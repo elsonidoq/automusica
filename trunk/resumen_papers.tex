@@ -1,0 +1,122 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[spanish,activeacute]{babel}
+
+\newcommand{\titulo}[1]{\def\Titulo{#1}}
+\newcommand{\resumen}[1]{\def\Resumen{#1}}
+\newcommand{\archivo}[1]{\def\Archivo{#1}}
+\newcommand{\link}[1]{\def\Link{#1}}
+\newcommand{\id}[1]{\def\Id{#1}}
+
+\newenvironment{resumenpaper}{
+\let\Titulo\empty
+\let\Resumen\empty
+\let\Archivo-
+\let\Link-
+\let\Id\empty
+}{
+\subsection{\textit{\Titulo}}
+\label{\Id}
+\noindent \textbf{Nombre del archivo PDF: }{\Archivo}\\
+\noindent \textbf{Link: }{\Link}\\ \\
+\noindent \textbf{Resumen:} \\ {\Resumen}
+}
+
+
+\title{Resumen de papers}
+\author{}
+
+\begin{document}
+\maketitle
+
+\section{Intro}
+Para cada paper adem'as del resumen, y el titulo pongo o bien el link de donde lo baje, o bien el nombre del archivo que est'a en el repositorio\footnote{https://automusica.googlecode.com/svn/trunk}. 
+
+\section{Resumenes}
+\begin{resumenpaper}
+\titulo{Visualizing Music and Audio using Self-Similarity}
+\archivo{FXPAL-PR-99-093}
+\resumen{El paper explica como utilizar matrices de similitud para visualizar la estructura temporal de un audio. Una matriz de similitud es una matriz que indica en la posicion (i,j) cuan parecidos son los momentos i y j en el tema. En el paper explica como calcular esto con transformadas de fourier y cosas que no entiendo. Al final muestra un par de ejemplos.}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{Application of virtual pitch theory in music analysis}
+ \link{http://www.lamadeguido.com/artangles.pdf}
+ \resumen{Este paper todavia no lo lei. Tiene mucho contenido de teoria musical, por lo creo que seria interesante dedicarle un tiempo para leerlo con un poco de profundidad.}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{Musical pattern extraction: from repetition to musical structure}
+ \link{http://recherche.ircam.fr/equipes/repmus/RMPapers/CMMR-meudic2003.pdf}
+ \id{MusicPatternExtrMidi}
+ \resumen{En este paper trabajan con como extraer patrones de MIDIs. Para hacer eso, lo que hacen es a partir de un algoritmo que esta en la referencia 1, segmentar al MIDI y despues clusterizar los segmentos. Para el algoritmo de clusterizacion usan matrices de similitud. Este paper tambien tiene bastante contenido musical.}
+ 
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{A Probabilistic Model of Melodic Similarity}
+ \link{http://citeseer.ist.psu.edu/hu02probabilistic.html}
+ \resumen{Este paper propone otra forma de ver si dos melod'ias son parecidos calculando (o mejor dicho aproximando) cual es la probabilidad de que una melod'ia sea una mutaci'on de otra.}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{Listening to ``Naima'': An Automated Structural Analysis of Music from Recorded Audio}
+ \link{http://www.cs.cmu.edu/~rbd/papers/icmc02naima.pdf}
+ \resumen{Este paper trata de extraer la m'etrica de un tema. Para hacer eso, hace algo parecido al paper \ref{MusicPatternExtrMidi}, pero la diferencia es que no usan MIDIs. Para esto usan tambien una t'ecnica de clustering, pero no utilizan matrices de similitud.}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{Similarity Matrix Processing for Music Structure Analysis}
+ \link{http://viola.usc.edu/Research/atoultaro\_yu\_mm\_vFinal2.pdf}
+ \resumen{Este paper pretende extraer la estructura de un tema, y para eso utilizan matrices de similitud para extraer patrones chicos (en tiempo), y utilizan el algoritmo de Viterbi para extraer patrones mas grandes.}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{A Mid-level Melody-based Representation for Calculating Audio Similarity}
+ \link{http://ismir2006.ismir.net/PAPERS/ISMIR0635\_Paper.pdf}
+ \resumen{}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{Automatic Music Summarization via Similarity Analysis}
+ \link{http://www.fxpal.com/publications/FXPAL-PR-02-171.pdf}
+ \resumen{no time to resume =p}
+\end{resumenpaper}
+
+
+\begin{resumenpaper}
+ \titulo{Toward Automatic Music Audio Summary Generation from Signal Analysis}
+ \link{http://mediatheque.ircam.fr/articles/textes/Peeters02c/}
+ \resumen{Este es un paper que me mandaste vos en el que apuntan a la generacion de musica teniendo como input solamente otras musicas. Lo que hacen es segmentar el tema y despues usan metodos de aprendizaje sin supervision (HMM y K-means que no se lo que es). Algo que tiene este paper que no vi tanto en los otros es la parte del estado del arte.}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{Representability of Human Motions by Factorial Hidden Markov Models }
+ \link{http://www.ynl.t.u-tokyo.ac.jp/~dana/pubs/KulicTakanoNakamuraIROS07Final.pdf}
+ \resumen{En este paper se muestra un modelo que permite factorizar caracteristicas que son independientes, cosa que no se puede en un HMM tradicional. }
+\end{resumenpaper}
+
+
+\section{Temas de base}
+\begin{resumenpaper}
+ \titulo{Bayesian Networks}
+ \link{http://www.eng.tau.ac.il/~bengal/BN.pdf}
+ \resumen{Explica sobre redes bayesianas}
+\end{resumenpaper}
+
+\begin{resumenpaper}
+ \titulo{Naive Bayesian Learning}
+ \link{http://citeseer.ist.psu.edu/cache/papers/cs/3570/http:zSzzSzdas-www.harvard.eduzSzcszSzacademicszSzcourseszSzcs182zSzhnb.pdf/naive-bayesian-learning.pdf}
+ \resumen{Este paper habla sobre como implementar un algoritmo de clusterizacion a partir de redes bayesianas.}
+\end{resumenpaper}
+
+\section{Cosas colgadas}
+\subsection{Music understanding}
+Es una pagina con un monton de articulos relacionados con el tema que no llegue a leer: http://www.cs.cmu.edu/~rbd/bib-musund.html
+
+\subsection{Collection of Music Information Retrieval and Visualization Applications}
+El titulo habla por si solo. Este es el link: http://www.cp.jku.at/people/schedl/Research/Development/CoMIRVA/webpage/CoMIRVA.html
+
+\subsection{Metodos bayesianos}
+http://www.cs.uwaterloo.ca/~ppoupart/ICML-07-tutorial-Bayes-RL.html
+
+\end{document}
