@@ -1,0 +1,11 @@
+no entendi el modelo de 3 estados para el coin tossing problem
+
+el alfabeto depende de cada estado??
+
+cuando enumera los elementos de una HMM, dice que los \pi_i son un elemento mas, sin embargo a mi me consta que se pueden calcular a partir de la state transition distribution para cadenas finitas. Ademas, otra cosa que me queda en el tintero es, es posible cualquier combinacion entre distribucion de transiciones entre estados y vectores para la distribucion inicial? Ahora que escribo me parece que me estoy confundiendo la distribucion inicial con la probabilidad de estar en un estado en el long term (que no me queda en claro si son lo mismo o no)
+
+Leyendo como se resuelven los 3 problemas fundamentales de los HMM. El primer problema asume que cada observacion de la secuencia de observaciones a la que se le quiere calcular la prbabilidad de independiente. Eso en nuestro caso no va a ser asi. Hay trabajo que conozcas al respecto? De ser afirmativa la respuesta, es computacionalmente posible trabajar con esos modelos?
+
+no entendi ni a palos por que la \sum_{t=1}^{T-1}\gamma_t(i) es el numero esperado de transiciones desde el estado S_i. Tengo el mismo problema con la formula analoga con \epsilonraro_t(i, j). Sin embargo, si me creo eso, el resto se entiende.
+
+La parte de HMM con continuous observation densities se me escapa, no se lo que son mixtures.
