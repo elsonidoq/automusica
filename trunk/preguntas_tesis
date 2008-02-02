@@ -9,3 +9,8 @@ Leyendo como se resuelven los 3 problemas fundamentales de los HMM. El primer pr
 no entendi ni a palos por que la \sum_{t=1}^{T-1}\gamma_t(i) es el numero esperado de transiciones desde el estado S_i. Tengo el mismo problema con la formula analoga con \epsilonraro_t(i, j). Sin embargo, si me creo eso, el resto se entiende.
 
 La parte de HMM con continuous observation densities se me escapa, no se lo que son mixtures.
+
+En la parte de scalling no entiend muy bie la prte que dice que no es necesrio calcular el coeficiente de escala en todos los instantes t, y que si en algun instante no es calculado y se le asigna el valor 1 las condiciones are met. Se me ourre que eso modifica a los calculos subsiguientes de los \alpha_t, pero no veo como es que esto funciona.
+
+En la parte que habla de multiple observation sequence. No entiendo la motivacion, es decir, no entiendo por que en los modelos left-right son particularmente mas complicados de entrenar que otros modelos, como los fully connected
+
