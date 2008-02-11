@@ -2,12 +2,16 @@ from interval import *
 from random import *
 
 class RandomVarlable:
+	def __init__(self, name=""):
+		self.name= name
+
 	def get_value():
 		pass
 
 
 class SplittedRandomVariable(RandomVarlable):
-	def __init__(self):
+	def __init__(self, name= ""):
+		RandomVarlable.__init__(self, name)
 		#son los intervalos con su respectiva probabilidad
 		self.intervals= {}
 
@@ -30,6 +34,8 @@ class SplittedRandomVariable(RandomVarlable):
 			raise Exception("Las probabilidades de los intervalos no suman 1") 
 		
 	def __repr__(self):
+		if self.name != "":
+			return self.name
 		res= ""
 		for interval, prob in self.intervals.items():
 			res+= "%s -> %s\n" % (interval,prob) 
