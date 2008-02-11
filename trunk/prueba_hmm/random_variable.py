@@ -22,10 +22,9 @@ class SplittedRandomVariable:
 	def get_value(self):
 		r= random()
 		for interval,prob in self.intervals.items():
+			r-= prob
 			if r <= 0:
 				return interval.random_value()
-			else:
-				r-= prob
 				
 		if r > 0:
 			raise Exception("Las probabilidades de los intervalos no suman 1") 
@@ -33,9 +32,11 @@ class SplittedRandomVariable:
 	def __repr__(self):
 		res= ""
 		for interval, prob in self.intervals.items():
-			res+= "%s -> %f\n" % (interval,prob) 
+			res+= "%s -> %s\n" % (interval,prob) 
 		return res
 
+
+#################### TESTING ########################
 def random_interval():
 	MAX_INT= 10
 	MIN_INT= -MAX_INT
@@ -69,30 +70,31 @@ def random_splitted_random_variable():
 	return res
 
 def splitted_random_variable_test():
-	intervals= [random_splitted_random_variable() for i in range(0,1)]
-	n_values= 500
+	random_variables= [random_splitted_random_variable() for i in range(0,1)]
+	n_values= 1000
 
 	""" la idea de este test, es generar aleatoriamente
 	una splitted random variable y despues pedirle bocha
 	de valores y despues imprimir las observaciones
 	que deberian ser parecidas a los parametros """
-	for i in intervals:
-		print i
-		values= [i.get_value() for j in range(0,n_values)]
-		
+	for r in random_variables:
+		print r
+
 		map= {}
-		for interval in i.intervals:
+		for interval in r.intervals:
 			map[interval]= 0
+
+		for i in range(0, n_values):
+			value= r.get_value()
 		
-		for value in values:
 			found= False
-			for interval in i.intervals:
+			for interval in r.intervals:
 				if interval.belongs(value):
 					map[interval]+= 1
 					found= True
-					continue
-				if not found:
-					print "NO ENONTRE %f " % value
+
+			if not found:
+				print "NO ENONTRE %s " % value
 		
 		measured_random_variable= SplittedRandomVariable()
 		for interval, times in map.items():
