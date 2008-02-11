@@ -4,5 +4,6 @@ from interval import *
 from random_variable import *
 from sys import argv
 
-eval("%s()" % argv[1])
+
+eval("%s.test()" % argv[1])
 	
