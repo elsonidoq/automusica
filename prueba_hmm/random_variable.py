@@ -6,7 +6,7 @@ class RandomVarlable:
 		pass
 
 
-class SplittedRandomVariable:
+class SplittedRandomVariable(RandomVarlable):
 	def __init__(self):
 		#son los intervalos con su respectiva probabilidad
 		self.intervals= {}
@@ -37,68 +37,69 @@ class SplittedRandomVariable:
 
 
 #################### TESTING ########################
-def random_interval():
-	MAX_INT= 10
-	MIN_INT= -MAX_INT
-	
-	a= uniform(MIN_INT, MAX_INT)
-	b= uniform(a, MAX_INT)
-	return Interval(a,b)
+	@classmethod
+	def random_interval(cls):
+		MAX_INT= 10
+		MIN_INT= -MAX_INT
+		
+		a= uniform(MIN_INT, MAX_INT)
+		b= uniform(a, MAX_INT)
+		return Interval(a,b)
 
-def random_splitted_random_variable():
-	print "Creating random splitted random variable"
-	r= 1.0
-	res= SplittedRandomVariable() 
-	n= 0
-	while n < 5:
-		prob= uniform(0, r)
-		try:
-			res.add_interval(random_interval(), prob)
-			r-= prob
-			n+= 1
-		except:
-			pass
-
-	if r > 0:
-		while True:
+	@classmethod
+	def random_splitted_random_variable(cls):
+		print "Creating random splitted random variable"
+		r= 1.0
+		res= SplittedRandomVariable() 
+		n= 0
+		while n < 5:
+			prob= uniform(0, r)
 			try:
-				res.add_interval(random_interval(), r)
-				break
+				res.add_interval(cls.random_interval(), prob)
+				r-= prob
+				n+= 1
 			except:
 				pass
-	
-	return res
 
-def splitted_random_variable_test():
-	random_variables= [random_splitted_random_variable() for i in range(0,1)]
-	n_values= 1000
-
-	""" la idea de este test, es generar aleatoriamente
-	una splitted random variable y despues pedirle bocha
-	de valores y despues imprimir las observaciones
-	que deberian ser parecidas a los parametros """
-	for r in random_variables:
-		print r
-
-		map= {}
-		for interval in r.intervals:
-			map[interval]= 0
-
-		for i in range(0, n_values):
-			value= r.get_value()
+		if r > 0:
+			while True:
+				try:
+					res.add_interval(cls.random_interval(), r)
+					break
+				except:
+					pass
 		
-			found= False
+		return res
+
+	@classmethod
+	def test(cls):
+		random_variables= [cls.random_splitted_random_variable()\
+						 for i in range(0,1)]
+		n_values= 1000
+
+		""" la idea de este test, es generar aleatoriamente
+		una splitted random variable y despues pedirle bocha
+		de valores y despues imprimir las observaciones
+		que deberian ser parecidas a los parametros """
+		for r in random_variables:
+			print r
+
+			map= {}
 			for interval in r.intervals:
-				if interval.belongs(value):
-					map[interval]+= 1
-					found= True
+				map[interval]= 0
 
-			if not found:
-				print "NO ENONTRE %s " % value
-		
-		measured_random_variable= SplittedRandomVariable()
-		for interval, times in map.items():
-			measured_random_variable.add_interval(interval, float(times)/n_values)
+			for i in range(0, n_values):
+				value= r.get_value()
+			
+				found= False
+				for interval in r.intervals:
+					if interval.belongs(value):
+						map[interval]+= 1
+						found= True
 
-		print "\n"
-		print str(measured_random_variable)
+			measured_random_variable= SplittedRandomVariable()
+			for interval, times in map.items():
+				measured_random_variable.add_interval(interval, float(times)/n_values)
+
+			print "\n"
+			print str(measured_random_variable)
