@@ -1,5 +1,6 @@
 from random import uniform
 from random_variable import *
+from random_picker import *
 
 class HiddenMarkovModel:
 	def __init__(self):	
@@ -7,6 +8,17 @@ class HiddenMarkovModel:
 		self.state_observation= {}
 		# es un dic(estado, dic(estado, prob))
 		self.state_transition= {}
+		# es un dic(estado, prob)
+		self.initial_probability= {}
+
+	def initial_probability(self, state):
+		return self.initial_probability[state]
+
+	def get_initial_state(self):
+		print self.initial_probability.keys()
+		r= RandomPicker("", self.initial_probability)
+		res= r.get_value()
+		return res
 
 	def states(self):
 		return self.state_transition.keys()
@@ -21,10 +33,11 @@ class HiddenMarkovModel:
 	def observators(self, state):
 		return self.state_observation[state]
 
-	def add_hidden_state(self, state):
+	def add_hidden_state(self, state, initial_probability):
 		if self.state_transition.has_key(state):
 			raise Exception("El estado " + str(state) + " ya existia")
 
+		self.initial_probability[state]= initial_probability
 		self.state_transition[state]= {}
 		self.state_observation[state]= []
 
@@ -73,19 +86,15 @@ class HiddenMarkovModel:
 
 
 class RandomObservation:
-	def __init__(self, hmm, initial_state):
+	def __init__(self, hmm):
 		self.hmm= hmm
-		self.actual_state= initial_state
+		self.actual_state= hmm.get_initial_state()
 
 	def next(self):
 		""" devuelve la proxima observacion """
-		rnd= random()
-
-		for state, prob in self.hmm.nexts(self.actual_state).items():
-			rnd-= prob
-			if rnd < 0:
-				self.actual_state= state
-				break
+		nexts= self.hmm.nexts(self.actual_state)
+		rnd_picker= RandomPicker("",nexts)
+		self.actual_state= rnd_picker.get_value()
 
 		res= {}
 		for random_variable in self.hmm.observators(self.actual_state):
@@ -96,34 +105,38 @@ class RandomObservation:
 	@classmethod
 	def test(cls):
 		model= HiddenMarkovModel()
-		model.add_hidden_state("I")
-		model.add_hidden_state("V")
+		model.add_hidden_state("I", 0.5)
+		model.add_hidden_state("V", 0.5)
 		model.add_transition("V", "I", 0.2) 
 		model.add_transition("I", "V", 0.1) 
-		model.add_transition("I", "I", 0.8) 
-		model.add_transition("V", "V", 0.9) 
+		model.add_transition("I", "I", 0.9) 
+		model.add_transition("V", "V", 0.8) 
 
-		summer_temperature= SplittedRandomVariable("ST") 
-		summer_temperature.add_interval(Interval(-20, 0), 0.1)
-		summer_temperature.add_interval(Interval(0.01, 10), 0.3)
-		summer_temperature.add_interval(Interval(10.01, 30), 0.6)
-		summer_rain= SplittedRandomVariable("SR") 
-		summer_rain.add_interval(Interval(0, 100), 0.3)
-		summer_rain.add_interval(Interval(100.01, 300), 0.7)
-		winter_temperature= SplittedRandomVariable("WT") 
-		winter_temperature.add_interval(Interval(-20, 0), 0.6)
-		winter_temperature.add_interval(Interval(0.01, 10), 0.3)
-		winter_temperature.add_interval(Interval(10.01, 30), 0.1)
-		winter_rain= SplittedRandomVariable("WR") 
-		winter_rain.add_interval(Interval(0, 100), 0.2)
-		winter_rain.add_interval(Interval(100.01, 300), 0.8)
+		summer_temperature= RandomPicker("ST") 
+		summer_temperature.add_value(Interval(-20, 0), 0.1)
+		summer_temperature.add_value(Interval(0.01, 10), 0.3)
+		summer_temperature.add_value(Interval(10.01, 30), 0.6)
+
+		summer_rain= RandomPicker("SR") 
+		summer_rain.add_value(Interval(0, 100), 0.3)
+		summer_rain.add_value(Interval(100.01, 300), 0.7)
+
+		winter_temperature= RandomPicker("WT") 
+		winter_temperature.add_value(Interval(-20, 0), 0.6)
+		winter_temperature.add_value(Interval(0.01, 10), 0.3)
+		winter_temperature.add_value(Interval(10.01, 30), 0.1)
+
+
+		winter_rain= RandomPicker("WR") 
+		winter_rain.add_value(Interval(0, 100), 0.2)
+		winter_rain.add_value(Interval(100.01, 300), 0.8)
 		
 		model.add_observator("V", summer_rain)
 		model.add_observator("V", summer_temperature)
 		model.add_observator("I", winter_rain)
 		model.add_observator("I", winter_temperature)
 
-		random_observation= RandomObservation(model, "I")
+		random_observation= RandomObservation(model)
 		for i in range(0, 20):
 			observation= random_observation.next()
 			print "%s -> %s" % (random_observation.actual_state,observation)

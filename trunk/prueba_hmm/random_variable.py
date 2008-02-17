@@ -1,7 +1,7 @@
 from interval import *
-from random import *
+from random_picker import *
 
-class RandomVarlable:
+class RandomVariable:
 	def __init__(self, name=""):
 		self.name= name
 
@@ -9,9 +9,9 @@ class RandomVarlable:
 		pass
 
 
-class SplittedRandomVariable(RandomVarlable):
+class SplittedRandomVariable(RandomVariable):
 	def __init__(self, name= ""):
-		RandomVarlable.__init__(self, name)
+		RandomVariable.__init__(self, name)
 		#son los intervalos con su respectiva probabilidad
 		self.intervals= {}
 
@@ -24,14 +24,9 @@ class SplittedRandomVariable(RandomVarlable):
 		self.intervals[interval]= prob
 
 	def get_value(self):
-		r= random()
-		for interval,prob in self.intervals.items():
-			r-= prob
-			if r <= 0:
-				return interval.random_value()
-				
-		if r > 0:
-			raise Exception("Las probabilidades de los intervalos no suman 1") 
+		rnd_picker= RandomPicker(self.intervals)
+		interval= rnd_picker.get_random_object()
+		return interval.random_value()
 		
 	def __repr__(self):
 		if self.name != "":
@@ -109,3 +104,39 @@ class SplittedRandomVariable(RandomVarlable):
 
 			print "\n"
 			print str(measured_random_variable)
+
+	
+class RandomPicker(RandomVariable):
+	def __init__(self, name="", values= {}):
+		RandomVariable.__init__(self, name)
+		self.values= values
+
+	def add_value(self, value, prob):
+		self.values[value]= prob
+
+	def get_value(self):
+		rnd= random()
+
+		for value, prob in self.values.items():
+			rnd-= prob
+			if rnd < 0:
+				return value
+
+		if rnd >=0:
+			raise Exception("ERROR: objects probability doesnt sum 1 %s"%self.values)
+
+	@classmethod
+	def test(cls):
+		r= RandomPicker()
+		r.add_value(1, 0.3)
+		r.add_value(2, 0.5)
+		r.add_value(3, 0.2)
+
+		m= {}
+		for i in range(1,4):
+			m[i]= 0
+
+		for i in range(0, 100):
+			m[r.get_value()]+= 1
+
+		print m
