@@ -1,6 +1,5 @@
 from random import uniform
 from random_variable import *
-from random_picker import *
 
 class HiddenMarkovModel:
 	def __init__(self):	
@@ -15,7 +14,6 @@ class HiddenMarkovModel:
 		return self.initial_probability[state]
 
 	def get_initial_state(self):
-		print self.initial_probability.keys()
 		r= RandomPicker("", self.initial_probability)
 		res= r.get_value()
 		return res
@@ -42,6 +40,9 @@ class HiddenMarkovModel:
 		self.state_observation[state]= []
 
 	def add_transition(self, from_state, to_state, prob):
+		""" agrega la transicion desde dos estados que deben existir
+		y si ya existe la transicion le cambia la probabilidad"""
+
 		if not self.state_transition.has_key(from_state):
 			raise Exception("No esta el from_state(" + str(from_state)+")")
 		elif not self.state_transition.has_key(to_state):
@@ -72,6 +73,22 @@ class HiddenMarkovModel:
 
 		return True
 
+	def __repr__(self):
+		res= "states:%s\n" % zip(self.states(),[self.initial_probability[state] for state in self.states()])
+
+		res+= "transitions\n"
+		for state in self.states():
+			res+= "%s|%s\n" % (state, self.state_transition[state])
+
+		res+= "observations\n"
+		for state in self.states():
+			res+= "%s|%s\n" % (state, self.state_observation[state])
+
+		return res
+
+
+
+
 	@classmethod
 	def test(cls):
 		model= HiddenMarkovModel()
@@ -91,7 +108,8 @@ class RandomObservation:
 		self.actual_state= hmm.get_initial_state()
 
 	def next(self):
-		""" devuelve la proxima observacion """
+		""" devuelve la proxima observacion en forma de 
+		diccionario de random variable en valor """
 		nexts= self.hmm.nexts(self.actual_state)
 		rnd_picker= RandomPicker("",nexts)
 		self.actual_state= rnd_picker.get_value()
@@ -104,6 +122,21 @@ class RandomObservation:
 
 	@classmethod
 	def test(cls):
+		random_observation= cls.create_example()
+		observation_sequence= []
+		for i in range(0,30):
+			observation= random_observation.next()
+			observation_sequence.append((random_observation.actual_state, observation))
+		print "Observation sequence"
+		for state, obs in observation_sequence:
+			print state
+			for var,value in obs.items():
+				print "\t%s -> %s" %(var,value)
+			print "*******************"
+
+
+	@classmethod
+	def create_example(cls):
 		model= HiddenMarkovModel()
 		model.add_hidden_state("I", 0.5)
 		model.add_hidden_state("V", 0.5)
@@ -117,7 +150,7 @@ class RandomObservation:
 		summer_temperature.add_value(Interval(0.01, 10), 0.3)
 		summer_temperature.add_value(Interval(10.01, 30), 0.6)
 
-		summer_rain= RandomPicker("SR") 
+		summer_rain= RandomPicker("SR", {}) 
 		summer_rain.add_value(Interval(0, 100), 0.3)
 		summer_rain.add_value(Interval(100.01, 300), 0.7)
 
@@ -125,7 +158,6 @@ class RandomObservation:
 		winter_temperature.add_value(Interval(-20, 0), 0.6)
 		winter_temperature.add_value(Interval(0.01, 10), 0.3)
 		winter_temperature.add_value(Interval(10.01, 30), 0.1)
-
 
 		winter_rain= RandomPicker("WR") 
 		winter_rain.add_value(Interval(0, 100), 0.2)
@@ -136,7 +168,7 @@ class RandomObservation:
 		model.add_observator("I", winter_rain)
 		model.add_observator("I", winter_temperature)
 
-		random_observation= RandomObservation(model)
-		for i in range(0, 20):
-			observation= random_observation.next()
-			print "%s -> %s" % (random_observation.actual_state,observation)
+		return RandomObservation(model)
+
+
+
