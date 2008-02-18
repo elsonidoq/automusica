@@ -1,5 +1,5 @@
 from interval import *
-from random_picker import *
+from random import *
 
 class RandomVariable:
 	def __init__(self, name=""):
@@ -8,6 +8,53 @@ class RandomVariable:
 	def get_value():
 		pass
 
+from copy import deepcopy
+
+class RandomPicker(RandomVariable):
+	def __init__(self, name="", values={}):
+		self.values= deepcopy(values)
+		RandomVariable.__init__(self, name)
+
+	def add_value(self, value, prob):
+		self.values[value]= prob
+
+	def get_value(self):
+		rnd= random()
+
+		for value, prob in self.values.items():
+			rnd-= prob
+			if rnd < 0:
+				return value
+
+		if rnd >=0:
+			raise Exception("ERROR: objects probability doesnt sum 1 %s"%self.values)
+
+	def __repr__(self):
+#		if self.name != "":
+#			return self.name
+		res= ""
+		for value,prob in self.values.items():
+			res+= "%s->%s|" % (value,prob)
+
+		return res
+
+
+
+	@classmethod
+	def test(cls):
+		r= RandomPicker()
+		r.add_value(1, 0.3)
+		r.add_value(2, 0.5)
+		r.add_value(3, 0.2)
+
+		m= {}
+		for i in range(1,4):
+			m[i]= 0
+
+		for i in range(0, 100):
+			m[r.get_value()]+= 1
+
+		print m
 
 class SplittedRandomVariable(RandomVariable):
 	def __init__(self, name= ""):
@@ -76,7 +123,7 @@ class SplittedRandomVariable(RandomVariable):
 	def test(cls):
 		random_variables= [cls.random_splitted_random_variable()\
 						 for i in range(0,1)]
-		n_values= 1000
+		n_values= 10000
 
 		""" la idea de este test, es generar aleatoriamente
 		una splitted random variable y despues pedirle bocha
@@ -106,37 +153,3 @@ class SplittedRandomVariable(RandomVariable):
 			print str(measured_random_variable)
 
 	
-class RandomPicker(RandomVariable):
-	def __init__(self, name="", values= {}):
-		RandomVariable.__init__(self, name)
-		self.values= values
-
-	def add_value(self, value, prob):
-		self.values[value]= prob
-
-	def get_value(self):
-		rnd= random()
-
-		for value, prob in self.values.items():
-			rnd-= prob
-			if rnd < 0:
-				return value
-
-		if rnd >=0:
-			raise Exception("ERROR: objects probability doesnt sum 1 %s"%self.values)
-
-	@classmethod
-	def test(cls):
-		r= RandomPicker()
-		r.add_value(1, 0.3)
-		r.add_value(2, 0.5)
-		r.add_value(3, 0.2)
-
-		m= {}
-		for i in range(1,4):
-			m[i]= 0
-
-		for i in range(0, 100):
-			m[r.get_value()]+= 1
-
-		print m
