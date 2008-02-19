@@ -64,7 +64,6 @@ class HiddenMarkovLearner:
 			# la informacion de transiciones
 			for state_to in res.states():
 				if total_outgoing_transitions > 0:
-					print trans[state_to]
 					res.add_transition(state, state_to, float(trans[state_to])/total_outgoing_transitions)
 				else:
 					res.add_transition(state, state_to, 0)
@@ -89,23 +88,37 @@ class HiddenMarkovLearner:
 			observation= random_observation.next()
 			observation_sequence.append((random_observation.actual_state, observation))
 
+		"""
 		print "Observation sequence"
 		for state, obs in observation_sequence:
 			print state
 			for var,value in obs.items():
 				print "\t%s -> %s" %(var,value)
 			print "*******************"
-		"""
 """
 		learner= HiddenMarkovLearner(observation_sequence, {"I":0.5,"V":0.5})	
 		hmm= learner.get_hidden_markov_model()
 		print "Hidden markov model"
 		print hmm
+		print "************************\n"
 
 		observation_sequence= []
+		hidden_state_sequence= []
 		for i in range(0,20):
 			observation= random_observation.next()
 			observation_sequence.append(observation)
+			hidden_state_sequence.append(random_observation.actual_state)
 
-		print hmm.viterbi(observation_sequence)
+
+		print "hidden_state_sequence:\n %s" % hidden_state_sequence
+		prob, viterbis_sequence= hmm.viterbi(observation_sequence)
+		print "observation probability: %s" % prob
+		print "viterbis_hidden_state_sequence: %s" % viterbis_sequence
+
+		count= 0
+		for vit_state, real_state in zip(viterbis_sequence, hidden_state_sequence):
+			if vit_state == real_state:
+				count+= 1
+
+		print "number of coinciding states: %s of %s" % (count, len(viterbis_sequence))
 		

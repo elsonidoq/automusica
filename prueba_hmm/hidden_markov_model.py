@@ -78,12 +78,13 @@ class HiddenMarkovModel:
 		states= self.states()
 		for s in states:
 			psi[0][s]= s # por poner algo, creop que no se usa este valor
+			#print "self.get_observation_probability(observations[0], %s)= %s" % (s,self.get_observation_probability(observations[0], s))
 			delta[0][s]= self.initial_probability[s]*self.get_observation_probability(observations[0], s)
 
-		print observations[0]
-		print "t=0"
-		print "delta_t= %s" % delta[0]
-		print "psi_t= %s" % psi[0]
+		#print "observations[0]= %s" % observations[0]
+		#print "t=0"
+		#print "delta_t= %s" % delta[0]
+		#print "psi_t= %s" % psi[0]
 
 		# para el resto de las observaciones (paso 2)
 		for t in range(1, len(observations)):
@@ -96,6 +97,9 @@ class HiddenMarkovModel:
 				s_max= None
 				for old_s in states:
 					tmp= delta[t-1][old_s]*self.state_transition[old_s][s]
+					#print "tmp= %s" % tmp
+					#print "delta[t-1][%s]= %s" % (old_s, delta[t-1][old_s])
+					#print "self.state_transition[old_s][s]= %s" % self.state_transition[old_s][s]
 					if new_max < tmp:
 						new_max= tmp
 						s_max= old_s
@@ -107,9 +111,9 @@ class HiddenMarkovModel:
 				delta_t[s]= new_max
 				psi_t[s]= s_max
 
-			print "t=%s" % t
-			print "delta_t= %s" % delta_t
-			print "psi_t= %s" % psi_t
+			#print "t=%s" % t
+			#print "delta_t= %s" % delta_t
+			#print "psi_t= %s" % psi_t
 			delta.append(delta_t)
 			psi.append(psi_t)
 		
@@ -144,42 +148,52 @@ class HiddenMarkovModel:
 		
 		res= 1.0
 		observators= self.state_observation[state]
-		print state
-		print observators
+		#print "state= %s" % state
+		#print "observators= %s" % observators
 
 		# para calcular la probabilidad de aparicion de un valor en una variable
 		# calculo la probabilidad en el observador correspondiente multiplicado
 		# por la proporcion de la interseccion entre los intervalos
 
-		for variable, value in observation.items():
-			my_variable= find(observators, variable.name, lambda x,y:x.name == y)
+		for variable, interval in observation.items():
 
+			my_variable= find(observators, variable.name, lambda x,y:x.name == y)
 			if my_variable is None:
 				raise Exception("Cant find matching for variable %s in %s" % (variable, observators))
 
-
 			# ASUMO QUE LOS VALORES SON INTERVALOS
-			my_interval= self.get_interval(my_variable, value)
-			interval= self.get_interval(variable, value)
+			my_interval= self.get_interval(my_variable, interval)
 
-			if my_interval is None:
+			#print "interval= %s" % interval
+			#print "my_interval= %s" % my_interval
+			#print "my_variable %s" % my_variable
+
+			if my_interval is None or my_interval.length() == 0:
 				return 0.0
 				
-			res*= my_variable.get_value_probability(value) * \
-							my_interval.intersection(interval).length() / (my_interval.length + interval.length) 
+			res*= my_variable.get_value_probability(my_interval) * my_interval.intersection(interval).length() / (my_interval.length() + interval.length()) 
 
 		return res
 
 
-	def get_interval(self, variable, value):
+	def get_interval(self, variable, interval):
 		""" Esta funcion tengo que pasarla a splitted random variable, y hacer
 		que splitted random variable sea subclase de RandomPicker para el caso en que 
-		los valores son intervalos """
-		for interval in variable.values.keys():
-			if interval.belongs(value):
-				return interval
+		los valores son intervalos. Devuelve el intervalo que se interseca con mayor
+		longitud """
 
-		return None
+		res= None
+#		print "variable=%s" % variable
+		for variable_interval in variable.values.keys():
+			intersection= variable_interval.intersection(interval)
+#			print "\t variable_interval= %s" % variable_interval
+#			print "\t interval= %s" % interval
+#			print "\t intersection= %s" % intersection
+			if (res is None and intersection.length()>0) or (res is not None and intersection.length() > res.length()):
+				res= variable_interval
+#			print "\t res= %s" % res
+
+		return res
 
 	
 	def is_valid(self):
@@ -197,15 +211,16 @@ class HiddenMarkovModel:
 		return True
 
 	def __repr__(self):
-		res= "states:%s\n" % zip(self.states(),[self.initial_probability[state] for state in self.states()])
+		res= "states:%s\n\n" % zip(self.states(),[self.initial_probability[state] for state in self.states()])
 
 		res+= "transitions\n"
 		for state in self.states():
 			res+= "%s|%s\n" % (state, self.state_transition[state])
+		res+= "\n"
 
-		res+= "observations\n"
+		res+= "observers"
 		for state in self.states():
-			res+= "%s|%s\n" % (state, self.state_observation[state])
+			res+= "\n%s|%s" % (state, self.state_observation[state])
 
 		return res
 
@@ -264,29 +279,28 @@ class RandomObservation:
 		model= HiddenMarkovModel()
 		model.add_hidden_state("I", 0.5)
 		model.add_hidden_state("V", 0.5)
-		model.add_transition("V", "I", 0.2) 
-		model.add_transition("I", "V", 0.1) 
-		model.add_transition("I", "I", 0.9) 
-		model.add_transition("V", "V", 0.8) 
+		model.add_transition("I", "V", 0.5) 
+		model.add_transition("I", "I", 0.5) 
+		model.add_transition("V", "V", 0.6) 
+		model.add_transition("V", "I", 0.4) 
 
 		summer_temperature= RandomPicker("T") 
-		summer_temperature.add_value(Interval(1, 4.99), 0.6)
+		summer_temperature.add_value(Interval(1, 4.99), 0.1)
 		summer_temperature.add_value(Interval(5, 9.99), 0.3)
-		summer_temperature.add_value(Interval(10, 20), 0.1)
+		summer_temperature.add_value(Interval(10, 20), 0.6)
 
 		summer_rain= RandomPicker("R", {}) 
 		summer_rain.add_value(Interval(0, 100), 0.3)
 		summer_rain.add_value(Interval(100.01, 300), 0.7)
 
 		winter_temperature= RandomPicker("T") 
-		winter_temperature.add_value(Interval(-20, 0), 0.6)
-		winter_temperature.add_value(Interval(-20, -10), 0.1)
-		winter_temperature.add_value(Interval(-9.99, -5), 0.3)
-		winter_temperature.add_value(Interval(-4.99,-1), 0.6)
+		winter_temperature.add_value(Interval(1, 4.99), 0.6)
+		winter_temperature.add_value(Interval(5, 9.99), 0.3)
+		winter_temperature.add_value(Interval(10, 20), 0.1)
 
 		winter_rain= RandomPicker("R") 
-		winter_rain.add_value(Interval(400, 500), 0.2)
-		winter_rain.add_value(Interval(501, 600), 0.8)
+		winter_rain.add_value(Interval(0, 100), 0.5)
+		winter_rain.add_value(Interval(100.01, 300), 0.5)
 		
 		model.add_observator("V", summer_rain)
 		model.add_observator("V", summer_temperature)
