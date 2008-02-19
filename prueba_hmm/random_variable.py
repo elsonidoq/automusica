@@ -29,9 +29,12 @@ class RandomPicker(RandomVariable):
 		if rnd >=0:
 			raise Exception("ERROR: objects probability doesnt sum 1 %s"%self.values)
 
+	def get_value_probability(self, value):
+		return self.values[value]
+
 	def __repr__(self):
-#		if self.name != "":
-#			return self.name
+		if self.name != "":
+			return self.name
 		res= ""
 		for value,prob in self.values.items():
 			res+= "%s->%s|" % (value,prob)
