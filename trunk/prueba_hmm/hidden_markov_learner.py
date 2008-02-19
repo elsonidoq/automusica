@@ -35,6 +35,13 @@ class HiddenMarkovLearner:
 			increment_next_state= False
 
 			for obs_state, observations in self.observations:
+				if increment_next_state:
+					# incremento el estado actual
+					increment_next_state= False
+					trans[obs_state]+= 1
+					total_outgoing_transitions+= 1
+					
+
 				if obs_state == state:
 					# marco que tengo que mirar el proximo estado
 					increment_next_state= True
@@ -48,13 +55,6 @@ class HiddenMarkovLearner:
 							obs[variable][observation]= 0
 
 						obs[variable][observation]+= 1
-				elif increment_next_state:
-					# incremento el estado actual
-					increment_next_state= False
-					trans[obs_state]+= 1
-					total_outgoing_transitions+= 1
-					
-
 			# a esta altura tengo toda la informacion que necesito
 			# recopilada en los diccionarios para este estado
 			# Solo resta crear el hidden markov model con estos datos
@@ -62,6 +62,7 @@ class HiddenMarkovLearner:
 			# la informacion de transiciones
 			for state_to in res.states():
 				if total_outgoing_transitions > 0:
+					print trans[state_to]
 					res.add_transition(state, state_to, float(trans[state_to])/total_outgoing_transitions)
 				else:
 					res.add_transition(state, state_to, 0)
