@@ -10,6 +10,9 @@ class Interval:
 	def intersects(self, other):
 		return not self.intersection(other).is_empty()	
 
+	def length(self):
+		return max(0, self.max_value - self.min_value)
+
 	def intersection(self, other):
 		if self.max_value < other.min_value:
 			""" caso en el que self

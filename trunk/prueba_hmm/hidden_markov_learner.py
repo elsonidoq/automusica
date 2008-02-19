@@ -1,9 +1,11 @@
 from hidden_markov_model import *
+from copy import deepcopy
 
 class HiddenMarkovLearner:
-	def __init__(self, observations):
+	def __init__(self, observations, initial_probability):
 		# observations es [(hidden_state,dict(random_variable, observation)])]
 		self.observations= observations
+		self.initial_probability= initial_probability
 	
 	def get_hidden_markov_model(self):
 		states= dict(self.observations).keys()
@@ -15,7 +17,7 @@ class HiddenMarkovLearner:
 			if state == self.observations[0][0]:
 				initial_prob= 1
 
-			res.add_hidden_state(state, initial_prob)
+			res.add_hidden_state(state, self.initial_probability[state])
 		
 
 		for state in states:
@@ -83,7 +85,7 @@ class HiddenMarkovLearner:
 	def test(cls):
 		random_observation= RandomObservation.create_example()
 		observation_sequence= []
-		for i in range(0,300):
+		for i in range(0,80):
 			observation= random_observation.next()
 			observation_sequence.append((random_observation.actual_state, observation))
 
@@ -93,7 +95,17 @@ class HiddenMarkovLearner:
 			for var,value in obs.items():
 				print "\t%s -> %s" %(var,value)
 			print "*******************"
+		"""
+"""
+		learner= HiddenMarkovLearner(observation_sequence, {"I":0.5,"V":0.5})	
+		hmm= learner.get_hidden_markov_model()
+		print "Hidden markov model"
+		print hmm
 
-		learner= HiddenMarkovLearner(observation_sequence)	
-		print learner.get_hidden_markov_model()
+		observation_sequence= []
+		for i in range(0,20):
+			observation= random_observation.next()
+			observation_sequence.append(observation)
+
+		print hmm.viterbi(observation_sequence)
 		
