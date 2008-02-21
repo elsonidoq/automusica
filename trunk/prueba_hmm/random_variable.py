@@ -33,11 +33,10 @@ class RandomPicker(RandomVariable):
 		return self.values[value]
 
 	def __repr__(self):
-		#if self.name != "":
-		#	return self.name
-		res= ""
+		res= "name= %s\n" % self.name
+
 		for value,prob in self.values.items():
-			res+= "%s->%s|" % (value,prob)
+			res+= "\t%s->%s\n" % (value,prob)
 
 		return res
 
