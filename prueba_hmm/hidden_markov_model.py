@@ -147,55 +147,45 @@ class HiddenMarkovModel:
 		de cada observador """
 		
 		res= 1.0
-		observators= self.state_observation[state]
+		my_observators= self.state_observation[state]
 		#print "state= %s" % state
-		#print "observators= %s" % observators
+		#print "observators= %s" % my_observators
 
 		# para calcular la probabilidad de aparicion de un valor en una variable
 		# calculo la probabilidad en el observador correspondiente multiplicado
 		# por la proporcion de la interseccion entre los intervalos
 
-		for variable, interval in observation.items():
+		for observation_variable, interval in observation.items():
 
-			my_variable= find(observators, variable.name, lambda x,y:x.name == y)
-			if my_variable is None:
-				raise Exception("Cant find matching for variable %s in %s" % (variable, observators))
+			variable_candidates= filter(lambda x:x.name == observation_variable.name, my_observators)
+			if len(variable_candidates) == 0:
+				raise Exception("Cant find matching for variable %s in %s" % (observation_variable, observators))
+			elif len(variable_candidates) > 1:
+				raise Exception("More than one candidate for variable %s (%s)" % (observation_variable, variable_candidates))
 
-			# ASUMO QUE LOS VALORES SON INTERVALOS
-			my_interval= self.get_interval(my_variable, interval)
+			my_variable= variable_candidates[0]
 
-			#print "interval= %s" % interval
-			#print "my_interval= %s" % my_interval
-			#print "my_variable %s" % my_variable
-
-			if my_interval is None or my_interval.length() == 0:
+			intersecting_intervals= filter(lambda v:v.intersects(interval), my_variable.values.keys())
+			if len(intersecting_intervals) == 0:
 				return 0.0
-				
-			res*= my_variable.get_value_probability(my_interval) * my_interval.intersection(interval).length() / (my_interval.length() + interval.length()) 
+
+			# prob acumula la probabilidad de todos los intervalos que se intersecan
+			prob= 0.0
+			for my_interval in intersecting_intervals: 
+				#print "interval= %s" % interval
+				#print "my_interval= %s" % my_interval
+				#print "my_variable %s" % my_variable
+
+				if my_interval is None or my_interval.length() == 0:
+					return 0.0
+					
+				prob+= my_variable.get_value_probability(my_interval) * my_interval.intersection(interval).length() / (my_interval.length() + interval.length()) 
+
+			res*= prob
 
 		return res
 
 
-	def get_interval(self, variable, interval):
-		""" Esta funcion tengo que pasarla a splitted random variable, y hacer
-		que splitted random variable sea subclase de RandomPicker para el caso en que 
-		los valores son intervalos. Devuelve el intervalo que se interseca con mayor
-		longitud """
-
-		res= None
-#		print "variable=%s" % variable
-		for variable_interval in variable.values.keys():
-			intersection= variable_interval.intersection(interval)
-#			print "\t variable_interval= %s" % variable_interval
-#			print "\t interval= %s" % interval
-#			print "\t intersection= %s" % intersection
-			if (res is None and intersection.length()>0) or (res is not None and intersection.length() > res.length()):
-				res= variable_interval
-#			print "\t res= %s" % res
-
-		return res
-
-	
 	def is_valid(self):
 		""" revisa que la suma de las probabilidades de las transiciones
 		para cada estado de 1 """
@@ -215,12 +205,12 @@ class HiddenMarkovModel:
 
 		res+= "transitions\n"
 		for state in self.states():
-			res+= "%s|%s\n" % (state, self.state_transition[state])
+			res+= "\t%s|%s\n" % (state, self.state_transition[state])
 		res+= "\n"
 
 		res+= "observers"
 		for state in self.states():
-			res+= "\n%s|%s" % (state, self.state_observation[state])
+			res+= "\n\t%s:\n%s" % (state, tab_string(self.state_observation[state],2))
 
 		return res
 
@@ -230,49 +220,7 @@ class HiddenMarkovModel:
 
 	@classmethod
 	def test(cls):
-		model= HiddenMarkovModel()
-		model.add_hidden_state("I")
-		model.add_hidden_state("V")
-		model.add_transition("V", "I", 0.2) 
-		model.add_transition("I", "V", 0.1) 
-		model.add_transition("I", "I", 0.8) 
-		model.add_transition("V", "V", 0.9) 
-
 		print model.states()
-
-
-class RandomObservation:
-	def __init__(self, hmm):
-		self.hmm= hmm
-		self.actual_state= hmm.get_initial_state()
-
-	def next(self):
-		""" devuelve la proxima observacion en forma de 
-		diccionario de random variable en valor """
-		nexts= self.hmm.nexts(self.actual_state)
-		rnd_picker= RandomPicker("",nexts)
-		self.actual_state= rnd_picker.get_value()
-
-		res= {}
-		for random_variable in self.hmm.observators(self.actual_state):
-			res[random_variable]= random_variable.get_value()
-
-		return res
-
-	@classmethod
-	def test(cls):
-		random_observation= cls.create_example()
-		observation_sequence= []
-		for i in range(0,30):
-			observation= random_observation.next()
-			observation_sequence.append((random_observation.actual_state, observation))
-		print "Observation sequence"
-		for state, obs in observation_sequence:
-			print state
-			for var,value in obs.items():
-				print "\t%s -> %s" %(var,value)
-			print "*******************"
-
 
 	@classmethod
 	def create_example(cls):
@@ -307,7 +255,43 @@ class RandomObservation:
 		model.add_observator("I", winter_rain)
 		model.add_observator("I", winter_temperature)
 
-		return RandomObservation(model)
+		return model
+
+
+
+class RandomObservation:
+	def __init__(self, hmm):
+		self.hmm= hmm
+		self.actual_state= hmm.get_initial_state()
+
+	def next(self):
+		""" devuelve la proxima observacion en forma de 
+		diccionario de random variable en valor """
+		nexts= self.hmm.nexts(self.actual_state)
+		rnd_picker= RandomPicker("",nexts)
+		self.actual_state= rnd_picker.get_value()
+
+		res= {}
+		for random_variable in self.hmm.observators(self.actual_state):
+			res[random_variable]= random_variable.get_value()
+
+		return res
+
+	@classmethod
+	def test(cls):
+		random_observation= RandomObservation(HiddenMarkovModel.create_example())
+		observation_sequence= []
+		for i in range(0,30):
+			observation= random_observation.next()
+			observation_sequence.append((random_observation.actual_state, observation))
+		print "Observation sequence"
+		for state, obs in observation_sequence:
+			print state
+			for var,value in obs.items():
+				print "\t%s -> %s" %(var,value)
+			print "*******************"
+
+
 
 
 

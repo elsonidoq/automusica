@@ -1,4 +1,5 @@
 from hidden_markov_model import *
+from utils import *
 from copy import deepcopy
 
 class HiddenMarkovLearner:
@@ -82,25 +83,16 @@ class HiddenMarkovLearner:
 
 	@classmethod
 	def test(cls):
-		random_observation= RandomObservation.create_example()
+		original_hmm= HiddenMarkovModel.create_example()
+		random_observation= RandomObservation(original_hmm)
 		observation_sequence= []
-		for i in range(0,80):
+		for i in range(0,200):
 			observation= random_observation.next()
 			observation_sequence.append((random_observation.actual_state, observation))
 
-		"""
-		print "Observation sequence"
-		for state, obs in observation_sequence:
-			print state
-			for var,value in obs.items():
-				print "\t%s -> %s" %(var,value)
-			print "*******************"
-"""
+
 		learner= HiddenMarkovLearner(observation_sequence, {"I":0.5,"V":0.5})	
-		hmm= learner.get_hidden_markov_model()
-		print "Hidden markov model"
-		print hmm
-		print "************************\n"
+		trained_hmm= learner.get_hidden_markov_model()
 
 		observation_sequence= []
 		hidden_state_sequence= []
@@ -110,15 +102,54 @@ class HiddenMarkovLearner:
 			hidden_state_sequence.append(random_observation.actual_state)
 
 
-		print "hidden_state_sequence:\n %s" % hidden_state_sequence
-		prob, viterbis_sequence= hmm.viterbi(observation_sequence)
-		print "observation probability: %s" % prob
-		print "viterbis_hidden_state_sequence: %s" % viterbis_sequence
+		separator= "***************************************"
 
+		# modelos
+		print "original model"
+		print tab_string(repr(original_hmm))
+		print separator
+		print "trained model"
+		print tab_string(repr(trained_hmm))
+		print separator + '\n'
+
+		# observacion
+		print "observation sequence"
+		for state, obs in zip(hidden_state_sequence, observation_sequence):
+			print state
+			for var,value in obs.items():
+				print "\t%s -> %s" %(var.name,value)
+
+		print "\nhidden state sequence:\n %s\n" % hidden_state_sequence
+
+
+		# resultados para el modelo original
+		print "original model:"
+
+		prob, viterbis_sequence= original_hmm.viterbi(observation_sequence)
 		count= 0
 		for vit_state, real_state in zip(viterbis_sequence, hidden_state_sequence):
 			if vit_state == real_state:
 				count+= 1
 
-		print "number of coinciding states: %s of %s" % (count, len(viterbis_sequence))
+		print "\t number of coinciding states: %s of %s" % (count, len(viterbis_sequence))
+		print "\t viterbis sequence:"
+		print viterbis_sequence 
+		print "\t observation probability: %s" % prob
+
+		
+		# resultados para el modelo entrenado
+		print separator
+		print "\n trained model"
+
+		prob, viterbis_sequence= trained_hmm.viterbi(observation_sequence)
+		count= 0
+		for vit_state, real_state in zip(viterbis_sequence, hidden_state_sequence):
+			if vit_state == real_state:
+				count+= 1
+
+		print "\t number of coinciding states: %s of %s" % (count, len(viterbis_sequence))
+		print "\t viterbis sequence:"
+		print  viterbis_sequence
+		print "observation probability: %s" % prob
+
 		
