@@ -86,7 +86,8 @@ class HiddenMarkovLearner:
 		original_hmm= HiddenMarkovModel.create_example()
 		random_observation= RandomObservation(original_hmm)
 		observation_sequence= []
-		for i in range(0,200):
+		observation_length= 200
+		for i in range(0,observation_length):
 			observation= random_observation.next()
 			observation_sequence.append((random_observation.actual_state, observation))
 
@@ -108,7 +109,7 @@ class HiddenMarkovLearner:
 		print "original model"
 		print tab_string(repr(original_hmm))
 		print separator
-		print "trained model"
+		print "trained model (observation length = %s)" % observation_length
 		print tab_string(repr(trained_hmm))
 		print separator + '\n'
 
