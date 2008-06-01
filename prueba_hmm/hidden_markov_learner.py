@@ -87,7 +87,7 @@ class HiddenMarkovLearner:
 		random_observation= RandomObservation(original_hmm)
 		observation_sequence= []
 		observation_length= 1000
-		for i in range(0,observation_length):
+		for i in xrange(observation_length):
 			observation= random_observation.next()
 			observation_sequence.append((random_observation.actual_state, observation))
 
@@ -103,8 +103,8 @@ class HiddenMarkovLearner:
 			hidden_state_sequence.append(random_observation.actual_state)
 
 
-		separator= "***************************************"
-
+		separator= "*"*100
+	
 		# modelos
 		print "original model"
 		print tab_string(repr(original_hmm))
