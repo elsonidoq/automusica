@@ -2,9 +2,9 @@ from random import uniform
 from random_variable import *
 from utils import *
 
-class HiddenMarkovModel:
+class HiddenMarkovModel(object):
 	def __init__(self):	
-		# es un dic(estado, [random_variable])
+		# es un dic(estado, set(random_variable))
 		self.state_observation= {}
 		# es un dic(estado, dic(estado, prob))
 		self.state_transition= {}
@@ -38,7 +38,7 @@ class HiddenMarkovModel:
 
 		self.initial_probability[state]= initial_probability
 		self.state_transition[state]= {}
-		self.state_observation[state]= []
+		self.state_observation[state]= set()
 
 	def add_transition(self, from_state, to_state, prob):
 		""" agrega la transicion desde dos estados que deben existir
@@ -57,7 +57,7 @@ class HiddenMarkovModel:
 		if not self.state_transition.has_key(hidden_state):
 			raise Exception("No esta el hidden state " + str(hidden_state))
 	
-		self.state_observation[hidden_state].append(random_variable)
+		self.state_observation[hidden_state].add(random_variable)
 	
 
 	def viterbi(self, observations):
@@ -220,7 +220,7 @@ class HiddenMarkovModel:
 
 	@classmethod
 	def test(cls):
-		print model.states()
+		print cls.create_example().states()
 
 	@classmethod
 	def create_example(cls):
@@ -296,4 +296,48 @@ class RandomObservation:
 
 
 
+
+class MeanHiddenMarkovModel(HiddenMarkovModel):
+	def __init__(self, *models):
+		assert len(models) > 0
+		assert not type(models[0]) == list or len(models) == 1
+		
+		if type(models[0]) == list: models= models[0]
+		
+		HiddenMarkovModel.__init__(self)
+
+		# es un dic(estado, set(random_variable))
+		state_observation= self.state_observation
+		# es un dic(estado, dic(estado, prob))
+		state_transition= self.state_transition
+		# es un dic(estado, prob)
+		initial_probability= self.initial_probability
+
+		for hmm in models:
+			for s, vars in hmm.state_observation.items():
+				try:
+					state_observation[s].update(vars)
+				except KeyError:
+					state_observation[s]= vars
+					
+			initial_probability.update(hmm.initial_probability)
+			for s1, nexts in hmm.state_transition.items():
+				if s1 not in state_transition:
+					d= {}
+					state_transition[s1]= d
+				else:
+					d= state_transition[s1]
+
+				for s2, prob in nexts.items():
+					if s2 not in d:
+						d[s2]= prob
+					else:
+						d[s2]+=prob
+
+
+		nmodels= len(state_transition)
+		for s1, nexts in state_transition.items():
+			for s2 in nexts:
+				nexts[s2]= nexts[s2]/nmodels
+				
 
