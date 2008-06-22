@@ -1,10 +1,9 @@
 from hidden_markov_model import *
 from utils import *
-from copy import deepcopy
 
 class HiddenMarkovLearner:
 	def __init__(self, observations, initial_probability):
-		# observations es [(hidden_state,dict(random_variable, observation)])]
+		""" observations es [(hidden_state,dict(random_variable, observation)])] """
 		self.observations= observations
 		self.initial_probability= initial_probability
 	

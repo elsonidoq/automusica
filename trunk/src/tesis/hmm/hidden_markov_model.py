@@ -1,3 +1,4 @@
+from tesis.hmm.hidden_markov_learner import HiddenMarkovLearner
 from random import uniform
 from random_variable import *
 from utils import *
@@ -279,6 +280,15 @@ class RandomObservation:
 
 		return res
 
+	def __iter__(self):
+		while True:
+			yield self.next()
+
+
+	def sizedObservation(self, size):
+		for i in xrange(size):
+			yield self.next()
+
 	@classmethod
 	def test(cls):
 		random_observation= RandomObservation(HiddenMarkovModel.create_example())
@@ -341,3 +351,16 @@ class MeanHiddenMarkovModel(HiddenMarkovModel):
 				nexts[s2]= nexts[s2]/nmodels
 				
 
+	@classmethod
+	def test(cls):
+		print "building models"
+		m1= HiddenMarkovModel.create_example()
+		m2= HiddenMarkovModel.create_example()
+		m3= MeanHiddenMarkovModel(m1,m2)
+		print "building observation sequence"
+		random_observation= RandomObservation(m1)
+		observation_length= 1000
+		observation_sequence= [v for v in random_observation.sizedObservation(observation_length)]
+
+		print "calculating viterbi for both models"
+		assert m1.viterbi(observation_sequence) == m3.viterbi(observation_sequence)
