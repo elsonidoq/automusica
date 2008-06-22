@@ -135,6 +135,16 @@ class MusicXMLParser:
                         if attrib.find("diatonic"):
                             measure.transpose.diatonicSteps = int(
                                 attrib.findtext("diatonic"))
+            elif child.tag == "harmony":
+              root= child.find('root')
+              root_alter= root.findtext('root-alter')
+              if root_alter is None: root_alter= 0
+              harm_chord= HarmonyChord(\
+                      len(measure.musicdata), \
+                      root.findtext('root-step'),\
+                      root_alter, \
+                      child.findtext('kind'))
+              measure.harmonies.append(harm_chord)
             elif child.tag == 'note':
                 note = self.readNote(child)
                 note.measure = measure

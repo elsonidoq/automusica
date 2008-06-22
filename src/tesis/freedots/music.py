@@ -191,6 +191,7 @@ class Measure(object):
     """A measure (or bar) is a segment of time defined as a given
 number of beats of a given duration."""
     def __init__(self, number=None, implicit=False):
+        self.harmonies= []
         self.number = number
         self.implicit = implicit
         self.parent = None
@@ -270,6 +271,22 @@ the stems point downward, and under them if the stems point upwards."""
         self.notes.append(note)
         note.slur.append(self)
 
+class HarmonyChord:
+  def __init__(self, starting_note, chord_name, alter, kind):
+    self.starting_note= starting_note
+    self.chord_name= chord_name
+    self.kind= kind
+    self.alter= alter
+
+  def __repr__(self):
+    return "HarmonyChord(%(starting_note)s, '%(chord_name)s', %(alter)s, '%(kind)s')" % self.__dict__
+
+  def __eq__(self, other):
+    return self.starting_note == other.starting_note and \
+          self.chord_name == other.chord_name and \
+          self.kind == other.kind and\
+          self.alter == other.alter
+    
 class Lyric:
     def __init__(self, text, syllabic, note):
         self.text = unicode(text)
