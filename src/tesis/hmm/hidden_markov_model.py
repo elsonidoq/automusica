@@ -287,10 +287,6 @@ class RandomObservation:
 			yield self.next()
 
 
-	def sizedObservation(self, size):
-		for i in xrange(size):
-			yield self.next()
-
 	@classmethod
 	def test(cls):
 		random_observation= RandomObservation(HiddenMarkovModel.create_example())
@@ -306,7 +302,27 @@ class RandomObservation:
 			print "*******************"
 
 
+class SizedRandomObservation(RandomObservation):
+	"""
+	es como una RandomObservation pero no es infinita
+	"""
+	def __init__(self, hmm, size):
+		RandomObservation.__init__(self, hmm)
+		self.size= size
+		self.actual_pos= 0
+	
+	def next(self):
+		if self.actual_pos >= self.size:
+			raise StopIteration
 
+		return RandomObservation.next(self)
+		
+	def __iter__(self):
+		actual_pos= self.actual_pos
+		size= self.size
+		while actual_pos < size:
+			yield self.next()
+			actual_pos+= 1
 
 
 class MeanHiddenMarkovModel(HiddenMarkovModel):
