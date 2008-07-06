@@ -2,9 +2,11 @@ from tesis.freedots import musicxml
 from tesis.hmm.hidden_markov_learner import HiddenMarkovLearner
 from tesis.hmm.hidden_markov_model import MeanHiddenMarkovModel
 from tesis.hmm.random_variable import ConstantRandomVariable
+from itertools import imap
 
 def train_hmm(fnames, score2obs_seq):
-	models= [None]*len(fnames)
+	learner= HiddenMarkovLearner()
+	hidden_states= set()
 	for i, fname in enumerate(fnames):
 		print "loading", fname
 		score= musicxml.load_file(fname)
@@ -12,13 +14,14 @@ def train_hmm(fnames, score2obs_seq):
 		print "\tconverting to observation seq"
 		obs_seq= score2obs_seq(score)
 
-		hidden_states= map(lambda x:x[0], obs_seq)
-		init_probs= dict( ((h,1.0/len(hidden_states)) for h in hidden_states) ) 
+		hidden_states.update(imap(lambda x:x[0], obs_seq))
 
 		print "\ttraining model"
-		models[i]= HiddenMarkovLearner(obs_seq, init_probs).get_hidden_markov_model()
+		learner.train(obs_seq)
 
+	initial_probability= dict( ((s,1.0/len(hidden_states)) for s in hidden_states) )
 	print "building result"
+	return learner.get_trainned_model(initial_probability)
 	return models
 	return MeanHiddenMarkovModel(models)
 
