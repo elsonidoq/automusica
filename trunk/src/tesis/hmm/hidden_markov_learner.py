@@ -1,81 +1,101 @@
-from hidden_markov_model import *
+from hidden_markov_model import HiddenMarkovModel
+from random_variable import RandomPicker
 from utils import *
+from itertools import chain, imap
 
 class HiddenMarkovLearner:
-	def __init__(self, observations, initial_probability):
-		""" observations es [(hidden_state,dict(random_variable, observation)])] """
-		self.observations= observations
-		self.initial_probability= initial_probability
-	
-	def get_hidden_markov_model(self):
-		states= dict(self.observations).keys()
+	def __init__(self):
+		# mantengo diccionarios analogos a los del HMM pero llevando la 
+		# cuenta y no la probabilidad
+		self.initial_probability= {}
+		self.state_transition= {}
+		self.state_observation= {}
 
-		res= HiddenMarkovModel()
+	def train(self, observations):
+		""" 
+		observations es [(hidden_state,dict(random_variable, observation)])] 
+		"""
 
-		for state in states:
-			initial_prob= 0
-			if state == self.observations[0][0]:
-				initial_prob= 1
+		# TODO: hacerlo en O(len(observations))
+		state_transition= self.state_transition
+		state_observation= self.state_observation
 
-			res.add_hidden_state(state, self.initial_probability[state])
-		
-
-		for state in states:
+		for state in imap(lambda (x,y):x, observations):
 			# itero para cada estado y calculo la informacion
 			# correspondiente.
 
-			# diccionario para la freuencia relativa de los estados
-			trans= dict([(s,0) for s in states])
-			# cantidad total de transiciones salientes
-			total_outgoing_transitions= 0
+			# diccionario para la frecuencia relativa de los estados
+			if state not in state_transition:
+				trans= {}
+				state_transition[state]= trans
+			else:
+				trans= state_transition[state]
 			# diccionario para la frecuencia relativa de las observaciones
 			# tiene como clave las variables aleatorias, y como significado
 			# un diccionario de observacion en veces
-			obs= {}
-			# si en algun momento me topo con este estado, incremento
-			# trans[proximo estado que observo]
+			if state not in state_observation:
+				obs= {}
+				state_observation[state]= obs
+			else:
+				obs= state_observation[state]
+			# si en algun momento me topo el estado state dentro de la
+			# observacion, debo incrementar trans[proximo estado que observo]
 			increment_next_state= False
 
 			for obs_state, observations in self.observations:
 				if increment_next_state:
-					# incremento el estado actual
+					# incremento porque el anterior estado era state 
 					increment_next_state= False
 					trans[obs_state]+= 1
-					total_outgoing_transitions+= 1
 					
 
 				if obs_state == state:
 					# marco que tengo que mirar el proximo estado
 					increment_next_state= True
+
 					# junto la informacion de las observaciones
 					for variable,observation in observations.items():
 						# si las cosas no estan definidas. 
-						# Habria que sacar esto de aca
-						if not obs.has_key(variable):
+						if variable not in obs:
 							obs[variable]= {}
-						if not obs[variable].has_key(observation):
-							obs[variable][observation]= 0
 
-						obs[variable][observation]+= 1
-			# a esta altura tengo toda la informacion que necesito
-			# recopilada en los diccionarios para este estado
-			# Solo resta crear el hidden markov model con estos datos
+						var_obs= obs[variable]
+						if observation not in var_obs:
+							var_obs[observation]= 0
 
+						var_obs[observation]+= 1
+
+		def get_trainned_model(self, initial_probability):
+			"""
+			initial_probability es {state:prob}
+			"""
+
+			res= HiddenMarkovModel()
 			# la informacion de transiciones
-			for state_to in res.states():
-				if total_outgoing_transitions > 0:
-					res.add_transition(state, state_to, float(trans[state_to])/total_outgoing_transitions)
-				else:
-					res.add_transition(state, state_to, 0)
+			for state_from, info in self.state_transition.iteritems():
+				res.add_hidden_state(state_from, initial_probability[state_from])
+
+				total_count= sum(info.itervalues())
+				for state_to, count in info.iteritems():
+					if not res.has_state(state_to):
+						res.add_hidden_state(state_to, initial_probability[state_to])
+					# total_count >= count 
+					if total_count > 0:
+						res.add_transition(state, state_to, float(count)/total_count)
+					else:
+						# XXX: tiene sentido que este esto aca?
+						# pasa la ejecucion por aca?
+						res.add_transition(state, state_to, 0)
 
 			# las observaciones en este estado
-			for variable, observations in obs.items():
-				total_observations= reduce(lambda tot,(value,times):tot+times,observations.items(),0)
-				observations= dict(map(lambda (value,times):(value,float(times)/total_observations), \
-								observations.items()))
-				picker= RandomPicker(variable.name, observations)
-				res.add_observator(state,picker)
+			for state, info in state_observation.iteritems():
+				for variable, observations in info.iteritems():
+					total_observations= sum(observations.itervalues())
+					norm= lambda (v,t):(v,float(t)/total_observations)
+					observations= dict(map(norm, observations.iteritems()))
 
+					picker= RandomPicker(variable.name, observations)
+					res.add_observator(state,picker)
 
 		return res
 

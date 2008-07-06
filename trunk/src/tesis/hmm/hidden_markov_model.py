@@ -1,4 +1,3 @@
-from tesis.hmm.hidden_markov_learner import HiddenMarkovLearner
 from random import uniform
 from random_variable import *
 from utils import *
@@ -22,6 +21,9 @@ class HiddenMarkovModel(object):
 
 	def states(self):
 		return self.state_transition.keys()
+	
+	def has_state(self, state):
+		return state in self.state_transition
 
 	def nexts(self, state):
 		""" devuelve diccionario (next_state, probability) """
@@ -323,6 +325,7 @@ class MeanHiddenMarkovModel(HiddenMarkovModel):
 		# es un dic(estado, prob)
 		initial_probability= self.initial_probability
 
+		print len(models)
 		for hmm in models:
 			for s, vars in hmm.state_observation.items():
 				try:

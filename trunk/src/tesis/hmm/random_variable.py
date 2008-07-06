@@ -5,8 +5,27 @@ class RandomVariable:
 	def __init__(self, name=""):
 		self.name= name
 
-	def get_value():
+	def get_value(self):
 		pass
+
+class ConstantRandomVariable(RandomVariable):
+	"""
+	Forma de enmascarar dentro de una random variable
+	una constante
+	"""
+	def __init__(self, value, name= ""):
+		RandomVariable.__init__(self, name)
+		self.value= value
+	def get_value(self): return value
+
+	def __hash__(self):
+		return hash(self.name)
+
+	def __eq__(self, other):
+		return self.name == other.name
+	
+	def __repr__(self):
+		return "%s(%d)" % (self.name, self.value)
 
 from copy import deepcopy
 
