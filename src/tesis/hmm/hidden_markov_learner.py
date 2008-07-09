@@ -13,7 +13,7 @@ class HiddenMarkovLearner:
 
 	def train(self, observations):
 		""" 
-		observations es [(hidden_state,dict(random_variable, observation)])] 
+		observations es [(hidden_state,dict(random_variable, observation)])]
 		"""
 
 		state_transition= self.state_transition
@@ -66,8 +66,9 @@ class HiddenMarkovLearner:
 			var_obs= obs[var]
 			if val not in var_obs:
 				var_obs[val]= 0
-
-			var_obs[val]+= 1
+			
+			ntimes= var_obs[val]
+			var_obs[val]= ntimes + 1
 
 	def get_trainned_model(self, initial_probability):
 		"""

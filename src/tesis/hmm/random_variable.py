@@ -25,7 +25,7 @@ class ConstantRandomVariable(RandomVariable):
 		return self.name == other.name
 	
 	def __repr__(self):
-		return "%s(%d)" % (self.name, self.value)
+		return self.name
 
 from copy import deepcopy
 

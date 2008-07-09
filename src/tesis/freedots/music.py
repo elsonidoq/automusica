@@ -326,6 +326,16 @@ class Note(object):
                self.head == other.head and \
                self.dots == other.dots and \
                self.duration == other.duration
+
+    def __hash__(self):
+        return hash((self.__class__,
+               self.staff,
+               self.voice,
+               self.pitch,
+               self.head,
+               self.dots,
+               self.duration))
+
     @property
     def divisions(self):
         return self.measure.divisions
