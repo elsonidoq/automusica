@@ -1,8 +1,9 @@
 from tesis.freedots import musicxml
 from tesis.hmm.hidden_markov_learner import HiddenMarkovLearner
-from tesis.hmm.hidden_markov_model import MeanHiddenMarkovModel
+from tesis.hmm.hidden_markov_model import *
 from tesis.hmm.random_variable import ConstantRandomVariable
 from itertools import imap
+from tesis.freedots.playback import MidiWriter
 
 def train_hmm(fnames, score2obs_seq):
 	learner= HiddenMarkovLearner()
@@ -21,11 +22,16 @@ def train_hmm(fnames, score2obs_seq):
 
 	initial_probability= dict( ((s,1.0/len(hidden_states)) for s in hidden_states) )
 	print "building result"
-	return learner
 	return learner.get_trainned_model(initial_probability)
-	return models
-	return MeanHiddenMarkovModel(models)
 
+
+def create_song(filename, hmm, song_size):
+	obs= SizedRandomObservation(hmm, song_size)
+	notes= [o.items()[0][1] for o in obs]
+	mw= MidiWriter(filename)
+	for n in notes:
+		mw.write_note(n)
+	mw.eof()
 
 
 def simple_score2oseq(score):
