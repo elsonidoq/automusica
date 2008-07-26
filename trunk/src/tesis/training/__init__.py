@@ -3,9 +3,13 @@ from tesis.hmm.hidden_markov_learner import HiddenMarkovLearner
 from tesis.hmm.hidden_markov_model import *
 from tesis.hmm.random_variable import ConstantRandomVariable
 from itertools import imap
-from tesis.freedots.playback import MidiWriter
 
 def train_hmm(fnames, score2obs_seq):
+    """
+    dada una lista de archivos y una funcion de traduccion que tome una Score y
+    devuelva una observation sequence entrena un hmm y lo devuelve como
+    resultado
+    """
     learner= HiddenMarkovLearner()
     hidden_states= set()
     for i, fname in enumerate(fnames):
@@ -25,10 +29,15 @@ def train_hmm(fnames, score2obs_seq):
     return learner.get_trainned_model(initial_probability)
 
 
-def create_song(filename, hmm, song_size):
+from tesis.freedots.playback import MidiWriter
+def create_song(output_file, hmm, song_size):
+    """
+    dado un nombre de archivo, un hmm y un numero que determine el largo de la
+    observation seq, genera un midi y lo escribe en output_file
+    """
     obs= SizedRandomObservation(hmm, song_size)
     notes= [o.items()[0][1] for o in obs]
-    mw= MidiWriter(filename)
+    mw= MidiWriter(output_file)
     for n in notes:
         mw.write_note(n)
     mw.eof()
