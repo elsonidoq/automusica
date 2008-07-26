@@ -1,4 +1,9 @@
 class Fraccion:
+    """
+    representa una fraccion sin perdida de presicion.
+    sobrecarga todos los operadores.
+    la programe hace mucho, habria que revisar el codigo
+    """
     def __init__(self, num= 0, denom= 1):
         if isinstance(num, int) and isinstance(denom, int):
             self._num= num

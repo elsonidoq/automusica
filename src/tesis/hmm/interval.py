@@ -50,8 +50,8 @@ class Interval:
     def __repr__(self):
         return "(%f,%f)" % (self.min_value, self.max_value)
     
-    @classmethod
-    def test(cls):
+    @staticmethod
+    def test():
         intervals= [Interval(1,3), Interval(2,4),\
                                  Interval(0,0.53), Interval(0,1),\
                                  Interval(1.5,6)]
@@ -60,8 +60,8 @@ class Interval:
             for j in intervals:
                 cls.operation_test(i,j)
 
-    @classmethod
-    def operation_test(cls, i, j):
+    @staticmethod
+    def operation_test(i, j):
         print "operation_test(i=%s, j=%s)" % (i,j)
         print "i.intersection(j)=%s" % i.intersection(j)
         print "j.intersection(i)=%s" % j.intersection(i)
@@ -71,8 +71,8 @@ class Interval:
         cls.belogness_test(i)
         cls.belogness_test(j)
 
-    @classmethod
-    def belogness_test(cls, i):
+    @staticmethod
+    def belogness_test(i):
         print "belogness_test for interval %s" % i
         values= [i.random_value() for k in range(0,10)]
         print "values: %s" % values

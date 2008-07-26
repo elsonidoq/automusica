@@ -1,22 +1,17 @@
 from interval import *
 from random import *
 
-class RandomVariable:
+class RandomVariable(object):
+    """
+    clase abstracta para las variables aleatorias que va a manejar el HMM.
+    tiene un nombre que es el identificador por el que se referencia y se sabe
+    cuando dos instancias distintas se refieren a la misma variable
+    """
     def __init__(self, name=""):
         self.name= name
 
     def get_value(self):
         pass
-
-class ConstantRandomVariable(RandomVariable):
-    """
-    Forma de enmascarar dentro de una random variable
-    una constante
-    """
-    def __init__(self, value, name= ""):
-        RandomVariable.__init__(self, name)
-        self.value= value
-    def get_value(self): return value
 
     def __hash__(self):
         return hash(self.name)
@@ -27,12 +22,30 @@ class ConstantRandomVariable(RandomVariable):
     def __repr__(self):
         return self.name
 
+
+class ConstantRandomVariable(RandomVariable):
+    """
+    forma de enmascarar dentro de una random variable
+    una constante
+    """
+    def __init__(self, value, name= ""):
+        RandomVariable.__init__(self, name)
+        self.value= value
+    def get_value(self): return value
+
 from copy import deepcopy
 
 class RandomPicker(RandomVariable):
+    """
+    Dado un monton de valores con su probabilidad asociada, crea una variable
+    aleatoria para elegir uno al azar
+    """
     def __init__(self, name="", values={}):
-        self.values= deepcopy(values)
+        """
+        calues se copia
+        """
         RandomVariable.__init__(self, name)
+        self.values= deepcopy(values)
 
     def add_value(self, value, prob):
         self.values[value]= prob
@@ -59,16 +72,8 @@ class RandomPicker(RandomVariable):
 
         return res
 
-    def __hash__(self):
-        return hash(self.name)
-
-    def __eq__(self, other):
-        return self.name == other.name
-
-
-
-    @classmethod
-    def test(cls):
+    @staticmethod
+    def test():
         r= RandomPicker()
         r.add_value(1, 0.3)
         r.add_value(2, 0.5)
@@ -84,6 +89,9 @@ class RandomPicker(RandomVariable):
         print m
 
 class SplittedRandomVariable(RandomVariable):
+    """
+    Es una variable aleatoria definida por intervalos
+    """
     def __init__(self, name= ""):
         RandomVariable.__init__(self, name)
         #son los intervalos con su respectiva probabilidad
@@ -111,9 +119,8 @@ class SplittedRandomVariable(RandomVariable):
         return res
 
 
-#################### TESTING ########################
-    @classmethod
-    def random_interval(cls):
+    @staticmethod
+    def random_interval():
         MAX_INT= 10
         MIN_INT= -MAX_INT
         
@@ -121,8 +128,8 @@ class SplittedRandomVariable(RandomVariable):
         b= uniform(a, MAX_INT)
         return Interval(a,b)
 
-    @classmethod
-    def random_splitted_random_variable(cls):
+    @staticmethod
+    def random_splitted_random_variable():
         print "Creating random splitted random variable"
         r= 1.0
         res= SplittedRandomVariable() 
@@ -146,16 +153,18 @@ class SplittedRandomVariable(RandomVariable):
         
         return res
 
-    @classmethod
-    def test(cls):
+    @staticmethod
+    def test():
+        """
+        la idea de este test, es generar aleatoriamente
+        una splitted random variable y despues pedirle bocha
+        de valores y despues imprimir las observaciones
+        que deberian ser parecidas a los parametros 
+        """
         random_variables= [cls.random_splitted_random_variable()\
                          for i in range(0,1)]
         n_values= 10000
 
-        """ la idea de este test, es generar aleatoriamente
-        una splitted random variable y despues pedirle bocha
-        de valores y despues imprimir las observaciones
-        que deberian ser parecidas a los parametros """
         for r in random_variables:
             print r
 

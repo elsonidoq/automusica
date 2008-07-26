@@ -4,6 +4,12 @@ from utils import *
 from itertools import *
 
 class HiddenMarkovLearner:
+    """
+    esta clase es la que aprende y genera los hidden markov models.
+    como variables de instancia tiene las mismas que el hidden markov model,
+    pero lleva la suma de ocurrencias, y luego cuando se pide el modelo
+    entrenado hace efectivamente las cuentas
+    """
     def __init__(self):
         # mantengo diccionarios analogos a los del HMM pero llevando la 
         # cuenta y no la probabilidad
@@ -13,6 +19,7 @@ class HiddenMarkovLearner:
 
     def train(self, observations):
         """ 
+        entrena al tipito con la secuencia de observaciones.
         observations es [(hidden_state,dict(random_variable, observation)])]
         """
 
@@ -107,8 +114,8 @@ class HiddenMarkovLearner:
         return res
 
 
-    @classmethod
-    def test(cls):
+    @staticmethod
+    def test():
         original_hmm= HiddenMarkovModel.create_example()
         learner= HiddenMarkovLearner()    
         n_observations= 10
