@@ -8,4 +8,4 @@ from hidden_markov_learner import *
 
 
 eval("%s.test()" % argv[1])
-	
+    
