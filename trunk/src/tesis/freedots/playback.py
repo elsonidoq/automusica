@@ -63,7 +63,6 @@ class MidiWriter:
             e.tick = self.tick+note.start_tick+note.duration
             self.midistream.add_event(e)
 
-            self.tick+=note.duration
     def eof(self):
         midi.write_midifile(self.midistream, self.filename)
                                                                
