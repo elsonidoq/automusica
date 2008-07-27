@@ -30,17 +30,35 @@ def train_hmm(fnames, score2obs_seq):
 
 
 from tesis.freedots.playback import MidiWriter
-def create_song(output_file, hmm, song_size):
+def create_song(output_file, hmm, song_size, divisions):
     """
     dado un nombre de archivo, un hmm y un numero que determine el largo de la
     observation seq, genera un midi y lo escribe en output_file
     """
     obs= SizedRandomObservation(hmm, song_size)
     notes= [o.items()[0][1] for o in obs]
+    notes[0].start_tick= 0
+    notes[0].divisions=10
+    for prev, next in zip(notes, notes[1:]):
+        next.start_tick= prev.start_tick + prev.duration
+    notes= map(lambda n:NoteWrapper(n, divisions), notes)        
+        
     mw= MidiWriter(output_file)
     for n in notes:
         mw.write_note(n)
     mw.eof()
+    return notes
+
+class NoteWrapper(object):
+    def __init__(self, note, divisions):
+        self.divisions= divisions 
+        self.midi= note.midi
+        self.midiPitch= note.midiPitch
+        self.start_tick= note.start_tick
+        self.duration= note.duration
+        self.pitch= note.pitch
+       
+
 
 
 def simple_score2oseq(score):
