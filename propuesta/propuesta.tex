@@ -6,12 +6,13 @@
 \title{Propuesta de tesis de licenciatura}
 
 \begin{document}
+\bibliographystyle{plain}
 \maketitle
 %\begin{flushleft}
  \begin{description}
   \item[Alumno:] Pablo Hern'an Rodr'iguez Zivic
   \item[Director:] Lic. Carlos Diuk
-  \item[Titulo:] Hacia la generaci'on algor'itmica de m'usica
+  \item[Titulo:] Hacia la generaci'on autom'atica de m'usica
   \item[Contenido:] Al escuchar una pieza musical, uno es capaz de extraer informaci'on acerca del 
 	estilo, la m'etrica, y tal vez teniendo mayor conocimiento sobre teor'ia musical, cuestiones relacionadas 
 	con armon'ia y contrapunto. Todo m'usico es influenciado por otros m'usicos por diferentes razones, 
@@ -20,15 +21,25 @@
 	Ahora, la pregunta es: >Es posible darle a una computadora un conjunto de piezas musicales y que esta sea 
 	``influenciada'' por este conjunto para componer nueva m'usica?
     
-    Es importante notar la diferencia que 
-	tiene este problema al an'alogo aplicado a lenguaje natural. En el lenguaje natural hay reglas sem'anticas
-	mucho mas duras que en la m'usica puesto que al fin y al cabo en esta 'ultima, lo importante es que 
-	``suene bien''.
-	
-
-	Si bien existen varios m'etodos de generaci'on de m'usica, muy pocos utilizan t'ecnicas de aprendizaje 
+    Para intentar responder a esta pregunta, primero es necesario tener alg'un
+    tipo de modelo param'etrico que capture las reglas que rigen a una composici'on musical.
+    Es por esto que gran parte de este trabajo consistir'a en la elecci'on de qu'e 
+    caracter'isticas son consideradas representativas y como modelarlas formalmente. 
+    Este tema es tratado en libros como \cite{Musimathics} y \cite{MuPr}.
+    
+    Una vez elegido el modelo, es necesario utilizar alguna t'ecnica para
+    estimar valores adecuados para los par'ametros. Si bien existen varios m'etodos de 
+    generaci'on de m'usica, muy pocos utilizan t'ecnicas de aprendizaje 
 	que automaticen el proceso, y permitan aprender nuevos estilos de composici'on con m'inima
-	incorporaci'on de conocimiento previo. Un ejemplo de un trabajo que utiliza t'ecnicas de aprendizaje es 
+	incorporaci'on de conocimiento previo. Sin embargo, existen trabajos en el
+    area que atacan problemas relacionados con este que aqu'i se propone. 
+
+    Por ejemplo, en \cite{nickcollinsphd} se analizan cuestiones concernientes a la
+    precepci'on humana del sonido y al procesamiento de se~nales con el fin de construir 
+    un agente capaz de acompa~nar a un m'usico. En \cite{NCP1} se propone un
+    algoritmo de aprendizaje por refuerzos para el problema de improvizaci'on en
+    vivo. 
+	Otro ejemplo de un trabajo que utiliza t'ecnicas de aprendizaje es 
 	\cite{DaCo}. En 'el se trabaja sobre c'omo construir una especie de contrapunto conocida como contrapunto 
 	de dos voces. Dentro de la teor'ia musical, el contrapunto es una rama que se dedica al estudio de la 
 	interacci'on entre distintas voces dentro de una pieza musical. Un problema fundamental que se tiene 
@@ -68,13 +79,19 @@
  \end{description}
 %\end{flushleft}
 
+\bibliography{bib}
 \begin{thebibliography}{99}
-\bibitem[1]{FXPAL} Foote Jonathan; Visualizing Music and Audio using Self-Similarity
+%\bibitem[1]{FXPAL} Foote Jonathan; Visualizing Music and Audio using Self-Similarity
 \bibitem[2]{BeMe} Meudic Benoit; Musical pattern extraction: from repetition to musical structure
-\bibitem[3]{MySong} Ian Simon, Dan Morris, Sumit Basu; MySong: Automatic Accompaniment Generation for Vocal Melodies
-\bibitem[3]{FooJoCooMa}Foote Jonathan,Cooper Matthew; Automatic Music Summarization via Similarity Analysis
-\bibitem[4]{IoAlApYa}Ioannis Karydis, Alexandros Nanopoulos, Apostolos N. Papadopoulos, Yannis Manolopoulos; Audio Indexing for Efﬁcient Music Information Retrieval
-\bibitem[5]{DaCo} Cope David; A Musical Learning Algorithm
+%\bibitem[3]{MySong} Ian Simon, Dan Morris, Sumit Basu; MySong: Automatic Accompaniment Generation for Vocal Melodies
+%\bibitem[3]{FooJoCooMa}Foote Jonathan,Cooper Matthew; Automatic Music Summarization via Similarity Analysis
+%\bibitem[4]{IoAlApYa}Ioannis Karydis, Alexandros Nanopoulos, Apostolos N. Papadopoulos, Yannis Manolopoulos; Audio Indexing for Efﬁcient Music Information Retrieval
+%\bibitem[5]{DaCo} Cope David; A Musical Learning Algorithm
+%\bibitem[6]{nickcollinsphd} Collins Nick; Towards Autonomous Agents for Live Computer Music: Realtime Machine Listening and Interactive Music Systems
+\bibitem[7]{NCP1} Collins Nick; Reinforcement learning for live musical agents
+%\bibitem[8]{Musimathics} Gareth Loy; Musimathics, Volume 1: The Mathematical Foundations of Music 
+\bibitem[9]{MuPr} Temperley David; Music and Probability
+
 
 
 \end{thebibliography}
