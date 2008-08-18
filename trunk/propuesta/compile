@@ -1,0 +1,4 @@
+pdflatex propuesta
+bibtex propuesta
+pdflatex propuesta
+pdflatex propuesta
