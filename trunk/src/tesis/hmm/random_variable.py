@@ -34,7 +34,6 @@ class ConstantRandomVariable(RandomVariable):
     def get_value(self): return value
 
 from copy import deepcopy
-
 class RandomPicker(RandomVariable):
     """
     Dado un monton de valores con su probabilidad asociada, crea una variable
