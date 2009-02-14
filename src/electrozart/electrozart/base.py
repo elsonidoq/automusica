@@ -1,9 +1,5 @@
 
 from util import Interval
-from midistuff.writers.MidiOutStream import MidiOutStream
-from midistuff.writers.MidiOutFile import MidiOutFile
-from midistuff.midi_messages import MidiMessage, MidiMessageFactory, MidiControllerFactory 
-from midistuff.readers.MidiInFile import MidiInFile
 from itertools import groupby, izip, islice
 
 class AbstractNote(object):
