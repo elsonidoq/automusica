@@ -1,7 +1,7 @@
 from sys import argv
-from parsing.midi import MidiScoreParser 
-from algorithms.hmm import HmmAlgorithm
-from writing.midi import MidiScoreWriter
+from electrozart.parsing.midi import MidiScoreParser 
+from electrozart.algorithms.hmm import HmmAlgorithm
+from electrozart.writing.midi import MidiScoreWriter
 
 def main():
     outfname= argv[1]
