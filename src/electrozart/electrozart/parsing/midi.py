@@ -30,6 +30,21 @@ class MidiScoreParser(ScoreParser):
         return res                
 
 
+class MidiPatchParser(MidiScoreParser):
+    def parse(self, fname, patch):
+        score= MidiScoreParser.parse(self, fname)
+        the_instru= the_notes= None 
+        for instrument, notes in score.notes_per_instrument.iteritems():
+            if instrument.patch == patch:
+                if not the_instru or len(the_notes) < len(notes): 
+                    the_instru= instrument
+                    the_notes= notes
+
+        if the_instru: score.notes_per_instrument= {the_instru:the_notes}
+        else: score=None
+        return score
+        
+
 
 class MidiToScore(MidiOutStream):
     
