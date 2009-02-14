@@ -111,3 +111,5 @@ class MidiToScore(MidiOutStream):
     def tempo(self, *args):
         self.score.messages.append(MidiMessage(args, 'tempo')) 
 
+    def sysex_event(self, data):
+        pass

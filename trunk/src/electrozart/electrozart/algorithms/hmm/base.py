@@ -41,8 +41,8 @@ class HmmAlgorithm(TrainAlgorithm):
         for i, o in enumerate(obs):
             duration= o.values()[0]
             pitch= o.keys()[0].get_value()
-            if pitch == -1: 
-                print acum_time
+            #if pitch == -1: 
+                #print acum_time
             if pitch>0:
                 score.note_played(instrument, pitch, acum_time, duration, 200)
             acum_time+= duration
