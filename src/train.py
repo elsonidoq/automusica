@@ -1,10 +1,15 @@
 from sys import argv
 from electrozart.parsing.midi import MidiScoreParser, MidiPatchParser 
-from electrozart.algorithms.hmm import HmmAlgorithm
+from electrozart.algorithms.hmm import HmmAlgorithm, StructuredHmmAlgorithm
 from electrozart.writing.midi import MidiScoreWriter
 
 from md5 import md5
 import cPickle as pickle
+
+
+parserclass= MidiPatchParser
+modelclass= StructuredHmmAlgorithm
+writerclass= MidiScoreWriter
 
 def save_model_pickle(modelfname, algorithm):
     f= open(modelfname, 'w')
@@ -26,8 +31,8 @@ def load_model_from_pickle(fname):
     
 
 def load_model_from_fnames(fnames, patch):
-    parser= MidiPatchParser()
-    algorithm= HmmAlgorithm(patch)
+    parser= parserclass()
+    algorithm= modelclass(patch)
     step= len(fnames)/10
     for i, fname in enumerate(fnames):
         if (i+1) % step == 0: print str(round(float(i*100)/len(fnames),3)) + '%...'
@@ -44,7 +49,7 @@ def main():
     fnames= argv[3:]
 
     print 'searching for pickles...'
-    digest= md5(str(fnames)+'patch:%s'%patch).hexdigest()
+    digest= md5(str(fnames)+'|%s|%s|'% (patch, modelclass.__name__)).hexdigest()
     modelfname= 'models_cache/%s' % digest
     algorithm= load_model_from_pickle(modelfname)
     if not algorithm:
@@ -56,10 +61,10 @@ def main():
         print 'pickle found!! =D'
 
     print 'creating score....'
-    score= algorithm.create_score(100, 96)
+    score= algorithm.create_score(300, 96)
     instrument= score.notes_per_instrument.keys()[0]
-    instrument.patch= patch
-    writer= MidiScoreWriter()
+    #instrument.patch= patch
+    writer= writerclass()
     writer.dump(score, outfname)
     print 'done!'
 
