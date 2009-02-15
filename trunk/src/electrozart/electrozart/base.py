@@ -25,7 +25,7 @@ class PlayedNote(AbstractNote):
 class Instrument(object):
     id_seq= 0
     def __init__(self, is_drums=False):
-        self.patch= None
+        self._patch= None
         self.is_drums= is_drums
         self.messages= []
         self.channel= None
@@ -36,6 +36,14 @@ class Instrument(object):
         return hash(self.id)
     #def __eq__(self, other):
     #    return self.patch == other.patch
+    def getp(self):
+        return self._patch
+
+    def setp(self, val):
+        self._patch= val
+
+    patch= property(getp, setp, None, None)
+
 
 class Score(object):
     def __init__(self, ticks_per_beat):

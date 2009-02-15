@@ -13,7 +13,10 @@ def main():
         file_instrs= {}
         print fname
         for instr, notes in score.notes_per_instrument.iteritems():
-            print '\t%s(%s) -> %s' % (instr.patch, instr.id, len(notes))
+            print '\t%s(channel:%s, id:%s) -> %s' % (instr.patch,\
+                                                        instr.channel,\
+                                                        instr.id, \
+                                                        len(notes))
             finstr, fnotes= file_instrs.get(instr.patch, (None, None))
             if not finstr or  len(fnotes) < len(notes):
                 file_instrs[instr.patch]= instr, notes
