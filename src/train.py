@@ -34,6 +34,7 @@ def load_model_from_fnames(fnames, patch):
     parser= parserclass()
     algorithm= modelclass(patch)
     step= len(fnames)/10
+    step= max(1, step)
     for i, fname in enumerate(fnames):
         if (i+1) % step == 0: print str(round(float(i*100)/len(fnames),3)) + '%...'
         score= parser.parse(fname, patch)
@@ -63,7 +64,7 @@ def main():
     print 'creating score....'
     score= algorithm.create_score(300, 96)
     instrument= score.notes_per_instrument.keys()[0]
-    #instrument.patch= patch
+    instrument.patch= patch
     writer= writerclass()
     writer.dump(score, outfname)
     print 'done!'
