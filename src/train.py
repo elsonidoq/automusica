@@ -56,9 +56,11 @@ def main():
         print 'pickle found!! =D'
 
     print 'creating score....'
-    res= algorithm.create_score(100, 96)
+    score= algorithm.create_score(100, 96)
+    instrument= score.notes_per_instrument.keys()[0]
+    instrument.patch= patch
     writer= MidiScoreWriter()
-    writer.dump(res, outfname)
+    writer.dump(score, outfname)
     print 'done!'
 
 if __name__ == '__main__':

@@ -70,11 +70,11 @@ class MidiToScore(MidiOutStream):
         notes= self.notes_not_finished.get(channel, {})
         assert note in notes
 
-        #import ipdb;ipdb.set_trace()
         starting_vel, starting_reltime, starting_abstime= notes[note]
         if channel not in self.actual_instruments:
             self.actual_instruments[channel]= Instrument(is_drums=channel==9)
         instrument= self.actual_instruments[channel]
+        #import ipdb;ipdb.set_trace()
         self.score.note_played(instrument, note, starting_abstime, self.abs_time()-starting_abstime, starting_vel) 
 
     #def start_of_track(self, n_track=0):
@@ -86,6 +86,7 @@ class MidiToScore(MidiOutStream):
             self.actual_instruments[channel]= Instrument(is_drums=channel==9)
         instrument= self.actual_instruments[channel]
         instrument.patch= patch
+        instrument.channel= channel
 
     def continuous_controller(self, channel, controller, value):
         #if channel == 3: import ipdb;ipdb.set_trace()
