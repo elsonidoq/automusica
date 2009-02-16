@@ -1,6 +1,8 @@
 
 from util import Interval
 from itertools import groupby, izip, islice
+from math import ceil, log
+from midistuff.midi_messages import MidiMessage
 
 class AbstractNote(object):
     def __init__(self, start, duration):
@@ -50,8 +52,39 @@ class Score(object):
         assert ticks_per_beat > 0
         self.ticks_per_beat= ticks_per_beat
         self.notes_per_instrument= {}
-        self.messages= []
+        self._messages= [MidiMessage((96, 0, 3, 0, 0), 'smtp_offset', 0),
+                         MidiMessage((1, 0), 'key_signature', 0)]
+        self.time_signature= (6,8)
+        self.tempo= 521739
 
+    @property
+    def messages(self):
+        res= [m for m in self._messages]
+        res.append(self._time_signature_msg)
+        res.append(MidiMessage((self.tempo,), 'tempo', 0))
+        return res
+
+    def _set_time_signature(self, (num, denom)):
+        """
+        no lo uses directamente, usa score.time_signature= (num, denom)
+        """
+        assert ceil(log(denom,2))==int(log(denom,2)), '`denom` is not a power of 2'
+        self._time_num= num
+        self._time_denom= denom
+
+        denom= int(log(denom, 2))
+        self._time_signature_msg= MidiMessage((num, denom, 24, 8), 'time_signature', 0)
+
+    def _get_time_signature(self):
+        """
+        no lo uses directamente, usa score.time_signature
+        """
+        return self._time_num, self._time_denom
+
+    time_signature= property(_get_time_signature, _set_time_signature)
+
+        
+        
     def note_played(self, instrument, note_number, start, duration, volume):
         all_notes= self.notes_per_instrument.get(instrument, [])
 

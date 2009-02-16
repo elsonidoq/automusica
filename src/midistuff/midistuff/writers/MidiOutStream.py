@@ -459,6 +459,8 @@ class MidiOutStream(object):
         """
         pass
 
+    def sysex_event(self, *args, **kwargs):
+        pass
 
 
 if __name__ == '__main__':
