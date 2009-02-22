@@ -5,7 +5,7 @@ from midistuff.midi_messages import MidiMessage, MidiMessageFactory, MidiControl
 from electrozart import Score, Instrument, Silence, PlayedNote
 from base import ScoreParser
 from itertools import izip, islice
-
+    
 class MidiScoreParser(ScoreParser):
     def parse(self, fname):
         hdlr= MidiToScore()
@@ -18,17 +18,51 @@ class MidiScoreParser(ScoreParser):
             prev_next_iter= izip(notes, islice(notes, 1, len(notes)))
             for i, (prev, next) in enumerate(prev_next_iter):
                 # es que hubo un silencio
-                if prev.start + prev.duration < next.start:
-                    start= prev.start+prev.duration
+                if prev.start + prev.duration+1 < next.start:
+                    start= prev.start+prev.duration+1
                     duration= next.start - start
                     n= Silence(start, duration) 
                     to_insert.append((i, n))
 
-            for i, n in to_insert:
-                notes.insert(i, n)
+            for i in xrange(len(to_insert)-1, 0, -1):
+                pos, note= to_insert[i]
+                notes.insert(pos, note)
+
+            if notes[0].start > 0:
+                notes.insert(0, Silence(0, notes[0].start))
+
 
         return res                
 
+from md5 import md5
+from os import path
+import cPickle as pickle
+class MidiScoreParserCache(MidiScoreParser):
+    def __init__(self, cache_dir, *args, **kwargs):
+        MidiScoreParser.__init__(self, *args, **kwargs)
+        self.cache_dir= cache_dir
+
+    def parse(self, fname):
+        cache_fname= path.join(self.cache_dir, md5(fname).hexdigest())
+        if path.exists(cache_fname):
+            try:
+                f=open(cache_fname)
+                score= pickle.load(f)
+                f.close()
+            except:
+                score= MidiScoreParser.parse(self, fname)
+                f=open(cache_fname, 'w')
+                pickle.dump(score, f)
+                f.close()
+                    
+        else:                
+            score= MidiScoreParser.parse(self, fname)
+            f=open(cache_fname, 'w')
+            pickle.dump(score, f)
+            f.close()
+
+        return score
+            
 
 class MidiPatchParser(MidiScoreParser):
     def parse(self, fname, patch):
@@ -74,6 +108,7 @@ class MidiToScore(MidiOutStream):
         if channel not in self.actual_instruments:
             self.actual_instruments[channel]= Instrument(is_drums=channel==9)
         instrument= self.actual_instruments[channel]
+        instrument.channel= channel
         #import ipdb;ipdb.set_trace()
         self.score.note_played(instrument, note, starting_abstime, self.abs_time()-starting_abstime, starting_vel) 
 

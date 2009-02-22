@@ -1,5 +1,5 @@
 from sys import argv
-from electrozart.parsing.midi import MidiScoreParser, MidiPatchParser 
+from electrozart.parsing.midi import MidiScoreParser, MidiPatchParser, MidiScoreParserCache 
 from electrozart.algorithms.hmm import HmmAlgorithm, StructuredHmmAlgorithm
 from electrozart.writing.midi import MidiScoreWriter
 
@@ -7,9 +7,9 @@ from md5 import md5
 import cPickle as pickle
 
 
-parserclass= MidiPatchParser
+parserclass= MidiScoreParserCache
 modelclass= StructuredHmmAlgorithm
-modelclass= HmmAlgorithm
+#modelclass= HmmAlgorithm
 writerclass= MidiScoreWriter
 
 def save_model_pickle(modelfname, algorithm):
@@ -27,14 +27,14 @@ def load_model_from_pickle(infname):
     return algorithm
     
 
-def load_model_from_fnames(infnames, patch):
-    parser= parserclass()
-    algorithm= modelclass(patch)
+def load_model_from_fnames(infnames, patch, channel):
+    parser= parserclass('models_cache')
+    algorithm= modelclass(instrument=patch, channel=channel)
     step= len(infnames)/10
     step= max(1, step)
     for i, infname in enumerate(infnames):
         if (i+1) % step == 0: print str(round(float(i*100)/len(infnames),3)) + '%...'
-        score= parser.parse(infname, patch)
+        score= parser.parse(infname)
         if score: 
             algorithm.train(score)
         else:
