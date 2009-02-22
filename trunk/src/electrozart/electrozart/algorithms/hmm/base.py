@@ -11,17 +11,21 @@ class HmmAlgorithm(TrainAlgorithm):
         """
         El instrumento que voy a usar para entrenar la HMM
         """
-        if not channel and not instrument:
+        if channel is None and instrument is None:
             raise Exception('missing channel and instrument')
+        if channel is not None:
+            self.obsSeqBuilder= MidiChannelObsSeq(channel)
+        if instrument is not None:
+            self.obsSeqBuilder= MidiPatchObsSeq(instrument)
 
         TrainAlgorithm.__init__(self, *args, **kwargs)
-        #self.obsSeqBuilder= MidiObsSeqOrder3(MidiPatchObsSeq(instrument))
-        self.obsSeqBuilder= MidiPatchObsSeq(instrument)
+        #self.obsSeqBuilder= MidiObsSeqOrder3(self.obsSeqBuilder)
         self.learner= HiddenMarkovLearner()
         self.hidden_states= set()
 
     def train(self, score):
         obs_seq= self.obsSeqBuilder(score)
+        if not obs_seq: return
         self.hidden_states.update(imap(lambda x:x[0], obs_seq))
         self.learner.train(obs_seq)
 
@@ -39,6 +43,7 @@ class HmmAlgorithm(TrainAlgorithm):
         instrument= Instrument()
         instrument.patch= 1
         acum_time= 5
+        score.notes_per_instrument= {instrument:[]}
         #import ipdb;ipdb.set_trace()
         for duration, pitch in obs:
             duration= o.values()[0]
@@ -101,7 +106,7 @@ class ConditionalMidiObsSeq(object):
             if self.condition(instrument):
                 return self._build_obs_seq(notes)
     
-        raise Exception("no instrument found")
+        #raise Exception("no instrument found")
 
     def _build_obs_seq(self, notes):
         res= []
@@ -140,4 +145,9 @@ class MidiChannelObsSeq(ConditionalMidiObsSeq):
         """
         channel es el canal que importa
         """
-        ConditionalMidiObsSeq.__init__(self, lambda i:i.channel==channel)
+        ConditionalMidiObsSeq.__init__(self)
+        self.channel= channel
+    
+    def condition(self, instrument):
+        return self.channel == instrument.channel
+        
