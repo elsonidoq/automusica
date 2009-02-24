@@ -44,41 +44,6 @@ def cosine(s1_vec, s2_vec, i0, j0, vec_size):
     return float(dot)/sqrt(norm2_v1*norm2_v2)
 
 
-def build_sim_matrix_old(score, vector_size, step):
-    instruments_vector= [None]*len(score.notes_per_instrument)
-    for i, notes in enumerate(score.notes_per_instrument.itervalues()):
-        instruments_vector[i]= notes_to_vector(notes, step)
-
-    score_vector= compose_vectors(instruments_vector)
-    
-    nrows= len(score_vector) - vector_size
-    res= [[None for j in xrange(nrows)] for i in xrange(nrows)]
-
-    loop_step= nrows/10
-    for i in xrange(nrows):
-        if (i+1) % loop_step == 0: print i
-        v1= score_vector[i:i+vector_size]
-        for j in xrange(nrows):
-            v2= score_vector[j:j+vector_size]
-            res[i][j]= cosine_old(v1, v2)
-
-    return res
-
-from itertools import izip
-from math import sqrt
-def cosine_old(v1, v2):
-    dot= 0
-    norm2_v1= 0
-    norm2_v2= 0
-    for e1, e2 in izip(v1, v2):
-        dot+= e1*e2
-        norm2_v1+= e1**2
-        norm2_v2+= e2**2
-
-    if dot == 0: return 0
-    return float(dot)/sqrt(norm2_v1*norm2_v2)
-
-    
 def notes_to_vector(notes, step):
     res= []
     for note in notes:

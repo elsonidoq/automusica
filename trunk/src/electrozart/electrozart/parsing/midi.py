@@ -42,9 +42,9 @@ class MidiScoreParserCache(MidiScoreParser):
         MidiScoreParser.__init__(self, *args, **kwargs)
         self.cache_dir= cache_dir
 
-    def parse(self, fname):
+    def parse(self, fname, cache=True):
         cache_fname= path.join(self.cache_dir, md5(fname).hexdigest())
-        if path.exists(cache_fname):
+        if path.exists(cache_fname) and cache:
             try:
                 f=open(cache_fname)
                 score= pickle.load(f)
@@ -135,17 +135,18 @@ class MidiToScore(MidiOutStream):
         self.actual_instruments= {}
 
     def smtp_offset(self, *args):
-        self.score.messages.append(MidiMessage(args, 'smtp_offset')) 
-        #pass
+        self.score.append_message(MidiMessage(args, 'smtp_offset')) 
 
-    def time_signature(self, *args):
-        self.score.messages.append(MidiMessage(args, 'time_signature')) 
+    def time_signature(self, nn, dd, cc, bb):
+        self.score.time_signature= (nn,dd)
+        if cc != 24: print "WARNING: cc != 24"
+        if bb != 8: print "WARNING: bb != 24"
     
-    def key_signature(self, *args):
-        self.score.messages.append(MidiMessage(args, 'key_signature')) 
+    def key_signature(self, sf, mi):
+        self.score.key_signature= (sf, mi)
 
-    def tempo(self, *args):
-        self.score.messages.append(MidiMessage(args, 'tempo')) 
+    def tempo(self, tempo):
+        self.score.tempo= tempo
 
     def sysex_event(self, data):
         pass
