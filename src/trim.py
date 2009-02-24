@@ -15,10 +15,11 @@ writerclass= MidiScoreWriter
 
 from optparse import OptionParser
 def main():
-    usage= 'usage: %prog [options] outfname infname1 [infname2 [infname3 ...]...]'
+    usage= 'usage: %prog [options] infname outfname'
     parser= OptionParser(usage=usage)
     parser.add_option('-f', '--from', dest='moment_from', help='start moment in ticks', default=0)
     parser.add_option('-t', '--to', dest='moment_to', help='end moment in ticks')
+    parser.add_option('-c', '--no-cache', dest='cache', action='store_false', default=True, help='discard cache')
 
     options, args= parser.parse_args(argv[1:])
     if len(args) < 2: parser.error('not enaught args')
@@ -32,10 +33,9 @@ def main():
     infname= args[0]
     outfname= args[1]
     print 'creating score'
-    score= parser.parse(infname)
+    score= parser.parse(infname, cache=options.cache)
     ticks_per_beat= score.ticks_per_beat
     for instrument, notes in score.notes_per_instrument.iteritems():
-        #import ipdb;ipdb.set_trace()
         new_notes= [n for n in notes  \
                       if n.start >= moment_from and \
                          n.start + n.duration< moment_to]

@@ -52,18 +52,50 @@ class Score(object):
         assert ticks_per_beat > 0
         self.ticks_per_beat= ticks_per_beat
         self.notes_per_instrument= {}
-        self._messages= [MidiMessage((96, 0, 3, 0, 0), 'smtp_offset', 0),
-                         MidiMessage((1, 0), 'key_signature', 0)]
-        self.time_signature= (6,8)
+
+        self._messages= []
+        self.time_signature= (4,4)
         self.tempo= 521739
+        self.key_signature= (1,0)
+
+    def append_message(self, m):
+        for i, m2 in enumerate(self._messages):
+            if m2.method_name == m.method_name:
+                self._messages[i]= m
+                break
+        else:
+            self._messages.append(m)
+        
+    def note_played(self, instrument, note_number, start, duration, volume):
+        all_notes= self.notes_per_instrument.get(instrument, [])
+        all_notes.append(PlayedNote(note_number, start, duration, volume))
+        self.notes_per_instrument[instrument]= all_notes
 
     @property
     def messages(self):
-        res= [m for m in self._messages]
-        res.append(self._time_signature_msg)
-        res.append(MidiMessage((self.tempo,), 'tempo', 0))
-        return res
+        return self._messages
 
+
+    ####### key signature ####### 
+    def _set_key_signature(self, (sf, mi)):
+        self._key_signature= (sf, mi)
+        m= MidiMessage((sf, mi), 'key_signature', 0)
+        self.append_message(m)
+    def _get_key_signature(self):
+        return self._key_signature
+    key_signature= property(_get_key_signature, _set_key_signature)
+
+    ####### tempo ####### 
+    def _set_tempo(self, tempo):
+        self._tempo= tempo
+        m= MidiMessage((tempo,), 'tempo', 0)
+        self.append_message(m)
+    def _get_tempo(self):
+        return self._tempo
+    tempo= property(_get_tempo, _set_tempo)
+
+
+    ####### time signature ####### 
     def _set_time_signature(self, (num, denom)):
         """
         no lo uses directamente, usa score.time_signature= (num, denom)
@@ -73,25 +105,12 @@ class Score(object):
         self._time_denom= denom
 
         denom= int(log(denom, 2))
-        self._time_signature_msg= MidiMessage((num, denom, 24, 8), 'time_signature', 0)
-
+        m= MidiMessage((num, denom, 24, 8), 'time_signature', 0)
+        self.append_message(m)
     def _get_time_signature(self):
         """
         no lo uses directamente, usa score.time_signature
         """
         return self._time_num, self._time_denom
-
     time_signature= property(_get_time_signature, _set_time_signature)
-
-        
-        
-    def note_played(self, instrument, note_number, start, duration, volume):
-        all_notes= self.notes_per_instrument.get(instrument, [])
-
-        all_notes.append(PlayedNote(note_number, start, duration, volume))
-
-        self.notes_per_instrument[instrument]= all_notes
-
-
-                
 
