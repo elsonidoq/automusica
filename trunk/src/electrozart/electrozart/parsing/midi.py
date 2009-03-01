@@ -140,7 +140,7 @@ class MidiToScore(MidiOutStream):
     def time_signature(self, nn, dd, cc, bb):
         self.score.time_signature= (nn,dd)
         if cc != 24: print "WARNING: cc != 24"
-        if bb != 8: print "WARNING: bb != 24"
+        if bb != 8: print "WARNING: bb != 8"
     
     def key_signature(self, sf, mi):
         self.score.key_signature= (sf, mi)

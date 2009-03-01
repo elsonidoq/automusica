@@ -14,6 +14,9 @@ class Silence(AbstractNote):
     def is_silence(self):
         return True
     
+    def __repr__(self):
+        return "Silence(start=%s,duration=%s)" % (self.start, self.duration)
+    
 class PlayedNote(AbstractNote):
     def __init__(self, pitch, start, duration, volume):
         AbstractNote.__init__(self, start, duration) 
@@ -23,6 +26,9 @@ class PlayedNote(AbstractNote):
     @property
     def is_silence(self):
         return False
+
+    def __repr__(self):
+        return "PlayedNote(start=%s,duration=%s)" % (self.start, self.duration)
 
 class Instrument(object):
     id_seq= 0
@@ -48,14 +54,14 @@ class Instrument(object):
 
 
 class Score(object):
-    def __init__(self, ticks_per_beat):
-        assert ticks_per_beat > 0
-        self.ticks_per_beat= ticks_per_beat
+    def __init__(self, divisions):
+        assert divisions > 0
+        self.divisions= divisions
         self.notes_per_instrument= {}
 
         self._messages= []
         self.time_signature= (4,4)
-        self.tempo= 521739
+        self.tempo= None
         self.key_signature= (1,0)
 
     def append_message(self, m):
@@ -88,8 +94,10 @@ class Score(object):
     ####### tempo ####### 
     def _set_tempo(self, tempo):
         self._tempo= tempo
-        m= MidiMessage((tempo,), 'tempo', 0)
-        self.append_message(m)
+        if tempo is not None:
+            m= MidiMessage((tempo,), 'tempo', 0)
+            self.append_message(m)
+
     def _get_tempo(self):
         return self._tempo
     tempo= property(_get_tempo, _set_tempo)
