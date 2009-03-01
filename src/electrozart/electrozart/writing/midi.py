@@ -10,14 +10,14 @@ class MidiScoreWriter(ScoreWriter):
 
         mof= MidiOutFile(fname)
         if len(score.messages) > 0:
-            mof.header(1, len(tracks)+1, score.ticks_per_beat)
+            mof.header(1, len(tracks)+1, score.divisions)
             mof.start_of_track(0)
             for message in score.messages:
                 message.apply(mof)
             mof.end_of_track()
             track_number= 1
         else:
-            mof.header(1, len(tracks), score.ticks_per_beat)
+            mof.header(1, len(tracks), score.divisions)
             track_number= 0
 
         for stuff in tracks:
