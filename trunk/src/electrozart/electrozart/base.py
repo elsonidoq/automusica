@@ -54,10 +54,12 @@ class Instrument(object):
 
 
 class Score(object):
-    def __init__(self, divisions):
+    def __init__(self, divisions, notes_per_instrument=None):
         assert divisions > 0
         self.divisions= divisions
-        self.notes_per_instrument= {}
+        self.notes_per_instrument= notes_per_instrument
+        if notes_per_instrument is None:
+            self.notes_per_instrument= {}
 
         self._messages= []
         self.time_signature= (4,4)
