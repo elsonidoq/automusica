@@ -19,12 +19,12 @@ class MidiScoreParser(ScoreParser):
             for i, (prev, next) in enumerate(prev_next_iter):
                 # es que hubo un silencio
                 if prev.start + prev.duration+1 < next.start:
-                    start= prev.start+prev.duration+1
+                    start= prev.start+prev.duration
                     duration= next.start - start
                     n= Silence(start, duration) 
                     to_insert.append((i, n))
 
-            for i in xrange(len(to_insert)-1, 0, -1):
+            for i in xrange(len(to_insert)-1, -1, -1):
                 pos, note= to_insert[i]
                 notes.insert(pos, note)
 
