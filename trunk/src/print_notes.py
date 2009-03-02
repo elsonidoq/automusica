@@ -16,15 +16,9 @@ writerclass= MidiScoreWriter
 def main():
     usage= 'usage: %prog [options] infname'
     parser= OptionParser(usage=usage)
-    parser.add_option('-o', '--output', 
-                        dest='output_fname', default='%(filename)s.q.mid',
-                        help='output fname')
     parser.add_option('-c', '--no-cache', 
                         dest='cache', action='store_false', default=True, 
                         help='discard cache')
-    parser.add_option('-g', '--grain', 
-                        dest='grain', default=16,
-                        help='grain to quantize')
 
 
     options, args= parser.parse_args(argv[1:])
@@ -35,17 +29,8 @@ def main():
     infname= args[0]
     score= parser.parse(infname, cache=options.cache)
     #import ipdb;ipdb.set_trace()
-    qscore= quantize(score, int(options.grain), True)
-    qnotes= qscore.notes_per_instrument.values()[0]
     notes= score.notes_per_instrument.values()[0]
-    for qn, n in zip(qnotes, notes):
-        print qn, n
-
-    outfname= options.output_fname
-    outfname%= {'filename':infname[:-4]}
-
-    writer= writerclass()
-    writer.dump(qscore, outfname)
+    for n in notes: print n
 
 
 
