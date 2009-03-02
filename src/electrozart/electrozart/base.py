@@ -66,6 +66,13 @@ class Score(object):
         self.tempo= None
         self.key_signature= (1,0)
 
+    def copy(self):
+        res= Score(self.divisions, notes_per_instrument=self.notes_per_instrument.copy())
+        res.time_signature= self.time_signature
+        res.tempo= self.tempo
+        res.key_signature= self.key_signature
+        return res
+
     def append_message(self, m):
         for i, m2 in enumerate(self._messages):
             if m2.method_name == m.method_name:
@@ -111,10 +118,11 @@ class Score(object):
         no lo uses directamente, usa score.time_signature= (num, denom)
         """
         assert ceil(log(denom,2))==int(log(denom,2)), '`denom` is not a power of 2'
+        #import ipdb;ipdb.set_trace()
         self._time_num= num
         self._time_denom= denom
 
-        denom= int(log(denom, 2))
+        #denom= int(log(denom, 2))
         m= MidiMessage((num, denom, 24, 8), 'time_signature', 0)
         self.append_message(m)
     def _get_time_signature(self):

@@ -22,7 +22,8 @@ class MidiScoreParser(ScoreParser):
                     start= prev.start+prev.duration
                     duration= next.start - start
                     n= Silence(start, duration) 
-                    to_insert.append((i, n))
+                    # el metodo insert inserta *antes* del indice que le pasaste la nota
+                    to_insert.append((i+1, n))
 
             for i in xrange(len(to_insert)-1, -1, -1):
                 pos, note= to_insert[i]
