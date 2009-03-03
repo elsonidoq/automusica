@@ -44,6 +44,7 @@ def main():
     outfname= options.output_fname
     outfname%= {'filename':infname[:-4]}
 
+    #score.notes_per_instrument= qscore.notes_per_instrument
     writer= writerclass()
     writer.dump(qscore, outfname)
 

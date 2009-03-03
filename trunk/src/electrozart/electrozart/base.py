@@ -71,6 +71,7 @@ class Score(object):
         res.time_signature= self.time_signature
         res.tempo= self.tempo
         res.key_signature= self.key_signature
+        res._messages= self._messages
         return res
 
     def append_message(self, m):
