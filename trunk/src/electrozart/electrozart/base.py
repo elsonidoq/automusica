@@ -14,6 +14,9 @@ class Silence(AbstractNote):
     def is_silence(self):
         return True
     
+    def copy(self):
+        return Silence(self.start, self.duration) 
+    
     def __repr__(self):
         return "Silence(start=%s,duration=%s)" % (self.start, self.duration)
     
@@ -26,6 +29,9 @@ class PlayedNote(AbstractNote):
     @property
     def is_silence(self):
         return False
+
+    def copy(self):
+        return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
 
     def __repr__(self):
         return "PlayedNote(start=%s,duration=%s)" % (self.start, self.duration)
