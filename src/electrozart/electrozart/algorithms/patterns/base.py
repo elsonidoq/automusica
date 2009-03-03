@@ -28,13 +28,20 @@ def get_patterns(l, pat_sizes, margins, pat_f, key=None):
     cw= max_pat_size + max_margin
     cuts= get_cuts(l, cw, 2*cw)
 
+    #next_level1= find_level1(cuts)
+    #prune(next_level1, cw, pat_f)
     next_level= find_level1(cuts)
     prune(next_level, cw, pat_f)
     if 1 in pat_sizes: res[1]= next_level
 
     for i in xrange(1,cw):
+        print 'level',i,'of',cw-1
+        #import ipdb;ipdb.set_trace()
+        #next_level1= find_next_level_slow(next_level1, max_margin)
+        #prune(next_level1, cw, pat_f)
         next_level= find_next_level(next_level, max_margin)
         prune(next_level, cw, pat_f)
+        #assert next_level1 == next_level
         if i+1 in pat_sizes:
             res[i+1]= next_level
 
@@ -53,8 +60,87 @@ def get_patterns(l, pat_sizes, margins, pat_f, key=None):
 
     return pats
 
-from itertools import chain
+from utils.iter import FlagIter
 def find_next_level(prev_level, cw):
+    res= [{} for l in prev_level] 
+    for cut_id, d in enumerate(prev_level):
+        new_d= res[cut_id]
+
+        pats= d.keys()
+
+        prefs= [(i,p[:-1]) for (i,p) in enumerate(pats)]
+        prefs.sort(key=lambda x:x[1])
+
+        sufs= [(i, p[1:]) for (i, p) in enumerate(pats)]
+        sufs.sort(key=lambda x:x[1])
+        
+        prefsit= FlagIter(prefs)
+        sufsit= FlagIter(sufs)
+        # esta en True siempre que pref y suf son distintos, hasta la primera vez que 
+        # son iguales
+        first_time_equals= True
+        while prefsit.has_actual() and sufsit.has_actual():
+            i, pref= prefsit.actual
+            j, suf= sufsit.actual
+            if pref < suf:
+                prefsit.next()
+            elif pref > suf:
+                sufsit.next()
+            else:
+                if first_time_equals: 
+                    first_time_equals= False
+                    prefsit.set_flag()
+
+                if i != j:
+                    pat1= pats[j]
+                    pat2= pats[i]
+                    plist1= d[pat1]
+                    plist2= d[pat2]
+
+                    new_list= combine_plists(plist1, plist2, cw, len(pat1)+1)
+                    if len(new_list) > 0:
+                        if isinstance(pat1,tuple): new_pat= pat1 + tuple([pat2[-1]])
+                        else: new_pat= pat1 + pat2[-1] 
+
+                        l= new_d.get(new_pat, [])
+                        l.extend(new_list)
+                        new_d[new_pat]= l
+
+                # hay que recorrer todos los sufijos y prefijos iguales
+                if prefsit.has_next() and sufsit.has_next():
+                    prefsit.next()
+                    i, new_pref= prefsit.actual
+
+                    if new_pref != suf:
+                        sufsit.next()
+                        j, new_suf= sufsit.actual
+                        # todavia falta para completar el n^2
+                        if new_suf == suf:
+                            prefsit.goto_flag()
+                        else:
+                            first_time_equals= True
+
+                elif sufsit.has_next():
+                    sufsit.next()
+                    j, new_suf= sufsit.actual
+                    if new_suf != pref:
+                        #import ipdb;ipdb.set_trace()
+                        break
+                    else:
+                        prefsit.goto_flag()
+                elif prefsit.has_next():
+                    prefsit.next()
+                    i, new_pref= prefsit.actual
+                    if new_pref != suf: 
+                        #import ipdb;ipdb.set_trace()
+                        break
+                else: break
+                                        
+                    
+
+    return res        
+        
+def find_next_level_slow(prev_level, cw):
     res= [{} for l in prev_level] 
     for cut_id, d in enumerate(prev_level):
         new_d= res[cut_id]
@@ -81,6 +167,10 @@ def find_next_level(prev_level, cw):
     return res                
 
 def combine_plists(plist1, plist2, margin, pat_size):
+    """
+    plist1 corresponde al sufijo
+    plist2 corresponde al prefijo
+    """
     res= []
     for start1, end1 in plist1:
         for start2, end2 in plist2:
