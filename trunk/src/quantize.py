@@ -35,11 +35,12 @@ def main():
     infname= args[0]
     score= parser.parse(infname, cache=options.cache)
     #import ipdb;ipdb.set_trace()
-    qscore= quantize(score, int(options.grain), True)
+    qscore= quantize(score)
+
     qnotes= qscore.notes_per_instrument.values()[0]
     notes= score.notes_per_instrument.values()[0]
     for qn, n in zip(qnotes, notes):
-        print qn, n
+        if qn.duration != n.duration: print qn, n
 
     outfname= options.output_fname
     outfname%= {'filename':infname[:-4]}

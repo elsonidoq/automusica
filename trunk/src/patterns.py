@@ -13,12 +13,13 @@ parserclass= MidiScoreParserCache
 #modelclass= HmmAlgorithm
 writerclass= MidiScoreWriter
 
+import os
 def main():
     usage= 'usage: %prog [options] infname'
     parser= OptionParser(usage=usage)
     parser.add_option('-o', '--output', 
-                        dest='output_fname', default='patterns.mid',
-                        help='output fname')
+                        dest='output_folder', default='patterns',
+                        help='output folder')
     parser.add_option('-c', '--no-cache', 
                         dest='cache', action='store_false', default=True, 
                         help='discard cache')
@@ -30,56 +31,47 @@ def main():
 
     infname= args[0]
     score= parser.parse(infname)
-    quantize(score)
+    score= quantize(score)
 
-    outfname= options.output_fname
+    output_folder_prefix= options.output_folder
 
-    pat_sizess= [range(2,6)]
-    marginss= [range(3)]
-    fs= [3]
-    keys= [lambda n:(n.duration,)]
-    configs= list(combine(pat_sizess, marginss, fs, keys))
+    pat_sizes= [4]
+    margins= range(3)
+    f= 2
+    key= lambda n:('%s|%s' % (n.duration, n.is_silence),)
+
+    writer= writerclass()
 
     results= {}
-    for pat_sizes, margins, f, key in configs:
-        patterns= get_score_patterns(score, pat_sizes, margins, f, key)
-        pat, matches= max(patterns.iteritems(), key=lambda x:len(x[1]))
-        print pat
-        instr, all_notes= score.notes_per_instrument.iteritems().next()
-        s= Score(score.divisions)
-        s.notes_per_instrument={instr:[]}
-        desp= 0
-        for i, (start, end) in enumerate(matches):
-            notes= all_notes[start:end]
+    patterns= get_score_patterns(score, pat_sizes, margins, f, key)
+    instr, all_notes= score.notes_per_instrument.iteritems().next()
 
+    output_folder= os.path.join(output_folder_prefix, infname[:-4])
+    if not os.path.exists(output_folder):
+        os.mkdir(output_folder)
+
+    for i, (pat, matches) in enumerate(patterns.iteritems()):
+        pattern_folder= os.path.join(output_folder, 'pat_%s' % i)
+        if not os.path.exists(pattern_folder):
+            os.mkdir(pattern_folder)
+        for j, (start, end) in enumerate(matches):
+            notes= all_notes[start:end]
             notes= [n.copy() for n in notes]
-            notes[0].start= desp
+
+            notes[0].start= 0
             for prev, next in zip(notes, notes[1:]):
                 next.start= prev.start+prev.duration
+                            
+            s= score.copy()
+            s.notes_per_instrument={instr:notes}
 
-            for n in notes:
-                print n
-            print "*"*10
-
-            silence_start= notes[-1].start + notes[-1].duration
-            silence_duration= 4*score.divisions
-            desp+= silence_start + silence_duration
-            notes.append(Silence(silence_start, silence_duration))
-            score.notes_per_instrument[instr].extend(notes)
-
-        s.time_signature= score.time_signature
-        s.tempo= score.tempo
-        s.key_signature= score.key_signature
-
-        writer= writerclass()
-        writer.dump(score, outfname)
-
-
-
+            writer.dump(s, os.path.join(pattern_folder, 'match_%s.mid' % j))
 
 
 
 if __name__ == '__main__':
+    #import psyco
+    #psyco.full()
     main()
 
 
