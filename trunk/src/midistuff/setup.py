@@ -7,10 +7,10 @@ try:
         tests_require=[])
 except ImportError:
     from distutils.core import setup
-    extra_kw = dict(packages=['midistuff'])
+    extra_kw = dict(packages=['utils'])
 
 setup(
-    name="midistuff",
+    name="utils",
     version=0.1,
     description="",
     long_description="",
