@@ -1,9 +1,8 @@
 
 from sys import argv
-from electrozart.parsing.midi import MidiScoreParser, MidiPatchParser, MidiScoreParserCache 
 from electrozart.algorithms.lsa import apply_lsa, apply_cosine
 
-parserclass= MidiScoreParserCache
+from config import parserclass, modelclass, writerclass
 
 from optparse import OptionParser
 import Pycluster

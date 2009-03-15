@@ -1,16 +1,10 @@
 from sys import argv
-from electrozart.parsing.midi import MidiScoreParser, MidiPatchParser, MidiScoreParserCache 
-from electrozart.algorithms.hmm import HmmAlgorithm, StructuredHmmAlgorithm
-from electrozart.writing.midi import MidiScoreWriter
 
 from md5 import md5
 import cPickle as pickle
 
 
-parserclass= MidiScoreParserCache
-modelclass= StructuredHmmAlgorithm
-#modelclass= HmmAlgorithm
-writerclass= MidiScoreWriter
+from config import parserclass, modelclass, writerclass
 
 def save_model_pickle(modelfname, algorithm):
     f= open(modelfname, 'w')

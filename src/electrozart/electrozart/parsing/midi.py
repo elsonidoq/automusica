@@ -7,7 +7,7 @@ from base import ScoreParser
 from itertools import izip, islice
     
 class MidiScoreParser(ScoreParser):
-    def parse(self, fname):
+    def parse(self, fname, **kwargs):
         hdlr= MidiToScore()
         midi_in = MidiInFile(hdlr, fname)
         midi_in.read()
