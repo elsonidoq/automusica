@@ -1,17 +1,12 @@
 from utils.iter import combine
 from electrozart.algorithms.patterns import get_score_patterns
 from electrozart.algorithms.quantize import quantize
-from electrozart.parsing.midi import MidiScoreParserCache 
 from electrozart import Score, Silence, Instrument
-from electrozart.writing.midi import MidiScoreWriter
 
 from sys import argv
 from optparse import OptionParser
 
-parserclass= MidiScoreParserCache
-#modelclass= StructuredHmmAlgorithm
-#modelclass= HmmAlgorithm
-writerclass= MidiScoreWriter
+from config import parserclass, modelclass, writerclass
 
 import os
 def main():
