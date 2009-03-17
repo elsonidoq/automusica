@@ -15,6 +15,7 @@ def inside_outside(parser, corpus, niters):
         sentence_freq[sentence]+= 1
     sentence_freq= sentence_freq.items()        
 
+    print 'initial parsing...'
     sentence_trees= [None]*len(sentence_freq)
     for i, (sentence, freq) in enumerate(sentence_freq):
         sentence_trees[i]= list(parser.iter_parse(sentence))
@@ -24,7 +25,11 @@ def inside_outside(parser, corpus, niters):
     g= parser.grammar()
     prods_prob= uniform_prods(g)
 
+    print 'starting to iterate...'
+    step= niters/10
     for it_no in xrange(niters):
+        if (it_no + 1)%step == 0:
+            print (it_no+1)/niters
         trees_freq=[None]*len(sentence_trees)
         # expectation step
         for i, sentence in enumerate(corpus):
