@@ -1,5 +1,4 @@
-from utils.iter import combine
-from itertools import izip
+from utils.iter import combine, HasNextIter
 class Rule(object):
     def __init__(self, str, *constraints):
         self.str= str
@@ -11,7 +10,13 @@ class Rule(object):
         res= []
         for config in configs:
             if not all((c(*config) for c in self.constraints)): continue
-            res.append(self.str % config)
+            new_config= []
+            for e in config:
+                if e < 0:
+                    new_config.append('m%s' % abs(e))
+                else:
+                    new_config.append(e)
+            res.append(self.str % tuple(new_config))
 
         return res
 
@@ -54,16 +59,18 @@ class GilbertSchemata(object):
                                        lambda n, n1, n2: abs(n) <= self.max_escape,
                                        lambda n, n1, n2: n!=0),  # restriccion para no generar producciones repetidas
                # replace by terminal
-               Rule('I%s -> %s', lambda n1, n2: n1 == n2), 
-               Rule('S%s -> %s', lambda n1, n2: n1 == n2)] 
+               Rule("I%s -> '%s'", lambda n1, n2: n1 == n2), 
+               Rule("S%s -> '%s'", lambda n1, n2: n1 == n2)] 
 
     
 
 
     
-if __name__ == '__main__':
-    from sys import argv
-    from optparse import OptionParser
+from sys import argv
+from optparse import OptionParser
+from itertools import chain
+import pp
+def main():
 
     usage= 'usage: %prog [options] grammar_out_fname'
     parser= OptionParser(usage=usage)
@@ -72,7 +79,7 @@ if __name__ == '__main__':
     parser.add_option('-e', '--max-escape', dest='max_escape', help='max escape interval', type='int', default=3)
     parser.add_option('--min-terminal', dest='min_terminal', help='minimun terminal', type='int',  default=-10)
     parser.add_option('--max-terminal', dest='max_terminal', help='maximn terminal', type='int', default=10)
-    parser.add_option('-o', '--output', dest='outfname', help='out fname')
+    parser.add_option('-o', '--output', dest='outfname', help='out fname. default= grammar_%(min_terminal)s_%(max_terminal)s.lt')
 
     options, args= parser.parse_args(argv[1:])
     
@@ -91,3 +98,5 @@ if __name__ == '__main__':
 
     f.close()
 
+if __name__ == '__main__':
+    main()
