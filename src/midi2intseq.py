@@ -8,8 +8,8 @@ if __name__ == '__main__':
     usage= 'usage: %prog [options] midi_fname'
     parser= OptionParser(usage=usage)
     parser.add_option('-o', '--output', 
-                        dest='outfname', default='intervals',
-                        help='output fname')
+                        dest='outfname', 
+                        help='output fname, default=midi_fname.intervals')
     parser.add_option('-c', '--no-cache', 
                         dest='cache', action='store_false', default=True, 
                         help='discard cache')
@@ -19,6 +19,8 @@ if __name__ == '__main__':
 
     infame= args[0]
     outfname= options.outfname
+    if outfname is None:
+        outfname= infame[:-3] + 'intervals'
 
     parser= parserclass()
     score= parser.parse(infame)
@@ -39,5 +41,6 @@ if __name__ == '__main__':
     intervals= [f(next.pitch - prev.pitch) for (prev, next) in zip(notes, notes[1:])]
 
     f= open(outfname, 'w')
-    f.write(' '.join((e for e in intervals)))
+    for i in xrange(0, len(intervals), 10):
+        f.write('%s\n' % ' '.join((e for e in intervals[i:i+10])))
     f.close()
