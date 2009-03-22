@@ -1,4 +1,6 @@
 from utils.iter import combine, HasNextIter
+from itertools import chain
+
 class Rule(object):
     def __init__(self, str, *constraints):
         self.str= str
@@ -30,38 +32,38 @@ class GilbertSchemata(object):
 
     @property
     def rules(self):
-        return [# new
-               #Rule('S%s --> S%s S%s'),
-               Rule('S%s --> I%s S%s', lambda n, n1, n2: n == n1+n2),
+        return [
+               # new
+               Rule('A --> I%s A'), 
+               Rule('A --> I%s'), 
                # repeat
-               Rule('S%s --> I%s I0', lambda n1,n2:n1==n2),
                Rule('I%s --> I%s I0', lambda n1,n2:n1==n2),
-               # neighbour
-               Rule('S0 --> I%s I%s', lambda n1, n2: n1==-n2, lambda n1, n2: abs(n1) <= self.max_neighbour, 
-                                      lambda n1, n2:n2!=0), # restriccion para no generar producciones repetidas
+               #Rule('S%s --> I%s I0', lambda n1,n2:n1==n2),
 
+               # neighbour
                Rule('I0 --> I%s I%s', lambda n1, n2: n1==-n2, lambda n1, n2: abs(n1) <= self.max_neighbour, 
                                       lambda n1, n2:n2!=0), # restriccion para no generar producciones repetidas
+               #Rule('S0 --> I%s I%s', lambda n1, n2: n1==-n2, lambda n1, n2: abs(n1) <= self.max_neighbour, 
+               #                      lambda n1, n2:n2!=0), # restriccion para no generar producciones repetidas
+
 
                # passing
-               Rule('S%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2>0, 
-                                       lambda n, n1, n2: abs(n)<=self.max_passing), 
-
                Rule('I%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2>0, 
                                        lambda n, n1, n2: abs(n)<=self.max_passing), 
+               #Rule('S%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2>0, 
+               #                        lambda n, n1, n2: abs(n)<=self.max_passing), 
 
                # escape
-               Rule('S%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2<0, 
-                                       lambda n, n1, n2: abs(n) <= self.max_escape,
-                                       lambda n, n1, n2: n!=0), # restriccion para no generar producciones repetidas
-
                Rule('I%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2<0, 
                                        lambda n, n1, n2: abs(n) <= self.max_escape,
                                        lambda n, n1, n2: n!=0),  # restriccion para no generar producciones repetidas
+               #Rule('S%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2<0, 
+               #                        lambda n, n1, n2: abs(n) <= self.max_escape,
+               #                        lambda n, n1, n2: n!=0), # restriccion para no generar producciones repetidas
+
                # replace by terminal
-               Rule("I%s --> %s", lambda n1, n2: n1 == n2), 
-#               Rule("S%s -> '%s'", lambda n1, n2: n1 == n2)] 
-               Rule("S%s --> %s", lambda n1, n2: n1 == n2)] 
+               Rule("I%s --> %s", lambda n1, n2: n1 == n2)] 
+               #Rule("S%s --> %s", lambda n1, n2: n1 == n2)] 
 
     
 
@@ -92,11 +94,11 @@ def main():
     schemata= GilbertSchemata(options.max_neighbour, 
                               options.max_escape,
                               options.max_passing)
-    for i, rule in enumerate(schemata.rules):
-        #if i!= 0 and i< len(schemata.rules)-1: continue
-        prods= rule.create_productions(terminals)
-        for prod in prods:
-            f.write('%s\n' % prod)
+    prods= list(chain(*[r.create_productions(terminals) for r in schemata.rules]))
+    prods.sort()
+
+    for prod in prods:
+        f.write('%s\n' % prod)
 
     f.close()
 
