@@ -2,14 +2,16 @@ from utils.iter import combine, HasNextIter
 from itertools import chain
 
 class Rule(object):
-    def __init__(self, str, *constraints):
-        self.str= str
-        self.nvars= str.count('%s')
+    def __init__(self, schema, *constraints):
+        self.schema= schema
+        self.nvars= schema.count('%s')
         self.constraints= constraints
 
-    def create_productions(self, terminals):
+    def create_productions(self, terminals, formatter=None):
         configs= combine(*[terminals for i in xrange(self.nvars)])
         res= []
+        schema= self.schema
+        if formatter: schema= formatter.format(self)
         for config in configs:
             if not all((c(*config) for c in self.constraints)): continue
             new_config= []
@@ -18,9 +20,31 @@ class Rule(object):
                     new_config.append('m%s' % abs(e))
                 else:
                     new_config.append(e)
-            res.append(self.str % tuple(new_config))
+            res.append(schema % tuple(new_config))
 
         return res
+
+import re
+class RuleFormatter(object):
+    arrow= '->'
+    quote_terminals= False
+    def __init__(self, desired_arrow, quote_terminals):
+        self.desired_arrow= desired_arrow
+        self.quote_terminals= quote_terminals
+
+    def format(self, rule):
+        """
+        rule :: Rule
+        """
+        rule=rule.schema
+        [lhs, rhs]= rule.split(self.arrow)
+        if self.quote_terminals:
+            rhs= rhs.replace(' %s', " '%s'")
+        return self.desired_arrow.join((lhs,rhs))
+
+
+        
+
 
 # el schemata se puede escribir con muchas menos produccioens esquema, pero lo dejo asi para que quede como en el paper
 # es mas facil de razonar
@@ -34,27 +58,27 @@ class GilbertSchemata(object):
     def rules(self):
         return [
                # new
-               Rule('A --> I%s A'), 
-               Rule('A --> I%s'), 
+               Rule('A -> I%s A'), 
+               Rule('A -> I%s'), 
                # repeat
-               Rule('I%s --> I%s I0', lambda n1,n2:n1==n2),
+               Rule('I%s -> I%s I0', lambda n1,n2:n1==n2),
                #Rule('S%s --> I%s I0', lambda n1,n2:n1==n2),
 
                # neighbour
-               Rule('I0 --> I%s I%s', lambda n1, n2: n1==-n2, lambda n1, n2: abs(n1) <= self.max_neighbour, 
+               Rule('I0 -> I%s I%s', lambda n1, n2: n1==-n2, lambda n1, n2: abs(n1) <= self.max_neighbour, 
                                       lambda n1, n2:n2!=0), # restriccion para no generar producciones repetidas
                #Rule('S0 --> I%s I%s', lambda n1, n2: n1==-n2, lambda n1, n2: abs(n1) <= self.max_neighbour, 
                #                      lambda n1, n2:n2!=0), # restriccion para no generar producciones repetidas
 
 
                # passing
-               Rule('I%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2>0, 
+               Rule('I%s -> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2>0, 
                                        lambda n, n1, n2: abs(n)<=self.max_passing), 
                #Rule('S%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2>0, 
                #                        lambda n, n1, n2: abs(n)<=self.max_passing), 
 
                # escape
-               Rule('I%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2<0, 
+               Rule('I%s -> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2<0, 
                                        lambda n, n1, n2: abs(n) <= self.max_escape,
                                        lambda n, n1, n2: n!=0),  # restriccion para no generar producciones repetidas
                #Rule('S%s --> I%s I%s', lambda n, n1, n2: n == n1+n2, lambda n, n1,n2:n1*n2<0, 
@@ -62,7 +86,7 @@ class GilbertSchemata(object):
                #                        lambda n, n1, n2: n!=0), # restriccion para no generar producciones repetidas
 
                # replace by terminal
-               Rule("I%s --> %s", lambda n1, n2: n1 == n2)] 
+               Rule("I%s -> %s", lambda n1, n2: n1 == n2)] 
                #Rule("S%s --> %s", lambda n1, n2: n1 == n2)] 
 
     
@@ -82,19 +106,38 @@ def main():
     parser.add_option('-e', '--max-escape', dest='max_escape', help='max escape interval', type='int', default=2)
     parser.add_option('--min-terminal', dest='min_terminal', help='minimun terminal', type='int',  default=-10)
     parser.add_option('--max-terminal', dest='max_terminal', help='maximn terminal', type='int', default=10)
-    parser.add_option('-o', '--output', dest='outfname', help='out fname. default= grammar_%(min_terminal)s_%(max_terminal)s.lt')
+    parser.add_option('-o', '--output', dest='outfname', help='out fname. default= grammar_%(min_terminal)s_%(max_terminal)s_%(format)s.lt')
+    parser.add_option('--format', dest='format', help='define el formato, valores posibles: nltk, mike. default=mike', default='mike')
+    parser.add_option('--mike', dest='format_mike', help='usar el formato de mike johnson. default=True', action='store_true', default=False)
+
 
     options, args= parser.parse_args(argv[1:])
     
     outfname= options.outfname
-    if outfname is None: outfname= 'grammar_%s_%s.lt'  % (options.min_terminal, options.max_terminal)
-    f= open(outfname, 'w')
-    terminals= range(options.min_terminal, options.max_terminal+1)
+    min_terminal= options.min_terminal
+    max_terminal= options.max_terminal
+    format= options.format
+    max_neighbour= options.max_neighbour
+    max_escape= options.max_escape
+    max_passing= options.max_passing
 
-    schemata= GilbertSchemata(options.max_neighbour, 
-                              options.max_escape,
-                              options.max_passing)
-    prods= list(chain(*[r.create_productions(terminals) for r in schemata.rules]))
+    str_min_terminal= str(min_terminal)
+    if min_terminal < 0: str_min_terminal= 'm%s' % abs(min_terminal)
+
+    str_max_terminal= str(max_terminal)
+    if max_terminal < 0: str_max_terminal= 'm%s' % abs(max_terminal)
+
+    if outfname is None: outfname= 'grammar-%s-%s-%s.lt'  % (str_min_terminal, str_max_terminal, format)
+
+    if format=='nltk': formatter= RuleFormatter(desired_arrow='->', quote_terminals=True)
+    elif format=='mike': formatter= RuleFormatter(desired_arrow='-->', quote_terminals=False)
+    else: parser.error('formato invalido')
+
+    f= open(outfname, 'w')
+    terminals= range(min_terminal, max_terminal+1)
+
+    schemata= GilbertSchemata(max_neighbour, max_escape, max_passing)
+    prods= list(chain(*[r.create_productions(terminals, formatter) for r in schemata.rules]))
     prods.sort()
 
     for prod in prods:
