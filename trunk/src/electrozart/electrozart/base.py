@@ -88,9 +88,9 @@ class Score(object):
         else:
             self._messages.append(m)
         
-    def note_played(self, instrument, note_number, start, duration, volume):
+    def note_played(self, instrument, pitch, start, duration, volume):
         all_notes= self.notes_per_instrument.get(instrument, [])
-        all_notes.append(PlayedNote(note_number, start, duration, volume))
+        all_notes.append(PlayedNote(pitch, start, duration, volume))
         self.notes_per_instrument[instrument]= all_notes
 
     @property
