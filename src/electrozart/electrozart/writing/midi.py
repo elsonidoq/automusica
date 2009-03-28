@@ -58,7 +58,14 @@ class MidiScoreWriter(ScoreWriter):
                 event.instrument= instrument
                 events.append(event)
 
-        events.sort(key=lambda e:e.time)                
+        # los note events van despues
+        def mycmp(e1, e2): 
+            if e1.method_name == e2.method_name: return 0
+            if e1.method_name.startswith('note'): return 1
+            return -1
+
+        events.sort(cmp=mycmp)
+        events.sort(key=lambda e:e.time)
         return events
 
     def _save_track(self, mof, stuff):
