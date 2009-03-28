@@ -1,4 +1,3 @@
-from collections import defaultdict
 class StrFreqDict(object):
     def __init__(self):
         self.root= {}
@@ -49,7 +48,7 @@ class StrFreqDict(object):
             if len(level) == 1:
                 k, v= level.iteritems().next()
                 if isinstance(v, dict):
-                    stack.append((v, pref+k, res_equivalent)) 
+                    stack.append((v, pref+ ('' if len(pref) == 0 else ' ') + k, res_equivalent)) 
                 else:
                     assert k == 'nvals'
                     res_equivalent[pref]= level
@@ -64,10 +63,26 @@ class StrFreqDict(object):
         return res
 
     def get_grammar(self):
-        p= self.get_patricia()
+        terminals= set()
+        nnt= 0
+        res, nnt, added_symbols= _recursive_get_grammar(self.get_patricia(), nnt, terminals)
+        res.sort()
+
+        for terminal in terminals:
+            res.append('T%s --> %s' % (terminal, terminal))
+
+        return res            
+
+    def get_grammar_old(self):
+        """
+        no anda, se saltea no-terminales
+        """
+        #p= self.get_patricia()
+        p= self.root
         res= []
         stack= [p]
         nnt= 0
+        terminals= set()
         while len(stack) > 0:
             level= stack.pop()
             nnt+=1
@@ -77,18 +92,38 @@ class StrFreqDict(object):
 
             for i, (k, v) in enumerate(level.iteritems()):
                 if k == 'nvals': continue 
+                terminals.add(k)
+                # si tiene hijos
                 if len(v) > 1 or 'nvals' not in v:
-                    prod= "S%s -> '%s' S%s" % (nnt, k, nnt+nchilds-i) 
+                    prod= "S%s --> T%s S%s" % (nnt, k, nnt+nchilds-i) 
                     res.append(prod)
                 if 'nvals' in v:
-                    prod= "S%s -> '%s" % (nnt, k) 
+                    prod= "S%s --> T%s" % (nnt, k) 
                     res.append(prod)
                 stack.append(v)
-        return res
-                    
-def learn(strs):
-    d= StrFreqDict()
 
-    for str in strs: d.add(str)
-            
-    
+        for terminal in terminals:
+            res.append('T%s --> %s' % (terminal, terminal))
+
+        return res
+
+def _recursive_get_grammar(level, nnt, terminals):
+    res= []
+
+    added_symbols= 1
+    nnt+=1
+    for i, (k, v) in enumerate(level.iteritems()):
+        if k == 'nvals': continue 
+        terminals.add(k)
+        # si tiene hijos
+        if len(v) > 1 or 'nvals' not in v:
+            child_prods, start_symbol, new_symbols= _recursive_get_grammar(v, nnt+added_symbols-1, terminals)
+            added_symbols+= new_symbols
+            prod= "S%s --> T%s S%s" % (nnt, k, start_symbol)
+            res.append(prod)
+            res.extend(child_prods)
+        if 'nvals' in v:
+            prod= "S%s --> T%s" % (nnt, k) 
+            res.append(prod)
+
+    return res, nnt, added_symbols
