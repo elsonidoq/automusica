@@ -1,7 +1,8 @@
 from impl import StrFreqDict
 
 d= StrFreqDict()
-strs= 'hola', 'hol', 'holae', 'hola', 'hole'
+strs= ['hola', 'pepe'], ['hola','pepo'], ['hola', 'pepe', 'hola']
+#strs= 'hola', 'hol', 'holae', 'hola', 'hole'
 
 for str in strs:
     d.add(str)
