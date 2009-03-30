@@ -17,6 +17,7 @@ class HiddenMarkovLearner:
         self.state_transition= {}
         self.state_observation= {}
 
+    # TODO se puede hacer que observations :: dict(string, val)
     def train(self, observations):
         """ 
         entrena al tipito con la secuencia de observaciones.
@@ -48,10 +49,10 @@ class HiddenMarkovLearner:
             self._update_observation_info(prev_state, prev[1])
 
 
-            # solo me resta actualizar la informacion de las observaciones
-            # para el ultimo estado de observations
-            state, actual_observations= observations[-1]
-            self._update_observation_info(state, actual_observations)
+        # solo me resta actualizar la informacion de las observaciones
+        # para el ultimo estado de observations
+        state, actual_observations= observations[-1]
+        self._update_observation_info(state, actual_observations)
 
     def _update_observation_info(self, state, actual_observations):
         """

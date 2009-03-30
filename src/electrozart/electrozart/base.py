@@ -34,7 +34,7 @@ class PlayedNote(AbstractNote):
         return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
 
     def __repr__(self):
-        return "PlayedNote(start=%s,duration=%s)" % (self.start, self.duration)
+        return "PlayedNote(pitch=%s, start=%s, duration=%s)" % (self.pitch, self.start, self.duration)
 
 class Instrument(object):
     id_seq= 0

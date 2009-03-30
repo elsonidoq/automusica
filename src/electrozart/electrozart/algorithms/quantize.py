@@ -8,7 +8,7 @@ def quantize(score, divs=None):
     divs :: [int]
       son los divisores de la negra
     """
-    if divs is None: divs= [16,9]
+    if divs is None: divs= [4,3]
     return _quantize(score, reduce(lambda x,y:x*y, divs)/reduce(gcd, divs, 0))
 
 
