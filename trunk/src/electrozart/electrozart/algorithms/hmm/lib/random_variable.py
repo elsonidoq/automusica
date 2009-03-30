@@ -17,6 +17,7 @@ class RandomVariable(object):
         return hash(self.name)
 
     def __eq__(self, other):
+        if isinstance(other, basestring): return self.name == other
         return self.name == other.name
     
     def __repr__(self):
@@ -31,7 +32,7 @@ class ConstantRandomVariable(RandomVariable):
     def __init__(self, value, name= ""):
         RandomVariable.__init__(self, name)
         self.value= value
-    def get_value(self): return value
+    def get_value(self): return self.value
 
 from copy import deepcopy
 class RandomPicker(RandomVariable):

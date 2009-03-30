@@ -1,10 +1,12 @@
-from electrozart.algorithms import TrainAlgorithm
-from hidden_markov_learner import HiddenMarkovLearner 
-from random_variable import ConstantRandomVariable
 from itertools import imap
-from hidden_markov_model import SizedRandomObservation
+
+from electrozart.algorithms import TrainAlgorithm
 from electrozart import Score, PlayedNote, Silence, Instrument
 from midistuff.midi_messages import MidiMessage
+
+from lib.hidden_markov_learner import HiddenMarkovLearner 
+from lib.hidden_markov_model import SizedRandomObservation
+from obs_seq_builders import MidiPatchObsSeq, MidiObsSeqOrder3, MidiChannelObsSeq 
 
 class HmmAlgorithm(TrainAlgorithm):
     def __init__(self, channel= None, instrument=None, *args, **kwargs):
@@ -38,7 +40,7 @@ class HmmAlgorithm(TrainAlgorithm):
         hmm= self.learner.get_trainned_model(initial_probability)
         self.model= hmm
         robs= SizedRandomObservation(hmm, song_size)
-        obs= [(robs.actual_state, o.keys()[0].get_value()) for o in robs]
+        obs= [(robs.actual_state, o['pitch']) for o in robs]
         score= Score(divisions)
         instrument= Instrument()
         instrument.patch= 1
@@ -100,54 +102,3 @@ class StructuredHmmAlgorithm(HmmAlgorithm):
 
         return score
 
-class ConditionalMidiObsSeq(object):
-    def __call__(self, score):
-        for instrument, notes in score.notes_per_instrument.iteritems():
-            if self.condition(instrument):
-                return self._build_obs_seq(notes)
-    
-        #raise Exception("no instrument found")
-
-    def _build_obs_seq(self, notes):
-        res= []
-        for note in notes:
-            pitch= -1 if note.is_silence else note.pitch
-            pitch_var= ConstantRandomVariable(pitch, 'pitch')
-            res.append((note.duration, {pitch_var:pitch})) 
-
-        return res
-
-    def condition(self, instrument):
-        raise NotImplementedException
-
-class MidiPatchObsSeq(ConditionalMidiObsSeq):
-    def __init__(self, patch):
-        """
-        patch es el instrumento que me va a interesart seguir
-        """
-        ConditionalMidiObsSeq.__init__(self)
-        self.patch= patch
-    
-    def condition(self, instrument):
-        return instrument.patch == self.patch 
-
-class MidiObsSeqOrder3(object):
-    def __init__(self, obsseq):
-        self.obsseq= obsseq
-    def __call__(self, score):
-        res= self.obsseq(score)
-        res= [((s0,s1,s2), d2) for ((s0, d0), (s1, d1), (s2, d2)) in zip(res, res[1:], res[2:])]
-        return res
-
-
-class MidiChannelObsSeq(ConditionalMidiObsSeq):
-    def __init__(self, channel):
-        """
-        channel es el canal que importa
-        """
-        ConditionalMidiObsSeq.__init__(self)
-        self.channel= channel
-    
-    def condition(self, instrument):
-        return self.channel == instrument.channel
-        

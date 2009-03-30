@@ -11,9 +11,11 @@ def main():
         score= parser.parse(fname)
         if not score: continue
         file_instrs= {}
+        print
+        print "* " * 10
         print fname
         for instr, notes in score.notes_per_instrument.iteritems():
-            print '\t%s(channel:%s, id:%s) -> %s' % (instr.patch,\
+            print '\tpatch:%s, channel:%s, id:%s, n_notes:%s' % (instr.patch,\
                                                         instr.channel,\
                                                         instr.id, \
                                                         len(notes))
@@ -23,14 +25,14 @@ def main():
 
         instrs.extend(file_instrs.iteritems()) 
 
-    d= {}
-    for instr, notes in instrs:
-        cnt, nnotes= d.get(instr, (0,0))
-        d[instr]= cnt+1, nnotes+len(notes)
-    
-    print
-    for instr, (cnt, nnotes) in d.items():
-        print instr,':', cnt, ',', float(nnotes)/cnt
+    #d= {}
+    #for instr, notes in instrs:
+    #    cnt, nnotes= d.get(instr, (0,0))
+    #    d[instr]= cnt+1, nnotes+len(notes)
+   # 
+    #print
+    #for instr, (cnt, nnotes) in d.items():
+    #    print instr,':', cnt, ',', float(nnotes)/cnt
 
 
 if __name__ == '__main__':

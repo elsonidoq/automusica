@@ -31,8 +31,8 @@ def main():
 
     qnotes= qscore.notes_per_instrument.values()[0]
     notes= score.notes_per_instrument.values()[0]
-    for qn, n in zip(qnotes, notes):
-        if qn.duration != n.duration: print qn, n
+    #for qn, n in zip(qnotes, notes):
+    #    if qn.duration != n.duration: print qn, n
 
     outfname= options.output_fname
     outfname%= {'filename':infname[:-4]}
