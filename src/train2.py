@@ -42,6 +42,11 @@ def main():
     # BOCHA DE AJUSTES DE PARSING
     notes= score.notes_per_instrument.values()[0]  
     notes.sort(key=lambda x:x.start)
+    for i, n in enumerate(notes):
+        if n.is_silence and n.duration > 1600: 
+            #import ipdb;ipdb.set_trace()
+            break
+    notes= notes[:i]
     notes= [n for n in notes if n.duration > 0]
     # saco los silencios y estiro las notas
     for prev, next in zip(notes, notes[1:]):
@@ -49,6 +54,7 @@ def main():
 
     notes= [n for n in notes if not n.is_silence]
 
+    print min(notes, key=lambda x:x.duration)
     new_notes= notes
     #new_notes= []
     #for time, time_notes in groupby(notes, key=lambda x:x.start):
@@ -84,6 +90,7 @@ def main():
     score= algorithm.create_score(score.divisions, options.size)
     if options.print_model: print algorithm.model
     instrument= score.notes_per_instrument.keys()[0]
+    instrument.is_drums= True
     writer= writerclass()
     writer.dump(score, outfname)
     print 'done!'

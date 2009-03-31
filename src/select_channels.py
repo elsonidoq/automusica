@@ -2,17 +2,19 @@ from midistuff.writers.MidiOutFile import MidiOutFile
 from midistuff.writers.RetardedOutFile import RetardedOutFile
 from midistuff.readers.MidiInFile import MidiInFile
 
+from config import parserclass, writerclass
 
 
 from sys import argv
 in_file= argv[1]
-channels= map(int, argv[2:])
-out_file = 'selected.mid'
-midi_out = MidiOutFile(out_file, channels=channels)
-#midi_out = RetardedOutFile(out_file, channels=channels, time_to_move=3500)
-
-#in_file = 'midiout/minimal_type0.mid'
-#in_file = 'test/midifiles/Lola.mid'
-midi_in = MidiInFile(midi_out, in_file)
-midi_in.read()
+channel= int(argv[2])
+out_file = in_file.replace('.mid', '-%s.mid' % channel)
+parser= parserclass()
+score= parser.parse(in_file)
+for instr, notes in score.notes_per_instrument.iteritems():
+    if instr.channel == channel: break
+#instr.is_drums=True
+score.notes_per_instrument= {instr:notes}
+writer= writerclass()
+writer.dump(score, out_file)
 
