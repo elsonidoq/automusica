@@ -55,7 +55,7 @@ class RythmHMM(HmmAlgorithm):
 
         notes= list(chain(one_1, self.move(three_1, 1),
                    self.move(one_1, 4), self.move(three_2, 5), 
-                   self.move(one_1, 8), self.move(one_1, 9), self.move(one_1, 10), self.move(one_1, 11), 
+                   self.move(one_1, 8), self.move(one_2, 9), self.move(one_1, 10), self.move(one_2, 11), 
                    self.move(three_3, 12), self.move(one_1, 15)))
 
         #import ipdb;ipdb.set_trace()

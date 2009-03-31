@@ -95,8 +95,8 @@ class HiddenMarkovLearner:
                 if not res.has_state(state_to):
                     res.add_hidden_state(state_to, initial_probability[state_to])
                 # total_count >= count 
-                if total_count > 0:
-                    res.add_transition(state_from, state_to, float(count)/total_count)
+                #if total_count > 0:
+                res.add_transition(state_from, state_to, float(count)/total_count)
                 #else:
                 #    # XXX: tiene sentido que este esto aca?
                 #    # pasa la ejecucion por aca?
