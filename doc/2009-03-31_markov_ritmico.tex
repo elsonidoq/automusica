@@ -1,0 +1,25 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[spanish,activeacute]{babel}
+
+
+%opening
+\title{Markov para la ritmica}
+
+\begin{document}
+\maketitle
+\section{El modelo}
+El modelo est\'a basado en cadenas de markov. Al procesar un tema, lo que se hace es primero es estimar la metrical 
+grid, y luego elegir un nivel de la metrical grid para dividir el tema.
+Una vez elegido el nivel, dado que todos los beats del mismo nivel deben de estar equidistantes, se calcula el 
+tiempo efectivo en el tema que hay entre dos beats consecutivos del nivel deseado, llamemoslo $t$.
+De esta forma se generan potencialmente tantos estados como numeros naturales haya menores a $t$ (y se los etiqueta con este n\'umero).
+Luego para colocar las aristas entre los nodos se recorre la lista de notas, y desde el nodo actual, llamemoslo
+$n$, (que inicialmente es el nodo etiquetado como 0) se agrega una transicion al nodo $n+k$ modulo $t$,
+donde $k$ es la duracion de la nota en cuestion.
+Una vez terminado esto, puede ser que no sea posible hacer una random walk porque haya un estado (el final) que no
+tiene transiciones salientes, de esta forma se agrega una transicion desde este estado hasta el estado mas cercano
+que tenga transiciones salientes.
+
+Para generar un compas sencillamente se recorre la cadena de markov, hasta que el estado actual sea menor que el proximo estado determinado por la cadena
+
+\end{document}
