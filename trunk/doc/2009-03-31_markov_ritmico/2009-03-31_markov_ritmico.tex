@@ -9,8 +9,8 @@
 \begin{document}
 \maketitle
 \section{El modelo}
-El modelo est\'a basado en cadenas de markov. Al procesar un tema, lo que se hace es primero es estimar la metrical 
-grid, y luego elegir un nivel de la metrical grid para dividir el tema.
+El modelo est\'a basado en cadenas de markov. Al procesar un tema, lo que se hace es primero es estimar la \emph{metrical 
+grid}, y luego elegir un nivel de la \emph{metrical grid} para dividir el tema.
 Una vez elegido el nivel, dado que todos los beats del mismo nivel deben de estar equidistantes, se calcula el 
 tiempo efectivo en el tema que hay entre dos beats consecutivos del nivel deseado (o mayor o igual), llamemoslo $t$.
 Es importante notar que estas partes en las que se divide el tema no necesariamente corresponden con un comp\'as.
@@ -22,7 +22,7 @@ Es importante notar que estas partes en las que se divide el tema no necesariame
 \end{center}
 \end{figure}
 
-En el ejemplo, la metrical grid es la de un comp\'as de 4/4, y se dividir\'ia en dos partes, los dos renglones.
+En el ejemplo, la \emph{metrical grid} es la de un comp\'as de $\frac{4}{4}$, y se dividir\'ia en dos partes, los dos renglones.
 
 Dado que lo importante en la r\'itmica son los puntos de ataque, se podr\'ia preprocesar la entrada eliminando los silencios, y  
 extendiendo la duraci\'on de la golpe anterior al silencio para que abarque tambi\'en el silencio.
