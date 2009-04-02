@@ -108,6 +108,7 @@ class RythmHMM(HmmAlgorithm):
             if end == start: 
                 import ipdb;ipdb.set_trace()
             last_interval_time= interval_time
+            if pitch == -1 or volume == -1: continue
             score.note_played(instrument, pitch, start, end-start, volume)
 
         return score

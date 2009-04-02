@@ -79,6 +79,7 @@ class Fraccion:
         return self * f
 
     def __repr__(self):
+        if self._denom == 1: return str(self._num)
         return str(self._num) + "/" + str(self._denom) 
 
 def mcd(a, b):

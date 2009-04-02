@@ -20,6 +20,7 @@ def main():
     parser.add_option('-m', '--print-model', dest= 'print_model', default=False, action='store_true')
     parser.add_option('-l', '--level', dest='level', default=3, type='int')
     parser.add_option('--size', dest='size', default=10, type='int')
+    parser.add_option('--draw-model', dest='draw_model')
 
 
     options, args= parser.parse_args(argv[1:])
@@ -42,6 +43,7 @@ def main():
     # BOCHA DE AJUSTES DE PARSING
     notes= score.notes_per_instrument.values()[0]  
     notes.sort(key=lambda x:x.start)
+    notes.pop(0)
     for i, n in enumerate(notes):
         if n.is_silence and n.duration > 1600: 
             #import ipdb;ipdb.set_trace()
@@ -49,10 +51,10 @@ def main():
     notes= notes[:i]
     notes= [n for n in notes if n.duration > 0]
     # saco los silencios y estiro las notas
-    for prev, next in zip(notes, notes[1:]):
-        if next.is_silence: prev.duration+= next.duration
+    #for prev, next in zip(notes, notes[1:]):
+    #    if next.is_silence: prev.duration+= next.duration
 
-    notes= [n for n in notes if not n.is_silence]
+    #notes= [n for n in notes if not n.is_silence]
 
     print min(notes, key=lambda x:x.duration)
     new_notes= notes
@@ -65,32 +67,65 @@ def main():
     #for n in new_notes: n.start-=2048            
 
     instr= score.notes_per_instrument.keys()[0]
+    patch= instr.patch
+    channel= instr.channel
     score.notes_per_instrument= {instr:new_notes}
     #########
 
 
-    print "computing metrical grid..."
-    beats= meter(notes)
+    #print "computing metrical grid..."
+    #assert score.divisions % 32 == 0
+    #beats= meter(notes, pip_time=score.divisions/32)
 
-    interval_start= interval_end= None
-    for b in beats:
-        if b.level < level: continue
+    #interval_start= interval_end= None
+    #for b in beats:
+    #    if b.level < level: continue
 
-        if interval_start is None: interval_start= b.start
-        else: 
-            interval_end= b.start 
-            break
+    #    if interval_start is None: interval_start= b.start
+    #    else: 
+    #        interval_end= b.start 
+    #        break
 
-    interval_size= interval_end- interval_start
-    
+    #interval_size= interval_end- interval_start
+   
+    interval_size= 4*score.divisions
     algorithm= RythmHMM(interval_size, instrument=patch, channel=channel)
     # hay que pasarle el , interval_start
     algorithm.train(score)
 
-    score= algorithm.create_score(score.divisions, options.size)
+    res= algorithm.create_score(score.divisions, options.size)
+    if options.draw_model:
+        from pygraphviz import AGraph
+        from electrozart.algorithms.hmm.lib.fraccion import Fraccion
+        def get_node_name(ticks):
+            n_quarters= 0
+            while ticks >= score.divisions:
+                ticks-= score.divisions
+                n_quarters+= 1
+
+            if ticks > 0:
+                f= Fraccion(ticks, score.divisions)
+                if n_quarters > 0: return "%s + %s" % (n_quarters, f)
+                else: return repr(f)
+            return "%s" % n_quarters 
+            
+           
+        g= AGraph(directed=True, strict=False)
+        for n1, adj in algorithm.model.state_transition.iteritems():
+            n1_name= get_node_name(n1)
+            for n2, prob in adj.iteritems():
+                n2_name= get_node_name(n2)
+                g.add_edge(n1_name, n2_name)
+                e= g.get_edge(n1_name, n2_name)
+                e.attr['label']= str(prob)[:5]
+        model_fname= options.draw_model
+        g.draw(model_fname, prog='dot', args='-Grankdir=LR')                
+
     if options.print_model: print algorithm.model
-    instrument= score.notes_per_instrument.keys()[0]
-    instrument.is_drums= True
+    instrument= res.notes_per_instrument.keys()[0]
+    #instrument.is_drums= True
+    instrument.patch= 21
+    score.notes_per_instrument.update(res.notes_per_instrument)
     writer= writerclass()
     writer.dump(score, outfname)
     print 'done!'

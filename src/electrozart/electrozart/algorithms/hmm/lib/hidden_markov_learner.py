@@ -3,7 +3,7 @@ from random_variable import RandomPicker
 from utils import *
 from itertools import *
 
-class HiddenMarkovLearner:
+class HiddenMarkovLearner(object):
     """
     esta clase es la que aprende y genera los hidden markov models.
     como variables de instancia tiene las mismas que el hidden markov model,
