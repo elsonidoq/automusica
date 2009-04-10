@@ -21,6 +21,7 @@ class Silence(AbstractNote):
         return "Silence(start=%s,duration=%s)" % (self.start, self.duration)
     
 class PlayedNote(AbstractNote):
+    _pitches= ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
     def __init__(self, pitch, start, duration, volume):
         AbstractNote.__init__(self, start, duration) 
         self.pitch= pitch
@@ -34,7 +35,10 @@ class PlayedNote(AbstractNote):
         return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
 
     def __repr__(self):
-        return "PlayedNote(pitch=%s, start=%s, duration=%s)" % (self.pitch, self.start, self.duration)
+        return "PlayedNote(pitch=%s, start=%s, duration=%s)" % (self._get_pitch_name(), self.start, self.duration)
+
+    def _get_pitch_name(self):
+        return self._pitches[self.pitch%12] + str(self.pitch/12)
 
 class Instrument(object):
     id_seq= 0
@@ -59,6 +63,7 @@ class Instrument(object):
     patch= property(getp, setp, None, None)
 
 
+from itertools import chain, groupby
 class Score(object):
     def __init__(self, divisions, notes_per_instrument=None):
         assert divisions > 0
@@ -71,6 +76,21 @@ class Score(object):
         self.time_signature= (4,4)
         self.tempo= None
         self.key_signature= (1,0)
+
+    def get_first_voice(self):
+        allnotes= list(chain(*self.notes_per_instrument.values()))
+        allnotes.sort(key=lambda x:x.start)
+        res= []
+        for start, ns in groupby(allnotes, key=lambda x:x.start):
+            n= max(ns, key=lambda x:-1 if x.is_silence else x.pitch)
+            res.append(n)
+        return res
+
+    def get_notes(self):
+        """
+        devuelve una lista de notas, de alguna forma, no importa como
+        """
+        return self.notes_per_instrument.itervalues().next()
 
     def copy(self):
         res= Score(self.divisions, notes_per_instrument=self.notes_per_instrument.copy())
