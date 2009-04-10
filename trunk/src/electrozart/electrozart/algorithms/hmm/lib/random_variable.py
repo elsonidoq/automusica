@@ -34,6 +34,9 @@ class ConstantRandomVariable(RandomVariable):
         self.value= value
     def get_value(self): return self.value
 
+class EmptyValuesException(Exception): pass
+class NotSumOneException(Exception): pass
+
 from copy import deepcopy
 class RandomPicker(RandomVariable):
     """
@@ -42,7 +45,7 @@ class RandomPicker(RandomVariable):
     """
     def __init__(self, name="", values={}):
         """
-        calues se copia
+        values se copia
         """
         RandomVariable.__init__(self, name)
         self.values= deepcopy(values)
@@ -52,14 +55,16 @@ class RandomPicker(RandomVariable):
 
     def get_value(self):
         rnd= random()
+        orig= rnd
 
+        if len(self.values) == 0: raise EmptyValuesException()
         for value, prob in self.values.items():
             rnd-= prob
             if rnd < 0:
                 return value
 
         if rnd >=0:
-            raise Exception("ERROR: objects probability doesnt sum 1 %s"%self.values)
+            raise NotSumOneException("ERROR: objects probability doesnt sum 1 %s"%self.values)
 
     def get_value_probability(self, value):
         return self.values[value]

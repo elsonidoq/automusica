@@ -32,10 +32,6 @@ class HmmAlgorithm(TrainAlgorithm):
         self.learner.train(obs_seq)
 
     def create_score(self, song_size, divisions):
-        """
-        dado un nombre de archivo, un hmm y un numero que determine el largo de la
-        observation seq, genera un midi y lo escribe en output_file
-        """
         initial_probability= dict( ((s,1.0/len(self.hidden_states)) for s in self.hidden_states) )
         hmm= self.learner.get_trainned_model(initial_probability)
         self.model= hmm

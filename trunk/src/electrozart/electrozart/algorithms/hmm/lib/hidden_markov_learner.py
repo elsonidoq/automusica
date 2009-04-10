@@ -29,26 +29,27 @@ class HiddenMarkovLearner(object):
 
         nexts= iter(observations)
         nexts.next()
-        for prev, next in izip(observations, nexts):
+        acum_lala= 0
+        for i, (prev, next) in enumerate(izip(observations, nexts)):
             prev_state= prev[0]
             next_state= next[0]
 
             # actualizo la informacion de transiciones
-            if prev_state not in state_transition:
-                trans= {next_state:1}
-                state_transition[prev_state]= trans
-            else:
-                trans= state_transition[prev_state]
-                if next_state not in trans:
-                    trans[next_state]= 1
-                else:
-                    trans[next_state]+=1 
-                
+            d= state_transition.get(prev_state, {})
+            d[next_state]= d.get(next_state, 0) + 1
+            state_transition[prev_state]= d
+
+            #this_update= next_state-prev_state
+            #if this_update <= 0: this_update+= 1152
+            #acum_lala+= this_update
+            #if acum_lala == 53184: import ipdb;ipdb.set_trace()
+            #if acum_lala >= 52500: import ipdb;ipdb.set_trace()
 
             # actualizo la informacion de las observaciones
             self._update_observation_info(prev_state, prev[1])
 
 
+        #import ipdb;ipdb.set_trace()
         # solo me resta actualizar la informacion de las observaciones
         # para el ultimo estado de observations
         state, actual_observations= observations[-1]

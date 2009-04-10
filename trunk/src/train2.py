@@ -6,10 +6,34 @@ import cPickle as pickle
 
 
 from electrozart.algorithms.hmm.rythm import RythmHMM
+from electrozart.algorithms.hmm.harmony import HarmonyHMM
 from melisma.meter import meter
 from config import parserclass, modelclass, writerclass
 
 from optparse import OptionParser
+def metrical_grid_interval_size(score, notes, level):
+    print "computing metrical grid..."
+    assert score.divisions % 32 == 0
+    beats= meter(notes, pip_time=score.divisions/32)
+
+    interval_start= interval_end= None
+    for b in beats:
+        if b.level < level: continue
+
+        if interval_start is None: interval_start= b.start
+        else: 
+            interval_end= b.start 
+            break
+
+    interval_size= interval_end- interval_start
+    return interval_size
+
+def measure_interval_size(score, nmeasures):
+    nunits, unit_type= score.time_signature
+    unit_type= 2**unit_type
+    interval_size= nunits*nmeasures*score.divisions/unit_type*4
+    return interval_size
+
 def main():
     usage= 'usage: %prog [options] infname outfname'
     parser= OptionParser(usage=usage)
@@ -18,9 +42,10 @@ def main():
     parser.add_option('-d', '--is-drums', dest='is_drums', \
                       help='create a drums midi', default=False, action='store_true')
     parser.add_option('-m', '--print-model', dest= 'print_model', default=False, action='store_true')
-    parser.add_option('-l', '--level', dest='level', default=3, type='int')
-    parser.add_option('--size', dest='size', default=10, type='int')
+    parser.add_option('-l', '--level', dest='level', default=3, type='int', help='if the partition algorithm is MGRID, especifies the level from which the score is going to be parted')
+    parser.add_option('--n-measures', dest='n_measures', default=1, type='int', help='if the partition algorithm is MEASURE, especifies the number of measures to take as a unit')
     parser.add_option('--draw-model', dest='draw_model')
+    parser.add_option('--part-alg', dest='partition_algorithm', default='MEASURE', help='select the partition algorithm, only MEASURE and MGRID are available. Default MEASURE')
 
 
     options, args= parser.parse_args(argv[1:])
@@ -32,18 +57,23 @@ def main():
     if patch is not None and channel is not None:
         parser.error('options -p and -c are mutually exclusive')
 
+    partition_algorithm= options.partition_algorithm
+    if partition_algorithm not in ('MGRID', 'MEASURE'):
+        parser.error('unknown partition algorithm')
+
     infname= args[0]
     outfname= args[1]
 
     parser= parserclass()
     score= parser.parse(infname)
+    orig_score= score.copy()
     if not score: import ipdb;ipdb.set_trace() # por que podria devolver None?
 
     #########
     # BOCHA DE AJUSTES DE PARSING
-    notes= score.notes_per_instrument.values()[0]  
+    notes= score.get_first_voice()
     notes.sort(key=lambda x:x.start)
-    notes.pop(0)
+    #notes.pop(0)
     for i, n in enumerate(notes):
         if n.is_silence and n.duration > 1600: 
             #import ipdb;ipdb.set_trace()
@@ -71,43 +101,34 @@ def main():
     channel= instr.channel
     score.notes_per_instrument= {instr:new_notes}
     #########
+    #########
+    #########
 
 
-    #print "computing metrical grid..."
-    #assert score.divisions % 32 == 0
-    #beats= meter(notes, pip_time=score.divisions/32)
+    if options.partition_algorithm == 'MGRID':
+        interval_size= metrical_grid_interval_size(score, notes, level)
+    elif options.partition_algorithm == 'MEASURE':
+        interval_size= measure_interval_size(score, options.n_measures)
 
-    #interval_start= interval_end= None
-    #for b in beats:
-    #    if b.level < level: continue
-
-    #    if interval_start is None: interval_start= b.start
-    #    else: 
-    #        interval_end= b.start 
-    #        break
-
-    #interval_size= interval_end- interval_start
-   
-    interval_size= 4*score.divisions
-    algorithm= RythmHMM(interval_size, instrument=patch, channel=channel)
-    # hay que pasarle el , interval_start
+    algorithm= HarmonyHMM(interval_size, instrument=patch, channel=channel)
     algorithm.train(score)
+    #import ipdb;ipdb.set_trace()
 
-    res= algorithm.create_score(score.divisions, options.size)
+    def get_node_name(ticks):
+        n_quarters= 0
+        while ticks >= score.divisions:
+            ticks-= score.divisions
+            n_quarters+= 1
+
+        if ticks > 0:
+            f= Fraccion(ticks, score.divisions)
+            if n_quarters > 0: return "%s + %s" % (n_quarters, f)
+            else: return repr(f)
+        return "%s" % n_quarters 
+    res= algorithm.create_score(orig_score)
     if options.draw_model:
         from pygraphviz import AGraph
         from electrozart.algorithms.hmm.lib.fraccion import Fraccion
-        def get_node_name(ticks):
-            n_quarters= 0
-            while ticks >= score.divisions:
-                ticks-= score.divisions
-                n_quarters+= 1
-
-            if ticks > 0:
-                f= Fraccion(ticks, score.divisions)
-                if n_quarters > 0: return "%s + %s" % (n_quarters, f)
-                else: return repr(f)
-            return "%s" % n_quarters 
             
            
         g= AGraph(directed=True, strict=False)
@@ -121,13 +142,30 @@ def main():
         model_fname= options.draw_model
         g.draw(model_fname, prog='dot', args='-Grankdir=LR')                
 
+    from collections import defaultdict
+    #durationss= defaultdict(list)
+    #acum_duration= 0
+    #def get_pitch_name(note):
+    #    if note.is_silence:
+    #        return "Silence"
+    #    else:
+    #        notes= ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    #        return notes[note.pitch%12] + str(note.pitch/12)
+
+    #for note in notes:
+    #    durationss[get_node_name(acum_duration)].append(note.pitch)
+    #    acum_duration+= note.duration
+    #    acum_duration%= interval_size
+    #import ipdb;ipdb.set_trace()
+
+
     if options.print_model: print algorithm.model
     instrument= res.notes_per_instrument.keys()[0]
     #instrument.is_drums= True
     instrument.patch= 21
-    score.notes_per_instrument.update(res.notes_per_instrument)
+    orig_score.notes_per_instrument.update(res.notes_per_instrument)
     writer= writerclass()
-    writer.dump(score, outfname)
+    writer.dump(orig_score, outfname)
     print 'done!'
 
 if __name__ == '__main__':

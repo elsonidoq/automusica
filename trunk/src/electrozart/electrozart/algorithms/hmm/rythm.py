@@ -20,9 +20,9 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         res= self.builder(score)
         acum_duration= 0
         for i, (duration, vars) in enumerate(res):
+            res[i]= acum_duration, vars
             acum_duration+= duration
             acum_duration%= self.interval_size
-            res[i]= acum_duration, vars
 
         return res
 
@@ -35,7 +35,9 @@ class RythmHMM(HmmAlgorithm):
         self.interval_size= interval_size
         
     
-    def create_score(self, divisions, n_intervals):
+    def create_score(self, score):
+        divisions= score.divisions
+
         one_1= self._create_score(divisions, 1).notes_per_instrument.values()[0]
         one_2= self._create_score(divisions, 1).notes_per_instrument.values()[0]
         three_1= self._create_score(divisions, 3).notes_per_instrument.values()[0]
@@ -75,7 +77,7 @@ class RythmHMM(HmmAlgorithm):
         
 
     def _create_score(self, divisions, n_intervals):
-        initial_probability= dict( ((s,1.0/len(self.hidden_states)) for s in self.hidden_states) )
+        initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
         hmm= self.learner.get_trainned_model(initial_probability)
         self.model= hmm
 
@@ -114,15 +116,18 @@ class RythmHMM(HmmAlgorithm):
         return score
 
     def _next(self, states, robs):
-        try: 
-            obs= robs.next()
-        except:
-            # no tenia transiciones salientes el estado
-            state_index= bisect(states, robs.actual_state)
-            for state in chain(states[state_index+1:], states[:state_index]):
-                if len(self.model.state_transition[state]) > 0:
-                    robs.actual_state= state
-                    obs= robs.next()
+        obs= robs.next()
+        #try: 
+        #    obs= robs.next()
+        #except:
+        #    import ipdb;ipdb.set_trace()
+        #    # no tenia transiciones salientes el estado
+        #    # XXX mover esto a cuando se crea el HMM asi se hace solo una vez
+        #    state_index= bisect(states, robs.actual_state)
+        #    for state in chain(states[state_index+1:], states[:state_index]):
+        #        if len(self.model.state_transition[state]) > 0:
+        #            robs.actual_state= state
+        #            obs= robs.next()
 
         return obs
 

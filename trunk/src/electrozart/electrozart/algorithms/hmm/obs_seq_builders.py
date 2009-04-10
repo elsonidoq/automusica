@@ -18,7 +18,12 @@ class ConditionalMidiObsSeq(object):
             #if volume == -1 or pitch == -1:import ipdb;ipdb.set_trace()
             pitch_var= ConstantRandomVariable(pitch, 'pitch')
             vol_var= ConstantRandomVariable(volume, 'volume')
-            res.append((note.duration, {pitch_var:pitch, vol_var:volume})) 
+            start_var= ConstantRandomVariable(note.start, 'start')
+            duration_var= ConstantRandomVariable(note.duration, 'duration')
+            res.append((note.duration, {pitch_var : pitch,
+                                        vol_var : volume,
+                                        start_var : note.start,
+                                        duration_var: note.duration})) 
 
         return res
 
