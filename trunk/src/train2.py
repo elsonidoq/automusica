@@ -73,7 +73,7 @@ def main():
     # BOCHA DE AJUSTES DE PARSING
     notes= score.get_first_voice()
     notes.sort(key=lambda x:x.start)
-    #notes.pop(0)
+    notes.pop(0)
     for i, n in enumerate(notes):
         if n.is_silence and n.duration > 1600: 
             #import ipdb;ipdb.set_trace()
