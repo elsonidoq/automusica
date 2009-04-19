@@ -142,7 +142,7 @@ class MidiFileParser:
                 data_size = data_sizes.get(hi_nible, 0)
                 common_data = raw_in.nextSlice(data_size)
                 common_type = lo_nible
-                dispatch.system_common(common_type, common_data)
+                dispatch.system_commons(common_type, common_data)
             
 
             # Oh! Then it must be a midi event (channel voice message)
