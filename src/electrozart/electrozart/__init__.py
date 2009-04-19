@@ -1,1 +1,1 @@
-from base import Score, Instrument, Silence, PlayedNote
+from base import Score, Instrument, Silence, PlayedNote, Note, Interval

@@ -4,12 +4,18 @@ from itertools import groupby, izip, islice
 from math import ceil, log
 from midistuff.midi_messages import MidiMessage
 
-class AbstractNote(object):
+class Figure(object):
+    """
+    representa una figura en la partitura que puede tanto tener sonido como no
+    """
     def __init__(self, start, duration):
         self.start= start
         self.duration= duration
     
-class Silence(AbstractNote):
+class Silence(Figure):
+    """
+    el silencio es una figura que no suena
+    """
     @property
     def is_silence(self):
         return True
@@ -20,11 +26,81 @@ class Silence(AbstractNote):
     def __repr__(self):
         return "Silence(start=%s,duration=%s)" % (self.start, self.duration)
     
-class PlayedNote(AbstractNote):
+class Note(object):
+    """
+    representa una nota en si, mas alla de si es tocada o no y cuando
+    """
     _pitches= ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    def __init__(self, pitch, start, duration, volume):
-        AbstractNote.__init__(self, start, duration) 
+    def __init__(self, pitch):
+        if isinstance(pitch, basestring):
+            if pitch not in self._pitches: raise ValueError('si pitch es sting, debe ser alguno de Note._pitches')
+            pitch= self._pitches.index(pitch)
+
         self.pitch= pitch
+
+    def copy(self):
+        return Note(self.pitch)
+
+    def __repr__(self):
+        return "Note('%s')" % self._get_pitch_name() 
+
+    def __eq__(self, other):
+        return self.pitch == other.pitch
+
+    def __hash__(self):
+        return hash(self.pitch)
+
+    def get_canonical_note(self):
+        return Note(self.pitch%12)
+
+    def _get_pitch_name(self):
+        return self._pitches[self.pitch%12] + str(self.pitch/12)
+    
+
+class PitchClass(object):
+    def __init__(self, pitch):
+        self.pitch= pitch%12
+
+    def __eq__(self, other):
+        return self.pitch == other.pitch
+
+    def __hash__(self):
+        return hash(self.pitch)
+
+    def __repr__(self):
+        return "PitchClass(%s)" % self.pitch
+
+class Interval(object):
+    """
+    representa el intervalo entre dos notas
+    """
+    def __init__(self, n1, n2):
+        self.length= n2.pitch - n1.pitch
+
+    def apply(self, n):
+        """
+        aplica el intervalo a `n` y devuelve una nota `m` cuyo intervalo 
+        con `n` es el defido por `self`.
+        """
+        return PitchClass(n.pitch+self.length)
+    
+    def __repr__(self):
+        return 'Interval(%s)' % self.length
+
+    def __eq__(self, other):
+        return self.length == other.length
+
+    def __hash__(self):
+        return hash(self.length)
+
+class PlayedNote(Figure, Note):
+    """
+    es una nota que suena y tiene esta posicionada en un momento en una partitura
+    """
+    
+    def __init__(self, pitch, start, duration, volume):
+        Figure.__init__(self, start, duration) 
+        Note.__init__(self, pitch) 
         self.volume= volume
     
     @property
@@ -37,8 +113,6 @@ class PlayedNote(AbstractNote):
     def __repr__(self):
         return "PlayedNote(pitch=%s, start=%s, duration=%s)" % (self._get_pitch_name(), self.start, self.duration)
 
-    def _get_pitch_name(self):
-        return self._pitches[self.pitch%12] + str(self.pitch/12)
 
 class Instrument(object):
     id_seq= 0

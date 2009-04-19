@@ -1,22 +1,56 @@
 from rythm import RythmHMM
 from lib.hidden_markov_model import RandomObservation
 from lib.random_variable import RandomPicker
-from electrozart import Score, PlayedNote, Silence, Instrument
+from electrozart import Score, PlayedNote, Silence, Instrument, Note, Interval
 
 
-class Context(object):
-    def update(self, state): pass
-    def contextualize(self, random_variables): pass
-
-class HarmonicContext(Context):
+from itertools import groupby
+from collections import defaultdict
+"""
+lo que hace esto es
+1) se arma un diccionario de nota -> distribucion de intervalos
+2) al escuchar un conjunto de notas, se queda con una distribucion de pitchclass compatibles
+3) expande esas pitch classes a las octavas que estan sonando 
+       posiblemente haya que cambiar esto ultimo
+"""
+class HarmonicContext(object):
     def __init__(self, score, interval_size):
-        Context.__init__(self)
         self.score= score
         self.notes= score.get_notes()
         self.last_update= 0
         self.acum_time= 0
         self.interval_size= interval_size
 
+        # available_notes es un diccionario {nota_canonizada:{interval:prob}}
+        available_notes=defaultdict(lambda: defaultdict(lambda :0))
+        notes= [n for n in score.get_notes() if not n.is_silence]
+        notes.sort(key=lambda x:x.start)
+        notes_freq= defaultdict(lambda :0)
+        for i, n1 in enumerate(notes):
+            n1_can= n1.get_canonical_note()
+            notes_freq[n1_can]+=1
+            # recorro todas las notas que suenan con n1
+            for j in xrange(i, len(notes)):
+                n2= notes[j]
+                # quiere decir que n2 no esta sonando con n1
+                if n2.start > n1.start + n1.duration: break
+
+                available_notes[n1_can][Interval(n1, n2)]+= 1
+
+                if j > i: available_notes[n2.get_canonical_note()][Interval(n2,n1)]+=1
+
+        for n0, info in available_notes.iteritems():
+            #import ipdb;ipdb.set_trace()
+            tot= sum(info.itervalues())
+
+            for interval, times in info.iteritems():
+                info[interval]= float(times)/tot
+
+            if abs(sum(info.itervalues())-1) > 0.0001: import ipdb;ipdb.set_trace()
+
+        self.available_notes= available_notes 
+        self.notes= notes
+        self.last_answer= None
     
     def update(self, state):
         this_update= state-self.last_update
@@ -27,35 +61,64 @@ class HarmonicContext(Context):
 
     def contextualize(self, random_variables):
         random_variables= dict(((v.name, v) for v in random_variables))
-        pitch_var= random_variables['pitch']
 
         moment_notes= [n for n in self.notes if n.start <= self.acum_time and n.start+n.duration > self.acum_time and not n.is_silence]
          
-        if len(moment_notes) == 0: return random_variables.values()
+        #XXX hack para meter silencios
+        #if self.acum_time % self.interval_size > (6*self.interval_size)/8:
+        #    import random
+        #    if random.randint(0,1):
+        #        random_variables['pitch']= RandomPicker(name='pitch', values={-1:1})
+        #        return random_variables.values()
+
+        if len(moment_notes) == 0: 
+            if self.last_answer is None: 
+                random_variables['pitch']= RandomPicker(name='pitch', values={-1:1})
+            else:
+                random_variables['pitch']= self.last_answer
+            return random_variables.values()
         #import ipdb;ipdb.set_trace()
-        moment_pitches= set((n.pitch for n in moment_notes))
-        d= dict(((pitch, 1.0/len(moment_pitches)) for pitch in moment_pitches))
-        random_variables['pitch']= RandomPicker(name='pitch', values=d)
-        if sum(d.values()) != 1:import ipdb;ipdb.set_trace()
+        distr= self._build_distr(moment_notes[0])
+        for n in moment_notes[1:]:
+            #if self.acum_time == 3648: import ipdb;ipdb.set_trace()
+            distr2= self._build_distr(n)
+
+            inters= list(set(distr.keys()).intersection(distr2.keys()))
+            inters.sort(key=lambda x:x.pitch%12)
+
+            distr= dict(((k, distr[k]) for k in inters if k in distr))
+            distr2= dict(((k, distr2[k]) for k in inters if k in distr2))
+            s1= sum(distr.itervalues())
+            s2= sum(distr2.itervalues())
+            for interval, notes in groupby(inters, key=lambda x:x.pitch%12):
+                notes= list(notes)
+                for n2 in notes:
+                    distr[n2]= 0.5*(distr.get(n2, 0)/s1 + distr2.get(n2, 0)/s2)
+
+        # assert que todas las notas de moment_notes estan en el resultado
+        canonical_distr= [n.pitch for n in distr.iterkeys()]
+        if not all((n.get_canonical_note().pitch in canonical_distr for n in moment_notes)): import ipdb;ipdb.set_trace()
+
+        pitch_distr= {}
+        min_octave= min(moment_notes, key=lambda x:x.pitch).pitch/12
+        max_octave= max(moment_notes, key=lambda x:x.pitch).pitch/12
+        noctaves= max_octave-min_octave+1
+        for pitch_class, p in distr.iteritems():
+            for octave in xrange(min_octave, max_octave+1):
+                pitch_distr[pitch_class.pitch+12*octave]= p/noctaves
+
+        self.last_answer= RandomPicker(name='pitch', values=pitch_distr)
+        random_variables['pitch']= self.last_answer
+        if abs(sum(pitch_distr.values())-1) > 0.0001:import ipdb;ipdb.set_trace()
         return random_variables.values()
 
+    def _build_distr(self, note):
+        res= defaultdict(lambda :0)
+        for interval, prob in self.available_notes[note.get_canonical_note()].iteritems():
+            res[interval.apply(note)]+= prob
+        return res            
 
-        d= {}
-        s= 0
-        for pitch, prob in pitch_var.values.iteritems():
-            if pitch in moment_notes: 
-                d[pitch]=prob
-                s+=prob
-        if len(d) == 0: import ipdb;ipdb.set_trace() 
-        #if len(d) == 0: return random_variables
-        for pitch, prob in d.iteritems():
-            d[pitch]/=s
-        
-        if len(d) == 0: return random_variables.values()
-        random_variables['pitch']= RandomPicker(name='pitch', values=d)
-        return random_variables.values()
-        
-        
+
 class ContextRandomObservation(RandomObservation):
     def __init__(self, hmm, context):
         RandomObservation.__init__(self, hmm)
@@ -86,6 +149,7 @@ class HarmonyHMM(RythmHMM):
 
         initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
         hmm= self.learner.get_trainned_model(initial_probability)
+        hmm.make_walkable()
         self.model= hmm
 
         #import ipdb;ipdb.set_trace()

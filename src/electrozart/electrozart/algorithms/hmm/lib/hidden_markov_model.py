@@ -21,6 +21,15 @@ class HiddenMarkovModel(object):
     def initial_probability(self, state):
         return self.initial_probability[state]
 
+    def make_walkable(self):
+        """
+        hace universal a los nodos solitarios
+        """
+        prob= 1.0/len(self.state_transition)
+        for s, info in self.state_transition.iteritems():
+            if len(info) > 0: continue
+            self.state_transition[s]= dict(((s, prob) for s in self.state_transition))
+
     def get_initial_state(self):
         """
         devuelve un estado de acuerdo con self.initial_probability
