@@ -42,7 +42,7 @@ class Note(object):
         return Note(self.pitch)
 
     def __repr__(self):
-        return "Note('%s')" % self._get_pitch_name() 
+        return "Note('%s')" % self.get_pitch_name() 
 
     def __eq__(self, other):
         return self.pitch == other.pitch
@@ -53,7 +53,7 @@ class Note(object):
     def get_canonical_note(self):
         return Note(self.pitch%12)
 
-    def _get_pitch_name(self):
+    def get_pitch_name(self):
         return self._pitches[self.pitch%12] + str(self.pitch/12)
     
 
@@ -111,7 +111,7 @@ class PlayedNote(Figure, Note):
         return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
 
     def __repr__(self):
-        return "PlayedNote(pitch=%s, start=%s, duration=%s)" % (self._get_pitch_name(), self.start, self.duration)
+        return "PlayedNote(pitch=%s, start=%s, duration=%s)" % (self.get_pitch_name(), self.start, self.duration)
 
 
 class Instrument(object):
