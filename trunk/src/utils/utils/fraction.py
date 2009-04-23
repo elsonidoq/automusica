@@ -1,4 +1,4 @@
-class Fraccion:
+class Fraction(object):
     """
     representa una fraccion sin perdida de presicion.
     sobrecarga todos los operadores.
@@ -8,13 +8,13 @@ class Fraccion:
         if isinstance(num, int) and isinstance(denom, int):
             self._num= num
             self._denom= denom
-        elif isinstance(num, Fraccion) and isinstance(denom, int):
+        elif isinstance(num, Fraction) and isinstance(denom, int):
             self._num= num.numerador()
             self._denom= num.denominador() * denom
-        elif isinstance(num, int) and isinstance(denom, Fraccion):
+        elif isinstance(num, int) and isinstance(denom, Fraction):
             self._num= num * denom.denominador()
             self._denom= denom.numerador() 
-        elif isinstance(num, Fraccion) and isinstance(denom, Fraccion):
+        elif isinstance(num, Fraction) and isinstance(denom, Fraction):
             self._num= num.numerador() * denom.denominador() 
             self._denom= num.denominador() * denom.numerador()
         else:
@@ -26,6 +26,8 @@ class Fraccion:
     def __coerce__(self, other):
         if isinstance(other, (int, long)):
             return type(other)(self._num/self._denom),other
+        elif isinstance(other, float):
+            return float(self._num)/self._denom,other
         else:
             return None
 
@@ -37,50 +39,54 @@ class Fraccion:
         self._denom= self._denom / el_mcd
         
     def __add__(self, numero):
-        # pre: type(numero) == Fraccion o int
+        # pre: type(numero) == Fraction o int
 
         if isinstance(numero, int):
-            fraccion= Fraccion(numero, 1)
-        elif isinstance(numero, Fraccion):
+            fraccion= Fraction(numero, 1)
+        elif isinstance(numero, Fraction):
             fraccion= numero
         else:
             print "numero es de tipo bizarro"
 
         denom= fraccion._denom * self._denom
         num= fraccion._num * self._denom + self._num * fraccion._denom
-        ret= Fraccion(num, denom)
+        ret= Fraction(num, denom)
         ret._simplificar()
         return ret
     
     def __mul__(self, numero):
-        # pre: type(numero) == Fraccion o int
+        # pre: type(numero) == Fraction o int
         
         if isinstance(numero, int):
-            fraccion= Fraccion(numero, 1)
-        elif isinstance(numero, Fraccion):
+            fraccion= Fraction(numero, 1)
+        elif isinstance(numero, Fraction):
             fraccion= numero
         else:
-            print "numero es de tipo bizarro"
+            raise Exception("numero es de tipo bizarro")
             
         num= self._num * fraccion._num    
         denom= self._denom * fraccion._denom
-        ret= Fraccion(num, denom)
+        ret= Fraction(num, denom)
         ret._simplificar()
         return ret
     
     def __div__(self, numero):
         if isinstance(numero, int):
-            f= Fraccion(1, numero)
-        elif isinstance(numero, Fraccion):
-            f= Fraccion(numero.denominador(), numero.numerador())
+            f= Fraction(1, numero)
+        elif isinstance(numero, Fraction):
+            f= Fraction(numero.denominador(), numero.numerador())
         else:
-            print "ayyyy"
+            raise Exception("ayyyy")
             
         return self * f
 
     def __repr__(self):
         if self._denom == 1: return str(self._num)
         return str(self._num) + "/" + str(self._denom) 
+
+    def __cmp__(self, other):
+        return cmp(coerce(self, float), coerce(other, float))
+        
 
 def mcd(a, b):
     if b == 0:
@@ -91,14 +97,14 @@ def mcd(a, b):
     
 def test_frac():
     # 2/3
-    f1= Fraccion(2,3)
+    f1= Fraction(2,3)
     print "debe dar 2/3 %s" % f1
     # 3/1
-    f2= Fraccion(2,f1)
+    f2= Fraction(2,f1)
     print "debe dar 3/1 %s" % f2
     # 2/9
-    f3= Fraccion(f1,3)
+    f3= Fraction(f1,3)
     print "debe dar 2/9 %s" % f3
     # 27/2
-    f4= Fraccion(f2,f1)
+    f4= Fraction(f2,f1)
     print "debe dar 9/2 %s" % f4

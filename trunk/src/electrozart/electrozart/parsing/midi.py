@@ -111,7 +111,8 @@ class MidiToScore(MidiOutStream):
         instrument= self.actual_instruments[channel]
         instrument.channel= channel
         #import ipdb;ipdb.set_trace()
-        self.score.note_played(instrument, note, starting_abstime, self.abs_time()-starting_abstime, starting_vel) 
+        if self.abs_time()-starting_abstime > 0: 
+            self.score.note_played(instrument, note, starting_abstime, self.abs_time()-starting_abstime, starting_vel) 
 
     #def start_of_track(self, n_track=0):
 

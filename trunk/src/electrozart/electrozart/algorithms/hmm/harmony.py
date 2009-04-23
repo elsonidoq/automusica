@@ -65,11 +65,11 @@ class HarmonicContext(object):
         moment_notes= [n for n in self.notes if n.start <= self.acum_time and n.start+n.duration > self.acum_time and not n.is_silence]
          
         #XXX hack para meter silencios
-        #if self.acum_time % self.interval_size > (6*self.interval_size)/8:
-        #    import random
-        #    if random.randint(0,1):
-        #        random_variables['pitch']= RandomPicker(name='pitch', values={-1:1})
-        #        return random_variables.values()
+        if self.acum_time % self.interval_size > (6*self.interval_size)/8:
+            import random
+            if random.randint(0,1):
+                random_variables['pitch']= RandomPicker(name='pitch', values={-1:1})
+                return random_variables.values()
 
         if len(moment_notes) == 0: 
             if self.last_answer is None: 
@@ -99,10 +99,16 @@ class HarmonicContext(object):
         canonical_distr= [n.pitch for n in distr.iterkeys()]
         if not all((n.get_canonical_note().pitch in canonical_distr for n in moment_notes)): import ipdb;ipdb.set_trace()
 
+        distr= dict(sorted(distr.items(), key= lambda x:x[1], reverse=True)[:5])
+        s= sum(distr.itervalues())
+        for k, v in distr.iteritems():
+            distr[k]= v/s
+
         pitch_distr= {}
         min_octave= min(moment_notes, key=lambda x:x.pitch).pitch/12
         max_octave= max(moment_notes, key=lambda x:x.pitch).pitch/12
         noctaves= max_octave-min_octave+1
+
         for pitch_class, p in distr.iteritems():
             for octave in xrange(min_octave, max_octave+1):
                 pitch_distr[pitch_class.pitch+12*octave]= p/noctaves
