@@ -1,5 +1,6 @@
 
 from util import Interval
+from utils.fraction import Fraction
 from itertools import groupby, izip, islice
 from math import ceil, log
 from midistuff.midi_messages import MidiMessage
@@ -151,6 +152,10 @@ class Score(object):
         self.tempo= None
         self.key_signature= (1,0)
 
+    @property
+    def instruments(self):
+        return self.notes_per_instrument.keys()
+
     def get_first_voice(self):
         allnotes= list(chain(*self.notes_per_instrument.values()))
         allnotes.sort(key=lambda x:x.start)
@@ -160,11 +165,27 @@ class Score(object):
             res.append(n)
         return res
 
-    def get_notes(self):
+    def get_notes(self, relative=False, instrument=None):
         """
-        devuelve una lista de notas, de alguna forma, no importa como
+        params:
+          relative :: bool
+            determina si la duracion de las notas de la lista que se devuelve
+            es una fraccion relativa a self.divisions*4 (son relativas a una redonda)
+          
+          instrument :: Instrument
+            devuelve las notas correspondientes a instrument 
         """
-        return self.notes_per_instrument.itervalues().next()
+        if instrument is None:
+            allnotes= list(chain(*self.notes_per_instrument.values()))
+        else:
+            allnotes= [n for n in self.notes_per_instrument[instrument]]
+        allnotes.sort(key=lambda n:n.start)            
+
+        if relative:
+            for i, n in enumerate(allnotes):
+                allnotes[i]= n.copy() 
+                allnotes[i].duration= Fraction(n.duration, self.divisions*4)
+        return allnotes
 
     def copy(self):
         res= Score(self.divisions, notes_per_instrument=self.notes_per_instrument.copy())
@@ -184,6 +205,7 @@ class Score(object):
         
     def note_played(self, instrument, pitch, start, duration, volume):
         all_notes= self.notes_per_instrument.get(instrument, [])
+        if any((n.pitch == pitch and n.start == start for n in all_notes)): return
         all_notes.append(PlayedNote(pitch, start, duration, volume))
         self.notes_per_instrument[instrument]= all_notes
 

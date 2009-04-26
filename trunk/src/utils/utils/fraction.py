@@ -23,13 +23,8 @@ class Fraction(object):
         self._simplificar()
 
 
-    def __coerce__(self, other):
-        if isinstance(other, (int, long)):
-            return type(other)(self._num/self._denom),other
-        elif isinstance(other, float):
-            return float(self._num)/self._denom,other
-        else:
-            return None
+    def __float__(self):
+        return float(self._num)/self._denom
 
     def numerador(self): return self._num
     def denominador(self): return self._denom
@@ -54,6 +49,12 @@ class Fraction(object):
         ret._simplificar()
         return ret
     
+    def __sub__(self, numero):
+        return self + (numero*(-1))
+    
+    def __hash__(self):
+        return hash((self._num, self._denom))
+
     def __mul__(self, numero):
         # pre: type(numero) == Fraction o int
         
@@ -85,7 +86,7 @@ class Fraction(object):
         return str(self._num) + "/" + str(self._denom) 
 
     def __cmp__(self, other):
-        return cmp(coerce(self, float), coerce(other, float))
+        return cmp(float(self), float(other))
         
 
 def mcd(a, b):
