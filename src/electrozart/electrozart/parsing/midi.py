@@ -14,6 +14,7 @@ class MidiScoreParser(ScoreParser):
         res= hdlr.score
         for instrument, notes in res.notes_per_instrument.iteritems():
             # to_insert :: [(index, note)]
+            notes.sort(key=lambda x:x.start)
             to_insert=[]
             prev_next_iter= izip(notes, islice(notes, 1, len(notes)))
             for i, (prev, next) in enumerate(prev_next_iter):
