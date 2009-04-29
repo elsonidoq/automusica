@@ -14,6 +14,14 @@ class Document(object):
     def norm2(self):
         return sum((w**2 for w in self.wfeatures.itervalues()))
 
+    def dice(self, other):
+        mykeys= set(self.wfeatures.keys())
+        inters= mykeys.intersection(other.wfeatures)
+        return sum((self.wfeatures[k] for k in inters))/sum(self.wfeatures.itervalues())
+
+    def similarity(self, other):
+        return (self.dice(other) + other.dice(self))/2
+
     def cosine(self, other):
         dot= 0
         for feature, wcnt1 in self.wfeatures.iteritems():
@@ -35,14 +43,14 @@ class Document(object):
         
 
 def create_corpus(score):
-    notes= score.get_notes(relative_to='crotchet')
+    notes= score.get_notes(relative_to='quaver')
 
     max_note= max(notes, key=lambda n:n.start+n.duration)
     maxd= max_note.start + max_note.duration
     if maxd.denominador() > 1: maxd= int(maxd+1)
     else: maxd= int(maxd)
 
-    slices= [[n for n in notes if n.start >= i and n.start+n.duration <= i+4] for i in range(maxd)]
+    slices= [[n for n in notes if n.start >= i and n.start+n.duration <= i+2] for i in range(maxd)]
     slices= [s for s in slices if len(s) > 0]
     
     corpus= defaultdict(lambda :0)
@@ -50,11 +58,12 @@ def create_corpus(score):
         features= defaultdict(lambda :0)
         for n in slice:
             if n.is_silence: continue
-            features[n.get_canonical_note()]+= 1
+            features[n.get_canonical_note()]= 1
         
         d= Document(features)
         corpus[d]+=1
 
+    #import ipdb;ipdb.set_trace()
     return corpus.keys()
 
 def calc_tf_idf(corpus, tf, idf):
@@ -70,52 +79,43 @@ def calc_tf_idf(corpus, tf, idf):
         document.wfeatures= {}
         for feature, cnt in document.features.iteritems():
             document.wfeatures[feature]= (tf(cnt)+1)*idf(df[feature], N)
+        assert sum(document.wfeatures.itervalues()) >0            
 
 
 from math import log
 log_tf= log
-log_idf= lambda df, N: log(float(N)/df) 
+bool_tf= lambda x: 0 if x == 0 else 1.0
+log_idf= lambda df, N: log(float(N+1)/df) 
 
 from pygraphviz import AGraph
-def group_corpus(corpus):
+def group_corpus(corpus, tf, idf):
     found= True
     while found:
         found= False
-        for g1, l1 in groups.iteritems():
-            for g2, l2 in groups.iteritems():
-                if g1 == g2: continue
-                for d1 in l1:
-                    if any((d1.cosine(d2) < 1 for d2 in l2)): break
-                else:
+        for i, d1 in enumerate(corpus):
+            for d2 in corpus[i+1:]:
+                if d1.similarity(d2) >= 0.9:
                     found= True
                     break
                 if found: break
             if found: break
         if found:
-            groups.pop(g2)
-            groups[g1]= l1+l2
-                        
-    res= []
-    for l in groups.itervalues():
-        features= defaultdict(lambda :0)
-        for d in l:
-            for feature, cnt in d.features.iteritems():
-                features[feature]+=1
-                        
-        res.append(Document(features))                        
-    return res
+            corpus.pop(i)
+            for feature, cnt in d1.features.iteritems():
+                d2.features[feature]= d2.features.get(feature, 0) + cnt
+            calc_tf_idf(corpus, tf, idf)                        
+
+    return corpus
     
 def build_graph(score):
     corpus= create_corpus(score)
     calc_tf_idf(corpus, log_tf, log_idf)
-    corpus= group_corpus(corpus)
-    corpus= list(set(corpus) )
-    calc_tf_idf(corpus, log_tf, log_idf)
-    
+
+    #corpus= group_corpus(corpus, log_tf, log_idf)
     g= AGraph(strict=False)
     for i, d1 in enumerate(corpus):
         d1_name= str(d1)
-        edges= [(d2, d2.cosine(d1)) for d2 in corpus[i+1:]] 
+        edges= [(d2, d2.similarity(d1)) for d2 in corpus[i+1:]] 
         edges.sort(key=lambda x:x[1], reverse=True)
         edges= edges[:5]
         for d2, weight in edges:
@@ -126,6 +126,29 @@ def build_graph(score):
    
     #import ipdb;ipdb.set_trace()
     return g
+
+from igraph import Graph
+def rank(score):
+    corpus= create_corpus(score)
+    calc_tf_idf(corpus, log_tf, log_idf)
+
+    node2id= dict(((d,i) for (i,d) in enumerate(corpus)))
+    id2node= dict(((i,d) for (i,d) in enumerate(corpus)))
+
+    edges= []
+    weights= []
+    for i, d1 in enumerate(corpus):
+        l= [(node2id[d2], node2id[d1], d2.similarity(d1)) for d2 in corpus[i+1:]]
+        l= [e for e in l if e[-1]>0]
+        edges.extend([(e[0], e[1]) for e in l])
+        weights.extend([e[2] for e in l])
+
+    g= Graph(edges= edges, weights= weights, directed= False)
+    pagerank= list(enumerate(g.pagerank()))
+    pagerank= [(id2node[i], w) for (i,w) in pagerank]
+    pagerank.sort(key=lambda x:x[1])
+
+    for i in pagerank: print i
 
 from sys import argv
 def main():
@@ -143,6 +166,7 @@ def main():
     parser= MidiScoreParser()
     score= parser.parse(infname)
 
+    rank(score)
     graph= build_graph(score)
     graph.draw(outfname, prog='dot') # , args='-Gsize="4096,4096"')
     
