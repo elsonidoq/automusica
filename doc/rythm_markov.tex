@@ -1,14 +1,7 @@
-\documentclass[a4paper,10pt]{article}
-\usepackage[spanish,activeacute]{babel}
-\usepackage{graphicx}
 
 
 
-\title{Markov para la r\'itmica}
-
-\begin{document}
-\maketitle
-\section{El modelo}
+\section{Markov para la ritmica}
 El modelo est\'a basado en cadenas de markov. Al procesar un tema, lo que se hace es primero es estimar la \emph{metrical 
 grid}, y luego elegir un nivel de la \emph{metrical grid} para dividir el tema.
 Una vez elegido el nivel, dado que todos los beats del mismo nivel deben de estar equidistantes, se calcula el 
@@ -17,7 +10,7 @@ Es importante notar que estas partes en las que se divide el tema no necesariame
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=12cm]{images/reggae.png}
+\includegraphics[width=12cm]{rythm_markov/images/reggae.png}
 \label{fig:reggae}
 \end{center}
 \end{figure}
@@ -39,7 +32,7 @@ que tenga transiciones salientes.
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=12cm]{images/grafo_sin_etiquetas.png}
+\includegraphics[width=12cm]{rythm_markov/images/grafo_sin_etiquetas.png}
 \label{fig:grafo_sin_etiquetas}
 \end{center}
 \end{figure}
@@ -50,7 +43,7 @@ suenan, se agregan dos etiquetas a las transiciones \emph{R} para el silencio (R
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=12cm]{images/grafo_con_etiquetas.png}
+\includegraphics[width=12cm]{rythm_markov/images/grafo_con_etiquetas.png}
 \label{fig:grafo_con_etiquetas}
 \end{center}
 \end{figure}
