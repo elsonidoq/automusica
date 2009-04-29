@@ -1,5 +1,0 @@
-#!/bin/sh
-dot -Tpng images_src/grafo_sin_etiquetas.dot > images/grafo_sin_etiquetas.png 
-dot -Tpng images_src/grafo_con_etiquetas.dot > images/grafo_con_etiquetas.png 
-lilypond -b eps -f png -o images/reggae images_src/reggae.ly 
-pdflatex 2009-03-31_markov_ritmico.tex
