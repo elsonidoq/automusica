@@ -30,6 +30,20 @@ class HiddenMarkovModel(object):
             if len(info) > 0: continue
             self.state_transition[s]= dict(((s, prob) for s in self.state_transition))
 
+    def calc_stationationary_distr(self):
+        pi= self.initial_probability.copy()
+        for i in xrange(100):
+            new_pi= {}
+            for col in self.state_transition:
+                r=0
+                for row in self.state_transition: 
+                    r+= self.state_transition[row].get(col, 0)*pi[row]
+
+                new_pi[col]= r                    
+                    
+            pi= new_pi                    
+        return pi            
+
     def get_initial_state(self):
         """
         devuelve un estado de acuerdo con self.initial_probability

@@ -18,14 +18,9 @@ class Silence(Figure):
     el silencio es una figura que no suena
     """
     @property
-    def is_silence(self):
-        return True
-    
-    def copy(self):
-        return Silence(self.start, self.duration) 
-    
-    def __repr__(self):
-        return "Silence(start=%s,duration=%s)" % (self.start, self.duration)
+    def is_silence(self): return True
+    def copy(self): return Silence(self.start, self.duration) 
+    def __repr__(self): return "Silence(start=%s,duration=%s)" % (self.start, self.duration)
     
 class Note(object):
     """
@@ -39,45 +34,29 @@ class Note(object):
 
         self.pitch= pitch
 
-    def copy(self):
-        return Note(self.pitch)
-
-    def __repr__(self):
-        return "Note('%s')" % self.get_pitch_name() 
-
-    def __eq__(self, other):
-        return self.pitch == other.pitch
-
-    def __hash__(self):
-        return hash(self.pitch)
-
-    def get_canonical_note(self):
-        return Note(self.pitch%12)
-
-    def get_pitch_name(self):
-        return self._pitches[self.pitch%12] + str(self.pitch/12)
+    def copy(self): return Note(self.pitch)
+    def __repr__(self): return "Note('%s')" % self.get_pitch_name() 
+    def __eq__(self, other): 
+        try:
+            return self.pitch == other.pitch
+        except:
+            return False
+    def __hash__(self): return hash(self.pitch)
+    def get_canonical_note(self): return Note(self.pitch%12)
+    def get_pitch_name(self): return self._pitches[self.pitch%12] + str(self.pitch/12)
     
 
 class PitchClass(object):
-    def __init__(self, pitch):
-        self.pitch= pitch%12
-
-    def __eq__(self, other):
-        return self.pitch == other.pitch
-
-    def __hash__(self):
-        return hash(self.pitch)
-
-    def __repr__(self):
-        return "PitchClass(%s)" % self.pitch
+    def __init__(self, pitch): self.pitch= pitch%12
+    def __eq__(self, other): return self.pitch == other.pitch
+    def __hash__(self): return hash(self.pitch)
+    def __repr__(self): return "PitchClass(%s)" % self.pitch
 
 class Interval(object):
     """
     representa el intervalo entre dos notas
     """
-    def __init__(self, n1, n2):
-        self.length= n2.pitch - n1.pitch
-
+    def __init__(self, n1, n2): self.length= n2.pitch - n1.pitch
     def apply(self, n):
         """
         aplica el intervalo a `n` y devuelve una nota `m` cuyo intervalo 
@@ -85,14 +64,18 @@ class Interval(object):
         """
         return PitchClass(n.pitch+self.length)
     
-    def __repr__(self):
-        return 'Interval(%s)' % self.length
+    def __repr__(self): return 'Interval(%s)' % self.length
+    def __eq__(self, other): return self.length == other.length
+    def __hash__(self): return hash(self.length)
 
-    def __eq__(self, other):
-        return self.length == other.length
+class Annotation(Figure):
+    def __init__(self, start, duration, text):
+        Figure.__init__(self, start, duration)
+        self.text= text
 
-    def __hash__(self):
-        return hash(self.length)
+    def copy(self): return Annotation(self.start, self.duration, self.text)
+    def __repr__(self): return 'Annotation(%s, %s, "%s")' % (self.start, self.duration, str(self.text))
+    
 
 class PlayedNote(Figure, Note):
     """
@@ -105,12 +88,8 @@ class PlayedNote(Figure, Note):
         self.volume= volume
     
     @property
-    def is_silence(self):
-        return False
-
-    def copy(self):
-        return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
-
+    def is_silence(self): return False
+    def copy(self): return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
     def __repr__(self):
         return "PlayedNote(pitch=%s, start=%s, duration=%s)" % (self.get_pitch_name(), self.start, self.duration)
 
@@ -147,6 +126,14 @@ class Score(object):
         if notes_per_instrument is None:
             self.notes_per_instrument= {}
 
+
+        self.relative_values= \
+                dict(quaver     = self.divisions/2,
+                     crotchet   = self.divisions,
+                     minim      = self.divisions*2,
+                     semi_breve = self.divisions*4)
+
+        self.annotations= []
         self._messages= []
         self.time_signature= (4,4)
         self.tempo= None
@@ -156,36 +143,86 @@ class Score(object):
     def instruments(self):
         return self.notes_per_instrument.keys()
 
-    def get_first_voice(self):
+    def annotate(self, start, duration, text, relative_to=None):
+        """
+        anota la partitura con el texto `text` en el momento `moment`
+        """
+        if relative_to is not None:
+            multiplier= self._get_relative_value(relative_to)
+            start= int(multiplier*start)
+            duration= int(multiplier*duration)
+        self.annotations.append(Annotation(start, duration, text))
+
+    def get_annotations(self, relative_to=None):
+        if relative_to is None: 
+            res= self.annotations[:]
+        else:
+            divisor= self._get_relative_value(relative_to)
+            res= []
+            for i, a in enumerate(self.annotations):
+                a= a.copy()
+                a.start= Fraction(a.start, divisor)
+                a.duration= Fraction(a.duration, divisor)
+                res.append(a)
+
+        silences= []
+        for prev, next in zip(res, res[1:]):
+            if prev.start + prev.duration < next.start:
+                silences.append(Annotation(prev.start+prev.duration, next.start-prev.start-prev.duration, ''))
+        for s in silences:
+            res.append(s)
+        res.sort(key=lambda x:x.start)
+        if res[0].start!=0:
+            res.insert(0, Annotation(0, res[0].start, ''))
+        return res
+
+
+    def get_first_voice(self, skip_silences=False):
         allnotes= list(chain(*self.notes_per_instrument.values()))
         allnotes.sort(key=lambda x:x.start)
         res= []
         for start, ns in groupby(allnotes, key=lambda x:x.start):
             n= max(ns, key=lambda x:-1 if x.is_silence else x.pitch)
             res.append(n)
+        if skip_silences:
+            res= [n for n in res if not n.is_silence]
         return res
 
-    def get_notes(self, relative=False, instrument=None):
+    def get_notes(self, relative_to=None, instrument=None, skip_silences=False):
         """
         params:
-          relative :: bool
-            determina si la duracion de las notas de la lista que se devuelve
-            es una fraccion relativa a self.divisions*4 (son relativas a una redonda)
+          relative_to :: string
+            determina si las duraciones son relativas. 
+            Posibles valores: None, 'quaver' (corchea), 'crotchet' (negra), 'minim'(blanca), 'semi_breve' (redonda) 
           
           instrument :: Instrument
             devuelve las notas correspondientes a instrument 
+          skip_silences :: bool
+            saca los silencios
         """
         if instrument is None:
             allnotes= list(chain(*self.notes_per_instrument.values()))
         else:
             allnotes= [n for n in self.notes_per_instrument[instrument]]
+
+        if skip_silences:
+            allnotes= [n for n in allnotes if not n.is_silence]
+
         allnotes.sort(key=lambda n:n.start)            
 
-        if relative:
+        if relative_to is not None:
+            divisor= self._get_relative_value(relative_to)
             for i, n in enumerate(allnotes):
                 allnotes[i]= n.copy() 
-                allnotes[i].duration= Fraction(n.duration, self.divisions*4)
+                allnotes[i].duration= Fraction(n.duration, divisor)
+                allnotes[i].start= Fraction(n.start, divisor)
         return allnotes
+
+    def _get_relative_value(self, relative_to):
+        if not relative_to in self.relative_values:
+            raise ValueError('relative_to must be in (%s)' % ', '.join((str(k) for k in values)))
+                        
+        return self.relative_values[relative_to]
 
     def copy(self):
         res= Score(self.divisions, notes_per_instrument=self.notes_per_instrument.copy())
@@ -203,7 +240,13 @@ class Score(object):
         else:
             self._messages.append(m)
         
-    def note_played(self, instrument, pitch, start, duration, volume):
+    def note_played(self, instrument, pitch, start, duration, volume, relative_to=None):
+        if relative_to is not None:
+            multiplier= self._get_relative_value(relative_to)
+            start= start*multiplier
+            duration= duration*multiplier
+            
+
         all_notes= self.notes_per_instrument.get(instrument, [])
         if any((n.pitch == pitch and n.start == start for n in all_notes)): return
         all_notes.append(PlayedNote(pitch, start, duration, volume))
@@ -240,7 +283,10 @@ class Score(object):
         """
         no lo uses directamente, usa score.time_signature= (num, denom)
         """
-        assert ceil(log(denom,2))==int(log(denom,2)), '`denom` is not a power of 2'
+        #if ceil(log(denom,2))!=int(log(denom,2)):
+        #    print "Warning: time signature denominator is not a power of 2"
+            #denom= 2**denom
+        #assert ceil(log(denom,2))==int(log(denom,2)), '`denom` is not a power of 2'
         #import ipdb;ipdb.set_trace()
         self._time_num= num
         self._time_denom= denom

@@ -8,7 +8,7 @@ import cPickle as pickle
 from electrozart.algorithms.hmm.rythm import RythmHMM
 from electrozart.algorithms.hmm.harmony import HarmonyHMM
 from electrozart.algorithms.quantize import quantize
-from melisma.meter import meter
+from utils.melisma.meter import meter
 from config import parserclass, modelclass, writerclass
 
 from optparse import OptionParser
@@ -111,7 +111,7 @@ def main():
         interval_size= metrical_grid_interval_size(score, notes, level)
     elif options.partition_algorithm == 'MEASURE':
         interval_size= measure_interval_size(score, options.n_measures)
-    algorithm= HarmonyHMM(interval_size, instrument=patch, channel=channel)
+    algorithm= RythmHMM(interval_size, instrument=patch, channel=channel)
     algorithm.train(score)
     #import ipdb;ipdb.set_trace()
 
@@ -163,7 +163,7 @@ def main():
     if options.print_model: print algorithm.model
     instrument= res.notes_per_instrument.keys()[0]
     #instrument.is_drums= True
-    instrument.patch= 21
+    instrument.patch= 33
     #instrument.patch= 0
     #orig_score= parser.parse('E.mid')
     #orig_score.notes_per_instrument=res.notes_per_instrument

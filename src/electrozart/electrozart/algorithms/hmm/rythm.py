@@ -34,53 +34,18 @@ class RythmHMM(HmmAlgorithm):
         self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         self.interval_size= interval_size
         
-    
-    def create_score(self, score):
-        divisions= score.divisions
-
-        one_1= self._create_score(divisions, 1).notes_per_instrument.values()[0]
-        one_2= self._create_score(divisions, 1).notes_per_instrument.values()[0]
-        three_1= self._create_score(divisions, 3).notes_per_instrument.values()[0]
-        three_2= self._create_score(divisions, 3).notes_per_instrument.values()[0]
-        three_3= self._create_score(divisions, 3).notes_per_instrument.values()[0]
-
-        self._adjust_interval(one_1, 1)
-        self._adjust_interval(one_2, 1)
-        self._adjust_interval(three_1, 3)
-        self._adjust_interval(three_2, 3)
-        self._adjust_interval(three_3, 3)
-
-
-        res= Score(divisions)
-        instrument= Instrument()
-        #instrument.patch= 33
-
-        notes= list(chain(one_1, self.move(three_1, 1),
-                   self.move(one_1, 4), self.move(three_2, 5), 
-                   self.move(one_1, 8), self.move(one_2, 9), self.move(one_1, 10), self.move(one_2, 11), 
-                   self.move(three_3, 12), self.move(one_1, 15)))
-
-        #import ipdb;ipdb.set_trace()
-        res.notes_per_instrument= {instrument: notes} 
-        return res
-
-    def _adjust_interval(self, notes, n_intervals):
-        if notes[-1].start + notes[-1].duration > self.interval_size*n_intervals:
-            notes[-1].duration= self.interval_size*n_intervals - notes[-1].start
-        return notes            
-
-    def move(self, notes, n_intervals):
-        res= [n.copy() for n in notes]
-        for n in res:
-            n.start+= n_intervals*self.interval_size
-        return res            
-        
-
-    def _create_score(self, divisions, n_intervals):
+    def create_model(self):
         initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
         hmm= self.learner.get_trainned_model(initial_probability)
+        hmm.make_walkable()
         self.model= hmm
+        return hmm
+    
+    def create_score(self, context_score):
+        divisions= context_score.divisions
+        n_intervals= max(context_score.get_notes(), key=lambda x:x.start).start/self.interval_size + 1
 
+        hmm= self.create_model()
         robs= RandomObservation(hmm)
         score= Score(divisions)
 
@@ -95,10 +60,8 @@ class RythmHMM(HmmAlgorithm):
         actual_interval= 0
         #import ipdb;ipdb.set_trace()
         while actual_interval<n_intervals:
-            obs= self._next(states, robs)
+            obs= robs.next()
             pitch= obs['pitch']
-            # hay que hacer que el volumen depende del pitch
-            #volume= 100
             volume= obs['volume']
             interval_time= robs.actual_state
 
@@ -115,8 +78,20 @@ class RythmHMM(HmmAlgorithm):
 
         return score
 
+    def _adjust_interval(self, notes, n_intervals):
+        if notes[-1].start + notes[-1].duration > self.interval_size*n_intervals:
+            notes[-1].duration= self.interval_size*n_intervals - notes[-1].start
+        return notes            
+
+    def move(self, notes, n_intervals):
+        res= [n.copy() for n in notes]
+        for n in res:
+            n.start+= n_intervals*self.interval_size
+        return res            
+        
+
+
     def _next(self, states, robs):
-        obs= robs.next()
         #try: 
         #    obs= robs.next()
         #except:
