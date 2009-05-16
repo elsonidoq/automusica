@@ -49,9 +49,6 @@ class Fraction(object):
         ret._simplificar()
         return ret
     
-    def __sub__(self, numero):
-        return self + (numero*(-1))
-    
     def __hash__(self):
         return hash((self._num, self._denom))
 
@@ -81,9 +78,21 @@ class Fraction(object):
             
         return self * f
 
+    def __rdiv__(self, other): return Fraction(self._denom, self._num)*other
+    def __neg__(self): return Fraction(-self._num, self._denom)
+    def __rmul__(self, num): return self.__mul__(num)
+    def __radd__(self, other): return self.__add__(other)
+    def __rsub__(self, other): return -self + other 
+    def __sub__(self, numero): return self + (numero*(-1))
+
+    def __int__(self): return self._num/self._denom
+
     def __repr__(self):
         if self._denom == 1: return str(self._num)
-        return str(self._num) + "/" + str(self._denom) 
+        if self._num < self._denom:
+            return '%s/%s' % (self._num, self._denom) 
+        else:
+            return '%s + %s/%s' % (self._num/self._denom, self._num%self._denom, self._denom)
 
     def __cmp__(self, other):
         return cmp(float(self), float(other))

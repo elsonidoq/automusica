@@ -148,16 +148,20 @@ class ContextRandomObservation(RandomObservation):
 
 class HarmonyHMM(RythmHMM):
     
+    def create_model(self):
+        initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
+        hmm= self.learner.get_trainned_model(initial_probability)
+        hmm.make_walkable()
+        self.model= hmm
+        return hmm
+
+
     def create_score(self, context_score):
         divisions= context_score.divisions
         n_intervals= max(context_score.get_notes(), key=lambda x:x.start).start/self.interval_size + 1
 
 
-        initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
-        hmm= self.learner.get_trainned_model(initial_probability)
-        hmm.make_walkable()
-        self.model= hmm
-
+        hmm= self.create_model()
         #import ipdb;ipdb.set_trace()
         robs= ContextRandomObservation(hmm, HarmonicContext(context_score, self.interval_size))
         #robs= RandomObservation(hmm)
