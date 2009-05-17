@@ -17,6 +17,11 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         self.builder= builder
 
     def __call__(self, score):
+        # XXX
+        i= score.notes_per_instrument.keys()[0]
+        notes= score.get_first_voice()
+        score= Score(score.divisions)
+        score.notes_per_instrument={i:notes}
         res= self.builder(score)
         acum_duration= 0
         for i, (duration, vars) in enumerate(res):
@@ -26,6 +31,7 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
 
         return res
 
+from electrozart.algorithms.applier import ExecutionContext
 from itertools import chain
 from bisect import bisect
 class RythmHMM(HmmAlgorithm):
@@ -34,6 +40,7 @@ class RythmHMM(HmmAlgorithm):
         self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         self.interval_size= interval_size
         
+
     def create_model(self):
         initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
         hmm= self.learner.get_trainned_model(initial_probability)
@@ -41,42 +48,38 @@ class RythmHMM(HmmAlgorithm):
         self.model= hmm
         return hmm
     
-    def create_score(self, context_score):
-        divisions= context_score.divisions
-        n_intervals= max(context_score.get_notes(), key=lambda x:x.start).start/self.interval_size + 1
+    def start_creation(self, context_score):
+        self.execution_context= ExecutionContext()
+        self.execution_context.hmm= self.create_model()
+        robs= RandomObservation(self.execution_context.hmm)
+        self.execution_context.last_interval_time= robs.actual_state
+        self.execution_context.actual_interval= 0
 
-        hmm= self.create_model()
-        robs= RandomObservation(hmm)
-        score= Score(divisions)
+        self.execution_context.robs= robs
 
-        instrument= Instrument()
-        #instrument.patch= 33
+    def next(self, result):
+        # para trabajar mas comodo
+        last_interval_time= self.execution_context.last_interval_time
+        actual_interval= self.execution_context.actual_interval
 
-        states= hmm.states()
-        states.sort()
-        obs= self._next(states, robs)
-        # XXX guarda con las notas que duran mas que interval_size
-        last_interval_time= robs.actual_state
-        actual_interval= 0
-        #import ipdb;ipdb.set_trace()
-        while actual_interval<n_intervals:
-            obs= robs.next()
-            pitch= obs['pitch']
-            volume= obs['volume']
-            interval_time= robs.actual_state
+        obs= self.execution_context.robs.next()
+        interval_time= self.execution_context.robs.actual_state
 
-            start= actual_interval*self.interval_size + last_interval_time
-            if interval_time <= last_interval_time: actual_interval+=1
-            end= actual_interval*self.interval_size + interval_time
+        start= actual_interval*self.interval_size + last_interval_time
+        if interval_time <= last_interval_time: actual_interval+=1
+        end= actual_interval*self.interval_size + interval_time
 
-            # esto pasa cuando tenes un salto congruente a 0 modulo interval_size
-            if end == start: 
-                import ipdb;ipdb.set_trace()
-            last_interval_time= interval_time
-            if pitch == -1 or volume == -1: continue
-            score.note_played(instrument, pitch, start, end-start, volume)
+        # actualizo el execution_context
+        self.execution_context.actual_interval= actual_interval
+        self.execution_context.last_interval_time= interval_time
 
-        return score
+        # esto pasa cuando tenes un salto congruente a 0 modulo interval_size
+        if end == start: import ipdb;ipdb.set_trace()
+        result.start= start
+        result.duration= end-start
+        result.volume= obs['volume']
+        result.pitch= obs['pitch']
+
 
     def _adjust_interval(self, notes, n_intervals):
         if notes[-1].start + notes[-1].duration > self.interval_size*n_intervals:
@@ -91,18 +94,4 @@ class RythmHMM(HmmAlgorithm):
         
 
 
-    def _next(self, states, robs):
-        #try: 
-        #    obs= robs.next()
-        #except:
-        #    import ipdb;ipdb.set_trace()
-        #    # no tenia transiciones salientes el estado
-        #    # XXX mover esto a cuando se crea el HMM asi se hace solo una vez
-        #    state_index= bisect(states, robs.actual_state)
-        #    for state in chain(states[state_index+1:], states[:state_index]):
-        #        if len(self.model.state_transition[state]) > 0:
-        #            robs.actual_state= state
-        #            obs= robs.next()
-
-        return obs
 
