@@ -12,6 +12,9 @@ class Figure(object):
     def __init__(self, start, duration):
         self.start= start
         self.duration= duration
+
+    @property
+    def end(self): return self.start+self.duration
     
 class Silence(Figure):
     """
@@ -41,6 +44,7 @@ class Note(object):
             return self.pitch == other.pitch
         except:
             return False
+    def __cmp__(self, other): return cmp(self.pitch, other.pitch)            
     def __hash__(self): return hash(self.pitch)
     def get_canonical_note(self): return Note(self.pitch%12)
     def get_pitch_name(self): return self._pitches[self.pitch%12] + str(self.pitch/12)

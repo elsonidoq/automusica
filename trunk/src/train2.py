@@ -5,7 +5,11 @@ from md5 import md5
 import cPickle as pickle
 
 
+from electrozart.algorithms.applier import AlgorithmsApplier
+
+from electrozart import Instrument
 from electrozart.algorithms.hmm.rythm import RythmHMM
+from electrozart.algorithms.hmm.silence import SilenceAlg
 from electrozart.algorithms.hmm.harmony import HarmonyHMM
 from electrozart.algorithms.quantize import quantize
 from utils.melisma.meter import meter
@@ -73,35 +77,9 @@ def main():
 
     #########
     # BOCHA DE AJUSTES DE PARSING
-    notes= score.get_first_voice()
-    notes.sort(key=lambda x:x.start)
-    notes.pop(0)
-    for i, n in enumerate(notes):
-        if n.is_silence and n.duration > 1600: 
-            #import ipdb;ipdb.set_trace()
-            break
-    notes= notes[:i]
-    notes= [n for n in notes if n.duration > 0]
-    # saco los silencios y estiro las notas
-    #for prev, next in zip(notes, notes[1:]):
-    #    if next.is_silence: prev.duration+= next.duration
-
-    #notes= [n for n in notes if not n.is_silence]
-
-    print min(notes, key=lambda x:x.duration)
-    new_notes= notes
-    #new_notes= []
-    #for time, time_notes in groupby(notes, key=lambda x:x.start):
-    #    time_notes= list(time_notes)
-    #    new_notes.append(max(time_notes, key=lambda x:x.pitch))
-    #import ipdb;ipdb.set_trace()
-    #deplacement= new_notes[0].start/interval_size
-    #for n in new_notes: n.start-=2048            
-
     instr= score.notes_per_instrument.keys()[0]
     patch= instr.patch
     channel= instr.channel
-    score.notes_per_instrument= {instr:new_notes}
     #########
     #########
     #########
@@ -111,7 +89,11 @@ def main():
         interval_size= metrical_grid_interval_size(score, notes, level)
     elif options.partition_algorithm == 'MEASURE':
         interval_size= measure_interval_size(score, options.n_measures)
-    algorithm= RythmHMM(interval_size, instrument=patch, channel=channel)
+
+    algorithm= AlgorithmsApplier()
+    algorithm.algorithms.append(RythmHMM(interval_size, instrument=patch, channel=channel))
+    algorithm.algorithms.append(HarmonyHMM(instrument=patch, channel=channel))
+    algorithm.algorithms.append(SilenceAlg(interval_size))
     algorithm.train(score)
     #import ipdb;ipdb.set_trace()
 
@@ -126,7 +108,9 @@ def main():
             if n_quarters > 0: return "%s + %s" % (n_quarters, f)
             else: return repr(f)
         return "%s" % n_quarters 
-    res= algorithm.create_score(orig_score)
+
+    notes= algorithm.create_melody(orig_score)
+
     if options.draw_model:
         from pygraphviz import AGraph
         from utils.fraction import Fraction
@@ -144,30 +128,16 @@ def main():
         g.draw(model_fname, prog='dot', args='-Grankdir=LR')                
 
     from collections import defaultdict
-    #durationss= defaultdict(list)
-    #acum_duration= 0
-    #def get_pitch_name(note):
-    #    if note.is_silence:
-    #        return "Silence"
-    #    else:
-    #        notes= ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    #        return notes[note.pitch%12] + str(note.pitch/12)
-
-    #for note in notes:
-    #    durationss[get_node_name(acum_duration)].append(note.pitch)
-    #    acum_duration+= note.duration
-    #    acum_duration%= interval_size
-    #import ipdb;ipdb.set_trace()
 
 
     if options.print_model: print algorithm.model
-    instrument= res.notes_per_instrument.keys()[0]
-    #instrument.is_drums= True
+    instrument= Instrument()
     instrument.patch= 33
-    #instrument.patch= 0
-    #orig_score= parser.parse('E.mid')
-    #orig_score.notes_per_instrument=res.notes_per_instrument
-    orig_score.notes_per_instrument.update(res.notes_per_instrument)
+    #instrument.patch= 21
+    #orig_score.notes_per_instrument= {instrument: notes}
+    for i, ns in orig_score.notes_per_instrument.iteritems():
+        for n in ns: n.volume= 80
+    orig_score.notes_per_instrument[instrument]= notes
     writer= writerclass()
     writer.dump(orig_score, outfname)
     print 'done!'
