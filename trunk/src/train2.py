@@ -133,11 +133,12 @@ def main():
     if options.print_model: print algorithm.model
     instrument= Instrument()
     instrument.patch= 33
-    #instrument.patch= 21
+    instrument.patch= 21
     #orig_score.notes_per_instrument= {instrument: notes}
-    for i, ns in orig_score.notes_per_instrument.iteritems():
-        for n in ns: n.volume= 80
-    orig_score.notes_per_instrument[instrument]= notes
+    #for i, ns in orig_score.notes_per_instrument.iteritems():
+    #    for n in ns: n.volume= 80
+    #orig_score.notes_per_instrument[instrument]= notes
+    orig_score.notes_per_instrument= {instrument:notes}
     writer= writerclass()
     writer.dump(orig_score, outfname)
     print 'done!'
