@@ -1,5 +1,5 @@
 from base import HmmAlgorithm
-from lib.hidden_markov_model import RandomObservation
+from lib.hidden_markov_model import RandomObservation, DPRandomObservation
 from lib.random_variable import RandomPicker
 from electrozart import Score, PlayedNote, Silence, Instrument, Note, Interval
 from obs_seq_builders import ConditionalMidiObsSeq
@@ -45,6 +45,34 @@ class IntervalsObsSeq(ConditionalMidiObsSeq):
         return res            
 
                 
+class ConstraintDPRandomObservation(DPRandomObservation):
+    def next(self, available_states):
+        distr= {}
+        state_counters= self.states_counters[self.actual_state]
+        n= sum(state_counters.itervalues())
+        alpha= self.alpha
+
+        # solo esta parte cambia, donde uso available_states
+        nexts= self.hmm.nexts(self.actual_state)
+        nexts= dict(((k, v) for (k,v) in nexts.iteritems() if k in available_states))
+        s= sum(nexts.itervalues())
+        for k, v in nexts.iteritems():
+            nexts[k]= v/s
+
+        for state, prob in nexts.iteritems():
+            distr[state]= alpha/(alpha+n)*prob + n/(alpha+n)*state_counters[state]
+
+        rnd_picker= RandomPicker("",distr)
+        self.actual_state= rnd_picker.get_value()
+        state_counters[self.actual_state]+=1
+
+        res= {}
+        for random_variable in self.hmm.observators(self.actual_state):
+            res[random_variable]= random_variable.get_value()
+
+        return res
+
+
 class ConstraintRandomObservation(RandomObservation):
     
     def next(self, available_states):
@@ -109,12 +137,13 @@ class HarmonyHMM(HmmAlgorithm):
         self.execution_context= ExecutionContext()
         self.execution_context.context_score= context_score
         self.execution_context.hmm= self.create_model()
-        self.execution_context.robs= ConstraintRandomObservation(self.execution_context.hmm)
+        self.execution_context.robs= ConstraintDPRandomObservation(self.execution_context.hmm, 10)
+        #self.execution_context.robs= ConstraintRandomObservation(self.execution_context.hmm)
         self.execution_context.last_pitch= None
         self.execution_context.last_note= None
 
         notes= context_score.get_notes(skip_silences=True)
-        self.execution_context.octave= int(sum((n.pitch for n in notes))/(len(notes)*12))+1
+        self.execution_context.octave= int(sum((n.pitch for n in notes))/(len(notes)*12)) +1
 
 
     def next(self, result):
