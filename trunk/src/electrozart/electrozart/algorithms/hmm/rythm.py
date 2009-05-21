@@ -1,6 +1,6 @@
 from base import HmmAlgorithm
 from obs_seq_builders import ConditionalMidiObsSeq
-from lib.hidden_markov_model import RandomObservation
+from lib.hidden_markov_model import RandomObservation, DPRandomObservation
 from electrozart import Score, PlayedNote, Silence, Instrument
 
 class ModuloObsSeq(ConditionalMidiObsSeq):
@@ -51,7 +51,8 @@ class RythmHMM(HmmAlgorithm):
     def start_creation(self, context_score):
         self.execution_context= ExecutionContext()
         self.execution_context.hmm= self.create_model()
-        robs= RandomObservation(self.execution_context.hmm)
+        #robs= RandomObservation(self.execution_context.hmm)
+        robs= DPRandomObservation(self.execution_context.hmm, 10)
         self.execution_context.last_interval_time= robs.actual_state
         self.execution_context.actual_interval= 0
 

@@ -1,6 +1,7 @@
 from random import uniform
 from random_variable import *
 from utils import *
+from collections import defaultdict
 
 class HiddenMarkovModel(object):
     """
@@ -316,7 +317,8 @@ class HiddenMarkovModel(object):
         return model
 
 
-
+    
+    
 class RandomObservation(object):
     """
     es un iterador infinito del hmm
@@ -358,6 +360,33 @@ class RandomObservation(object):
             print "*******************"
 
 
+
+class DPRandomObservation(RandomObservation):
+    def __init__(self, hmm, alpha):
+        super(DPRandomObservation, self).__init__(hmm)
+        self.alpha= float(alpha)
+        self.states_counters= defaultdict(lambda: defaultdict(lambda :0)) 
+
+    def next(self):
+        distr= {}
+        state_counters= self.states_counters[self.actual_state]
+        n= sum(state_counters.itervalues())
+        alpha= self.alpha
+
+        nexts= self.hmm.nexts(self.actual_state)
+        for state, prob in nexts.iteritems():
+            distr[state]= alpha/(alpha+n)*prob + n/(alpha+n)*state_counters[state]
+            
+        rnd_picker= RandomPicker("",distr)
+        self.actual_state= rnd_picker.get_value()
+        state_counters[self.actual_state]+=1
+        
+        res= {}
+        for random_variable in self.hmm.observators(self.actual_state):
+            res[random_variable]= random_variable.get_value()
+
+        return res
+        
 class SizedRandomObservation(RandomObservation):
     """
     es como una RandomObservation pero finita
