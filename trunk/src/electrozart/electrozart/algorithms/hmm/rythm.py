@@ -52,19 +52,26 @@ class RythmHMM(HmmAlgorithm):
         self.execution_context= ExecutionContext()
         self.execution_context.hmm= self.create_model()
         #robs= RandomObservation(self.execution_context.hmm)
-        robs= DPRandomObservation(self.execution_context.hmm, 10)
-        self.execution_context.last_interval_time= robs.actual_state
+        #robs= DPRandomObservation(self.execution_context.hmm, 10)
+        self.execution_context.robses= {}
         self.execution_context.actual_interval= 0
 
-        self.execution_context.robs= robs
 
-    def next(self, result):
+    def get_current_robs(self, robsid):
+        robs= self.execution_context.robses.get(robsid)
+        if robs is None:
+            robs= DPRandomObservation(self.execution_context.hmm, 10)
+            self.execution_context.robses[robsid]= robs
+        return robs
+
+    def next(self, input, result):
         # para trabajar mas comodo
-        last_interval_time= self.execution_context.last_interval_time
+        robs= self.get_current_robs(input.rythm_robsid)
+        last_interval_time= robs.actual_state
         actual_interval= self.execution_context.actual_interval
 
-        obs= self.execution_context.robs.next()
-        interval_time= self.execution_context.robs.actual_state
+        obs= robs.next()
+        interval_time= robs.actual_state
 
         start= actual_interval*self.interval_size + last_interval_time
         if interval_time <= last_interval_time: actual_interval+=1
@@ -72,7 +79,6 @@ class RythmHMM(HmmAlgorithm):
 
         # actualizo el execution_context
         self.execution_context.actual_interval= actual_interval
-        self.execution_context.last_interval_time= interval_time
 
         # esto pasa cuando tenes un salto congruente a 0 modulo interval_size
         if end == start: import ipdb;ipdb.set_trace()

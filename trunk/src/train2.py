@@ -8,6 +8,7 @@ import cPickle as pickle
 from electrozart.algorithms.applier import AlgorithmsApplier
 
 from electrozart import Instrument
+from electrozart.algorithms.crp.algorithm import CRPAlgorithm
 from electrozart.algorithms.hmm.rythm import RythmHMM
 from electrozart.algorithms.hmm.silence import SilenceAlg
 from electrozart.algorithms.hmm.harmony import HarmonyHMM
@@ -91,6 +92,8 @@ def main():
         interval_size= measure_interval_size(score, options.n_measures)
 
     algorithm= AlgorithmsApplier()
+    crpalg= CRPAlgorithm(10)
+    algorithm.algorithms.append(crpalg)
     algorithm.algorithms.append(RythmHMM(interval_size, instrument=patch, channel=channel))
     algorithm.algorithms.append(HarmonyHMM(instrument=patch, channel=channel))
     algorithm.algorithms.append(SilenceAlg(interval_size))
@@ -141,6 +144,7 @@ def main():
     #orig_score.notes_per_instrument= {instrument:notes}
     writer= writerclass()
     writer.dump(orig_score, outfname)
+    import pdb;pdb.set_trace()
     print 'done!'
 
 if __name__ == '__main__':

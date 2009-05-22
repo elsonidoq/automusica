@@ -133,11 +133,18 @@ class HarmonyHMM(HmmAlgorithm):
         self.matching_notes= dict(self.matching_notes)
         return hmm
 
+    def get_current_robs(self, robsid):
+        robs= self.execution_context.robses.get(robsid)
+        if robs is None:
+            robs= ConstraintDPRandomObservation(self.execution_context.hmm, 10)
+            self.execution_context.robses[robsid]= robs
+        return robs
+              
     def start_creation(self, context_score):
         self.execution_context= ExecutionContext()
         self.execution_context.context_score= context_score
         self.execution_context.hmm= self.create_model()
-        self.execution_context.robs= ConstraintDPRandomObservation(self.execution_context.hmm, 10)
+        self.execution_context.robses= {}
         #self.execution_context.robs= ConstraintRandomObservation(self.execution_context.hmm)
         self.execution_context.last_pitch= None
         self.execution_context.last_note= None
@@ -146,7 +153,7 @@ class HarmonyHMM(HmmAlgorithm):
         self.execution_context.octave= int(sum((n.pitch for n in notes))/(len(notes)*12)) +1
 
 
-    def next(self, result):
+    def next(self, input, result):
         context_score= self.execution_context.context_score
         now_notes= [n \
                     for n in context_score.get_notes(skip_silences=True) \
@@ -223,7 +230,8 @@ class HarmonyHMM(HmmAlgorithm):
             available_states= [NarmourInterval(i) for i in candidate_intervals]
             #import ipdb;ipdb.set_trace()
 
-            robs= self.execution_context.robs
+            robs= self.get_current_robs(input.harmony_robsid)
+            # XXX hacer que la robs ande bien con esto
             try:
                 robs.next(available_states)
             except:
