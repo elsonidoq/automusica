@@ -1,6 +1,6 @@
 from electrozart.algorithms.hmm.lib.random_variable import RandomPicker
 
-class ChineseRestaurant(object):
+class ChineseRestaurantProcess(object):
     def __init__(self, alpha):
         self.alpha= alpha
         self.customers_per_table= {}

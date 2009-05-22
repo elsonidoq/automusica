@@ -1,6 +1,8 @@
 from electrozart import PlayedNote, Silence
 
 class ExecutionContext(object): pass
+class AcumulatedInput(object): pass
+
 class PartialNote(object): 
     def finish(self):
         if hasattr(self, 'pitch') and self.pitch > 0 and \
@@ -40,8 +42,9 @@ class AlgorithmsApplier(object):
 
     def _next_note(self):
         pn= PartialNote()
+        ai= AcumulatedInput()
         for alg in self.algorithms:
-            alg.next(pn)
+            alg.next(ai, pn)
         return pn.finish()
         
 
