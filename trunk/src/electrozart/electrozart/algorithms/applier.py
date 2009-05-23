@@ -16,6 +16,14 @@ class PartialNote(object):
         else:
             return PlayedNote(self.pitch, self.start, self.duration, self.volume)
 
+class Algorithm(object):
+    def start_creation(self, context_score): pass
+    def next(self, input, result, prev_notes): pass
+    def print_info(self): pass
+    def draw_models(self, prefix): pass
+    def train(self, score): pass
+
+
 class AlgorithmsApplier(object):
     def __init__(self, *algorithms):
         self.algorithms= list(algorithms)
@@ -24,7 +32,7 @@ class AlgorithmsApplier(object):
         for alg in self.algorithms:
             alg.train(score)
 
-    def create_melody(self, context_score):
+    def create_melody(self, context_score, print_info=False):
         for alg in self.algorithms:
             alg.start_creation(context_score)
 
@@ -34,17 +42,20 @@ class AlgorithmsApplier(object):
         last_start= 0
         notes= []
         while last_start < last_score_start:
-            next_note= self._next_note()
+            next_note= self._next_note(notes)
             last_start= next_note.start
             notes.append(next_note)
 
+        if print_info:
+            for alg in self.algorithms:
+                alg.print_info()
         return notes
 
-    def _next_note(self):
+    def _next_note(self, prev_notes):
         pn= PartialNote()
         ai= AcumulatedInput()
         for alg in self.algorithms:
-            alg.next(ai, pn)
+            alg.next(ai, pn, prev_notes=prev_notes)
         return pn.finish()
         
 

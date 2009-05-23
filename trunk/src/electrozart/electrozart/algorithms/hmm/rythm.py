@@ -1,42 +1,15 @@
 from base import HmmAlgorithm
-from obs_seq_builders import ConditionalMidiObsSeq
+from obs_seq_builders import ConditionalMidiObsSeq, ModuloObsSeq
 from lib.hidden_markov_model import RandomObservation, DPRandomObservation
 from electrozart import Score, PlayedNote, Silence, Instrument
 
-class ModuloObsSeq(ConditionalMidiObsSeq):
-    def __init__(self, builder, interval_size):
-        """
-        params:
-          builder :: ConditionalMidiObsSeq
-          interval_size :: int
-            es el tamanho del intervalo por el que va a ser cocientado 
-            la observation sequence
-        """
-        ConditionalMidiObsSeq.__init__(self)
-        self.interval_size= interval_size
-        self.builder= builder
-
-    def __call__(self, score):
-        # XXX
-        i= score.notes_per_instrument.keys()[0]
-        notes= score.get_first_voice()
-        score= Score(score.divisions)
-        score.notes_per_instrument={i:notes}
-        res= self.builder(score)
-        acum_duration= 0
-        for i, (duration, vars) in enumerate(res):
-            res[i]= acum_duration, vars
-            acum_duration+= duration
-            acum_duration%= self.interval_size
-
-        return res
 
 from electrozart.algorithms.applier import ExecutionContext
 from itertools import chain
 from bisect import bisect
 class RythmHMM(HmmAlgorithm):
     def __init__(self, interval_size, *args, **kwargs):
-        HmmAlgorithm.__init__(self, *args, **kwargs)
+        super(RythmHMM, self).__init__(*args, **kwargs)
         self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         self.interval_size= interval_size
         
@@ -51,22 +24,26 @@ class RythmHMM(HmmAlgorithm):
     def start_creation(self, context_score):
         self.execution_context= ExecutionContext()
         self.execution_context.hmm= self.create_model()
-        #robs= RandomObservation(self.execution_context.hmm)
+        self.execution_context.robs= RandomObservation(self.execution_context.hmm)
         #robs= DPRandomObservation(self.execution_context.hmm, 10)
         self.execution_context.robses= {}
         self.execution_context.actual_interval= 0
-
 
     def get_current_robs(self, robsid):
         robs= self.execution_context.robses.get(robsid)
         if robs is None:
             robs= DPRandomObservation(self.execution_context.hmm, 10)
+            for i in xrange(1000):
+                try: robs.next()
+                except: import ipdb;ipdb.set_trace()
+            robs.actual_state= 0                
             self.execution_context.robses[robsid]= robs
         return robs
 
-    def next(self, input, result):
+    def next(self, input, result, **optional):
         # para trabajar mas comodo
         robs= self.get_current_robs(input.rythm_robsid)
+        #robs= self.execution_context.robs
         last_interval_time= robs.actual_state
         actual_interval= self.execution_context.actual_interval
 

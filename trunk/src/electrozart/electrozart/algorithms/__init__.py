@@ -1,3 +1,2 @@
-from base import TrainAlgorithm
-from quantize import quantize
+from applier import Algorithm, AlgorithmsApplier
 
