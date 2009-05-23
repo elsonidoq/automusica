@@ -15,6 +15,32 @@ class Figure(object):
 
     @property
     def end(self): return self.start+self.duration
+
+class Chord(Figure):
+    def __init__(self, start, duration, notes):
+        super(Chord, self).__init__(start, duration)
+        self.notes= [n.get_canonical_note() for n in notes]
+        
+    def __eq__(self, other): 
+        return set(self.notes) == set(other.notes)
+
+    def __hash__(self): return hash(tuple(self.notes))
+    
+    @classmethod
+    def chordlist(cls, score):
+        all_notes= score.get_notes(skip_silences=True)
+        res= []
+        last_start= None
+        for start, ns in groupby(all_notes, key=lambda n:n.start):
+            ns= list(ns)
+            #print len(ns)
+            if len(ns) >= 2: 
+                chord= cls(start, None, ns)
+                if len(res) > 0: res[-1].duration= start - res[-1].start
+                res.append(chord)
+
+        if len(res) > 0: res[-1].duration= all_notes[-1].duration
+        return res
     
 class Silence(Figure):
     """

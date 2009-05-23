@@ -1,4 +1,6 @@
 from lib.random_variable import ConstantRandomVariable
+from electrozart import Score
+
 class ConditionalMidiObsSeq(object):
     def __call__(self, score):
         for instrument, notes in score.notes_per_instrument.iteritems():
@@ -53,6 +55,34 @@ class MidiChannelObsSeq(ConditionalMidiObsSeq):
     def condition(self, instrument):
         return self.channel == instrument.channel
         
+
+class ModuloObsSeq(ConditionalMidiObsSeq):
+    def __init__(self, builder, interval_size):
+        """
+        params:
+          builder :: ConditionalMidiObsSeq
+          interval_size :: int
+            es el tamanho del intervalo por el que va a ser cocientado 
+            la observation sequence
+        """
+        ConditionalMidiObsSeq.__init__(self)
+        self.interval_size= interval_size
+        self.builder= builder
+
+    def __call__(self, score):
+        # XXX
+        i= score.notes_per_instrument.keys()[0]
+        notes= score.get_first_voice()
+        score= Score(score.divisions)
+        score.notes_per_instrument={i:notes}
+        res= self.builder(score)
+        acum_duration= 0
+        for i, (duration, vars) in enumerate(res):
+            res[i]= acum_duration, vars
+            acum_duration+= duration
+            acum_duration%= self.interval_size
+
+        return res
 
 class MidiObsSeqOrder3(object):
     def __init__(self, obsseq):

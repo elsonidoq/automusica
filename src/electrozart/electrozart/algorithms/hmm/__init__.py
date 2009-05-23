@@ -1,1 +1,1 @@
-from base import HmmAlgorithm, StructuredHmmAlgorithm
+from base import HmmAlgorithm

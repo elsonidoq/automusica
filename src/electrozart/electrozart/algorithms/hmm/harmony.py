@@ -1,5 +1,5 @@
 from base import HmmAlgorithm
-from lib.hidden_markov_model import RandomObservation, DPRandomObservation
+from lib.hidden_markov_model import RandomObservation, DPRandomObservation, ConstraintRandomObservation
 from lib.random_variable import RandomPicker
 from electrozart import Score, PlayedNote, Silence, Instrument, Note, Interval
 from obs_seq_builders import ConditionalMidiObsSeq
@@ -46,6 +46,9 @@ class IntervalsObsSeq(ConditionalMidiObsSeq):
 
                 
 class ConstraintDPRandomObservation(DPRandomObservation):
+    def __init__(self, *args, **kwargs):
+        super(ConstraintDPRandomObservation, self).__init__(*args, **kwargs)
+        self.convex_factor= 1
     def next(self, available_states):
         distr= {}
         state_counters= self.states_counters[self.actual_state]
@@ -72,25 +75,6 @@ class ConstraintDPRandomObservation(DPRandomObservation):
 
         return res
 
-
-class ConstraintRandomObservation(RandomObservation):
-    
-    def next(self, available_states):
-        """ devuelve la proxima observacion en forma de 
-        diccionario de random variable en valor """
-        nexts= self.hmm.nexts(self.actual_state)
-        nexts= dict(((k, v) for (k,v) in nexts.iteritems() if k in available_states))
-        s= sum(nexts.itervalues())
-        for k, v in nexts.iteritems():
-            nexts[k]= v/s
-        rnd_picker= RandomPicker("",nexts)
-        self.actual_state= rnd_picker.get_value()
-
-        res= {}
-        for random_variable in self.hmm.observators(self.actual_state):
-            res[random_variable]= random_variable.get_value()
-
-        return res
 
 
 class HarmonyHMM(HmmAlgorithm):
@@ -134,9 +118,12 @@ class HarmonyHMM(HmmAlgorithm):
         return hmm
 
     def get_current_robs(self, robsid):
+        #return self.execution_context.robs
         robs= self.execution_context.robses.get(robsid)
         if robs is None:
             robs= ConstraintDPRandomObservation(self.execution_context.hmm, 10)
+            #for i in xrange(1000):
+            #    robs.next()
             self.execution_context.robses[robsid]= robs
         return robs
               
@@ -145,7 +132,7 @@ class HarmonyHMM(HmmAlgorithm):
         self.execution_context.context_score= context_score
         self.execution_context.hmm= self.create_model()
         self.execution_context.robses= {}
-        #self.execution_context.robs= ConstraintRandomObservation(self.execution_context.hmm)
+        self.execution_context.robs= ConstraintRandomObservation(self.execution_context.hmm)
         self.execution_context.last_pitch= None
         self.execution_context.last_note= None
 
@@ -153,7 +140,7 @@ class HarmonyHMM(HmmAlgorithm):
         self.execution_context.octave= int(sum((n.pitch for n in notes))/(len(notes)*12)) +1
 
 
-    def next(self, input, result):
+    def next(self, input, result, **optional):
         context_score= self.execution_context.context_score
         now_notes= [n \
                     for n in context_score.get_notes(skip_silences=True) \
@@ -215,7 +202,6 @@ class HarmonyHMM(HmmAlgorithm):
             self.execution_context.last_pitch= actual_pitch
             self.execution_context.last_note= Note(actual_pitch.pitch+octave*12)
             result.pitch=actual_pitch.pitch+octave*12 
-            result.volume= 100
         else:
             center_octave= self.execution_context.octave
             candidate_pitches_distr= dict(sorted(candidate_pitches_distr.items(), key=lambda x:x[1], reverse=True)[:5])
@@ -235,6 +221,7 @@ class HarmonyHMM(HmmAlgorithm):
             try:
                 robs.next(available_states)
             except:
+                print "AS"
                 robs.actual_state= choice(available_states)
 
             available_intervals=[ni.interval for ni in available_states if ni == robs.actual_state]

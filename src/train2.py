@@ -6,15 +6,17 @@ import cPickle as pickle
 
 
 from electrozart.algorithms.applier import AlgorithmsApplier
+from electrozart import PlayedNote
+from utils.fraction import Fraction
 
 from electrozart import Instrument
 from electrozart.algorithms.crp.algorithm import CRPAlgorithm
 from electrozart.algorithms.hmm.rythm import RythmHMM
 from electrozart.algorithms.hmm.silence import SilenceAlg
-from electrozart.algorithms.hmm.harmony import HarmonyHMM
+from electrozart.algorithms.hmm.harmony import HarmonyHMM, NarmourInterval
 from electrozart.algorithms.quantize import quantize
 from utils.melisma.meter import meter
-from config import parserclass, modelclass, writerclass
+from config import parserclass, writerclass
 
 from optparse import OptionParser
 def metrical_grid_interval_size(score, notes, level):
@@ -92,15 +94,19 @@ def main():
         interval_size= measure_interval_size(score, options.n_measures)
 
     algorithm= AlgorithmsApplier()
-    crpalg= CRPAlgorithm(10)
-    algorithm.algorithms.append(crpalg)
-    algorithm.algorithms.append(RythmHMM(interval_size, instrument=patch, channel=channel))
-    algorithm.algorithms.append(HarmonyHMM(instrument=patch, channel=channel))
+    rythm_alg= RythmHMM(interval_size, instrument=patch, channel=channel)
+    harmony_alg= HarmonyHMM(instrument=patch, channel=channel)
+    crp_alg= CRPAlgorithm(15, interval_size, rythm_alg, harmony_alg)
+    algorithm.algorithms.append(crp_alg)
+    algorithm.algorithms.append(rythm_alg)
+    algorithm.algorithms.append(harmony_alg)
     algorithm.algorithms.append(SilenceAlg(interval_size))
     algorithm.train(score)
     #import ipdb;ipdb.set_trace()
 
     def get_node_name(ticks):
+        if isinstance(ticks, NarmourInterval):
+            return repr(ticks)
         n_quarters= 0
         while ticks >= score.divisions:
             ticks-= score.divisions
@@ -112,39 +118,43 @@ def main():
             else: return repr(f)
         return "%s" % n_quarters 
 
-    notes= algorithm.create_melody(orig_score)
+    notes= algorithm.create_melody(orig_score, print_info=True)
+    #notes2= algorithm.create_melody(orig_score)
+    #notes3= algorithm.create_melody(orig_score)
 
     if options.draw_model:
-        from pygraphviz import AGraph
-        from utils.fraction import Fraction
-            
-           
-        g= AGraph(directed=True, strict=False)
-        for n1, adj in algorithm.model.state_transition.iteritems():
-            n1_name= get_node_name(n1)
-            for n2, prob in adj.iteritems():
-                n2_name= get_node_name(n2)
-                g.add_edge(n1_name, n2_name)
-                e= g.get_edge(n1_name, n2_name)
-                e.attr['label']= str(prob)[:5]
-        model_fname= options.draw_model
-        g.draw(model_fname, prog='dot', args='-Grankdir=LR')                
-
+        prefix= options.draw_model.replace('.png', '')
+        crp_alg.draw_models(prefix, get_node_name)
+        for name, robs in rythm_alg.execution_context.robses.iteritems():
+            print name
+            model= robs.get_model()
+            for node, prob in model.calc_stationationary_distr().iteritems():
+                print "\t%s->%s" % (node, round(prob,4))
+        rythm_alg.model.draw(options.draw_model.replace('.png','-rythm.png'), get_node_name)
+        harmony_alg.model.draw(options.draw_model.replace('.png','-harmony.png'), get_node_name)
     from collections import defaultdict
 
 
     if options.print_model: print algorithm.model
     instrument= Instrument()
+    instrument2= Instrument()
+    instrument3= Instrument()
+    notes_lala= []
+    for start, part in crp_alg.execution_context.parts:
+        if part ==1:
+            notes_lala.append(PlayedNote(60, start, interval_size/4, 100))
+            break
     instrument.patch= 33
-    instrument.patch= 21
-    #orig_score.notes_per_instrument= {instrument: notes}
-    #for i, ns in orig_score.notes_per_instrument.iteritems():
-    #    for n in ns: n.volume= 80
+    instrument2.patch= 21
+    instrument3.patch= 0
+    orig_score.notes_per_instrument= {instrument: notes}
+    for i, ns in orig_score.notes_per_instrument.iteritems():
+        for n in ns: n.volume= 50
     orig_score.notes_per_instrument[instrument]= notes
-    #orig_score.notes_per_instrument= {instrument:notes}
+    #orig_score.notes_per_instrument[instrument2]= notes_lala
+    #orig_score.notes_per_instrument= {instrument:notes}#, instrument2:notes_lala}
     writer= writerclass()
     writer.dump(orig_score, outfname)
-    import pdb;pdb.set_trace()
     print 'done!'
 
 if __name__ == '__main__':

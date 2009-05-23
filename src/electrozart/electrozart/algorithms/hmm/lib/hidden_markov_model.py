@@ -1,6 +1,9 @@
-from random import uniform
+from random import uniform, random
 from random_variable import *
 from utils import *
+from pygraphviz import AGraph
+from utils.fraction import Fraction
+
 from collections import defaultdict
 
 class HiddenMarkovModel(object):
@@ -21,6 +24,17 @@ class HiddenMarkovModel(object):
 
     def initial_probability(self, state):
         return self.initial_probability[state]
+
+    def draw(self, fname, state2str):
+        g= AGraph(directed=True, strict=False)
+        for n1, adj in self.state_transition.iteritems():
+            n1_name= state2str(n1)
+            for n2, prob in adj.iteritems():
+                n2_name= state2str(n2)
+                g.add_edge(n1_name, n2_name)
+                e= g.get_edge(n1_name, n2_name)
+                e.attr['label']= str(round(prob, 3))[:5]
+        g.draw(fname, prog='dot', args='-Grankdir=LR')
 
     def make_walkable(self):
         """
@@ -360,24 +374,38 @@ class RandomObservation(object):
             print "*******************"
 
 
+class ConstraintRandomObservation(RandomObservation):
+    
+    def next(self, available_states):
+        """ devuelve la proxima observacion en forma de 
+        diccionario de random variable en valor """
+        nexts= self.hmm.nexts(self.actual_state)
+        nexts= dict(((k, v) for (k,v) in nexts.iteritems() if k in available_states))
+        s= sum(nexts.itervalues())
+        for k, v in nexts.iteritems():
+            nexts[k]= v/s
+        rnd_picker= RandomPicker("",nexts)
+        self.actual_state= rnd_picker.get_value()
+
+        res= {}
+        for random_variable in self.hmm.observators(self.actual_state):
+            res[random_variable]= random_variable.get_value()
+
+        return res
 
 class DPRandomObservation(RandomObservation):
     def __init__(self, hmm, alpha):
         super(DPRandomObservation, self).__init__(hmm)
         self.alpha= float(alpha)
         self.states_counters= defaultdict(lambda: defaultdict(lambda :0)) 
+        self.convex_factor= random()
+        print self.convex_factor
 
     def next(self):
-        distr= {}
-        state_counters= self.states_counters[self.actual_state]
-        n= sum(state_counters.itervalues())
-        alpha= self.alpha
-
-        nexts= self.hmm.nexts(self.actual_state)
-        for state, prob in nexts.iteritems():
-            distr[state]= alpha/(alpha+n)*prob + n/(alpha+n)*state_counters[state]
+        distr= self._get_state_distr(self.actual_state)
             
         rnd_picker= RandomPicker("",distr)
+        state_counters= self.states_counters[self.actual_state]
         self.actual_state= rnd_picker.get_value()
         state_counters[self.actual_state]+=1
         
@@ -386,6 +414,32 @@ class DPRandomObservation(RandomObservation):
             res[random_variable]= random_variable.get_value()
 
         return res
+    
+    def _get_state_distr(self, actual_state):
+        distr= {}
+        state_counters= self.states_counters[actual_state]
+        n= sum(state_counters.itervalues())
+        alpha= self.alpha
+
+        nexts= self.hmm.nexts(actual_state)
+        convex_prob= 1.0/len(nexts)
+        for state, prob in nexts.iteritems():
+            if prob < 1:
+                prob= (1-self.convex_factor)*(1-prob) + self.convex_factor*prob
+            distr[state]= alpha/(alpha+n)*prob + state_counters[state]/(alpha+n)
+        return distr
+
+    def get_model(self):
+        res= HiddenMarkovModel()
+        for state in self.hmm.state_transition:
+            distr= self._get_state_distr(state)
+            res.state_transition[state]= distr
+
+        res.state_observation= dict(self.hmm.state_observation.iteritems())
+        res.initial_probability= self.hmm.initial_probability.copy()
+        return res
+
+        
         
 class SizedRandomObservation(RandomObservation):
     """
