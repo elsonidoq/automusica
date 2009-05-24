@@ -13,7 +13,6 @@ from electrozart import Instrument
 from electrozart.algorithms.crp.microparts import MicropartsAlgorithm
 from electrozart.algorithms.crp.harmonic_parts import HarmonicPartsAlgorithm
 from electrozart.algorithms.hmm.rythm import RythmHMM
-from electrozart.algorithms.hmm.hyper_rythm import HyperRythmHMM
 from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext
 from electrozart.algorithms.hmm.harmonic_context import HMMHarmonicContext
 from electrozart.algorithms.hmm.silence import SilenceAlg
@@ -113,23 +112,29 @@ def main():
         interval_size= measure_interval_size(score, options.n_measures)
 
     nintervals= 24
+    max_note= max(score.get_notes(skip_silences=True), key=lambda x:x.start)
+    nintervals= max_note.end/interval_size
+
+    hyper_rythm_alg= RythmHMM(interval_size*4, multipart=False, instrument=patch, channel=channel)
+    harmonic_context_alg= ScoreHarmonicContext(orig_score)
+    harmonic_context_alg= HMMHarmonicContext(3)
+    harmonic_parts_alg= HarmonicPartsAlgorithm(3, nintervals, interval_size)
+
+    chord_algorithm= AlgorithmsApplier()
+    chord_algorithm.algorithms.append(hyper_rythm_alg)
+    chord_algorithm.algorithms.append(harmonic_parts_alg)
+    chord_algorithm.algorithms.append(harmonic_context_alg)
 
     algorithm= AlgorithmsApplier()
     rythm_alg= RythmHMM(interval_size, instrument=patch, channel=channel)
-    hyper_rythm_alg= HyperRythmHMM(interval_size*4, instrument=patch, channel=channel)
     harmony_alg= HarmonyHMM(instrument=patch, channel=channel)
     microparts_alg= MicropartsAlgorithm(15, nintervals, rythm_alg, harmony_alg)
-    harmonic_parts_alg= HarmonicPartsAlgorithm(3, nintervals, interval_size)
-    harmonic_context_alg= HMMHarmonicContext(3)
 
     algorithm.algorithms.append(microparts_alg)
-    algorithm.algorithms.append(hyper_rythm_alg)
+    algorithm.algorithms.append(chord_algorithm)
     algorithm.algorithms.append(rythm_alg)
-    algorithm.algorithms.append(harmonic_parts_alg)
-    #algorithm.algorithms.append(ScoreHarmonicContext(orig_score))
-    algorithm.algorithms.append(harmonic_context_alg)
     algorithm.algorithms.append(harmony_alg)
-    algorithm.algorithms.append(SilenceAlg(interval_size))
+    #algorithm.algorithms.append(SilenceAlg(interval_size))
 
     algorithm.train(score)
     #rythm2_alg.train(score)
@@ -172,8 +177,7 @@ def main():
         duration= 0
         for chord in harmonic_context_alg.ec.chords:
             for note in chord.notes:
-                chords.append(PlayedNote(note.pitch, chord.start, chord.duration, 80))
-                duration = 0
+                chords.append(PlayedNote(note.pitch, chord.start, chord.duration, 65))
         orig_score.notes_per_instrument= {instrument3:chords, instrument:notes}
         #orig_score.notes_per_instrument= {instrument3:chords}
     else:        

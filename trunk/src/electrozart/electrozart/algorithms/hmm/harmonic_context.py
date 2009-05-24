@@ -53,7 +53,7 @@ class HMMHarmonicContext(HmmAlgorithm):
         robs= self.get_current_robs(input.harmonic_part)
         chord= robs.actual_state
         robs.next()
-        now_chord= Chord(input.hyper_start, input.hyper_duration, chord.notes)
+        now_chord= Chord(result.start, result.duration, chord.notes)
         self.ec.chords.append(now_chord)
         input.now_notes= now_chord.notes
         return

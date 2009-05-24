@@ -8,12 +8,12 @@ from electrozart.algorithms.applier import ExecutionContext
 from itertools import chain
 from bisect import bisect
 class RythmHMM(HmmAlgorithm):
-    def __init__(self, interval_size, *args, **kwargs):
+    def __init__(self, interval_size, multipart=True, *args, **kwargs):
         super(RythmHMM, self).__init__(*args, **kwargs)
         self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         self.interval_size= interval_size
+        self.multipart= multipart
         
-
     def create_model(self):
         initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
         hmm= self.learner.get_trainned_model(initial_probability)
@@ -24,12 +24,16 @@ class RythmHMM(HmmAlgorithm):
     def start_creation(self):
         self.ec= ExecutionContext()
         self.ec.hmm= self.create_model()
-        self.ec.robs= RandomObservation(self.ec.hmm)
-        #robs= DPRandomObservation(self.ec.hmm, 10)
-        self.ec.robses= {}
+        if self.multipart:
+            self.ec.robses= {}
+        else:
+            self.ec.robs= RandomObservation(self.ec.hmm)
         self.ec.actual_interval= 0
 
     def get_current_robs(self, robsid):
+        if not self.multipart:
+            return self.ec.robs
+
         robs= self.ec.robses.get(robsid)
         if robs is None:
             robs= DPRandomObservation(self.ec.hmm, 10)
@@ -39,12 +43,9 @@ class RythmHMM(HmmAlgorithm):
             self.ec.robses[robsid]= robs
         return robs
 
-    def get_robsid(self, input):
-        return input.rythm_robsid
-
     def next(self, input, result, **optional):
         # para trabajar mas comodo
-        robs= self.get_current_robs(self.get_robsid(input))
+        robs= self.get_current_robs(input.rythm_robsid)
         #robs= self.ec.robs
         last_interval_time= robs.actual_state
         actual_interval= self.ec.actual_interval
