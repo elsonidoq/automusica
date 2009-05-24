@@ -21,31 +21,33 @@ class RythmHMM(HmmAlgorithm):
         self.model= hmm
         return hmm
     
-    def start_creation(self, context_score):
-        self.execution_context= ExecutionContext()
-        self.execution_context.hmm= self.create_model()
-        self.execution_context.robs= RandomObservation(self.execution_context.hmm)
-        #robs= DPRandomObservation(self.execution_context.hmm, 10)
-        self.execution_context.robses= {}
-        self.execution_context.actual_interval= 0
+    def start_creation(self):
+        self.ec= ExecutionContext()
+        self.ec.hmm= self.create_model()
+        self.ec.robs= RandomObservation(self.ec.hmm)
+        #robs= DPRandomObservation(self.ec.hmm, 10)
+        self.ec.robses= {}
+        self.ec.actual_interval= 0
 
     def get_current_robs(self, robsid):
-        robs= self.execution_context.robses.get(robsid)
+        robs= self.ec.robses.get(robsid)
         if robs is None:
-            robs= DPRandomObservation(self.execution_context.hmm, 10)
+            robs= DPRandomObservation(self.ec.hmm, 10)
             for i in xrange(1000):
-                try: robs.next()
-                except: import ipdb;ipdb.set_trace()
+                robs.next()
             robs.actual_state= 0                
-            self.execution_context.robses[robsid]= robs
+            self.ec.robses[robsid]= robs
         return robs
+
+    def get_robsid(self, input):
+        return input.rythm_robsid
 
     def next(self, input, result, **optional):
         # para trabajar mas comodo
-        robs= self.get_current_robs(input.rythm_robsid)
-        #robs= self.execution_context.robs
+        robs= self.get_current_robs(self.get_robsid(input))
+        #robs= self.ec.robs
         last_interval_time= robs.actual_state
-        actual_interval= self.execution_context.actual_interval
+        actual_interval= self.ec.actual_interval
 
         obs= robs.next()
         interval_time= robs.actual_state
@@ -54,8 +56,8 @@ class RythmHMM(HmmAlgorithm):
         if interval_time <= last_interval_time: actual_interval+=1
         end= actual_interval*self.interval_size + interval_time
 
-        # actualizo el execution_context
-        self.execution_context.actual_interval= actual_interval
+        # actualizo el ec
+        self.ec.actual_interval= actual_interval
 
         # esto pasa cuando tenes un salto congruente a 0 modulo interval_size
         if end == start: import ipdb;ipdb.set_trace()

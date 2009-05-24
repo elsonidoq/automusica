@@ -75,8 +75,6 @@ class ConstraintDPRandomObservation(DPRandomObservation):
 
         return res
 
-
-
 class HarmonyHMM(HmmAlgorithm):
     def __init__(self, *args, **kwargs):
         super(HarmonyHMM, self).__init__(*args, **kwargs)
@@ -118,36 +116,30 @@ class HarmonyHMM(HmmAlgorithm):
         return hmm
 
     def get_current_robs(self, robsid):
-        #return self.execution_context.robs
-        robs= self.execution_context.robses.get(robsid)
+        #return self.ec.robs
+        robs= self.ec.robses.get(robsid)
         if robs is None:
-            robs= ConstraintDPRandomObservation(self.execution_context.hmm, 10)
+            robs= ConstraintDPRandomObservation(self.ec.hmm, 10)
             #for i in xrange(1000):
             #    robs.next()
-            self.execution_context.robses[robsid]= robs
+            self.ec.robses[robsid]= robs
         return robs
               
-    def start_creation(self, context_score):
-        self.execution_context= ExecutionContext()
-        self.execution_context.context_score= context_score
-        self.execution_context.hmm= self.create_model()
-        self.execution_context.robses= {}
-        self.execution_context.robs= ConstraintRandomObservation(self.execution_context.hmm)
-        self.execution_context.last_pitch= None
-        self.execution_context.last_note= None
+    def start_creation(self):
+        self.ec= ExecutionContext()
+        self.ec.hmm= self.create_model()
+        self.ec.robses= {}
+        self.ec.robs= ConstraintRandomObservation(self.ec.hmm)
+        self.ec.last_pitch= None
+        self.ec.last_note= None
 
-        notes= context_score.get_notes(skip_silences=True)
-        self.execution_context.octave= int(sum((n.pitch for n in notes))/(len(notes)*12)) +1
+        #notes= context_score.get_notes(skip_silences=True)
+        #self.ec.octave= int(sum((n.pitch for n in notes))/(len(notes)*12)) +1
+        self.ec.octave= 6
 
 
     def next(self, input, result, **optional):
-        context_score= self.execution_context.context_score
-        now_notes= [n \
-                    for n in context_score.get_notes(skip_silences=True) \
-                    if n.start < result.start+result.duration and \
-                       n.end >=result.start]
-        
-        
+        now_notes= input.now_notes 
         if len(now_notes) == 0: 
             result.pitch= -1
             return
@@ -194,16 +186,16 @@ class HarmonyHMM(HmmAlgorithm):
         max_note= max(now_notes, key=lambda x:x.pitch)
         octave= max_note.pitch/12
 
-        last_pitch= self.execution_context.last_pitch
-        last_note= self.execution_context.last_note
+        last_pitch= self.ec.last_pitch
+        last_note= self.ec.last_note
         if last_pitch is None:
             actual_pitch= RandomPicker(values=candidate_pitches_distr).get_value()
             #actual_pitch= choice(list(candidate_pitches_distr))
-            self.execution_context.last_pitch= actual_pitch
-            self.execution_context.last_note= Note(actual_pitch.pitch+octave*12)
+            self.ec.last_pitch= actual_pitch
+            self.ec.last_note= Note(actual_pitch.pitch+octave*12)
             result.pitch=actual_pitch.pitch+octave*12 
         else:
-            center_octave= self.execution_context.octave
+            center_octave= self.ec.octave
             candidate_pitches_distr= dict(sorted(candidate_pitches_distr.items(), key=lambda x:x[1], reverse=True)[:5])
             candidate_pitches_distr=[p.pitch for p in candidate_pitches_distr]
             candidate_intervals= [Interval(last_note, Note(p)) for p in range((center_octave-1)*12, (center_octave+1)*12) \
@@ -211,7 +203,7 @@ class HarmonyHMM(HmmAlgorithm):
             candidate_intervals= [i for i in candidate_intervals if i.length <= 12]                                      
             #candidate_intervals= [Interval(last_pitch, p) for p in candidate_pitches_distr]
             #candidate_intervals.extend((Interval(p, last_pitch)) for p in candidate_pitches_distr)
-            #candidate_intervals= [i for i in candidate_intervals if abs(self.execution_context.octave - (last_note.pitch + i.length)/12) <= 1]
+            #candidate_intervals= [i for i in candidate_intervals if abs(self.ec.octave - (last_note.pitch + i.length)/12) <= 1]
 
             available_states= [NarmourInterval(i) for i in candidate_intervals]
             #import ipdb;ipdb.set_trace()
@@ -230,8 +222,8 @@ class HarmonyHMM(HmmAlgorithm):
             actual_note= last_note.copy()
             actual_note.pitch+= interval.length
 
-            self.execution_context.last_note= actual_note
-            self.execution_context.last_pitch= actual_note.get_canonical_note()
+            self.ec.last_note= actual_note
+            self.ec.last_pitch= actual_note.get_canonical_note()
 
             result.pitch= actual_note.pitch
             result.volume= 100

@@ -13,8 +13,7 @@ class HmmAlgorithm(Algorithm):
         """
         El instrumento que voy a usar para entrenar la HMM
         """
-        if channel is None and instrument is None:
-            raise Exception('missing channel and instrument')
+        self.obsSeqBuilder=None
         if channel is not None:
             self.obsSeqBuilder= MidiChannelObsSeq(channel)
         if instrument is not None:

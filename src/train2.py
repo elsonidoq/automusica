@@ -10,8 +10,12 @@ from electrozart import PlayedNote
 from utils.fraction import Fraction
 
 from electrozart import Instrument
-from electrozart.algorithms.crp.algorithm import CRPAlgorithm
+from electrozart.algorithms.crp.microparts import MicropartsAlgorithm
+from electrozart.algorithms.crp.harmonic_parts import HarmonicPartsAlgorithm
 from electrozart.algorithms.hmm.rythm import RythmHMM
+from electrozart.algorithms.hmm.hyper_rythm import HyperRythmHMM
+from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext
+from electrozart.algorithms.hmm.harmonic_context import HMMHarmonicContext
 from electrozart.algorithms.hmm.silence import SilenceAlg
 from electrozart.algorithms.hmm.harmony import HarmonyHMM, NarmourInterval
 from electrozart.algorithms.quantize import quantize
@@ -41,6 +45,21 @@ def measure_interval_size(score, nmeasures):
     unit_type= 2**unit_type
     interval_size= nunits*nmeasures*score.divisions/unit_type*4
     return interval_size
+
+
+def get_node_name(score, ticks):
+    if isinstance(ticks, NarmourInterval):
+        return repr(ticks)
+    n_quarters= 0
+    while ticks >= score.divisions:
+        ticks-= score.divisions
+        n_quarters+= 1
+
+    if ticks > 0:
+        f= Fraction(ticks, score.divisions)
+        if n_quarters > 0: return "%s + %s" % (n_quarters, f)
+        else: return repr(f)
+    return "%s" % n_quarters 
 
 def main():
     usage= 'usage: %prog [options] infname outfname'
@@ -93,39 +112,38 @@ def main():
     elif options.partition_algorithm == 'MEASURE':
         interval_size= measure_interval_size(score, options.n_measures)
 
+    nintervals= 24
+
     algorithm= AlgorithmsApplier()
     rythm_alg= RythmHMM(interval_size, instrument=patch, channel=channel)
+    hyper_rythm_alg= HyperRythmHMM(interval_size*4, instrument=patch, channel=channel)
     harmony_alg= HarmonyHMM(instrument=patch, channel=channel)
-    crp_alg= CRPAlgorithm(15, interval_size, rythm_alg, harmony_alg)
-    algorithm.algorithms.append(crp_alg)
+    microparts_alg= MicropartsAlgorithm(15, nintervals, rythm_alg, harmony_alg)
+    harmonic_parts_alg= HarmonicPartsAlgorithm(3, nintervals, interval_size)
+    harmonic_context_alg= HMMHarmonicContext(3)
+
+    algorithm.algorithms.append(microparts_alg)
+    algorithm.algorithms.append(hyper_rythm_alg)
     algorithm.algorithms.append(rythm_alg)
+    algorithm.algorithms.append(harmonic_parts_alg)
+    #algorithm.algorithms.append(ScoreHarmonicContext(orig_score))
+    algorithm.algorithms.append(harmonic_context_alg)
     algorithm.algorithms.append(harmony_alg)
     algorithm.algorithms.append(SilenceAlg(interval_size))
+
     algorithm.train(score)
+    #rythm2_alg.train(score)
+    #hmm= rythm2_alg.create_model()
+    #hmm.draw('pepe.png', lambda n: get_node_name(score, n))
     #import ipdb;ipdb.set_trace()
 
-    def get_node_name(ticks):
-        if isinstance(ticks, NarmourInterval):
-            return repr(ticks)
-        n_quarters= 0
-        while ticks >= score.divisions:
-            ticks-= score.divisions
-            n_quarters+= 1
-
-        if ticks > 0:
-            f= Fraction(ticks, score.divisions)
-            if n_quarters > 0: return "%s + %s" % (n_quarters, f)
-            else: return repr(f)
-        return "%s" % n_quarters 
-
-    notes= algorithm.create_melody(orig_score, print_info=True)
     #notes2= algorithm.create_melody(orig_score)
     #notes3= algorithm.create_melody(orig_score)
 
     if options.draw_model:
         prefix= options.draw_model.replace('.png', '')
-        crp_alg.draw_models(prefix, get_node_name)
-        for name, robs in rythm_alg.execution_context.robses.iteritems():
+        microparts_alg.draw_models(prefix, get_node_name)
+        for name, robs in rythm_alg.ec.robses.iteritems():
             print name
             model= robs.get_model()
             for node, prob in model.calc_stationationary_distr().iteritems():
@@ -136,23 +154,30 @@ def main():
 
 
     if options.print_model: print algorithm.model
+    notes= algorithm.create_melody(orig_score, print_info=True)
+
     instrument= Instrument()
     instrument2= Instrument()
     instrument3= Instrument()
-    notes_lala= []
-    for start, part in crp_alg.execution_context.parts:
-        if part ==1:
-            notes_lala.append(PlayedNote(60, start, interval_size/4, 100))
-            break
     instrument.patch= 33
     instrument2.patch= 21
     instrument3.patch= 0
-    orig_score.notes_per_instrument= {instrument: notes}
+
     for i, ns in orig_score.notes_per_instrument.iteritems():
         for n in ns: n.volume= 50
-    orig_score.notes_per_instrument[instrument]= notes
-    #orig_score.notes_per_instrument[instrument2]= notes_lala
-    #orig_score.notes_per_instrument= {instrument:notes}#, instrument2:notes_lala}
+
+    full_new= True
+    if full_new:
+        chords= []
+        duration= 0
+        for chord in harmonic_context_alg.ec.chords:
+            for note in chord.notes:
+                chords.append(PlayedNote(note.pitch, chord.start, chord.duration, 80))
+                duration = 0
+        orig_score.notes_per_instrument= {instrument3:chords, instrument:notes}
+        #orig_score.notes_per_instrument= {instrument3:chords}
+    else:        
+        orig_score.notes_per_instrument[instrument]= notes
     writer= writerclass()
     writer.dump(orig_score, outfname)
     print 'done!'

@@ -1,9 +1,9 @@
 import random
-class SilenceAlg(object):
+from electrozart.algorithms import Algorithm
+
+class SilenceAlg(Algorithm):
     def __init__(self, interval_size):
         self.interval_size= interval_size
-    def print_info(self): pass
-    def start_creation(self, context_score): pass
     def next(self, input, result, **optional):
         return
         interval_size= self.interval_size
@@ -11,4 +11,3 @@ class SilenceAlg(object):
             random.randint(0,1) == 1:
             result.pitch=-1
 
-    def train(self, score): pass
