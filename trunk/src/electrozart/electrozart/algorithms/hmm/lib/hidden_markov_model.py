@@ -1,10 +1,20 @@
 from random import uniform, random
 from random_variable import *
-from utils import *
 from pygraphviz import AGraph
 from utils.fraction import Fraction
 
 from collections import defaultdict
+
+def tab_string(obj, number_of_tabs= 1):
+    """ le agrega tabs a un string """
+    if not isinstance(obj,str):
+        obj= repr(obj)
+
+    res= ""
+    for line in obj.split("\n"):
+        line= '\t'*number_of_tabs + line
+        res+= line + '\n'
+
 
 class HiddenMarkovModel(object):
     """
@@ -398,8 +408,8 @@ class DPRandomObservation(RandomObservation):
         super(DPRandomObservation, self).__init__(hmm)
         self.alpha= float(alpha)
         self.states_counters= defaultdict(lambda: defaultdict(lambda :0)) 
-        self.convex_factor= random()
-        print self.convex_factor
+        self.convex_factor= 0.5 #random()
+        #print self.convex_factor
 
     def next(self):
         distr= self._get_state_distr(self.actual_state)
@@ -424,9 +434,10 @@ class DPRandomObservation(RandomObservation):
         nexts= self.hmm.nexts(actual_state)
         convex_prob= 1.0/len(nexts)
         for state, prob in nexts.iteritems():
-            if prob < 1:
-                prob= (1-self.convex_factor)*(1-prob) + self.convex_factor*prob
+            #if prob < 1:
+            prob= (1-self.convex_factor)*convex_prob + self.convex_factor*prob
             distr[state]= alpha/(alpha+n)*prob + state_counters[state]/(alpha+n)
+        assert abs(sum(distr.values()) -1) < 0.00001
         return distr
 
     def get_model(self):

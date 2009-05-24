@@ -19,22 +19,23 @@ class Figure(object):
 class Chord(Figure):
     def __init__(self, start, duration, notes):
         super(Chord, self).__init__(start, duration)
-        self.notes= [n.get_canonical_note() for n in notes]
+        self.notes= notes[:]
+        self.canon_notes= [n.get_canonical_note() for n in notes]
         
     def __eq__(self, other): 
-        return set(self.notes) == set(other.notes)
+        return set(self.canon_notes) == set(other.canon_notes)
 
     def __hash__(self): return hash(tuple(self.notes))
     
     @classmethod
-    def chordlist(cls, score):
+    def chordlist(cls, score, min_notes_per_chord=3):
         all_notes= score.get_notes(skip_silences=True)
         res= []
         last_start= None
         for start, ns in groupby(all_notes, key=lambda n:n.start):
             ns= list(ns)
             #print len(ns)
-            if len(ns) >= 2: 
+            if len(ns) >= min_notes_per_chord: 
                 chord= cls(start, None, ns)
                 if len(res) > 0: res[-1].duration= start - res[-1].start
                 res.append(chord)
