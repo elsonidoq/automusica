@@ -1,11 +1,19 @@
 from base import ExecutionContext, AcumulatedInput, PartialNote, Algorithm
-class AlgorithmsApplier(object):
+class AlgorithmsApplier(Algorithm):
     def __init__(self, *algorithms):
         self.algorithms= list(algorithms)
 
     def train(self, score):
         for alg in self.algorithms:
             alg.train(score)
+    
+    def start_creation(self):
+        for alg in self.algorithms:
+            alg.start_creation()
+
+    def next(self, input, result, prev_notes):
+        for alg in self.algorithms:
+            alg.next(input, result, prev_notes=prev_notes)
 
     def create_melody(self, context_score, print_info=False):
         for alg in self.algorithms:

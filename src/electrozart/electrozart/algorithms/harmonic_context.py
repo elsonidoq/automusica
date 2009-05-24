@@ -1,11 +1,22 @@
 from applier import Algorithm
+from itertools import groupby
 from electrozart import Chord
+from base import ExecutionContext
 
 
 class ScoreHarmonicContext(Algorithm):
     def __init__(self, context_score, *args, **kwargs):
         super(ScoreHarmonicContext, self).__init__(*args, **kwargs)
         self.context_score= context_score
+
+    def start_creation(self):
+        self.ec= ExecutionContext()
+        notes= self.context_score.get_notes(skip_silences=True)
+
+        chords= []
+        for n in notes:
+            chords.append(Chord(n.start, n.duration, [n]))
+        self.ec.chords= chords
 
     def next(self, input, result, prev_notes):
         input.now_notes= \
