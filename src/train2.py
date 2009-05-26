@@ -1,16 +1,17 @@
-from sys import argv
 from itertools import groupby
 
+from math import log
 from md5 import md5
 import cPickle as pickle
 
 
-from electrozart.algorithms.applier import AlgorithmsApplier
+from electrozart.algorithms.hmm.lib.hidden_markov_model import DPRandomObservation
+from electrozart.algorithms import AlgorithmsApplier, StackAlgorithm
 from electrozart import PlayedNote
 from utils.fraction import Fraction
 
 from electrozart import Instrument
-from electrozart.algorithms.crp.microparts import MicropartsAlgorithm
+from electrozart.algorithms.crp.phrase import PhraseAlgorithm
 from electrozart.algorithms.crp.harmonic_parts import HarmonicPartsAlgorithm
 from electrozart.algorithms.hmm.rythm import RythmHMM
 from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext
@@ -42,7 +43,7 @@ def metrical_grid_interval_size(score, notes, level):
 def measure_interval_size(score, nmeasures):
     nunits, unit_type= score.time_signature
     unit_type= 2**unit_type
-    interval_size= nunits*nmeasures*score.divisions/unit_type*4
+    interval_size= nunits*nmeasures*score.divisions*4/unit_type
     return interval_size
 
 
@@ -60,7 +61,7 @@ def get_node_name(score, ticks):
         else: return repr(f)
     return "%s" % n_quarters 
 
-def main():
+def main(argv):
     usage= 'usage: %prog [options] infname outfname'
     parser= OptionParser(usage=usage)
     parser.add_option('-p', '--patch', dest='patch', type='int', help='patch to select')
@@ -87,6 +88,14 @@ def main():
     if partition_algorithm not in ('MGRID', 'MEASURE'):
         parser.error('unknown partition algorithm')
 
+    train2(options, args)
+
+
+def train2(options, args):
+    partition_algorithm= options.partition_algorithm
+    patch= options.patch
+    channel= options.channel
+    level= options.level
     infname= args[0]
     outfname= args[1]
 
@@ -111,56 +120,53 @@ def main():
     elif options.partition_algorithm == 'MEASURE':
         interval_size= measure_interval_size(score, options.n_measures)
 
-    nintervals= 24
-    max_note= max(score.get_notes(skip_silences=True), key=lambda x:x.start)
-    nintervals= max_note.end/interval_size
+    nintervals= 16
+    nphrases= 5
+    composition_length= interval_size*nintervals
+    alpha= nphrases/log(nintervals,2)
 
-    hyper_rythm_alg= RythmHMM(interval_size*4, multipart=False, instrument=patch, channel=channel)
-    harmonic_context_alg= ScoreHarmonicContext(orig_score)
-    harmonic_context_alg= HMMHarmonicContext(3)
-    harmonic_parts_alg= HarmonicPartsAlgorithm(3, nintervals, interval_size)
 
-    chord_algorithm= AlgorithmsApplier()
-    chord_algorithm.algorithms.append(hyper_rythm_alg)
-    chord_algorithm.algorithms.append(harmonic_parts_alg)
-    chord_algorithm.algorithms.append(harmonic_context_alg)
+    chords_notes_alg= ScoreHarmonicContext(orig_score)
+    chords_notes_alg= HMMHarmonicContext(3)
+    chords_rythm_alg= RythmHMM(interval_size, multipart=True, instrument=patch, channel=channel)
+    chord_maker= StackAlgorithm(chords_rythm_alg, chords_notes_alg)
 
-    algorithm= AlgorithmsApplier()
-    rythm_alg= RythmHMM(interval_size, instrument=patch, channel=channel)
-    harmony_alg= HarmonyHMM(instrument=patch, channel=channel)
-    microparts_alg= MicropartsAlgorithm(15, nintervals, rythm_alg, harmony_alg)
+    phrase_maker= PhraseAlgorithm(orig_score.divisions, alpha, chord_maker)
 
-    algorithm.algorithms.append(microparts_alg)
-    algorithm.algorithms.append(chord_algorithm)
-    algorithm.algorithms.append(rythm_alg)
-    algorithm.algorithms.append(harmony_alg)
-    #algorithm.algorithms.append(SilenceAlg(interval_size))
+    rythm_alg= RythmHMM(interval_size, multipart=True, instrument=patch, channel=channel)
+    melody_alg= HarmonyHMM(instrument=patch, channel=channel)
+
+    algorithm= StackAlgorithm(phrase_maker, rythm_alg, phrase_maker, melody_alg)
 
     algorithm.train(score)
-    #rythm2_alg.train(score)
-    #hmm= rythm2_alg.create_model()
-    #hmm.draw('pepe.png', lambda n: get_node_name(score, n))
-    #import ipdb;ipdb.set_trace()
-
-    #notes2= algorithm.create_melody(orig_score)
-    #notes3= algorithm.create_melody(orig_score)
-
+    applier= AlgorithmsApplier(algorithm)
+    notes= applier.create_melody(composition_length, print_info=True)
+    
+    #for c1, c2 in zip(phrase_maker.ec.chords, phrase_maker.ec.chords[1:]):
+    #    if c1.end != c2.start: import ipdb;ipdb.set_trace()
     if options.draw_model:
         prefix= options.draw_model.replace('.png', '')
-        microparts_alg.draw_models(prefix, get_node_name)
+        for name, robs in chords_notes_alg.algorithm[-1].ec.robses.iteritems():
+            print name
+            model= robs.get_model()
+            for node, prob in model.calc_stationationary_distr().iteritems():
+                print "\t%s->%s" % (node, round(prob,4))
+            model.draw('%s-harmony-%s.png' % (prefix, name), lambda n:get_node_name(score, n))
         for name, robs in rythm_alg.ec.robses.iteritems():
             print name
             model= robs.get_model()
             for node, prob in model.calc_stationationary_distr().iteritems():
                 print "\t%s->%s" % (node, round(prob,4))
-        rythm_alg.model.draw(options.draw_model.replace('.png','-rythm.png'), get_node_name)
-        harmony_alg.model.draw(options.draw_model.replace('.png','-harmony.png'), get_node_name)
+            model.draw('%s-rythm-%s.png' % (prefix, name), lambda n:get_node_name(score, n))
+        rythm_alg.model.draw(options.draw_model.replace('.png','-rythm.png'), lambda n:get_node_name(score, n))
+        #melody_alg.model.draw(options.draw_model.replace('.png','-harmony.png'),  lambda n:get_node_name(score, n))
     from collections import defaultdict
 
 
     if options.print_model: print algorithm.model
-    notes= algorithm.create_melody(orig_score, print_info=True)
 
+    drums= Instrument(is_drums=True)
+    #drums.patch= int('0x12', 16)
     instrument= Instrument()
     instrument2= Instrument()
     instrument3= Instrument()
@@ -175,19 +181,26 @@ def main():
     if full_new:
         chords= []
         duration= 0
-        for chord in harmonic_context_alg.ec.chords:
+        metro= []
+        for i in xrange(0, nintervals*interval_size, score.divisions):
+            metro.append(PlayedNote(31, i, i+1, 65))
+
+
+        for chord in phrase_maker.ec.chords:
             for note in chord.notes:
-                chords.append(PlayedNote(note.pitch, chord.start, chord.duration, 65))
-        orig_score.notes_per_instrument= {instrument3:chords, instrument:notes}
-        #orig_score.notes_per_instrument= {instrument3:chords}
+                chords.append(PlayedNote(note.pitch, chord.start, chord.duration, chord.volume))
+        orig_score.notes_per_instrument= {instrument3:chords, instrument:notes}#, drums:metro}
+        #orig_score.notes_per_instrument= {drums:metro}
+        #orig_score.notes_per_instrument= {instrument:notes}
+        #orig_score.notes_per_instrument= {instrument3:chords, drums:metro}
     else:        
         orig_score.notes_per_instrument[instrument]= notes
     writer= writerclass()
     writer.dump(orig_score, outfname)
     print 'done!'
-
 if __name__ == '__main__':
-    main()
+    from sys import argv
+    main(argv)
     
 
     

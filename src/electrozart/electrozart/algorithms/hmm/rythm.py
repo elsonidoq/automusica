@@ -1,6 +1,6 @@
 from base import HmmAlgorithm
 from obs_seq_builders import ConditionalMidiObsSeq, ModuloObsSeq
-from lib.hidden_markov_model import RandomObservation, DPRandomObservation
+from lib.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
 from electrozart import Score, PlayedNote, Silence, Instrument
 
 
@@ -27,8 +27,9 @@ class RythmHMM(HmmAlgorithm):
         if self.multipart:
             self.ec.robses= {}
         else:
-            self.ec.robs= RandomObservation(self.ec.hmm)
+            self.ec.robs= FullyRepeatableObservation(self.ec.hmm)
         self.ec.actual_interval= 0
+        self.ec.actual_state= 0
 
     def get_current_robs(self, robsid):
         if not self.multipart:
@@ -36,21 +37,24 @@ class RythmHMM(HmmAlgorithm):
 
         robs= self.ec.robses.get(robsid)
         if robs is None:
-            robs= DPRandomObservation(self.ec.hmm, 10)
-            for i in xrange(1000):
-                robs.next()
-            robs.actual_state= 0                
+            robs= DPRandomObservation(self.ec.hmm, 1)
+            for i in xrange(1000): robs.next()
             self.ec.robses[robsid]= robs
+
+        robs.actual_state= self.ec.actual_state                
         return robs
 
-    def next(self, input, result, **optional):
-        # para trabajar mas comodo
-        robs= self.get_current_robs(input.rythm_robsid)
-        #robs= self.ec.robs
+    def next(self, input, result, prev_notes):
+        if self.multipart:
+            robs= self.get_current_robs(input.phrase_id)
+        else:
+            robs= self.ec.robs
         last_interval_time= robs.actual_state
         actual_interval= self.ec.actual_interval
 
-        obs= robs.next()
+        obs= robs.actual_obs()
+        robs.next()
+        self.ec.actual_state= robs.actual_state
         interval_time= robs.actual_state
 
         start= actual_interval*self.interval_size + last_interval_time
@@ -64,8 +68,8 @@ class RythmHMM(HmmAlgorithm):
         if end == start: import ipdb;ipdb.set_trace()
         result.start= start
         result.duration= end-start
-        result.volume= obs['volume']
-        result.pitch= obs['pitch']
+        #result.volume= obs['volume']
+        #result.pitch= obs['pitch']
 
 
     def _adjust_interval(self, notes, n_intervals):

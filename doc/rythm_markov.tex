@@ -49,6 +49,16 @@ suenan, se agregan dos etiquetas a las transiciones \emph{R} para el silencio (R
 \end{center}
 \end{figure}
 
+Esta \'ultima aproximaci\'on asume que el silencio es un elemento que est\'a a la misma altura que el sonido, cosa que no es asi. 
+De esta forma, el modelo no tendr\'a etiquetas en las aristas y no diferenciar\'a entre silencio y sonido.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=12cm]{rythm_markov/images/grafo_con_silencios_sin_etiquetas.png}
+\label{fig:grafo_con_etiquetas}
+\end{center}
+\end{figure}
+
 Para generar un comp\'as sencillamente se recorre la cadena de markov, hasta que el estado actual sea menor que el proximo estado determinado por la cadena
 
 \subsection{Formalmente}

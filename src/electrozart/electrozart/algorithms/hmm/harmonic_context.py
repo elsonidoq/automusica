@@ -1,4 +1,6 @@
-from lib.hidden_markov_model import RandomObservation, DPRandomObservation
+from lib.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
+from electrozart.algorithms import AcumulatedInput
+from collections import defaultdict
 from lib.random_variable import ConstantRandomVariable
 from electrozart import Chord
 from electrozart.algorithms.applier import ExecutionContext
@@ -36,42 +38,37 @@ class HMMHarmonicContext(HmmAlgorithm):
         self.ec.chords= []
         self.ec.hmm= self.create_model()
         self.ec.robses= {}
-        self.ec.robs= DPRandomObservation(self.ec.hmm, 10)
+
+        robs= DPRandomObservation(self.ec.hmm, 10)
+        robs= FullyRepeatableObservation(self.ec.hmm)
+        for i in range(1000): robs.next()
+
+        self.ec.robs= robs
+        self.ec.robsids= []
+        self.ec.parts= defaultdict(lambda : [[]])
 
     def get_current_robs(self, robsid):
-        #return self.ec.robs
         robs= self.ec.robses.get(robsid)
         if robs is None:
-            robs= DPRandomObservation(self.ec.hmm, 10)
-            for i in xrange(1000): robs.next()
+            robs= FullyRepeatableObservation(self.ec.hmm)
             self.ec.robses[robsid]= robs
+            self.ec.robsids.append(robsid)
+        elif len(self.ec.robsids)>0 and self.ec.robsids[-1] != robsid: 
+            robs.restart()
+            self.ec.robsids.append(robsid)
+            self.ec.parts[robsid].append([])
         return robs
-    #def print_info(self):
-        #for chord in self.chords.values(): print chord.notes
+
+    def print_info(self):
+        print self.ec.robsids
 
     def next(self, input, result, prev_notes):
-        robs= self.get_current_robs(input.harmonic_part)
+        robs= self.get_current_robs(input.phrase_id)
         chord= robs.actual_state
+        result.notes= chord.notes
+        self.ec.parts[input.phrase_id][-1].append(chord)
         robs.next()
-        now_chord= Chord(result.start, result.duration, chord.notes)
-        self.ec.chords.append(now_chord)
-        input.now_notes= now_chord.notes
-        return
 
-        if len(self.ec.chords) == 0:
-            obs= robs.next()
-            chord= robs.actual_state
-            now_chord= Chord(0, obs['duration'], chord.notes)
-            self.ec.chords.append(now_chord)
-        else:
-            if self.ec.chords[-1].end <= result.start: 
-                obs= robs.next()
-                chord= robs.actual_state
-                now_chord= Chord(self.ec.chords[-1].end, obs['duration'], chord.notes)
-                self.ec.chords.append(now_chord)
-            else:
-                now_chord= self.ec.chords[-1]
 
-        input.now_notes= now_chord.notes 
-
+        
     

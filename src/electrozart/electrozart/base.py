@@ -17,11 +17,14 @@ class Figure(object):
     def end(self): return self.start+self.duration
 
 class Chord(Figure):
-    def __init__(self, start, duration, notes):
+    def __init__(self, start, duration, notes, volume=None):
         super(Chord, self).__init__(start, duration)
+        self.volume= volume
         self.notes= notes[:]
         self.canon_notes= [n.get_canonical_note() for n in notes]
         
+    def __repr__(self):
+        return "Chord(%s)" % map(lambda n:n.get_canonical_note(), self.notes)
     def __eq__(self, other): 
         return set(self.canon_notes) == set(other.canon_notes)
 
@@ -42,6 +45,12 @@ class Chord(Figure):
 
         if len(res) > 0: res[-1].duration= all_notes[-1].duration
         return res
+
+    def to_notelist(self):
+        notes= []
+        for note in self.notes:
+            notes.append(PlayedNote(note.pitch, chord.start, chord.duration, self.volume or 100))
+
     
 class Silence(Figure):
     """

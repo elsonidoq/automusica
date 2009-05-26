@@ -358,11 +358,15 @@ class RandomObservation(object):
         rnd_picker= RandomPicker("",nexts)
         self.actual_state= rnd_picker.get_value()
 
+        return self.actual_obs()
+
+    def actual_obs(self):
         res= {}
         for random_variable in self.hmm.observators(self.actual_state):
             res[random_variable]= random_variable.get_value()
 
         return res
+
 
     def __iter__(self):
         while True:
@@ -403,13 +407,14 @@ class ConstraintRandomObservation(RandomObservation):
 
         return res
 
-class DPRandomObservation(RandomObservation):
-    def __init__(self, hmm, alpha):
-        super(DPRandomObservation, self).__init__(hmm)
-        self.alpha= float(alpha)
+    
+class MemoizationObservation(RandomObservation):
+    def __init__(self, hmm):
+        super(MemoizationObservation, self).__init__(hmm)
         self.states_counters= defaultdict(lambda: defaultdict(lambda :0)) 
-        self.convex_factor= 0.5 #random()
-        #print self.convex_factor
+    
+    def _get_state_distr(self, actual_state): 
+        raise NotImplementedError
 
     def next(self):
         distr= self._get_state_distr(self.actual_state)
@@ -424,21 +429,6 @@ class DPRandomObservation(RandomObservation):
             res[random_variable]= random_variable.get_value()
 
         return res
-    
-    def _get_state_distr(self, actual_state):
-        distr= {}
-        state_counters= self.states_counters[actual_state]
-        n= sum(state_counters.itervalues())
-        alpha= self.alpha
-
-        nexts= self.hmm.nexts(actual_state)
-        convex_prob= 1.0/len(nexts)
-        for state, prob in nexts.iteritems():
-            #if prob < 1:
-            prob= (1-self.convex_factor)*convex_prob + self.convex_factor*prob
-            distr[state]= alpha/(alpha+n)*prob + state_counters[state]/(alpha+n)
-        assert abs(sum(distr.values()) -1) < 0.00001
-        return distr
 
     def get_model(self):
         res= HiddenMarkovModel()
@@ -449,6 +439,44 @@ class DPRandomObservation(RandomObservation):
         res.state_observation= dict(self.hmm.state_observation.iteritems())
         res.initial_probability= self.hmm.initial_probability.copy()
         return res
+
+class FullyRepeatableObservation(MemoizationObservation):
+    def __init__(self, hmm):
+        super(FullyRepeatableObservation, self).__init__(hmm)
+        self.cache_state= self.actual_state
+
+    def already_passed(self):
+        return len(self.states_counters[self.actual_state]) == 1
+
+    def _get_state_distr(self, actual_state):
+        state_counters= self.states_counters[actual_state]
+        assert len(state_counters) <= 1
+        if len(state_counters) == 0:
+            return self.hmm.state_transition[actual_state]
+        else:
+            return {state_counters.keys()[0]: 1.0}
+
+    def restart(self):
+        self.actual_state= self.cache_state
+
+class DPRandomObservation(MemoizationObservation):
+    def __init__(self, hmm, alpha):
+        super(DPRandomObservation, self).__init__(hmm)
+        self.alpha= float(alpha)
+
+    def _get_state_distr(self, actual_state):
+        distr= {}
+        state_counters= self.states_counters[actual_state]
+        n= sum(state_counters.itervalues())
+        alpha= self.alpha
+
+        nexts= self.hmm.nexts(actual_state)
+        for state, prob in nexts.iteritems():
+            #if prob < 1:
+            distr[state]= alpha/(alpha+n)*prob + state_counters[state]/(alpha+n)
+        assert abs(sum(distr.values()) -1) < 0.00001
+        return distr
+
 
         
         

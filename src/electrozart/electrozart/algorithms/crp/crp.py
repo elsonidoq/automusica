@@ -21,7 +21,9 @@ class ChineseRestaurantProcess(object):
                 self.customers_per_table[self.ntables]= 1
                 self.ntables+=1
             else:
-                self.customers_per_table[prox_table]+=1
+                now_customers= self.customers_per_table[prox_table]
+                if now_customers < 2: 
+                    self.customers_per_table[prox_table]+=1
 
             return prox_table
 
