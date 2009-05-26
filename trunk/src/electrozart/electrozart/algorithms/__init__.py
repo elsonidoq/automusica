@@ -1,2 +1,3 @@
-from applier import Algorithm, AlgorithmsApplier
+from applier import AlgorithmsApplier
+from base import Algorithm, StackAlgorithm, HierarchicalAlgorithm, AcumulatedInput, ExecutionContext, PartialNote
 

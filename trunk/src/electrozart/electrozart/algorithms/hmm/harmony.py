@@ -115,20 +115,9 @@ class HarmonyHMM(HmmAlgorithm):
         self.matching_notes= dict(self.matching_notes)
         return hmm
 
-    def get_current_robs(self, robsid):
-        #return self.ec.robs
-        robs= self.ec.robses.get(robsid)
-        if robs is None:
-            robs= ConstraintDPRandomObservation(self.ec.hmm, 10)
-            #for i in xrange(1000):
-            #    robs.next()
-            self.ec.robses[robsid]= robs
-        return robs
-              
     def start_creation(self):
         self.ec= ExecutionContext()
         self.ec.hmm= self.create_model()
-        self.ec.robses= {}
         self.ec.robs= ConstraintRandomObservation(self.ec.hmm)
         self.ec.last_pitch= None
         self.ec.last_note= None
@@ -138,7 +127,7 @@ class HarmonyHMM(HmmAlgorithm):
         self.ec.octave= 6
 
 
-    def next(self, input, result, **optional):
+    def next(self, input, result, prev_notes):
         now_notes= input.now_notes 
         if len(now_notes) == 0: 
             result.pitch= -1
@@ -208,7 +197,7 @@ class HarmonyHMM(HmmAlgorithm):
             available_states= [NarmourInterval(i) for i in candidate_intervals]
             #import ipdb;ipdb.set_trace()
 
-            robs= self.get_current_robs(input.harmony_robsid)
+            robs= self.ec.robs
             # XXX hacer que la robs ande bien con esto
             try:
                 robs.next(available_states)
@@ -226,7 +215,7 @@ class HarmonyHMM(HmmAlgorithm):
             self.ec.last_pitch= actual_note.get_canonical_note()
 
             result.pitch= actual_note.pitch
-            result.volume= 100
+            #result.volume= 
 
 
 
