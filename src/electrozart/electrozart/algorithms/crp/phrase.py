@@ -20,6 +20,7 @@ class PhraseAlgorithm(Algorithm):
 
     def start_creation(self):
         if hasattr(self, 'ec'): return
+
         self.ec= ExecutionContext()
         self.chord_maker.start_creation()
         # XXX sacar lo de divisions de TODOS lados, hay que manejar fracciones
