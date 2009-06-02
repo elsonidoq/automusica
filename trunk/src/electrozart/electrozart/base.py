@@ -228,6 +228,14 @@ class Score(object):
             res= [n for n in res if not n.is_silence]
         return res
 
+    @property
+    def instruments(self):
+        return self.notes_per_instrument.keys()
+
+    @property
+    def duration(self):
+        return self.get_notes()[-1].end
+
     def get_notes(self, relative_to=None, instrument=None, skip_silences=False):
         """
         params:

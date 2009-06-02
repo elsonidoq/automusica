@@ -112,7 +112,6 @@ def train2(options, args):
     channel= instr.channel
     #########
     #########
-    #########
 
 
     if options.partition_algorithm == 'MGRID':
@@ -121,22 +120,28 @@ def train2(options, args):
         interval_size= measure_interval_size(score, options.n_measures)
 
     nintervals= 16
+    nintervals= orig_score.get_notes()[-1].end/interval_size
     nphrases= 5
     composition_length= interval_size*nintervals
     alpha= nphrases/log(nintervals,2)
 
-
+    # para que la copie del tema original
     chords_notes_alg= ScoreHarmonicContext(orig_score)
-    chords_notes_alg= HMMHarmonicContext(3)
-    chords_rythm_alg= RythmHMM(interval_size, multipart=True, instrument=patch, channel=channel)
-    chord_maker= StackAlgorithm(chords_rythm_alg, chords_notes_alg)
-
-    phrase_maker= PhraseAlgorithm(orig_score.divisions, alpha, chord_maker)
-
-    rythm_alg= RythmHMM(interval_size, multipart=True, instrument=patch, channel=channel)
+    rythm_alg= RythmHMM(interval_size, multipart=False, instrument=patch, channel=channel)
     melody_alg= HarmonyHMM(instrument=patch, channel=channel)
+    algorithm= StackAlgorithm(rythm_alg, chords_notes_alg, melody_alg)
 
-    algorithm= StackAlgorithm(phrase_maker, rythm_alg, phrase_maker, melody_alg)
+    # para que arme la base
+    #chords_notes_alg= HMMHarmonicContext(3)
+    #chords_rythm_alg= RythmHMM(interval_size, multipart=True, instrument=patch, channel=channel)
+    #chord_maker= StackAlgorithm(chords_rythm_alg, chords_notes_alg)
+
+    #phrase_maker= PhraseAlgorithm(orig_score.divisions, alpha, chord_maker)
+
+    #rythm_alg= RythmHMM(interval_size, multipart=True, instrument=patch, channel=channel)
+    #melody_alg= HarmonyHMM(instrument=patch, channel=channel)
+
+    #algorithm= StackAlgorithm(phrase_maker, rythm_alg, phrase_maker, melody_alg)
 
     algorithm.train(score)
     applier= AlgorithmsApplier(algorithm)
@@ -144,24 +149,6 @@ def train2(options, args):
     
     #for c1, c2 in zip(phrase_maker.ec.chords, phrase_maker.ec.chords[1:]):
     #    if c1.end != c2.start: import ipdb;ipdb.set_trace()
-    if options.draw_model:
-        prefix= options.draw_model.replace('.png', '')
-        for name, robs in chords_notes_alg.algorithm[-1].ec.robses.iteritems():
-            print name
-            model= robs.get_model()
-            for node, prob in model.calc_stationationary_distr().iteritems():
-                print "\t%s->%s" % (node, round(prob,4))
-            model.draw('%s-harmony-%s.png' % (prefix, name), lambda n:get_node_name(score, n))
-        for name, robs in rythm_alg.ec.robses.iteritems():
-            print name
-            model= robs.get_model()
-            for node, prob in model.calc_stationationary_distr().iteritems():
-                print "\t%s->%s" % (node, round(prob,4))
-            model.draw('%s-rythm-%s.png' % (prefix, name), lambda n:get_node_name(score, n))
-        rythm_alg.model.draw(options.draw_model.replace('.png','-rythm.png'), lambda n:get_node_name(score, n))
-        #melody_alg.model.draw(options.draw_model.replace('.png','-harmony.png'),  lambda n:get_node_name(score, n))
-    from collections import defaultdict
-
 
     if options.print_model: print algorithm.model
 
@@ -175,9 +162,9 @@ def train2(options, args):
     instrument3.patch= 0
 
     for i, ns in orig_score.notes_per_instrument.iteritems():
-        for n in ns: n.volume= 50
+        for n in ns: n.volume= 75
 
-    full_new= True
+    full_new= False
     if full_new:
         chords= []
         duration= 0
@@ -192,7 +179,7 @@ def train2(options, args):
         orig_score.notes_per_instrument= {instrument3:chords, instrument:notes}#, drums:metro}
         #orig_score.notes_per_instrument= {drums:metro}
         #orig_score.notes_per_instrument= {instrument:notes}
-        #orig_score.notes_per_instrument= {instrument3:chords, drums:metro}
+        orig_score.notes_per_instrument= {instrument3:chords}#, drums:metro}
     else:        
         orig_score.notes_per_instrument[instrument]= notes
     writer= writerclass()

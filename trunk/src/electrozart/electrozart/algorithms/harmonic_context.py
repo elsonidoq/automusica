@@ -19,6 +19,7 @@ class ScoreHarmonicContext(Algorithm):
         self.ec.chords= chords
 
     def next(self, input, result, prev_notes):
+        result.volume= 100
         input.now_notes= \
                 [n for n in self.context_score.get_notes(skip_silences=True) \
                     if n.start < result.start+result.duration and \
@@ -42,9 +43,11 @@ class ChordHarmonicContext(Algorithm):
 
     def print_info(self):
         for chord in self.chords.values(): print chord.notes
+
     def next(self, input, result, prev_notes):
         chord= self.get_chord(input.chord_id)
         self.chord_pos.append((result.start, chord))
-        input.now_notes= chord.notes 
+        #input.now_notes= chord.notes 
+        result.notes= chord.notes 
 
     
