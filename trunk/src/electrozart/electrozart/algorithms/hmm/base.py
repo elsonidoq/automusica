@@ -4,8 +4,8 @@ from electrozart.algorithms import Algorithm
 from electrozart import Score, PlayedNote, Silence, Instrument
 from midistuff.midi_messages import MidiMessage
 
-from lib.hidden_markov_learner import HiddenMarkovLearner 
-from lib.hidden_markov_model import SizedRandomObservation
+from utils.hmm.hidden_markov_learner import HiddenMarkovLearner 
+from utils.hmm.hidden_markov_model import SizedRandomObservation
 from obs_seq_builders import MidiPatchObsSeq, MidiObsSeqOrder3, MidiChannelObsSeq 
 
 class HmmAlgorithm(Algorithm):

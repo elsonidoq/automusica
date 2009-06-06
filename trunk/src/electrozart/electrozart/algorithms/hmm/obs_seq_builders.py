@@ -1,4 +1,4 @@
-from lib.random_variable import ConstantRandomVariable
+from utils.hmm.random_variable import ConstantRandomVariable
 from electrozart import Score
 
 class ConditionalMidiObsSeq(object):

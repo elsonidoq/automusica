@@ -1,14 +1,15 @@
-from lib.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
-from electrozart.algorithms import AcumulatedInput
 from collections import defaultdict
-from lib.random_variable import ConstantRandomVariable
+from random import choice
+
+from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
+from utils.hmm.random_variable import ConstantRandomVariable
+
+from electrozart.algorithms import AcumulatedInput
 from electrozart import Chord
 from electrozart.algorithms.applier import ExecutionContext
 from base import HmmAlgorithm
 from obs_seq_builders import ConditionalMidiObsSeq
-from utils.functools import check_attribs
 
-from random import choice
 class ChordObsSeq(ConditionalMidiObsSeq):
     def __init__(self, chord_size, *args, **kwargs):
         super(ChordObsSeq, self).__init__(self, *args, **kwargs)

@@ -1,65 +1,47 @@
 from base import ExecutionContext, AcumulatedInput, PartialNote, Algorithm, StackAlgorithm
+from time import time as time_tell
+
 class AlgorithmsApplier(object):
     def __init__(self, *algorithms):
-        if len(algorithms) > 1: self.algorithm= StackAlgorithm(*algorithms)
-        else: self.algorithm= algorithms[0]
-
-        self.algorithm.independent= False
-
+        self.algorithms= algorithms
+    
     def create_melody(self, time, print_info=False):
-        self.algorithm.start_creation()
+        for alg in self.algorithms:
+            alg.start_creation()
 
-        last_start= 0
+        t0= time_tell()
+        last_end= 0
         notes= []
-        while last_start < time:
-            next_note= self.algorithm.next_note(notes)
-            last_start= next_note.start
-            notes.append(next_note)
+        stack= []
+        while last_end < time:
+            #if time_tell() - t0 >= 4: import ipdb;ipdb.set_trace()
+            # voy arriba en el arbol
+            for i in xrange(len(stack)-1, -1, -1):
+                pos, brancher, input= stack[i]
+                if brancher(notes): break
+                stack.pop(i)
+            
+            # voy a partir del ultimo algoritmo de brancheo
+            start_alg= 0
+            input= AcumulatedInput()
+            if len(stack) > 0:
+                start_alg= stack[-1][0] + 1
+                input= stack[-1][-1].copy()
+            input.now= last_end
+            
+            # construyo la nota y meto los branchers que aparezcan
+            result= PartialNote()
+            result.volume= 100
+            for i, alg in enumerate(self.algorithms[start_alg:]):
+                brancher= alg.next(input, result, notes)
+                if brancher is not None:
+                    brancher_input= input.copy()
+                    stack.append((i, brancher, brancher_input))
+
+            note= result.finish()
+            last_end= note.end
+            notes.append(note)
 
         if print_info: self.algorithm.print_info()
         return notes
 
-#class ListAlgorithmApplier(object):
-#    def __init__(self, father, child):
-#        assert hasattr(child, 'next_note')
-
-#        self.father= father
-#        self.child= child
-
-#    def create_melody(self, time):
-#        self.father.start_creation()
-#        self.child.start_creation()
-
-#        last_start= 0
-#        notes= []
-#        while last_start < time:
-#            new_part= self._create_part(time)
-#            notes.extend(new_part)
-#            self.father.next_part()
-
-#        return notes
-
-#    def _create_part(self, time):
-#        part= []
-#        while self.father.is_finished(part):
-#            note= self._next_note(self, part)
-#            part.append(note)
-#        return part            
-
-#    def start_creation(self):
-#        self.father.start_creation()
-#        self.child.start_creation()
-#        self.ec= ExecutionContext()
-#        self.ec.this_part= []
-
-#    def next_note(self, input, result, prev_notes):
-#        if self.father.is_finished(self.ec.this_part):
-#            self.father.next_part(input, result)
-#            self.ec.this_part= []
-
-#        
-
-#        
-
-#        
-#        

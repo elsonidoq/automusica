@@ -27,11 +27,11 @@ class ScoreHarmonicContext(Algorithm):
 
 from random import choice
 class ChordHarmonicContext(Algorithm):
-    def __init__(self, context_score):
-        super(ScoreHarmonicContext, self).__init__(*args, **kwargs)
+    def __init__(self, context_score, *args, **kwargs):
+        super(ChordHarmonicContext, self).__init__(*args, **kwargs)
         self.context_score= context_score
 
-    def start_creation(self, context_score):
+    def start_creation(self):
         self.chordlist= Chord.chordlist(self.context_score, 3)
         self.chords= {}
         self.chord_pos= []
@@ -45,9 +45,27 @@ class ChordHarmonicContext(Algorithm):
         for chord in self.chords.values(): print chord.notes
 
     def next(self, input, result, prev_notes):
-        chord= self.get_chord(input.chord_id)
-        self.chord_pos.append((result.start, chord))
+        for i, chord in enumerate(self.chordlist):
+            if chord.end>input.now: break
+
+        now_chord= chord                
+        if i+1 == len(self.chordlist):
+            prox_chord= now_chord
+        else:
+            prox_chord= self.chordlist[i+1]
+        #chord= self.get_chord(input.chord_id)
+        self.chord_pos.append((input.now, chord))
         #input.now_notes= chord.notes 
-        result.notes= chord.notes 
+
+        input.now_chord= now_chord
+        input.prox_chord= prox_chord
+            
+        # debe devolver true si la proxima nota va dentro de este acorde
+        def brancher(notes):
+            res= notes[-1].end < now_chord.end
+            #if not res : import ipdb;ipdb.set_trace()
+            return res
+
+        return brancher
 
     

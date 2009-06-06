@@ -55,6 +55,7 @@ def main(argv):
 
 
 from electrozart.composers.narmour_markov import NarmourMarkov
+from electrozart.composers.support_notes import SupportNotesComposer
 def train3(options, args):
     partition_algorithm= options.partition_algorithm
     patch= options.patch
@@ -68,6 +69,7 @@ def train3(options, args):
     #score= quantize(score)
     
     composer= NarmourMarkov()
+    composer= SupportNotesComposer()
     composed_score= composer.compose(score)
 
     writer= writerclass()
