@@ -17,6 +17,7 @@ class HarmonicPartsAlgorithm(Algorithm):
         self.ec.last_part= None
 
     def next(self, input, result, prev_notes):
+        raise NotImplementedError()
         if result.start % (self.interval_size*4) == 0:
             input.harmonic_part= self.ec.crp.next()
         else:

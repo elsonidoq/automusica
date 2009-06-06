@@ -1,4 +1,4 @@
-from electrozart.algorithms.hmm.lib.random_variable import RandomPicker
+from utils.hmm.random_variable import RandomPicker
 
 class ChineseRestaurantProcess(object):
     def __init__(self, alpha):

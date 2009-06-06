@@ -1,9 +1,22 @@
 from electrozart import PlayedNote, Silence
+class AttrDict(dict): 
+    def __setattr__(self, attr, val):
+        super(AttrDict, self).__setattr__(attr, val)
+        self[attr]= val
+    def __getattr__(self, attr):
+        return self[attr]
+
+    def copy(self):
+        res= type(self)()
+        for k, v in self.iteritems():
+            res[k]= v
+        return res            
+
 class ExecutionContext(object): pass
-class AcumulatedInput(object): pass
+class AcumulatedInput(AttrDict): pass 
 
 # XXX renombrar a PartiaResult
-class PartialNote(object): 
+class PartialNote(AttrDict): 
     def finish(self):
         if self.pitch > 0 and self.volume > 0:
             is_silence= False
@@ -16,7 +29,9 @@ class PartialNote(object):
             return PlayedNote(self.pitch, self.start, self.duration, self.volume)
 
 class Algorithm(object):
-    def start_creation(self): pass
+    def start_creation(self): 
+        self.ec= ExecutionContext()
+
     def next(self, input, result, prev_notes): pass
     def print_info(self): pass
     def draw_models(self, prefix): pass
@@ -40,6 +55,7 @@ class StackAlgorithm(Algorithm):
         self.independent= False
     
     def start_creation(self):
+        super(StackAlgorithm, self).start_creation()
         for alg in self.algorithms:
             alg.start_creation()
 
@@ -71,45 +87,32 @@ class StackAlgorithm(Algorithm):
         for alg in self.algorithms:
             alg.train(score)
     
-class FatherAgorithm(Algorithm):
-    def is_finished(self, this_part): pass
-    def next_part_input(self, input, result): pass
-
-class HierarchicalAlgorithm(Algorithm):
-    def __init__(self, father, child):
-        self.father= father 
-        self.child= child 
+    
+class ListAlgorithm(Algorithm):
+    """
+    permite wrappear algoritmos que generan listas de cosas a algoritmos
+    que generan de a una
+    """
+    
+    def generate_list(self, input, result, prev_notes): 
+        raise NotImplementedError()
 
     def start_creation(self):
-        self.father.start_creation()
-        self.child.start_creation()
-        self.ec= ExecutionContext()
-        self.ec.this_part= []
-        self.ec.child_input= None
+        super(ListAlgorithm, self).start_creation()
+        self.ec.actual_list= []
 
-    def next_note(self, input, prev_notes):
-        if self.father.is_finished(self.ec.this_part):
-            self.father.next_part(input, result)
-            self.ec.child_input= AcumulatedInput()
-            self.father.next_part_input(input, self.ec.child_input)
-            self.ec.this_part= []
-        else:
-            if self.ec.child_input is None:
-                self.ec.child_input= self.father.generate_part_input(input)
+    def next(self, input, result, prev_notes):
+        if len(self.ec.actual_list) == 0:
+            self.ec.actual_list= self.generate_list(input, result, prev_notes)
 
-        note= self.child.next_note(self.ec.child_input, self.ec.this_part)
-        self.ec.this_part.append(note)
-        return note
+        actual_input, actual_result= self.ec.actual_list.pop(0)
 
-    def print_info(self): 
-        for alg in self.algorithms:
-            alg.print_info()
+        # solamente meto los atributos que no estan 
+        for k, v in actual_input.iteritems():
+            if k in input: continue
+            input[k]= v
 
-    def draw_models(self, prefix): 
-        for alg in self.algorithms:
-            alg.draw_models(prefix)
-
-    def train(self, score):
-        for alg in self.algorithms:
-            alg.train(score)
-    
+        for k, v in actual_result.iteritems():
+            if k in result: continue
+            result[k]= v
+        

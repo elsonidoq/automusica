@@ -1,14 +1,15 @@
-from base import HmmAlgorithm
-from lib.hidden_markov_model import RandomObservation, DPRandomObservation, ConstraintRandomObservation
-from lib.random_variable import RandomPicker
-from electrozart import Score, PlayedNote, Silence, Instrument, Note, Interval
-from obs_seq_builders import ConditionalMidiObsSeq
-from lib.random_variable import ConstantRandomVariable
-from electrozart.algorithms.applier import ExecutionContext
-
 from itertools import groupby
 from collections import defaultdict
 from random import choice
+
+from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, ConstraintRandomObservation
+from utils.hmm.random_variable import RandomPicker, ConstantRandomVariable
+
+from electrozart import Score, PlayedNote, Silence, Instrument, Note, Interval
+from electrozart.algorithms.applier import ExecutionContext
+
+from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq
+from electrozart.algorithms.hmm.base import HmmAlgorithm
 
 class NarmourInterval(object):
     def __init__(self, interval):
@@ -75,14 +76,14 @@ class ConstraintDPRandomObservation(DPRandomObservation):
 
         return res
 
-class HarmonyHMM(HmmAlgorithm):
+class MelodyHMM(HmmAlgorithm):
     def __init__(self, *args, **kwargs):
-        super(HarmonyHMM, self).__init__(*args, **kwargs)
+        super(MelodyHMM, self).__init__(*args, **kwargs)
         self.obsSeqBuilder= IntervalsObsSeq(self.obsSeqBuilder)
         self.matching_notes= defaultdict(lambda: defaultdict(lambda :0))
     
     def train(self, score):
-        super(HarmonyHMM, self).train(score)
+        super(MelodyHMM, self).train(score)
 
         notes= [n for n in score.get_notes(skip_silences=True)]
         notes.sort(key=lambda n:n.start)
@@ -127,45 +128,12 @@ class HarmonyHMM(HmmAlgorithm):
         self.ec.octave= 6
 
 
-    def next(self, input, result, prev_notes):
-        now_notes= input.now_notes 
-        if len(now_notes) == 0: 
-            result.pitch= -1
-            return
+    def next_candidates(self, now_notes):
+        if len(now_notes) == 0: return {}
 
         now_pitches= list(set([n.get_canonical_note() for n in now_notes]))
         candidate_pitches_distr= self.matching_notes[now_pitches[0]].items()
         candidate_pitches_distr.sort()
-        # combinacion convexa, muchas, XXX refactorear
-        for n in now_pitches[1:]:
-            n_distr= self.matching_notes[n].items()
-            n_distr.sort()
-            
-            new_distr= []
-            i=0 
-            j=0
-            while i<len(candidate_pitches_distr) or j < len(n_distr):
-                if i<len(candidate_pitches_distr) and j < len(n_distr):
-                    note1, prob1= candidate_pitches_distr[i]
-                    note2, prob2= n_distr[j]
-                    if note1 == note2:
-                        new_distr.append((note1, (prob1+prob2)/2))
-                        i+=1
-                        j+=1
-                    elif note1 > note2:
-                        new_distr.append((note2, prob2/2))
-                        j+=1
-                    else:
-                        new_distr.append((note1, prob1/2))
-                        i+=1
-                elif i < len(candidate_pitches_distr):
-                    note1, prob1= candidate_pitches_distr[i]
-                    new_distr.append((note1, prob1/2))
-                    i+=1
-                else:
-                    note2, prob2= n_distr[j]
-                    new_distr.append((note2, prob2/2))
-                    j+=1
 
         if abs(sum(i[1] for i in candidate_pitches_distr) -1) > 0.0001:import ipdb;ipdb.set_trace()
         if len(candidate_pitches_distr) == 0: import ipdb;ipdb.set_trace()            
@@ -178,11 +146,10 @@ class HarmonyHMM(HmmAlgorithm):
         last_pitch= self.ec.last_pitch
         last_note= self.ec.last_note
         if last_pitch is None:
-            actual_pitch= RandomPicker(values=candidate_pitches_distr).get_value()
-            #actual_pitch= choice(list(candidate_pitches_distr))
-            self.ec.last_pitch= actual_pitch
-            self.ec.last_note= Note(actual_pitch.pitch+octave*12)
-            result.pitch=actual_pitch.pitch+octave*12 
+            notes_distr= {}
+            for pitch, prob in candidate_pitches_distr.iteritems():
+                notes_distr[pitch.pitch+octave*12]= prob
+            return notes_distr
         else:
             center_octave= self.ec.octave
             candidate_pitches_distr= dict(sorted(candidate_pitches_distr.items(), key=lambda x:x[1], reverse=True)[:5])
@@ -206,16 +173,26 @@ class HarmonyHMM(HmmAlgorithm):
                 robs.actual_state= choice(available_states)
 
             available_intervals=[ni.interval for ni in available_states if ni == robs.actual_state]
+            available_notes= {}
+            prob= 1.0/len(available_intervals)
+            for interval in available_intervals:
+                available_notes[last_note.pitch + interval.length]= prob
 
-            interval= choice(available_intervals)
-            actual_note= last_note.copy()
-            actual_note.pitch+= interval.length
+            return available_notes
 
-            self.ec.last_note= actual_note
-            self.ec.last_pitch= actual_note.get_canonical_note()
 
-            result.pitch= actual_note.pitch
-            #result.volume= 
+    def next(self, input, result, prev_notes):
+        available_notes= self.next_candidates(input.now_chord.notes)
+        if len(available_notes) == 0: 
+            result.pitch= -1
+            return
+
+        actual_note= Note(RandomPicker(values=available_notes).get_value())
+
+        self.ec.last_note= actual_note
+        self.ec.last_pitch= actual_note.get_canonical_note()
+
+        result.pitch= actual_note.pitch
 
 
 

@@ -1,12 +1,13 @@
-from base import HmmAlgorithm
-from obs_seq_builders import ConditionalMidiObsSeq, ModuloObsSeq
-from lib.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
-from electrozart import Score, PlayedNote, Silence, Instrument
-
-
-from electrozart.algorithms.applier import ExecutionContext
 from itertools import chain
 from bisect import bisect
+
+from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
+
+from electrozart.algorithms.hmm import HmmAlgorithm
+from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, ModuloObsSeq
+from electrozart import Score, PlayedNote, Silence, Instrument
+from electrozart.algorithms.applier import ExecutionContext
+
 class RythmHMM(HmmAlgorithm):
     def __init__(self, interval_size, multipart=True, *args, **kwargs):
         super(RythmHMM, self).__init__(*args, **kwargs)
@@ -45,10 +46,8 @@ class RythmHMM(HmmAlgorithm):
         return robs
 
     def next(self, input, result, prev_notes):
-        if self.multipart:
-            robs= self.get_current_robs(input.phrase_id)
-        else:
-            robs= self.ec.robs
+        robs= self.get_current_robs(input.get('phrase_id'))
+
         last_interval_time= robs.actual_state
         actual_interval= self.ec.actual_interval
 
