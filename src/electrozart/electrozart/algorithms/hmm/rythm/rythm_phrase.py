@@ -1,4 +1,5 @@
 from electrozart.algorithms import ListAlgorithm 
+from electrozart.algorithms import needs, produces 
 
 from impl import RythmHMM
 
@@ -13,6 +14,11 @@ class PhraseRythm(ListAlgorithm):
     def start_creation(self):
         super(PhraseRythm, self).start_creation()
         self.rythm_hmm.start_creation()
+
+    @needs('now_chord', 'now')
+    @produces('start', 'duration')
+    def next(self, input, result, prev_notes):
+        return super(PhraseRythm, self).next(input, result, prev_notes)
 
     def generate_list(self, input, result, prev_notes):
         assert hasattr(input, 'now_chord')
@@ -37,5 +43,6 @@ class PhraseRythm(ListAlgorithm):
         if child_result.start + child_result.duration > phrase_end: 
             child_result.duration= phrase_end - child_result.start
 
+        res[0][0].rythm_phrase_len= len(res)
         return res
 

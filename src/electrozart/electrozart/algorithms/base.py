@@ -1,4 +1,50 @@
 from electrozart import PlayedNote, Silence
+from functools import wraps
+
+def needs(*attrs):
+    def dec(f):
+        def new_f(self, input, result, *args, **kwargs):
+            for attr in attrs:
+                if not hasattr(input, attr): 
+                    class_path= '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
+                    func_name= f.__name__
+                    raise Exception("method '%s' of '%s' does not recive '%s'" % (func_name, class_path, attr))
+            return f(self, input, result, *args, **kwargs)
+        new_f.__name__= f.__name__
+        return new_f
+    return dec        
+
+
+def produces(*attrs):
+    def dec(f):
+        def new_f(self, input, result, *args, **kwargs):
+            res= f(self, input, result, *args, **kwargs)
+            for attr in attrs:
+                if not hasattr(result, attr): 
+                    class_path= '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
+                    func_name= f.__name__
+                    raise Exception("method '%s' of '%s' does not produce '%s'" % (func_name, class_path, attr))
+                    #import ipdb;ipdb.set_trace()
+            return res
+        new_f.__name__= f.__name__
+        return new_f
+    return dec
+
+def child_input(*attrs):
+    def dec(f):
+        def new_f(self, input, result, *args, **kwargs):
+            res= f(self, input, result, *args, **kwargs)
+            for attr in attrs:
+                if not hasattr(input, attr): 
+                    class_path= '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
+                    func_name= f.__name__
+                    raise Exception("method '%s' of '%s' does not produce child input '%s'" % (func_name, class_path, attr))
+            return res
+        return new_f
+        new_f.__name__= f.__name__
+    return dec
+
+
 class AttrDict(dict): 
     def __setattr__(self, attr, val):
         super(AttrDict, self).__setattr__(attr, val)

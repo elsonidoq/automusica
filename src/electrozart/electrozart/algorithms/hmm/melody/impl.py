@@ -4,12 +4,30 @@ from random import choice
 
 from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, ConstraintRandomObservation
 from utils.hmm.random_variable import RandomPicker, ConstantRandomVariable
+from utils.random import convex_combination
 
 from electrozart import Score, PlayedNote, Silence, Instrument, Note, Interval
-from electrozart.algorithms.applier import ExecutionContext
+from electrozart.algorithms import ExecutionContext, needs, child_input, produces
 
 from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq
 from electrozart.algorithms.hmm.base import HmmAlgorithm
+
+def length2str(interval_length):
+        if abs(interval_length) <= 5:
+            res= 'ch'
+        elif abs(interval_length) == 6:
+            res= 'm'
+        elif abs(interval_length) <=12:
+            res= 'g'
+        else:
+            res= 'ug'
+
+        if interval_length < 0: return res + '-'
+        else: return res
+
+def sign(n):
+    if n>=0: return 1
+    else: return -1
 
 class NarmourInterval(object):
     def __init__(self, interval):
@@ -32,6 +50,32 @@ class NarmourInterval(object):
 
         return res
 
+    def related_notes(self, pitch1, reverse=True):
+        interval_length= self.interval.length
+        if reverse: interval_length= -interval_length 
+
+        if abs(interval_length) <= 5:
+            lbound= pitch1
+            ubound= pitch1 + 5*sign(interval_length)
+            if lbound > ubound: lbound, ubound= ubound, lbound
+            return range(max(lbound, 0), ubound+1)
+        elif abs(interval_length) == 6:
+            p= pitch1+6*sign(interval_length)
+            if p > 0: return [p]
+            else: return []
+        elif abs(interval_length) <=12:
+            lbound= pitch1 + 6*sign(interval_length)
+            ubound= pitch1 + 12*sign(interval_length)
+            if lbound > ubound: lbound, ubound= ubound, lbound
+            return range(max(lbound, 0), ubound+1)
+        else:
+            lbound= pitch1 + 12*sign(interval_length)
+            ubound= pitch1 + 24*sign(interval_length)
+            if lbound > ubound: lbound, ubound= ubound, lbound
+            return range(max(lbound, 0), ubound+1)
+
+        
+
 class IntervalsObsSeq(ConditionalMidiObsSeq):
     def __init__(self, builder):
         super(ConditionalMidiObsSeq, self).__init__()
@@ -50,6 +94,7 @@ class ConstraintDPRandomObservation(DPRandomObservation):
     def __init__(self, *args, **kwargs):
         super(ConstraintDPRandomObservation, self).__init__(*args, **kwargs)
         self.convex_factor= 1
+
     def next(self, available_states):
         distr= {}
         state_counters= self.states_counters[self.actual_state]
@@ -127,6 +172,19 @@ class MelodyHMM(HmmAlgorithm):
         #self.ec.octave= int(sum((n.pitch for n in notes))/(len(notes)*12)) +1
         self.ec.octave= 6
 
+    def get_current_robs(self):
+        return self.ec.robs
+
+
+    def candidate_pitches(self, now_notes):
+        now_pitches= list(set([n.get_canonical_note() for n in now_notes]))
+        res= self.matching_notes[now_pitches[0]].items()
+        res.sort()
+        for pitch in now_pitches[1:]:
+            new_distr= self.matching_notes[pitch].items()
+            new_distr.sort()
+            res= convex_combination(res, new_distr)
+        return res            
 
     def next_candidates(self, now_notes):
         if len(now_notes) == 0: return {}
@@ -164,7 +222,7 @@ class MelodyHMM(HmmAlgorithm):
             available_states= [NarmourInterval(i) for i in candidate_intervals]
             #import ipdb;ipdb.set_trace()
 
-            robs= self.ec.robs
+            robs= self.get_current_robs()
             # XXX hacer que la robs ande bien con esto
             try:
                 robs.next(available_states)
@@ -181,6 +239,8 @@ class MelodyHMM(HmmAlgorithm):
             return available_notes
 
 
+    @needs('now_chord')
+    @produces('pitch')
     def next(self, input, result, prev_notes):
         available_notes= self.next_candidates(input.now_chord.notes)
         if len(available_notes) == 0: 

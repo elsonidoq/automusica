@@ -1,7 +1,7 @@
 from applier import Algorithm
 from itertools import groupby
 from electrozart import Chord
-from base import ExecutionContext
+from base import ExecutionContext, needs, child_input
 
 
 class ScoreHarmonicContext(Algorithm):
@@ -44,12 +44,15 @@ class ChordHarmonicContext(Algorithm):
     def print_info(self):
         for chord in self.chords.values(): print chord.notes
 
+    @needs('now')
+    @child_input('now_chord', 'prox_chord')
     def next(self, input, result, prev_notes):
         for i, chord in enumerate(self.chordlist):
             if chord.end>input.now: break
 
         now_chord= chord                
         if i+1 == len(self.chordlist):
+            # XXX ver que onda con esto
             prox_chord= now_chord
         else:
             prox_chord= self.chordlist[i+1]
