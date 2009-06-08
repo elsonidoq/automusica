@@ -1,7 +1,7 @@
 from electrozart import Instrument
 from electrozart.algorithms.hmm.rythm import PhraseRythm, RythmHMM
 from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext
-from electrozart.algorithms.hmm.melody import MelodyHMM
+from electrozart.algorithms.hmm.melody import MelodyHMM, PhraseMelody
 
 from electrozart.algorithms import AlgorithmsApplier
 
@@ -33,14 +33,17 @@ class SupportNotesComposer(object):
         
         #chords_notes_alg= ScoreHarmonicContext(score)
         chords_notes_alg= ChordHarmonicContext(score)
+
         rythm_alg= RythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
         phrase_rythm_alg= PhraseRythm(rythm_alg)
+
         melody_alg= MelodyHMM(instrument=piano.patch, channel=piano.channel)
+        phrase_melody_alg= PhraseMelody(melody_alg)
 
         rythm_alg.train(score)
         chords_notes_alg.train(score)
         melody_alg.train(score)
-        applier= AlgorithmsApplier(chords_notes_alg, phrase_rythm_alg, melody_alg)
+        applier= AlgorithmsApplier(chords_notes_alg, phrase_rythm_alg, phrase_melody_alg)
         
         notes= applier.create_melody(score.duration, params['print_info'])
         instrument= Instrument()
@@ -51,6 +54,7 @@ class SupportNotesComposer(object):
             n.volume= 70
 
         res.notes_per_instrument[instrument]= notes
+        res.notes_per_instrument= {instrument: notes}
         return res
 
     

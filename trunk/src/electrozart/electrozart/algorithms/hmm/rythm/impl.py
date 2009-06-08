@@ -6,7 +6,7 @@ from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation
 from electrozart.algorithms.hmm import HmmAlgorithm
 from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, ModuloObsSeq
 from electrozart import Score, PlayedNote, Silence, Instrument
-from electrozart.algorithms.applier import ExecutionContext
+from electrozart.algorithms import ExecutionContext, needs, produces, child_input
 
 class RythmHMM(HmmAlgorithm):
     def __init__(self, interval_size, multipart=True, *args, **kwargs):
@@ -28,6 +28,8 @@ class RythmHMM(HmmAlgorithm):
         if self.multipart:
             self.ec.robses= {}
         else:
+            self.ec.robs= RandomObservation(self.ec.hmm)
+            self.ec.robs= RandomObservation(self.ec.hmm)
             self.ec.robs= FullyRepeatableObservation(self.ec.hmm)
         self.ec.actual_interval= 0
         self.ec.actual_state= 0
@@ -45,6 +47,7 @@ class RythmHMM(HmmAlgorithm):
         robs.actual_state= self.ec.actual_state                
         return robs
 
+    @produces('start', 'duration')
     def next(self, input, result, prev_notes):
         robs= self.get_current_robs(input.get('phrase_id'))
 
