@@ -1,8 +1,74 @@
 from random import choice
 from collections import defaultdict
 
+from utils.hmm import RandomObservation
+from utils.hmm.random_variable import RandomPicker
 from electrozart.algorithms import ListAlgorithm, needs, produces
 from impl import MelodyHMM, NarmourInterval, length2str 
+
+class NarmourRandomObservation(RandomObservation):
+    def __init__(self, n0, nf, length, hmm, candidate_pitches):
+        super(NarmourRandomObservation, self).__init__(hmm)
+        self.n0= n0
+        self.nf= nf
+        self.length= length
+        self.candidate_pitches= candidate_pitches
+        self.nsteps= 0
+        self.now_pitches= set([n0])
+
+        distance_dict= self.build_state_distance_dict(length)
+        self.must_dict= self.build_must_dict(distance_dict)
+
+    def next(self):
+        next_candidates= self.hmm.nexts(self.actual_state)
+        nexts= {}
+        for state, prob in next_candidates.iteritems():
+            # si las notqas que vengo tocando interseccion con las que debo tocar hay
+            if len(self.now_pitches.intersection(self.must_dict[self.nsteps+1][state])) > 0:
+                nexts[state]= prob
+
+        s= sum(nexts.itervalues())
+        for state, prob in nexts.iteritems():
+            nexts[state]= prob/s
+        
+        next= RandomPicker(values=nexts).get_value()
+
+        now_pitches= set()
+        for p in self.now_pitches:
+            now_pitches.update(next.related_notes(p, reverse=False))
+        self.now_pitches=now_pitches
+
+        self.nsteps+=1
+        return next
+
+    def build_must_dict(self, distance_dict):
+        res= defaultdict(lambda : defaultdict(set))
+        for node in distance_dict[self.length-1]:
+            res[self.length-1][node]= node.related_notes(self.nf, reverse=True) 
+
+        for d in xrange(self.length-2, 0, -1):
+            for node in distance_dict[d]:
+                for node_adj in self.hmm.nexts(node):
+                    for n in res[d+1][node_adj]:
+                        res[d][node].update(node.related_notes(n, reverse=True))
+        return dict((k, dict(v)) for (k,v) in res.iteritems())
+
+    def build_state_distance_dict(self, max_distance):
+        stack= [(self.actual_state, 0)]
+        res= defaultdict(set)
+
+        while len(stack)>0:
+            state, distance= stack.pop()
+            res[distance].add(state)
+            # XXX ver si es < o <=
+            if distance < max_distance:
+                distance+=1
+                for next in self.hmm.nexts(state):
+                    if next in res[distance]: continue
+                    stack.append((next, distance))
+
+        return dict(res)
+
 
 class PhraseMelody(ListAlgorithm):
     def __init__(self, melody_alg, *args, **kwargs):
@@ -96,6 +162,8 @@ class PhraseMelody(ListAlgorithm):
             step_states= notes_per_state[i]
             available_states= [s for s in step_states if pitches[-1] in step_states[s]]
             #robs.next(available_states)
+            # XXX BUG solucionar por que a veces me queda vacio el available_states o no hay ninguno de los available_states
+            # que esten en los nexts de robs.actual_state
             try:
                 robs.next(available_states)
             except:

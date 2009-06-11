@@ -50,7 +50,7 @@ class NarmourInterval(object):
 
         return res
 
-    def related_notes(self, pitch1, reverse=True):
+    def related_notes(self, pitch1, reverse=False):
         interval_length= self.interval.length
         if reverse: interval_length= -interval_length 
 
