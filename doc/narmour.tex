@@ -4,41 +4,53 @@
 Un intervalo arm'onico es una nota $n_1$ seguida de una nota $n_2$, es decir un par ordenado.
 El modelo de Narmour establece una dependencia entre los sucesivos intervalos arm'onicos que ocurren en una melod'ia.
 Esta dependencia se expresa sobre una partici'on del conjunto de posibles intervalos, para luego establecer relaciones entre los conjuntos de dicha partici'on.
-Las relaciones que se establecen est'an expresadas en t'erminos de espectativa. Por ejemplo, un intervalo \texttt{chico} ascendente genera una espectativa de otro 
-intervalo \texttt{chico} ascendente. Llev'andolo a notaci'on de pares ordenados, esto equivale a decir que el si par ordenado $(n_1, n_2)$ 
+Las relaciones que se establecen est'an expresadas en t'erminos de espectativa. Por ejemplo, un intervalo \texttt{chico ascendente} genera una espectativa de otro 
+intervalo \texttt{chico ascendente}. Llev'andolo a notaci'on de pares ordenados, esto equivale a decir que el si par ordenado $(n_1, n_2)$ 
 cumple que $5 \geq n_2 - n_1 \geq 0$, luego, se espera otro par ordenado $(n_2, n_3)$ que cumpla $5\geq n_2 - n_1 \geq 0$, 
-puesto que los intervalos \texttt{chicos} son aquellos intervalos cuyas notas no distan mas de cinco semitonos.
+puesto que los intervalos \texttt{chicos ascendentes} son aquellos intervalos cuyas notas no distan mas de cinco semitonos.
 
 Por otro lado es de imaginarse que no todos los compositores respeten de la misma forma las reglas. Para reflejar eso se construye una cadena de markov.
-Esta cadena de markov tiene por nodos a conjuntos de intervalos. De esta forma, un nodo representa a un intervalo \texttt{chico}, y otro nodo a un intervalo 
-\texttt{grande}. Las transiciones de esta cadena de markov, tendr'an una sem'antica tradicional: Una transici'on del nodo $N_1$ al nodo $N_2$ simbolizar'a tocar, 
-primero un par ordenado $(n_1, n_2) \in N_1$ y luego un par ordenado $(n_2, n_3) \in N_2$.
+Esta cadena de markov tiene por nodos a conjuntos de intervalos. De esta forma, un nodo representa, por ejemplo, a un intervalo \texttt{chico ascendente},
+y otro nodo a un intervalo \texttt{grande descendente}. 
 
-
-\subsection{Definici\'ones}
-\subsubsection{la funci\'on $Poss$}
-Llamemos al conjunto de nodos de la cadena de markov $V$ y al conjunto de posibles notas, $T$.
+\subsection{la funci\'on $Poss$}
+Llamemos al conjunto de nodos de la cadena de markov $V$ y al conjunto de posibles notas $T$.
 
 El nombre $Poss$ es por \emph{shorthand} de \texttt{Possible}. Esta funci'on establece cual es el conjunto de notas posibles, dada una nota inicial y 
-un camino en la cadena de markov, teniendo en cuenta la restriccion establecida antes.
+un camino en la cadena de markov, teniendo en cuenta la restricci'on establecida antes sobre las secuencias de pares ordenados.
 
 De esta forma $Poss : [V]^d \times T \rightarrow \mathcal{P}(T)$, donde $\mathcal{P}$ denota el conjunto de partes.
+
 Inductivamente:
 $$Poss(N_1, n_1)= \{ n_2 / (n_1, n_2) \in N_1 \}$$
 $$Poss(N_1, \dots N_d, n_1)= \bigcup_{n_{d-1} \in Poss(N_1, \dots N_{d-1}, n_1)} \{ n_d / (n_{d-1}, n_d) \in N_d \}$$
 
 
-\subsubsection{la funci\'on $Must$}
+\subsection{Proceso generativo}
+Teniendo definida esta funci'on es posible describir el proceso de generaci'on de una melod'ia:
+
+El proceso comienza con una nota inicial y un estado inicial elegidos seg'un alg'un otro criterio. 
+Para saber cual es la pr'oxima nota a tocar, se efectuan dos pasos:
+\begin{enumerate}
+ \item Si el estado actual de la cadena de markov es $N$, elegir un estado $N'$ de acuerdo a la matriz de transici'on.
+ \item Si la nota tocada en el paso anterior es $n$, elegir una nota del conjunto $Poss(N', n)$
+\end{enumerate}
+
+
+\subsubsection{La funci\'on $Must$}
 la funci'on $Must$ tiene dominio $V \times T \times \mathbb{N}$, donde $\mathbb{N}$ denota al conjunto de los numeros naturales.
 El codiminio de $Must$ es $\mathcal{P}(T)$.
 
-Informalmente, la funcion $Must(N, n_f, d)$ ($n_f$ es por nota final) es el conjunto de notas, tales que cualquiera que de ellas 
-asegura que existe un camino comenzando en $N$ que permitir'a tocar $n_f$ en $d$ pasos.
-$$Must(N, n_f, d)= \{ n' / \exists\ N, N_2, \dots N_d \text{ tal que } N_i \in V \text{ y } n_f \in Poss(N_1, \dots, N_d, n') \}$$
+La funci'on $Must(N, n_f, d)$ ($n_f$ es por nota final) es el conjunto de notas, tales que de tocar cualquiera de ellas
+exactamente antes que el estado $N$, se garantiza la existencia de un camino de longitud $d$ a partir de $N$ que permite tocar
+$n_f$ en el 'ultimo estado.
+
+Formalmente:
+$$n \in Must(N, n_f, d) \Leftrightarrow \exists\ N_2, \dots N_d \text{ tales que } n_f \in Poss(N, N_2, \dots, N_d, n) $$ 
+En caso de $d=0$, interpretar $N, N_2, \dots N_d$ como $N$
  
-Inductivamente:
+Se puede probar por inducci'on (creo, espero!) que estas dos definici'ones son equivalentes:
 $$Must(N, n_f, 0)= \{n' / (n', n_f) \in N\}$$
 $$Must(N, n_f, d+1) = \bigcup_{N' \in Adj(N)}\{n / \exists n' \in Must(N', n_f, d) \land (n, n') \in N \}$$
 
-Nota: La primera definici'on de $Must$ se me ocurri'o reci'en, todav'ia no me queda 100\% claro que sean las dos definiciones equivalentes. En caso de no serlo, dale 
-mas bola a la definici'on de abajo.
+
