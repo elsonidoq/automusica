@@ -43,7 +43,8 @@ class Chord(Figure):
                 if len(res) > 0: res[-1].duration= start - res[-1].start
                 res.append(chord)
 
-        if len(res) > 0: res[-1].duration= all_notes[-1].duration
+        if len(res) > 0: 
+            res[-1].duration= all_notes[-1].end - res[-1].start 
         return res
 
     def to_notelist(self):

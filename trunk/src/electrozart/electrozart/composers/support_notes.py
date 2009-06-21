@@ -40,7 +40,7 @@ class SupportNotesComposer(object):
 
         melody_alg= MelodyHMM(instrument=piano.patch, channel=piano.channel)
         phrase_melody_alg= PhraseMelody(melody_alg)
-        phrase_melody_alg= melody_alg
+        #phrase_melody_alg= melody_alg
 
         rythm_alg.train(score)
         chords_notes_alg.train(score)
@@ -66,7 +66,7 @@ class SupportNotesComposer(object):
         piano= res.notes_per_instrument.keys()[0]
         res.notes_per_instrument[instrument]= notes
         res.notes_per_instrument= {instrument: notes}
-        #res.notes_per_instrument[piano]= chord_notes
+        res.notes_per_instrument[piano]= chord_notes
         return res
 
     
