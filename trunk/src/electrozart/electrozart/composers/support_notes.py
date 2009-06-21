@@ -1,6 +1,6 @@
-from electrozart import Instrument
+from electrozart import Instrument, PlayedNote
 from electrozart.algorithms.hmm.rythm import PhraseRythm, RythmHMM
-from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext
+from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext, YamlHarmonicContext
 from electrozart.algorithms.hmm.melody import MelodyHMM, PhraseMelody
 
 from electrozart.algorithms import AlgorithmsApplier
@@ -33,19 +33,29 @@ class SupportNotesComposer(object):
         
         #chords_notes_alg= ScoreHarmonicContext(score)
         chords_notes_alg= ChordHarmonicContext(score)
+        #chords_notes_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base1.yaml', score.divisions)
 
         rythm_alg= RythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
         phrase_rythm_alg= PhraseRythm(rythm_alg)
 
         melody_alg= MelodyHMM(instrument=piano.patch, channel=piano.channel)
         phrase_melody_alg= PhraseMelody(melody_alg)
+        phrase_melody_alg= melody_alg
 
         rythm_alg.train(score)
         chords_notes_alg.train(score)
         melody_alg.train(score)
+
         applier= AlgorithmsApplier(chords_notes_alg, phrase_rythm_alg, phrase_melody_alg)
-        
-        notes= applier.create_melody(score.duration, params['print_info'])
+        duration= score.duration
+        notes= applier.create_melody(duration, params['print_info'])
+
+        chord_notes= []
+        for c in chords_notes_alg.chordlist:
+            for n in c.notes:
+                chord_notes.append(PlayedNote(n.pitch+3*12, c.start, c.duration, 80))
+        duration= chord_notes[-1].end
+
         instrument= Instrument()
         instrument.patch= params['melody_instrument']
 
@@ -53,8 +63,10 @@ class SupportNotesComposer(object):
         for n in res.get_notes(skip_silences=True):
             n.volume= 70
 
+        piano= res.notes_per_instrument.keys()[0]
         res.notes_per_instrument[instrument]= notes
         res.notes_per_instrument= {instrument: notes}
+        #res.notes_per_instrument[piano]= chord_notes
         return res
 
     

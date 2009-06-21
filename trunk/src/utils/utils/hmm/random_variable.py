@@ -53,12 +53,17 @@ class RandomPicker(RandomVariable):
     def add_value(self, value, prob):
         self.values[value]= prob
 
-    def get_value(self):
+    def get_value(self, normalize=False):
+        if normalize:
+            s= sum(self.values.itervalues())
+            for k, v in self.values.iteritems():
+                self.values[k]= v/s
+
         rnd= random()
         orig= rnd
 
         if len(self.values) == 0: raise EmptyValuesException()
-        for value, prob in self.values.items():
+        for value, prob in self.values.iteritems():
             rnd-= prob
             if rnd < 0:
                 return value

@@ -3,10 +3,10 @@ from itertools import groupby
 from math import log
 from md5 import md5
 import cPickle as pickle
+import random
 
 
 from utils.melisma.meter import meter
-from config import parserclass, writerclass
 
 from optparse import OptionParser
 
@@ -36,6 +36,7 @@ def main(argv):
     parser.add_option('--n-measures', dest='n_measures', default=1, type='int', help='if the partition algorithm is MEASURE, especifies the number of measures to take as a unit')
     parser.add_option('--draw-model', dest='draw_model')
     parser.add_option('--part-alg', dest='partition_algorithm', default='MEASURE', help='select the partition algorithm, only MEASURE and MGRID are available. Default MEASURE')
+    parser.add_option('--seed', dest='seed',help='random seed')
 
 
     options, args= parser.parse_args(argv[1:])
@@ -51,11 +52,18 @@ def main(argv):
     if partition_algorithm not in ('MGRID', 'MEASURE'):
         parser.error('unknown partition algorithm')
 
+    if options.seed is not None: random.seed(options.seed)
+
     train3(options, args)
 
 
 from electrozart.composers.narmour_markov import NarmourMarkov
 from electrozart.composers.support_notes import SupportNotesComposer
+
+from electrozart.parsing.midi import MidiScoreParser
+from electrozart.writing.notes import NotesScoreWriter
+from electrozart.writing.midi import MidiScoreWriter
+
 def train3(options, args):
     partition_algorithm= options.partition_algorithm
     patch= options.patch
@@ -64,7 +72,7 @@ def train3(options, args):
     infname= args[0]
     outfname= args[1]
 
-    parser= parserclass()
+    parser= MidiScoreParser()
     score= parser.parse(infname)
     #score= quantize(score)
     
@@ -72,7 +80,8 @@ def train3(options, args):
     composer= SupportNotesComposer()
     composed_score= composer.compose(score)
 
-    writer= writerclass()
+    writer= NotesScoreWriter()
+    writer= MidiScoreWriter()
     writer.dump(composed_score, outfname)
     print 'done!'
 

@@ -48,7 +48,7 @@ class NarmourInterval(object):
         if self.interval.length < 0:
             res= res + '-'
 
-        return res
+        return '<%s>' % res
 
     def related_notes(self, pitch1, reverse=False):
         interval_length= self.interval.length
@@ -64,12 +64,12 @@ class NarmourInterval(object):
             if p > 0: return [p]
             else: return []
         elif abs(interval_length) <=12:
-            lbound= pitch1 + 6*sign(interval_length)
+            lbound= pitch1 + 6*sign(interval_length) + sign(interval_length) 
             ubound= pitch1 + 12*sign(interval_length)
             if lbound > ubound: lbound, ubound= ubound, lbound
             return range(max(lbound, 0), ubound+1)
         else:
-            lbound= pitch1 + 12*sign(interval_length)
+            lbound= pitch1 + 12*sign(interval_length) + sign(interval_length)
             ubound= pitch1 + 24*sign(interval_length)
             if lbound > ubound: lbound, ubound= ubound, lbound
             return range(max(lbound, 0), ubound+1)
@@ -130,7 +130,7 @@ class MelodyHMM(HmmAlgorithm):
     def train(self, score):
         super(MelodyHMM, self).train(score)
 
-        notes= [n for n in score.get_notes(skip_silences=True)]
+        notes= score.get_notes(skip_silences=True)
         notes.sort(key=lambda n:n.start)
 
         for i, n1 in enumerate(notes):
@@ -178,6 +178,8 @@ class MelodyHMM(HmmAlgorithm):
 
     def candidate_pitches(self, now_notes):
         now_pitches= list(set([n.get_canonical_note() for n in now_notes]))
+        if now_pitches[0] not in self.matching_notes: import ipdb;ipdb.set_trace() 
+
         res= self.matching_notes[now_pitches[0]].items()
         res.sort()
         for pitch in now_pitches[1:]:
