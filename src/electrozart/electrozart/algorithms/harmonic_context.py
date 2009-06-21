@@ -50,6 +50,9 @@ class ChordHarmonicContext(Algorithm):
     def next(self, input, result, prev_notes):
         for i, chord in enumerate(self.chordlist):
             if chord.end>input.now: break
+        else:
+            import ipdb;ipdb.set_trace()
+            raise Exception('Could not find a chord for now=%s' % input.now)
 
         now_chord= chord                
         if i+1 == len(self.chordlist):

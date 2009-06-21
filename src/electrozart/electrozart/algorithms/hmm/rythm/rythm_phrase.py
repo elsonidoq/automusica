@@ -3,8 +3,6 @@ from electrozart.algorithms import needs, produces
 
 from impl import RythmHMM
 
-# XXX BUG solucionar el tema de las notas superpuestas
-
 class PhraseRythm(ListAlgorithm):
     def __init__(self, rythm_hmm):
         self.rythm_hmm= rythm_hmm
@@ -24,8 +22,8 @@ class PhraseRythm(ListAlgorithm):
 
     @needs('now_chord', 'now')
     def generate_list(self, input, result, prev_notes):
+        if not ( input.now == 0 or input.now_chord.start == input.now ) : import ipdb;ipdb.set_trace()
         self.ncalls+=1
-        assert input.now == 0 or input.now_chord.start == input.now 
         #if self.ncalls == 30: import ipdb;ipdb.set_trace()
 
         phrase_end= input.now_chord.end 

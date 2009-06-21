@@ -119,9 +119,15 @@ class PhraseMelody(ListAlgorithm):
         super(PhraseMelody, self).start_creation()
         self.melody_alg.start_creation()
         self.ec.last_state= None
+        self.ec.last_support_note= None
 
     def pick_support_note(self, chord):
-        return chord.notes[0].pitch 
+        if self.ec.last_support_note is None:
+            res= choice(chord.notes).pitch 
+        else:
+            res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
+        self.ec.last_support_note= res
+        return res
 
     @needs('rythm_phrase_len', 'now_chord', 'prox_chord')
     def generate_list(self, input, result, prev_notes):
@@ -176,10 +182,12 @@ class PhraseMelody(ListAlgorithm):
         context_distr= dict((n.pitch, prob) for (n,prob) in self.melody_alg.candidate_pitches(input.now_chord.notes))
         for i in xrange(1, phrase_length):
             # candidates lo inicializo en las que tengo que tocar antes del proximo estado
-            candidates= robs2.must_dict[phrase_length-(i+1)][states[i+1]]
+            candidates= robs2.must_dict[phrase_length-1-i][states[i+1]]
             candidates= candidates.intersection(path[i].related_notes(pitches[-1]))
-            candidates_distr= dict((p, context_distr.get(p%12)) for p in candidates if context_distr.get(p%12) is not None)
             
+            if len(candidates) == 0: import ipdb;ipdb.set_trace()
+
+            candidates_distr= dict((p, context_distr.get(p%12)) for p in candidates if context_distr.get(p%12) is not None)
             # XXX ver que hacer cuando el contexto no me deja tocar (paso el contexto a la definicion de Must?)
             if len(candidates_distr) == 0: 
                 candidates_distr= dict((p,1.0) for p in candidates)

@@ -52,7 +52,9 @@ class NarmourInterval(object):
 
     def related_notes(self, pitch1, reverse=False):
         interval_length= self.interval.length
-        if reverse: interval_length= -interval_length 
+        if reverse: 
+            interval_length= -interval_length 
+            if interval_length == 0: interval_length= -1
 
         if abs(interval_length) <= 5:
             lbound= pitch1
