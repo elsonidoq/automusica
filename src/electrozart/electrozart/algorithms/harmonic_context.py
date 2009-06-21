@@ -1,8 +1,9 @@
 from applier import Algorithm
 from itertools import groupby
-from electrozart import Chord
+from electrozart import Chord, Note
 from base import ExecutionContext, needs, child_input
 
+import yaml
 
 class ScoreHarmonicContext(Algorithm):
     def __init__(self, context_score, *args, **kwargs):
@@ -33,16 +34,16 @@ class ChordHarmonicContext(Algorithm):
 
     def start_creation(self):
         self.chordlist= Chord.chordlist(self.context_score, 3)
-        self.chords= {}
+        #self.chords= {}
         self.chord_pos= []
 
-    def get_chord(self, chord_id):
-        if chord_id not in self.chords: 
-            self.chords[chord_id]= choice([c for c in self.chordlist if c not in self.chords.values()])
-        return self.chords[chord_id] 
+    #def get_chord(self, chord_id):
+    #    if chord_id not in self.chords: 
+    #        self.chords[chord_id]= choice([c for c in self.chordlist if c not in self.chords.values()])
+    #    return self.chords[chord_id] 
 
-    def print_info(self):
-        for chord in self.chords.values(): print chord.notes
+    #def print_info(self):
+    #    for chord in self.chords.values(): print chord.notes
 
     @needs('now')
     @child_input('now_chord', 'prox_chord')
@@ -72,3 +73,28 @@ class ChordHarmonicContext(Algorithm):
         return brancher
 
     
+class YamlHarmonicContext(ChordHarmonicContext):
+    def __init__(self, yamlfname, divisions, *args, **kwargs):
+        f= open(yamlfname)
+        d= yaml.load(f)
+        f.close()
+        now= 0
+        chords= []
+        for chord_info in d['chords']:
+            base_note= Note(chord_info.keys()[0])
+            chord_info= chord_info.values()[0]
+            intervals= d['chord_spec'][chord_info['type']]
+            duration= chord_info['duration']*divisions
+
+            notes= []
+            for interval in intervals:
+                notes.append(Note(base_note.pitch + interval + 4*12))
+
+            chord= Chord(now, duration, notes) 
+            chords.append(chord)
+            now+=duration
+
+        self.chordlist= chords
+
+    def start_creation(self): 
+        self.chord_pos= []

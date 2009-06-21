@@ -15,6 +15,7 @@ class PhraseRythm(ListAlgorithm):
     def start_creation(self):
         super(PhraseRythm, self).start_creation()
         self.rythm_hmm.start_creation()
+        self.ncalls= 0
 
     @needs('now_chord', 'now')
     @produces('start', 'duration')
@@ -23,14 +24,16 @@ class PhraseRythm(ListAlgorithm):
 
     @needs('now_chord', 'now')
     def generate_list(self, input, result, prev_notes):
+        self.ncalls+=1
         assert input.now == 0 or input.now_chord.start == input.now 
+        #if self.ncalls == 30: import ipdb;ipdb.set_trace()
 
         phrase_end= input.now_chord.end 
         start_node= input.now % self.rythm_hmm.interval_size 
 
         robs= self.rythm_hmm.get_current_robs(input.get('phrase_id'))
         robs.actual_state= start_node
-
+        
         res= []
         while True:
             child_result= result.copy()
@@ -41,6 +44,8 @@ class PhraseRythm(ListAlgorithm):
 
         if child_result.start + child_result.duration > phrase_end: 
             child_result.duration= phrase_end - child_result.start
+            # XXX ver commo hacerlo mas elegante
+            self.rythm_hmm.ec.actual_interval= (child_result.start + child_result.duration)/self.rythm_hmm.interval_size
 
         res[0][0].rythm_phrase_len= len(res)
         return res
