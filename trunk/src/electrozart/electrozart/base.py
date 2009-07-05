@@ -23,6 +23,9 @@ class Chord(Figure):
         self.notes= notes[:]
         self.canon_notes= [n.get_canonical_note() for n in notes]
         
+    def get_canonical(self):
+        return Chord(self.start, self.duration, list(set(n.get_canonical_note() for n in self.notes)), volume=self.volume)
+
     def __repr__(self):
         return "Chord(%s)" % map(lambda n:n.get_canonical_note(), self.notes)
     def __eq__(self, other): 
@@ -37,8 +40,9 @@ class Chord(Figure):
         last_start= None
         for start, ns in groupby(all_notes, key=lambda n:n.start):
             ns= list(ns)
+            chord_notes= len(set(n.get_canonical_note() for n in ns))
             #print len(ns)
-            if len(ns) >= min_notes_per_chord: 
+            if chord_notes >= min_notes_per_chord: 
                 chord= cls(start, None, ns)
                 if len(res) > 0: res[-1].duration= start - res[-1].start
                 res.append(chord)

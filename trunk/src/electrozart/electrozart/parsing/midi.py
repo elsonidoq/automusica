@@ -30,10 +30,12 @@ class MidiScoreParser(ScoreParser):
                 pos, note= to_insert[i]
                 notes.insert(pos, note)
 
-            if notes[0].start > 0:
-                notes.insert(0, Silence(0, notes[0].start))
+            #if notes[0].start > 0:
+            #    notes.insert(0, Silence(0, notes[0].start))
 
 
+        # si todos los intrumentos empiezan tarde, muevo todo para atras
+        offset= min(res.notes_per_instrument.itervalues(), key=lambda x:x[0].start)[0].start
         return res                
 
 from md5 import md5
