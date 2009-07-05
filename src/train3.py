@@ -9,6 +9,8 @@ import random
 from utils.melisma.meter import meter
 
 from optparse import OptionParser
+from electrozart.algorithms.hmm.melody.narmour_hmm import NarmourInterval
+from utils.fraction import Fraction
 
 def get_node_name(score, ticks):
     if isinstance(ticks, NarmourInterval):

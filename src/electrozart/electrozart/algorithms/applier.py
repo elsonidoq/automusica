@@ -13,6 +13,7 @@ class AlgorithmsApplier(object):
         last_end= 0
         notes= []
         stack= []
+        part_id= 1
         while last_end < time:
             #if time_tell() - t0 >= 4: import ipdb;ipdb.set_trace()
             # voy arriba en el arbol
@@ -27,8 +28,9 @@ class AlgorithmsApplier(object):
             if len(stack) > 0:
                 start_alg= stack[-1][0] + 1
                 input= stack[-1][-1].copy()
+
             input.now= last_end
-            
+
             # construyo la nota y meto los branchers que aparezcan
             result= PartialNote()
             result.volume= 100

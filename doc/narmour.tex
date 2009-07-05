@@ -22,8 +22,18 @@ un camino en la cadena de markov, teniendo en cuenta la restricci'on establecida
 De esta forma $Poss : [V]^d \times T \rightarrow \mathcal{P}(T)$, donde $\mathcal{P}$ denota el conjunto de partes.
 
 Inductivamente:
-$$Poss(N_1, n_1)= \{ n_2 / (n_1, n_2) \in N_1 \}$$
-$$Poss(N_1, \dots N_d, n_1)= \bigcup_{n_{d-1} \in Poss(N_1, \dots N_{d-1}, n_1)} \{ n_d / (n_{d-1}, n_d) \in N_d \}$$
+\begin{align}
+Poss(N_1, n_0)&= \{ n_1 / (n_0, n_1) \in N_1 \} \nonumber \\
+Poss(N_1, \dots, N_d, n_0)&= \bigcup_{n_{d-1} \in Poss(N_1, \dots N_{d-1}, n_0)} \{ n_d / (n_{d-1}, n_d) \in N_d \} \nonumber
+\end{align}
+
+Para que esta definici'on respete la cadena de markov, se va a pedir ademas que 
+$$(\exists i, 1 \leq i \leq d \text{ tal que } N_i \rightarrow N_{i+1} \notin E(C)) \Rightarrow Poss(N_1, \dots, N_d, n_0) = \phi$$
+Donde $N \rightarrow M$ denota una arista entre los nodos $N$ y $M$, y $E(C)$ denota el conjunto de aristas de la cadena de markov. 
+
+\subsubsection{Transitividad de la funci\'on $Poss$}
+La funci\'on $Poss$ cumple esta transitividad:
+$$ n_1 \in Poss(N_1, n_0) \land n_d \in Poss(N_2,\dots,N_d, n_1) \Rightarrow Poss(N_1,\dots,N_d,n_0)$$
 
 
 \subsection{Proceso generativo}
@@ -37,7 +47,7 @@ Para saber cual es la pr'oxima nota a tocar, se efectuan dos pasos:
 \end{enumerate}
 
 
-\subsubsection{La funci\'on $Must$}
+\subsection{La funci\'on $Must$}
 la funci'on $Must$ tiene dominio $V \times T \times \mathbb{N}$, donde $\mathbb{N}$ denota al conjunto de los numeros naturales.
 El codiminio de $Must$ es $\mathcal{P}(T)$.
 
@@ -46,11 +56,37 @@ exactamente antes que el estado $N$, se garantiza la existencia de un camino de 
 $n_f$ en el 'ultimo estado.
 
 Formalmente:
-$$n \in Must(N, n_f, d) \Leftrightarrow \exists\ N_2, \dots N_d \text{ tales que } n_f \in Poss(N, N_2, \dots, N_d, n) $$ 
+\begin{align}
+n \in Must(N, n_f, d) \Leftrightarrow \exists\ N_2, \dots N_d \text{ tales que } n_f \in Poss(N, N_2, \dots, N_d, n) 
+\end{align}
 En caso de $d=0$, interpretar $N, N_2, \dots N_d$ como $N$
  
-Se puede probar por inducci'on (creo, espero!) que estas dos definici'ones son equivalentes:
-$$Must(N, n_f, 0)= \{n' / (n', n_f) \in N\}$$
-$$Must(N, n_f, d+1) = \bigcup_{N' \in Adj(N)}\{n / \exists n' \in Must(N', n_f, d) \land (n, n') \in N \}$$
+\subsubsection{Definici\'on equivalente}
+A continuaci'on se da una definici'on equivalente para la funci'on $Must$.
+\begin{align}
+Must'(N, n_f, 0)   &= \{n' / (n', n_f) \in N\}\nonumber \\
+Must'(N, n_f, d+1) &= \bigcup_{N' \in Adj(N)}\{n / \exists n' \in Must(N', n_f, d) \land (n, n') \in N \}\nonumber
+\end{align}
 
+Para probar la equivalencia, se demostrar'a que la definici'on inductiva de $Must$ es equivalente a la definici'on cerrada se har'a inducci'on en 
+$d$.
 
+El caso base es $d=0$, que queda equivalente por definici'on, puesto que 
+$$Must'(N, n_f, 0) = \{ n' / (n', n_f) \in N \} = \{ n' / n_f \in Poss(N, n') \}$$
+La primer ecuaci'on, por definici'on de $Must$ y la segunda por definici'on de $Poss$.
+
+Para el caso inductivo, la hip'otesis inductiva ser'a
+
+$$n \in Must'(N, n_f, d) \Leftrightarrow \exists\ N_2, \dots N_d \text{ tales que } n_f \in Poss(N, N_2, \dots, N_d, n) $$
+\begin{align}
+Must'(N, n_f, d+1) =& \bigcup_{N' \in Adj(N)} \{ n /\exists n' \in Must'(N', n_f, d) \land (n, n') \in N \} \nonumber \\
+                  & \text{Por hip'otesis inductiva} \nonumber \\
+                  =& \bigcup_{N' \in Adj(N)} \{ n /\exists n',N_2,\dots,N_d \text{ tales que } n_f \in Poss(N',N_2,\dots,N_d,n') \land (n, n') \in N \} \nonumber \\
+                  & \text{Por definici'on de Poss} \nonumber \\
+                  =& \bigcup_{N' \in Adj(N)} \{ n /\exists n',N_2,\dots,N_d \text{ tales que } n_f \in Poss(N',N_2,\dots,N_d,n')  \land n' \in Poss(N, n) \} \nonumber \\
+                  & \text{Por transitividad de Poss} \nonumber \\
+                  =& \bigcup_{N' \in Adj(N)} \{ n /\exists N_2,\dots,N_d \text{ tales que } n_f \in Poss(N,N',N_2,\dots,N_d,n) \}\nonumber  \\
+                  & \text{Por vacuidad de Poss para estados no adyacentes} \nonumber \\
+                  =& \{ n /\exists N',N_2,\dots,N_d \text{ tales que } n_f \in Poss(N,N',N_2,\dots,N_d,n) \} \nonumber\\
+                  =& Must(N, n_f, d+1) \nonumber
+\end{align}

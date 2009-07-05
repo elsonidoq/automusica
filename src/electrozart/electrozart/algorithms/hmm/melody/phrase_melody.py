@@ -4,7 +4,7 @@ from collections import defaultdict
 from utils.hmm import RandomObservation, HiddenMarkovModel
 from utils.hmm.random_variable import RandomPicker
 from electrozart.algorithms import ListAlgorithm, needs, produces
-from impl import MelodyHMM, NarmourInterval, length2str 
+from narmour_hmm import NarmourInterval, length2str 
 
 class PathNarmourInterval(NarmourInterval):
     def __init__(self, ni, pos):

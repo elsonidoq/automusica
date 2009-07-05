@@ -1,12 +1,11 @@
 from base import get_patterns
 from electrozart import Score
-from electrozart.algorithms import TrainAlgorithm
 
 def get_score_patterns(score, pat_sizes, margins, pat_f, key):
         instr, notes= score.notes_per_instrument.iteritems().next()
         return get_patterns(notes, pat_sizes, margins, pat_f, key)
 
-class PatternsAlgorithm(TrainAlgorithm):
+class PatternsAlgorithm(object):
     input_type= Score
     def __init__(self, pat_sizes, margins, pat_f, key, 
                         *args, **kwargs):

@@ -162,3 +162,52 @@ class ListAlgorithm(Algorithm):
             if k in result: continue
             result[k]= v
         
+
+class CacheAlgorithm(ListAlgorithm):
+    """
+    Permite cachear las llamadas a un list algorithm
+    """
+    def __init__(self, algorithm, input_key, *args, **kwargs):
+        super(CacheAlgorithm, self).__init__(*args, **kwargs)
+
+        self.input_key= input_key
+        self.algorithm= algorithm
+
+        self.generate_list_orig= algorithm.generate_list
+        algorithm.generate_list= self.generate_list
+
+        self.cache= {}
+    
+    def start_creation(self):
+        self.algorithm.start_creation()
+    
+    def next(self, input, result, prev_notes):
+        return self.algorithm.next(input, result, prev_notes)
+
+    def generate_list(self, input, result, prev_notes): 
+        if self.input_key in input:
+            cache_key= input[self.input_key]
+            if cache_key not in self.cache:
+                answer= self.generate_list_orig(input, result, prev_notes)
+                self.cache[cache_key]= answer
+            else:
+                old_answer= self.cache[cache_key]
+                new_answer= []
+                for old_input, old_result in old_answer:
+                    # copio los viejos input y result y le piso con las cosas
+                    # de los nuevos input y result
+                    new_input= old_input.copy()
+                    new_input.update(input)
+
+                    new_result= old_result.copy()
+                    new_result.update(result)
+
+                    new_answer.append((new_input, new_result))
+
+                answer= new_answer
+
+        else:
+            answer= self.generate_list_orig(input, result, prev_notes)
+
+        return answer[:]
+

@@ -123,14 +123,14 @@ class ConstraintDPRandomObservation(DPRandomObservation):
 
         return res
 
-class MelodyHMM(HmmAlgorithm):
+class NarmourHMM(HmmAlgorithm):
     def __init__(self, *args, **kwargs):
-        super(MelodyHMM, self).__init__(*args, **kwargs)
+        super(NarmourHMM, self).__init__(*args, **kwargs)
         self.obsSeqBuilder= IntervalsObsSeq(self.obsSeqBuilder)
         self.matching_notes= defaultdict(lambda: defaultdict(lambda :0))
     
     def train(self, score):
-        super(MelodyHMM, self).train(score)
+        super(NarmourHMM, self).train(score)
 
         notes= score.get_notes(skip_silences=True)
         notes.sort(key=lambda n:n.start)

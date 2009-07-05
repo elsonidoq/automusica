@@ -30,7 +30,7 @@ class RythmHMM(HmmAlgorithm):
         else:
             self.ec.robs= RandomObservation(self.ec.hmm)
             self.ec.robs= RandomObservation(self.ec.hmm)
-            self.ec.robs= FullyRepeatableObservation(self.ec.hmm)
+            #self.ec.robs= FullyRepeatableObservation(self.ec.hmm)
         self.ec.actual_interval= 0
         self.ec.actual_state= 0
 

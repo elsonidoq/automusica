@@ -1,7 +1,7 @@
 from electrozart import Instrument
 from electrozart.algorithms.hmm.rythm import RythmHMM
 from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext
-from electrozart.algorithms.hmm.melody import MelodyHMM
+from electrozart.algorithms.hmm.melody import NarmourHMM
 
 from electrozart.algorithms import AlgorithmsApplier, StackAlgorithm
 
