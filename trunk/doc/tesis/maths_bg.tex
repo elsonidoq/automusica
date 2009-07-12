@@ -1,0 +1,83 @@
+
+\section{Background matem\'atico}
+\subsection{Distribuciones de probabilidad}
+Las distribuci'ones de probabilidad son una herramienta que permite modelar el grado de certeza que se tiene sobre la ocurrencia de un 
+cierto evento $a$ de un conjunto de posibles eventos $S$. 
+Formalmente, una distribuci'on de probabilidad $p$, es una funci'on que cumple con las siguientes propiedades:
+
+\begin{axiom}
+$p(S) = 1$
+\end{axiom}
+
+\begin{axiom}
+$\forall a \in S, p(a) \geq 0$
+\end{axiom}
+
+\begin{axiom}
+Sean los conjuntos $A \subseteq S$, y $B \subseteq S$, entonces 
+$A \cap B = \phi \Rightarrow p(A \cup B) = p(A) + p(B)$
+\end{axiom}
+
+El conjunto $S$ en principio podr'ia ser tanto finito, como infinito (numerable o no numerable). 
+En general, salvo que se aclare lo contrario, se asume que el conjunto $S$ es \texttt{finito}.
+
+\subsection{Combinaci\'ones de distribuci\'ones de probabilidad}
+Una operaci'on muy frecuentemente utilizada a lo largo del presente trabajo es la \texttt{combinaci'on convexa} entre distribuciones
+de probabilidad.
+
+Dadas $p$ y $q$, dos distribuci'ones de probabilidad sobre el conjunto $S$, y un n'umero $0 \leq \alpha \leq 1$, 
+se nota $p +_\alpha q$ a la combinaci'on convexa entre $p$ y $q$, y se define:
+$$(p +_\alpha q)(A) = \alpha \times p(A) + (1-\alpha) \times q(A)$$ 
+
+En caso de referirse a $p+q$, se asume que $\alpha = 1/2$. 
+\newline \newline
+Observaci'ones:
+\begin{itemize}
+ \item Se puede demostrar que el resultado de combinar dos distribuci'ones de probabilidad de esta forma es tambi'en una distribuci'on 
+de probabilidad.
+
+ \item Notar que esta definici'on puede extenderse para $n$ distribuci'ones de probabilidad. En ese caso se necesitar'an valores 
+$\alpha_1, \dots, \alpha_n$, tales que $\sum_i \alpha_i = 1$. En general, se utilizara $\alpha_i = 1/n$ salvo que se aclare lo contrario.
+\end{itemize}
+
+
+\subsection{Cadenas de Markov}
+Las distribuci'ones de probabilidad permiten describir la relaci'on entre la frecuencia con la que dos eventos suelen aparecer, 
+sin embargo, no sirven para describir la din'amica de un sistema. Por ejemplo, sea $S = \{a, b, c\}$, un sistema con tres posibles eventos, 
+cuyas probabilidad son $p(a) = p(b) = p(c) = 1/3$. Una propiedad din'amica del sistema podr'ia ser que no sea posible que luego 
+de ocurrir $a$, ocurra $c$. 
+
+Esta propiedad claramente no esta reflejada con la descripci'on dada, sin embargo una Cadena de Markov, 
+es capaz de capturar este tipo de propiedades.
+Las cadenas de markov permiten modelar en cierto grado este tipo de dependencias teniendo en cuenta la probabilidad condicional entre
+los eventos.
+\newline \newline
+Formalmente, una cadena de markov es una dupla $<S,P>$, donde $S$ es el conjunto de posibles eventos, y $f : S \times S \rightarrow [0,1]$ la 
+distribuci'on condicional de ocurrencia, es decir, dados $s_1, s_2 \in S$, el valor de $f(s_1, s_2) = P(s_1 | s_2)$. 
+
+\textcolor{red}{Aca podria poner un ejemplo con dibujitos no?} 
+
+
+\subsection{Restaurantes chinos}
+\textcolor{red}{No se como motivarlos, como me recomendas?}\newline 
+\textcolor{red}{Cuanto escribo sobre los dirichlet process? creo que no hace mucha falta porque no lo uso para inferir el modelo} 
+
+El modelo de los restaurantes chinos (\emph{Chinese restaurants} \cita) es un modelo originado en la rama de estad\'istica bayesiana no param'etrica.
+Este modelo y otros similares, como el Buffet Indio (\emph{Indian Buffet} \cita), han ganado mucha popularidad debido a que el proceso que generan
+tiene una distribuci'on que permite estimar facilmente cual es la distribuci'on \texttt{a-posteriori} del proceso a partir de una distribuci'on 
+\texttt{a-priori} (o creencia previa) y de un conjunto de observaciones.
+
+Dado que el uso que se le dar'a a este modelo es puramente generativo, no se har'a incapi'e en los mecanimos necesarios para realizar inferencia\footnote{El lector interesado en profundizar en este tema refierase a \cita.}.
+Concretamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Escribir algo gracioso respecto al nombre}. 
+En cada mesa, a su vez, pueden sentarse una cantidad no acotada de clientes. Inicialmente todas las mesas se encuentran vac'ias, 
+y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elejir una mesa de las ya ocupadas. 
+Esto lo hace con la siguiente distribuci'on:
+\begin{align}
+P(\text{sentarse en mesa vacia}) =&\; n/(N + n)\\
+P(\text{sentare en mesa } i) =&\; N(i)/(N + n)
+\end{align}
+
+Siendo $N$ es la cantidad total de clientes en el restaurant, $N(i)$ es la cantidad de clientes en la mesa $i$, y $n$ es un 
+parametro que determina la \emph{concentraci'on} de clientes en cada mesa; se puede demostrar si $m$ es la cantidad de mesas ocupadas, entonces
+$E(m|N) \in O(n\times log(N))$ 
+
