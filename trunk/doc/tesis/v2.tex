@@ -1,0 +1,100 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[spanish, activeacute]{babel}
+
+\addtolength{\topmargin}{-80pt}
+\addtolength{\textwidth}{170pt}
+\addtolength{\textheight}{145pt}
+\addtolength{\oddsidemargin}{-80pt}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+\tableofcontents
+
+\section{Introduccion}
+\begin{itemize}
+ \item en los ultimos a~nos tanto el estudio de la cognicion musical como las tecnicas de machine learning evolucionaron por 
+ separado
+ \item cualquier modelo que se desee hacer para este tipo de problemas, necesariamente debe estar basado en trabajos del tipo 
+ psicologico/cognitivo (ver bien que palabras usar)
+ \item es por esto que se observa esta evolucion por separado de las areas de investigacion previamente mencionadas
+\end{itemize}
+
+Aca ademas diria algo como leo en muchos papers de como se organiza la tesis. Ahora sigue una seccion de background (como se dice en castellano?) que se dividira en dos partes: por un lado la que respecta a conceptos relacionados con el estudio cognitivo de la musica y por el otro definiciones y notacion para los modelos matematicos utilizados, y luego un poco de contextualizacion
+del trabajo mostrando el estado del arte en el tema.
+
+\section{Objetivos}
+aca diria cosas sobre los alcances de la tesis, mas que nada que me voy a limitar a hacer una linea melodica con estructura, 
+ni mas ni menos. En algun lado, tal vez me gustaria explicar cuanto mas complicado es que haya varios instrumentos interactuando,
+que posiblemente no baste con tener el mismo modelo replicado varias veces, porque hay que modelar las interacciones entre los 
+instrumentos
+
+\section{Background cognitivo}
+\subsection{Sobre acentuaci\'on}
+Aca va lo de Jackendoff de acentos
+
+\subsection{Alturas}
+Altura se le llama al pitch
+
+\subsection{Caracteristicas de una melodia}
+pondria algo como que cosas son las que caracterizan a una melodia, y cuales son perceptiblemente mas salientes.
+En el congreso aprendi que justo lo que hicimos con la cadena de markov de narmour, lo que hace
+es respetar el contorno melodico, que es la caracteristica mas pregnante
+
+
+\section{Background matematico}
+esta seccion es tanto como para establecer notacion, como para dar background en caso de no tenerlo.
+\subsection{Distribuciones de probabilidades}
+mas que nada para hablar de combinaciones convexas
+\subsection{Cadenas de markov}
+
+\subsection{Chinese restaurants}
+En algun lugar me gustaria poner sobre chinese restaurants para sesgar una random walk por su historia.
+
+
+\section{Estado del arte}
+tengo que ponerme a busacar cosas del trabajo previo y empezar a meterlas aca.
+Me gustaria en esta seccion hacer la distincion de quienes se basaron en principios cognitivos y quienes solo hacen cuentitas
+pretendiendo que las cuentitas hechas asi a ``ciegas'' sirvan de algo. 
+Esto creo que deberia 
+
+\section{Modelando la ritmica}
+No estoy seguro de si meter todo esto como subsecciones de una seccion que se llame algocomo ``modelos''.
+
+Aca basicamente motivo y cuento el modelo de la ritmica en terminos formales.
+
+\section{Modelando lineas melodicas}
+Item con la melodia, probablemente esta seccion tenga subsecciones por todas las problematicas que tiene este modelo.
+
+\section{El proceso generativo compuesto}
+Aca explico como unir los dos modelos anteriores... que termina siendo como una composicion de automatas. No se si lo explicaria
+formalmente, salvo que luego me de cuenta que necesite eso para explicar otra cosa.
+
+\section{Modelando la estructura de la composicion}
+Bueno, aca todavia esta todo en el tintero porque no tenemos nada hecho. Hay que ver que metemos de esto en la parte
+de background y que aca
+
+\section{El problema de programarlo}
+Aca contaria un poco porque es dificil programar esto a medida que uno avanza con la investigacion, y como lo ``solucione''
+con la arquitectura esta de los arboles de trabajadores
+
+\section{Arquitectura}
+Aca cuento la arquitectura, o sea, que modulos tengo y les pongo nombre a cada uno, y a partir de ahi empiezo a explicar
+sobre cada uno (el de la ritmica, el de la melodia, etc)
+
+\section{Experimentos}
+lalala que lindo va a ser cuando llene esta seccion
+
+\section{Resultados}
+
+\section{Concluciones}
+
+\section{Trabajo a futuro}
+Bueno, aca calculo que terminare hablando de que quiero ver como componer un tema entero y no solo uyna linea melodica con 
+estructura.
+
+
+\end{document}
+
