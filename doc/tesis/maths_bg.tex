@@ -1,26 +1,5 @@
 
 \section{Background matem\'atico}
-\subsection{Distribuciones de probabilidad}
-Las distribuci'ones de probabilidad son una herramienta que permite modelar el grado de certeza que se tiene sobre la ocurrencia de un 
-cierto evento $a$ de un conjunto de posibles eventos $S$. 
-Formalmente, una distribuci'on de probabilidad $p$, es una funci'on que cumple con las siguientes propiedades:
-
-\begin{axiom}
-$p(S) = 1$
-\end{axiom}
-
-\begin{axiom}
-$\forall a \in S, p(a) \geq 0$
-\end{axiom}
-
-\begin{axiom}
-Sean los conjuntos $A \subseteq S$, y $B \subseteq S$, entonces 
-$A \cap B = \phi \Rightarrow p(A \cup B) = p(A) + p(B)$
-\end{axiom}
-
-El conjunto $S$ en principio podr'ia ser tanto finito, como infinito (numerable o no numerable). 
-En general, salvo que se aclare lo contrario, se asume que el conjunto $S$ es \texttt{finito}.
-
 \subsection{Combinaci\'ones de distribuci\'ones de probabilidad}
 Una operaci'on muy frecuentemente utilizada a lo largo del presente trabajo es la \texttt{combinaci'on convexa} entre distribuciones
 de probabilidad.
@@ -42,20 +21,40 @@ $\alpha_1, \dots, \alpha_n$, tales que $\sum_i \alpha_i = 1$. En general, se uti
 
 
 \subsection{Cadenas de Markov}
-Las distribuci'ones de probabilidad permiten describir la relaci'on entre la frecuencia con la que dos eventos suelen aparecer, 
-sin embargo, no sirven para describir la din'amica de un sistema. Por ejemplo, sea $S = \{a, b, c\}$, un sistema con tres posibles eventos, 
-cuyas probabilidad son $p(a) = p(b) = p(c) = 1/3$. Una propiedad din'amica del sistema podr'ia ser que no sea posible que luego 
-de ocurrir $a$, ocurra $c$. 
+Supongamos que se desea modelar la evoluci'on de un sistema con respecto al tiempo. Es de esperarse que 
+el estado en el que se encuentra el sistema en cierto momento de alguna forma tenga que ver con la historia por la que este transit'o
+previamente. 
 
-Esta propiedad claramente no esta reflejada con la descripci'on dada, sin embargo una Cadena de Markov, 
-es capaz de capturar este tipo de propiedades.
-Las cadenas de markov permiten modelar en cierto grado este tipo de dependencias teniendo en cuenta la probabilidad condicional entre
-los eventos.
-\newline \newline
-Formalmente, una cadena de markov es una dupla $<S,P>$, donde $S$ es el conjunto de posibles eventos, y $f : S \times S \rightarrow [0,1]$ la 
-distribuci'on condicional de ocurrencia, es decir, dados $s_1, s_2 \in S$, el valor de $f(s_1, s_2) = P(s_1 | s_2)$. 
+Las cadenas de Markov permiten modelar este tipo de dependencias haciendo una asunci'on: el estado en el que se encuentra el sistema
+en un momento dado \emph{s'olo} depende del estado anterior en el que este se encontraba. Esta asunci'on es conocida como la propiedad
+de falta de memoria.
 
-\textcolor{red}{Aca podria poner un ejemplo con dibujitos no?} 
+Formalmente, una cadena de markov es una dupla $<S,P>$, donde $S$ es el conjunto de posibles estados del sistema, y $P$ la 
+distribuci'on condicional de ocurrencia, es decir, dados $s_1, s_2 \in S$, el valor de $P(s_2 | s_1)$ indica cual es la probabilidad
+de que el sistema pase estado $s_2$ dado que se encuentra actualmente en el estado $s_1$.  Volviendo a la propiedad de falta de memoria, 
+ahora es posible expresarla formalmente: $P(s_k | s_1, \cdots s_{k-1}) = P(s_k | s_{k-1})$.
+
+A modo ilustrativo, supongamos que se desea modelar el clima, restringiendo el clima a si llueve o no. De esta forma, el conjunto $S$ de estados
+ser'a $\{llueve, no\ llueve\}$. 
+
+Luego de recolectar datos durante un mes, se estiman las siguientes probabilidades:
+
+\begin{center}
+\begin{tabular}{l l l l}
+$P(lluvia | lluvia) $ & $=0.9$ & $P(lluvia | no\ llueve) $& $=0.1$\\
+$P(no\ lluvia | lluvia)  $ & $=0.3$ & $P(no\ lluvia | no\ llueve) $ & $=0.7$\\
+\end{tabular}
+\end{center}
+
+Gr'aficamente el sistema se ver'ia de la siguiente forma:
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=5cm]{images/weather_graph.png}
+\end{center}
+\end{figure}
+
+
 
 
 \subsection{Restaurantes chinos}
