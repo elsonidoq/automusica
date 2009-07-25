@@ -55,6 +55,21 @@ class HiddenMarkovModel(object):
             if len(info) > 0: continue
             self.state_transition[s]= dict(((s, prob) for s in self.state_transition))
 
+    #def create_river_model(self, path):
+    #    """
+    #    crea un modelo basado en la metafora del rio que pasa por
+    #    el camino de hidden states `path`
+    #    """
+    #    res= self.copy()
+    #    
+
+    def copy(self):
+        res= HiddenMarkovModel()
+        res.state_observation= dict((s, rv.copy()) for (s,rv) in self.state_observation.iteritems())
+        res.state_transition= dict((s1, dict(v.iteritems())) for (s1,v) in self.state_transition)
+        res.initial_probability= dict(self.initial_probability.iteritems())
+        return res
+
     def calc_stationationary_distr(self):
         pi= self.initial_probability.copy()
         for i in xrange(100):
