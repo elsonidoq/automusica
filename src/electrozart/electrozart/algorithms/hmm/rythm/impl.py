@@ -24,9 +24,11 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         self.builder= builder
 
     def __call__(self, score):
-        res= self.builder(score)
+        prev_res= self.builder(score)
+        res= [None] * len(prev_res)
         acum_duration= 0
-        for i, (duration, vars) in enumerate(res):
+        for i, (duration, vars) in enumerate(prev_res):
+            if acum_duration == 1229: import ipdb;ipdb.set_trace()
             res[i]= acum_duration, vars
             acum_duration+= duration
             acum_duration%= self.interval_size

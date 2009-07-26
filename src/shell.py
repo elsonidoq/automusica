@@ -4,4 +4,4 @@ from electrozart.parsing.midi import MidiScoreParser, MidiPatchParser, MidiScore
 from electrozart.writing.midi import MidiScoreWriter
 
 parser= MidiScoreParser()
-
+writer= MidiScoreWriter()

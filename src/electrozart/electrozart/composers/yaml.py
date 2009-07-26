@@ -1,6 +1,6 @@
 from electrozart import Instrument, PlayedNote, Silence
 from electrozart.algorithms.hmm.rythm import PhraseRythm, RythmHMM, RythmCacheAlgorithm
-from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext, YamlHarmonicContext
+from electrozart.algorithms.harmonic_context import YamlHarmonicContext
 from electrozart.algorithms.hmm.melody import NarmourHMM, PhraseMelody
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
 
@@ -18,7 +18,7 @@ def bind_params(base, override):
     res.update(override)
     return res
 
-class SupportNotesComposer(object):
+class YamlComposer(object):
     def __init__(self):
         self.params= dict(
             n_measures= 1,
@@ -32,10 +32,8 @@ class SupportNotesComposer(object):
         piano= score.instruments[0]
         interval_size= measure_interval_size(score, params['n_measures']) 
         
-        harmonic_context_alg= ScoreHarmonicContext(score)
-        harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base2.yaml', score.divisions)
-        harmonic_context_alg= ChordHarmonicContext(score)
-        #harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
+        harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base34.yaml', score.divisions)
+        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
         rythm_alg= RythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
         phrase_rythm_alg= RythmCacheAlgorithm(PhraseRythm(rythm_alg), 'part_id')
@@ -52,17 +50,15 @@ class SupportNotesComposer(object):
 
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, phrase_melody_alg)
 
-        duration= score.duration
-        #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
-        #duration= harmonic_context_alg.chordlist[-1].end
+        duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
 
         notes= applier.create_melody(duration, params['print_info'])
 
-        #chord_notes= []
-        #for c in harmonic_context_alg.chordlist:
-        #    for n in c.notes:
-        #        chord_notes.append(PlayedNote(n.pitch+3*12, c.start, c.duration, 80))
-        #duration= chord_notes[-1].end
+        chord_notes= []
+        for c in harmonic_context_alg.harmonic_context_alg.chordlist:
+            for n in c.notes:
+                chord_notes.append(PlayedNote(n.pitch+3*12, c.start, c.duration, 80))
+        duration= chord_notes[-1].end
 
         instrument= Instrument()
         instrument.patch= params['melody_instrument']
@@ -87,9 +83,9 @@ class SupportNotesComposer(object):
         piano= Instrument()
         instrument.patch= 74
         instrument.patch= 73
+        res.notes_per_instrument= {}
         res.notes_per_instrument[instrument]= notes
-        #res.notes_per_instrument= {instrument: notes}
-        #res.notes_per_instrument[piano]= chord_notes
+        res.notes_per_instrument[piano]= chord_notes
 
         #rythm_alg.draw_model('rythm.png')
 
