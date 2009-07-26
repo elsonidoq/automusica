@@ -24,7 +24,7 @@ class HiddenMarkovModel(object):
     probabilidad
     Se tiene una probabilidad inicial
     """
-    def __init__(self):    
+    def __init__(self, *args, **kwargs):
         # es un dic(estado, set(random_variable))
         self.state_observation= {}
         # es un dic(estado, dic(estado, prob))
@@ -41,8 +41,10 @@ class HiddenMarkovModel(object):
             n1_name= state2str(n1)
             for n2, prob in adj.iteritems():
                 n2_name= state2str(n2)
-                g.add_edge(n1_name, n2_name)
-                e= g.get_edge(n1_name, n2_name)
+                g.add_edge(n1, n2)
+                g.get_node(n1).attr['label']= str(n1_name)
+                g.get_node(n2).attr['label']= str(n2_name)
+                e= g.get_edge(n1, n2)
                 e.attr['label']= str(round(prob, 3))[:5]
         g.draw(fname, prog='dot', args='-Grankdir=LR')
 

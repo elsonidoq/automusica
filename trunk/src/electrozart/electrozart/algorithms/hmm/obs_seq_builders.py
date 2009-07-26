@@ -3,8 +3,9 @@ from electrozart import Score
 
 class ConditionalMidiObsSeq(object):
     def __call__(self, score):
-        for instrument, notes in score.notes_per_instrument.iteritems():
+        for instrument in score.instruments:
             if self.condition(instrument):
+                notes= score.get_notes(instrument=instrument)# , relative_to='crotchet')
                 return self._build_obs_seq(notes)
     
         raise Exception("no instrument found")
@@ -32,6 +33,19 @@ class ConditionalMidiObsSeq(object):
     def condition(self, instrument):
         raise NotImplementedException
 
+class FirstVoiceObsSeq(ConditionalMidiObsSeq):
+    def __init__(self, relative=False):
+        super(FirstVoiceObsSeq, self).__init__(self)
+        self.relative= relative
+
+    def __call__(self, score):
+        i= score.notes_per_instrument.keys()[0]
+        if self.relative:
+            notes= score.get_first_voice(relative_to='crotchet')
+        else:
+            notes= score.get_first_voice()
+        return self._build_obs_seq(notes)
+
 class MidiPatchObsSeq(ConditionalMidiObsSeq):
     def __init__(self, patch):
         """
@@ -55,34 +69,6 @@ class MidiChannelObsSeq(ConditionalMidiObsSeq):
     def condition(self, instrument):
         return self.channel == instrument.channel
         
-
-class ModuloObsSeq(ConditionalMidiObsSeq):
-    def __init__(self, builder, interval_size):
-        """
-        params:
-          builder :: ConditionalMidiObsSeq
-          interval_size :: int
-            es el tamanho del intervalo por el que va a ser cocientado 
-            la observation sequence
-        """
-        ConditionalMidiObsSeq.__init__(self)
-        self.interval_size= interval_size
-        self.builder= builder
-
-    def __call__(self, score):
-        # XXX
-        i= score.notes_per_instrument.keys()[0]
-        notes= score.get_first_voice()
-        score= Score(score.divisions)
-        score.notes_per_instrument={i:notes}
-        res= self.builder(score)
-        acum_duration= 0
-        for i, (duration, vars) in enumerate(res):
-            res[i]= acum_duration, vars
-            acum_duration+= duration
-            acum_duration%= self.interval_size
-
-        return res
 
 class MidiObsSeqOrder3(object):
     def __init__(self, obsseq):

@@ -25,6 +25,7 @@ class HmmAlgorithm(Algorithm):
         self.hidden_states= set()
 
     def train(self, score):
+        import winpdb;winpdb.rpdb2.settrace()
         obs_seq= self.obsSeqBuilder(score)
         if not obs_seq: return
         self.hidden_states.update(imap(lambda x:x[0], obs_seq))

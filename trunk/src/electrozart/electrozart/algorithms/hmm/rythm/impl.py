@@ -4,20 +4,45 @@ from bisect import bisect
 from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
 
 from electrozart.algorithms.hmm import HmmAlgorithm
-from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, ModuloObsSeq
+from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, FirstVoiceObsSeq
 from electrozart import Score, PlayedNote, Silence, Instrument
 from electrozart.algorithms import ExecutionContext, needs, produces, child_input
+
+from rythm_model import RythmModel
+
+class ModuloObsSeq(ConditionalMidiObsSeq):
+    def __init__(self, builder, interval_size):
+        """
+        params:
+          builder :: ConditionalMidiObsSeq
+          interval_size :: int
+            es el tamanho del intervalo por el que va a ser cocientado 
+            la observation sequence
+        """
+        ConditionalMidiObsSeq.__init__(self)
+        self.interval_size= interval_size
+        self.builder= builder
+
+    def __call__(self, score):
+        res= self.builder(score)
+        acum_duration= 0
+        for i, (duration, vars) in enumerate(res):
+            res[i]= acum_duration, vars
+            acum_duration+= duration
+            acum_duration%= self.interval_size
+
+        return res
 
 class RythmHMM(HmmAlgorithm):
     def __init__(self, interval_size, multipart=True, *args, **kwargs):
         super(RythmHMM, self).__init__(*args, **kwargs)
-        self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
+        self.obsSeqBuilder= ModuloObsSeq(FirstVoiceObsSeq(), interval_size)
         self.interval_size= interval_size
         self.multipart= multipart
         
     def create_model(self):
         initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
-        hmm= self.learner.get_trainned_model(initial_probability)
+        hmm= self.learner.get_trainned_model(initial_probability, lambda: RythmModel(interval_size=self.interval_size))
         hmm.make_walkable()
         self.model= hmm
         return hmm
@@ -85,6 +110,9 @@ class RythmHMM(HmmAlgorithm):
             n.start+= n_intervals*self.interval_size
         return res            
         
+
+    def draw_model(self, fname):
+        self.model.draw(fname, str)
 
 
 

@@ -222,15 +222,20 @@ class Score(object):
         return res
 
 
-    def get_first_voice(self, skip_silences=False):
+    def get_first_voice(self, skip_silences=False, relative_to=None):
         allnotes= list(chain(*self.notes_per_instrument.values()))
         allnotes.sort(key=lambda x:x.start)
         res= []
         for start, ns in groupby(allnotes, key=lambda x:x.start):
             n= max(ns, key=lambda x:-1 if x.is_silence else x.pitch)
             res.append(n)
+
         if skip_silences:
             res= [n for n in res if not n.is_silence]
+
+        if relative_to is not None:
+            res= self._relative_notes(res, relative_to)
+
         return res
 
     @property
@@ -246,7 +251,7 @@ class Score(object):
         params:
           relative_to :: string
             determina si las duraciones son relativas. 
-            Posibles valores: None, 'quaver' (corchea), 'crotchet' (negra), 'minim'(blanca), 'semi_breve' (redonda) 
+            Posibles valores: None, 'quaver' (corchea), 'crotchet' (negra, self.divisions), 'minim'(blanca), 'semi_breve' (redonda) 
           
           instrument :: Instrument
             devuelve las notas correspondientes a instrument 
@@ -264,13 +269,17 @@ class Score(object):
         allnotes.sort(key=lambda n:n.start)            
 
         if relative_to is not None:
-            divisor= self._get_relative_value(relative_to)
-            for i, n in enumerate(allnotes):
-                allnotes[i]= n.copy() 
-                allnotes[i].duration= Fraction(n.duration, divisor)
-                allnotes[i].start= Fraction(n.start, divisor)
+            allnotes= self._relative_notes(notes, relative_to)
         return allnotes
 
+    def _relative_notes(self, notes, relative_to):
+        divisor= self._get_relative_value(relative_to)
+        for i, n in enumerate(notes):
+            notes[i]= n.copy() 
+            notes[i].duration= Fraction(n.duration, divisor)
+            notes[i].start= Fraction(n.start, divisor)
+        return notes
+        
     def _get_relative_value(self, relative_to):
         if not relative_to in self.relative_values:
             raise ValueError('relative_to must be in (%s)' % ', '.join((str(k) for k in values)))
