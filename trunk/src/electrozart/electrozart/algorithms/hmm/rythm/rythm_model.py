@@ -19,13 +19,14 @@ class RythmModel(HiddenMarkovModel):
     def get_metrical_accent(self, note):
         if self.metrical_accents is None:
             self.calculate_metrical_accents()
-            max_accent= max(self.metrical_accents.itervalues())
-            second_accent= max(a for a in self.metrical_accents.itervalues() if a!=max_accent)
+            ranked_accents= sorted(metrical_accents.itervalues())
             for moment, accent in self.metrical_accents.iteritems():
-                if accent == max_accent:
+                if accent == ranked_accents[-1]:
                     accent= 3
-                elif accent == second_accent:
+                elif accent == ranked_accents[-2]:
                     accent= 2
+                #elif accent == ranked_accents[-3]:
+                #    accent= 2
                 else:
                     accent= 1
                 self.metrical_accents[moment]= accent

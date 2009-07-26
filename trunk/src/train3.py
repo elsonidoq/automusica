@@ -61,6 +61,7 @@ def main(argv):
 
 from electrozart.composers.narmour_markov import NarmourMarkov
 from electrozart.composers.support_notes import SupportNotesComposer
+from electrozart.composers.yaml import YamlComposer
 
 from electrozart.parsing.midi import MidiScoreParser
 from electrozart.writing.notes import NotesScoreWriter
@@ -80,6 +81,7 @@ def train3(options, args):
     
     composer= NarmourMarkov()
     composer= SupportNotesComposer()
+    composer= YamlComposer()
     composed_score= composer.compose(score)
 
     writer= NotesScoreWriter()
