@@ -33,6 +33,13 @@ class Fraction(object):
         self._num= self._num / el_mcd
         self._denom= self._denom / el_mcd
         
+    def __mod__(self, num):
+        return Fraction(((self._num/self._denom) % num)*self._denom + (self._num % self._denom), self._denom)
+        res= Fraction(self._num, self._denom)
+        while res > 0:
+            res-=num
+        return res + num            
+        
     def __add__(self, numero):
         # pre: type(numero) == Fraction o int
 
@@ -104,6 +111,7 @@ def mcd(a, b):
     else:
         return mcd(b, a % b)
     
+gcd= mcd    
     
 def test_frac():
     # 2/3

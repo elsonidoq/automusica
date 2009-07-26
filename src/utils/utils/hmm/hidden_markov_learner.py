@@ -79,12 +79,17 @@ class HiddenMarkovLearner(object):
             ntimes= var_obs[val]
             var_obs[val]= ntimes + 1
 
-    def get_trainned_model(self, initial_probability):
+    def get_trainned_model(self, initial_probability, hmm_class=None):
         """
         initial_probability es {state:prob}
+        hmm_class es subclase de HiddenMarkovLearner  
         """
 
-        res= HiddenMarkovModel()
+        if hmm_class is not None:
+            res= hmm_class()
+            assert isinstance(res, HiddenMarkovModel)
+        else:
+            res= HiddenMarkovModel()
         state_observation= self.state_observation
         # la informacion de transiciones
         for state_from, info in self.state_transition.iteritems():

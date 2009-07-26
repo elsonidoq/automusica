@@ -32,10 +32,10 @@ class SupportNotesComposer(object):
         piano= score.instruments[0]
         interval_size= measure_interval_size(score, params['n_measures']) 
         
-        #harmonic_context_alg= ScoreHarmonicContext(score)
-        harmonic_context_alg= ChordHarmonicContext(score)
+        harmonic_context_alg= ScoreHarmonicContext(score)
         harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base2.yaml', score.divisions)
-        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
+        harmonic_context_alg= ChordHarmonicContext(score)
+        #harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
         rythm_alg= RythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
         phrase_rythm_alg= RythmCacheAlgorithm(PhraseRythm(rythm_alg), 'part_id')
@@ -52,27 +52,37 @@ class SupportNotesComposer(object):
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, phrase_melody_alg)
 
         duration= score.duration
-        duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
+        #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
+        #duration= harmonic_context_alg.chordlist[-1].end
 
         notes= applier.create_melody(duration, params['print_info'])
 
-        chord_notes= []
-        for c in harmonic_context_alg.harmonic_context_alg.chordlist:
-            for n in c.notes:
-                chord_notes.append(PlayedNote(n.pitch+3*12, c.start, c.duration, 80))
-        duration= chord_notes[-1].end
+        #chord_notes= []
+        #for c in harmonic_context_alg.chordlist:
+        #    for n in c.notes:
+        #        chord_notes.append(PlayedNote(n.pitch+3*12, c.start, c.duration, 80))
+        #duration= chord_notes[-1].end
 
         instrument= Instrument()
         instrument.patch= params['melody_instrument']
 
         res= score.copy()
+        rythm_alg.model.calculate_metrical_accents()
+        rythm_alg.model.draw_accents('accents.png', score.divisions)
+        max_accent= max(rythm_alg.model.metrical_accents.itervalues())
+        for n in notes:
+            n.volume= 70 #  max(50, (80 * rythm_alg.model.get_metrical_accent(n))/max_accent)
+
         for n in res.get_notes(skip_silences=True):
-            n.volume= 70
+            n.volume= 40
 
         piano= res.notes_per_instrument.keys()[0]
         res.notes_per_instrument[instrument]= notes
         res.notes_per_instrument= {instrument: notes}
-        res.notes_per_instrument[piano]= chord_notes
+        #res.notes_per_instrument[piano]= chord_notes
+
+        #rythm_alg.draw_model('rythm.png')
+
         return res
 
     
