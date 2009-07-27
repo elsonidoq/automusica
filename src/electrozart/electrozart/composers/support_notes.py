@@ -75,13 +75,13 @@ class SupportNotesComposer(object):
         for i, n in enumerate(notes):
             accent= rythm_alg.model.get_metrical_accent(n)
             n.volume=  max(62, (100 * accent)/max_accent)
-            if not n.is_silence: n.pitch+=24
+            if not n.is_silence: n.pitch+=12
             if accent == 1: #  and random.random() > 0.5:
                 pass
                 #notes[i]= Silence(n.start, n.duration)
 
         for n in res.get_notes(skip_silences=True):
-            n.volume= 70
+            n.volume= 65
 
         piano= res.notes_per_instrument.keys()[0]
         piano= Instrument()

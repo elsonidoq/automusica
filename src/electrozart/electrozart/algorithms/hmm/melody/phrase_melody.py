@@ -1,4 +1,5 @@
-from random import choice
+from random import choice, randint
+from math import log, floor
 from collections import defaultdict
 
 from utils.hmm import RandomObservation, HiddenMarkovModel
@@ -120,12 +121,21 @@ class PhraseMelody(ListAlgorithm):
         self.melody_alg.start_creation()
         self.ec.last_state= None
         self.ec.last_support_note= None
+        self.ec.support_note_cache= {}
 
     def pick_support_note(self, chord):
         if self.ec.last_support_note is None:
             res= choice(chord.notes).pitch 
         else:
-            res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
+            #res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
+
+            if chord in self.ec.support_note_cache:
+                res= self.ec.support_note_cache[chord]
+            else:
+                notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
+                r= randint(1, 2**len(notes)-1)
+                res= notes[int(floor(log(r, 2)))].pitch
+                self.ec.support_note_cache[chord]= res
         self.ec.last_support_note= res
         return res
 
