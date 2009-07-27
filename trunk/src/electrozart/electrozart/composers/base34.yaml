@@ -70,3 +70,69 @@ chords:
   - G:
       type: Major
       duration: 1
+  - C:
+      type: Major
+      duration: 2
+  - A:
+      type: Minor
+      duration: 1
+
+  - G:
+      type: Major
+      duration: 2
+  - G:
+      type: Major
+      duration: 1
+
+
+  - C:
+      type: Major
+      duration: 2
+  - A:
+      type: Minor
+      duration: 1
+
+  - G:
+      type: Major
+      duration: 2
+  - G:
+      type: Major
+      duration: 1
+
+  - C:
+      type: Major
+      duration: 2
+  - A:
+      type: Minor
+      duration: 1
+
+  - G:
+      type: Major
+      duration: 2
+  - G:
+      type: Major
+      duration: 1
+
+  - C:
+      type: Major_seventh
+      duration: 1
+  - F:
+      type: Major
+      duration: 1
+  - F:
+      type: Major
+      duration: 1
+
+  - C:
+      type: Major
+      duration: 2
+  - A:
+      type: Minor
+      duration: 1
+
+  - G:
+      type: Major
+      duration: 2
+  - G:
+      type: Major
+      duration: 1
