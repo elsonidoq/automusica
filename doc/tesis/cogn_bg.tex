@@ -4,51 +4,66 @@ se podr'an mostrar ciertos comportamientos deseados de los modelos planteados.
 
 Principalmente, la m'usica tiene dos grandes componentes: la del \texttt{tiempo} y la de la 
 \texttt{altura}. La dimensi\'on del tiempo se refiere a las duraci\'ones de los distintos eventos que 
-ocurren en una pieza musical. La dimensi\'on de la altura, por otro lado, se refiere a la percepci\'on de las distintas notas que ocurren 
+ocurren en una pieza musical. Por otro lado, la altura se refiere a la percepci\'on de las distintas notas que ocurren 
 en un tema. 
 
 Si bien estas dos dimensiones se presentan por separado, de ninguna manera son independientes. Ser'an abordadas de esta forma 
 para facilitar una primera descripci'on. De ser necesario, posteriormente se elaborar'an los conceptos que refieran a las interacciones entre 
 estas dos componentes. 
 
+\subsection{Rese~na hist\'orica}
+En esta secci\'on pretendo poner un poco que sobre Schenker, su relacion con las gramaticas de Chomsky y luego Lerdahl y Jackendoff. \red{Estais de acuerdo?}
+
 \subsection{El tiempo es racional: el concepto de \emph{beat}}
 
-En su libro, Lerdhal y Jackendoff(\cita) hacen una distinci'on entre dos estructuras que ocurren en simultaneidad en la m'usica:
+En su libro, Lerdahl y Jackendoff(\cita) hacen una distinci'on entre dos estructuras que ocurren en simultaneidad en la m'usica:
 La estructura \emph{m'etrica} y la estructura del \emph{agrupamiento}\footnote{\emph{meter} y \emph{grouping} en ingl'es}. 
-Esta distinci'on aparece en la literatura por todos lados(\red{citas muchas!}), se toma la version de Lerdhal y Jackendoff por ser esta m'as computacional.
+Esta distinci'on en t'erminos generales coincide con clasificaciones de otros autores (\red{citas muchas!}), se toma la version de Lerdahl y Jackendoff 
+por ser esta m'as computacional.
 La estructura del agrupamiento hace referencia a la organizaci'on de una pieza musical en unidades que pueden ser motivos, frases, secciones, etc. 
 Cada una de estas unidades, es denominada por los autores \emph{grupo}. Asimismo, el oyente infiere una estructura regular de pulsos. 
-Algunos pulsos, tambi'en denominados \emph{beats}, son m'as fuertes que otros, determinando lo que los autores definen como la estructura
-m'etrica. Para ponerlo en concreto pensar la estructura como la forma en la que un director de orquesta mueve su batuta. En lo subsiguiente se utilizar'a
-los t'erminos pulso y beat como sin'onimos intercambiables.
+Algunos pulsos son m'as fuertes que otros, determinando lo que los autores definen como la estructura m'etrica. 
+Para ponerlo en concreto pensar la estructura como la forma en la que un director de orquesta mueve su batuta. 
+En lo subsiguiente se utilizar'an los t'erminos pulso y \emph{beat} como sin'onimos intercambiables.
 
-Ambas estructuras tienen una forma jer'arquica, en el sentido de que hay estructuras a distintos niveles, y que las estructuras de niveles superiores 
+Ambas estructuras tienen una forma jer'arquica, en el sentido de que existen sub-estructuras a distintos niveles, y que las sub-estructuras de niveles superiores 
 incluyen por completo a las de nivel inferior\footnote{Para una definici'on mas formal de la jerarqu'ia referirse a \cita}. De esta forma, una secci'on
 de una pieza musical estar'a formada por una sucesi'on de frases. Estas frases s'olo pertenecer'an a esa secci'on, sin embargo, esto no quiere decir
 que no se pueda repetir una frase en dos secciones distitnas, puesto que cada una pertenecer'a a una sola secci'on. 
-Esto mismo ocurre con la estructura m'etrica; hay distintos niveles de beats dados por el tiempo que ocurre entre dos pulsos sucesivos. De esta forma, al 
-ocurrir estos en tiempos regulares, s'olo hace falta saber cual es la distancia entre cualquier par de beats para referirse a ese nivel. 
+Esto mismo ocurre con la estructura m'etrica; existen distintos niveles de beats dados por el tiempo que ocurre entre dos pulsos sucesivos. De esta forma, al 
+ocurrir estos en tiempos regulares, s'olo hace falta saber cual es la distancia entre cualquier par de beats consecutivos para referirse a ese nivel. 
+
+La organizaci'on jer'arquica de la m'usica no es una teor'ia solo postulada por Lerdahl y Jackendoff; Cooper y Meyer(\cita) plantean una teor'ia similar en
+estos t'erminos, Kramer(\cita) si bien no habla directamente de una jerarqu'ia, propone que tienen un rol 
+estructurante\footnote{\red{tengo que leer m'as, as'i se mejor de lo que hablan estos dos muchachos}}. 
 
 Un nivel de especial inter'es, es el denominado \emph{tactus}, que b'asicamente es el marcado por el director de orquesta al mover su batuta. 
-El tactus tambi'es es la distancia entre los pulsos que el oyente marca cuando mueve el pie y est'a relacionado con el baile. 
+El tactus tambi'en es la distancia entre los pulsos que el oyente marca cuando mueve el pie y est'a relacionado con el baile. 
 
-Est'a de m'as decir que esta estructura es ambigua, en el sentido de que que muchas veces no hay una 'unica descomposici'on de una pieza musical 
+Es importante notar que esta estructura es ambigua, en el sentido de que que muchas veces no existe una 'unica descomposici'on de una pieza musical 
 en una estructura m'etrica y de agrupamiento.
 
 
 \subsection{Acentuaci\'on}
-Una car'acteristica de la m'usica, tambien compartida con el habla, es que un mismo evento no es percibido de la misma forma seg'un
+Una car'acteristica de la m'usica, tambi'en compartida con el habla, es que un mismo evento no es percibido de la misma forma seg'un
 el contexto en el que ocurre. Hay varios factores que afectan el contexto, y uno de ellos es la \texttt{acentuaci\'on}. 
 
-Un evento musical es escuchado como acentuado si es enfatizado de alg\'una forma. Lerdahl y Jackendoff (\cita) distinguen tres tipos de 
-acentos: los acentos fenomenales \red{se que no es esta la traducci\'on, como se dice en espa~nol?}, estructurales y m'etricos.
+Un evento musical es escuchado como acentuado si es enfatizado de alg\'una forma. Lerdahl y Jackendoff(\cita) distinguen tres tipos de 
+acentos: los acentos fenomenales \footnote{\red{se que no es esta la traducci\'on, como se dice en espa~nol?}}, estructurales y m'etricos.
 Un acento fenomenal es cualquier evento que de 'enfasis o estress a un momento en la pieza musical. \red{Que ejemplos doy? esto lo va a 
 leer gente que \emph{no sabe} musica}. Los acentos estructurales son puntos de apoyo para finalizar una parte o una frase. 
-Por 'ultimo, los acentos m'etricos son aquellos beats relativamente fuertes dentro del contexto m'etrico donde suceden.\newline
-\red{tengo que explicar que es un beat?} \red{que es el contexto metrico? no se como explicarlo, para mi es como el compas jaja}
+Por 'ultimo, los acentos m'etricos son aquellos beats relativamente fuertes dentro del contexto m'etrico donde suceden.
 
-Es importante notar que esta categorizaci'on no es excluyente, es decir, un beat puede estar en m'as de una de las categor'ias mencionadas.
-Para ejemplificar, los acentos fenomenales act'uan como pistas que ayudan al oyente a extrapolar un patr'on regular de acentos m'etricos, 
-de esta forma, beats que son acentuados con un acento fenomenal, tambi'en lo son con un acento m'etrico.
+Kramer(\cita) tambi'en reconoce tres tipos distintos de acentos, llamados \emph{m'etrico}, \emph{stress} y \emph{r'itmico}. Esta categorizaci'on
+es equivalente a la dada por Lerdahl y Jackendoff.
+
+Meyer(\cita) no elabora\footnote{checkear que sea realmente asi} una taxonom'ia de acentos. Su inter'es no est'a en saber \emph{qu'e} hace
+que un pulso est'e acentuado sino \emph{c'omo} opera un pulso acentuado en terminos de estructura r'itmica. En estos t'erminos distingue
+que los pulsos acentuados son de alguna forma el punto de foco donde los beats circundantes se agrupan. 
+
+Es importante notar que este tipo de categorizaciones no son excluyentes, es decir, un beat puede tener m'as de un tipo de acento al mismo tiempo.
+Para ejemplificar, dentro de la teor'ia de Lerdahl y Jackendoff se describe el proceso cognitivo por el cual se infieren los acentos m'etricos. Este
+proceso consiste en que el oyente utiliza los acentos fenomenales y estructurales como pistas para extrapolar un patr'on regular de acentos m'etricos. 
+Dentro de 'este contexto, no es la excepci'on, sino la regla que haya beats que son acentuados con un acento fenomenal y m'etrico al mismo tiempo.
 
 
