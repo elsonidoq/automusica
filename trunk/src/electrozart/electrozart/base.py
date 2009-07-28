@@ -149,6 +149,9 @@ class Instrument(object):
         self.id= Instrument.id_seq
         Instrument.id_seq+=1
 
+    def __repr__(self):
+        return "Instrument(patch=%s, channel=%s)" % (self.patch, self.channel)
+
     def __hash__(self):
         return hash(self.id)
     #def __eq__(self, other):
