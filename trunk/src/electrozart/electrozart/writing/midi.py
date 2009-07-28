@@ -72,8 +72,7 @@ class MidiScoreWriter(ScoreWriter):
         events= self._generate_events(stuff)
         for event in events:
             mof.update_time(event.time, relative=False)
-            try: event.apply(mof)
-            except: import ipdb;ipdb.set_trace()
+            event.apply(mof)
 
     def _organize_tracks(self, score):
         #import ipdb;ipdb.set_trace()
