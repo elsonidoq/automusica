@@ -47,7 +47,7 @@ class SupportNotesComposer(object):
         interval_size= measure_interval_size(score, params['n_measures']) 
         
         harmonic_context_alg= ScoreHarmonicContext(score)
-        harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base2.yaml', score.divisions)
+        #harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base2.yaml', score.divisions)
         harmonic_context_alg= ChordHarmonicContext(score)
         #harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
@@ -154,16 +154,10 @@ class SupportNotesComposer(object):
         from electrozart import base
         from electrozart.algorithms import ExecutionContext
         from pycana import CodeAnalyzer
-        import pycana
-        from pycana import relations
-        r= relations.Relation(list, list)
-        r1= relations.AggregationRelation(list, list, True, None)
-        r2= relations.InheritanceRelation(list, list)
-        r3= relations.ClassRelation(list, list)
 
-        #analyzer= CodeAnalyzer(electrozart)
-        #relations= analyzer.analyze(exceptions= [ExecutionContext])
-        #analyzer.draw_relations(relations, 'relations.png')
+        analyzer= CodeAnalyzer(electrozart)
+        relations= analyzer.analyze(exceptions= [ExecutionContext])
+        analyzer.draw_relations(relations, 'relations.png')
 
 
         return res
