@@ -55,28 +55,3 @@ Gr'aficamente el sistema se ver'ia de la siguiente forma:
 \end{figure}
 
 
-
-
-\subsection{Restaurantes chinos}
-\textcolor{red}{No se como motivarlos, como me recomendas?}\newline 
-\textcolor{red}{Cuanto escribo sobre los dirichlet process? creo que no hace mucha falta porque no lo uso para inferir el modelo} 
-
-El modelo de los restaurantes chinos (\emph{Chinese restaurants} \cita) es un modelo originado en la rama de estad\'istica bayesiana no param'etrica.
-Este modelo y otros similares, como el Buffet Indio (\emph{Indian Buffet} \cita), han ganado mucha popularidad debido a que el proceso que generan
-tiene una distribuci'on que permite estimar facilmente cual es la distribuci'on \texttt{a-posteriori} del proceso a partir de una distribuci'on 
-\texttt{a-priori} (o creencia previa) y de un conjunto de observaciones.
-
-Dado que el uso que se le dar'a a este modelo es puramente generativo, no se har'a incapi'e en los mecanimos necesarios para realizar inferencia\footnote{El lector interesado en profundizar en este tema refierase a \cita.}.
-Concretamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Escribir algo gracioso respecto al nombre}. 
-En cada mesa, a su vez, pueden sentarse una cantidad no acotada de clientes. Inicialmente todas las mesas se encuentran vac'ias, 
-y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elejir una mesa de las ya ocupadas. 
-Esto lo hace con la siguiente distribuci'on:
-\begin{align}
-P(\text{sentarse en mesa vacia}) =&\; n/(N + n)\\
-P(\text{sentare en mesa } i) =&\; N(i)/(N + n)
-\end{align}
-
-Siendo $N$ es la cantidad total de clientes en el restaurant, $N(i)$ es la cantidad de clientes en la mesa $i$, y $n$ es un 
-parametro que determina la \emph{concentraci'on} de clientes en cada mesa; se puede demostrar si $m$ es la cantidad de mesas ocupadas, entonces
-$E(m|N) \in O(n\times log(N))$ 
-
