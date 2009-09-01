@@ -4,7 +4,7 @@ from bisect import bisect
 from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
 
 from electrozart.algorithms.hmm import HmmAlgorithm
-from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, FirstVoiceObsSeq
+from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, FirstVoiceObsSeq, MidiPatchObsSeq, MidiObsSeqOrder2
 from electrozart import Score, PlayedNote, Silence, Instrument
 from electrozart.algorithms import ExecutionContext, needs, produces, child_input
 
@@ -30,7 +30,10 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         for i, (duration, vars) in enumerate(prev_res):
             if acum_duration == 1229: import ipdb;ipdb.set_trace()
             res[i]= acum_duration, vars
-            acum_duration+= duration
+            if isinstance(duration, int):
+                acum_duration+= duration
+            else: # es tupla porque es order 2 o 3
+                acum_duration+= duration[-1]
             acum_duration%= self.interval_size
 
         return res
@@ -38,12 +41,21 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
 class RythmHMM(HmmAlgorithm):
     def __init__(self, interval_size, multipart=True, *args, **kwargs):
         super(RythmHMM, self).__init__(*args, **kwargs)
+        #self.obsSeqBuilder= MidiObsSeqOrder2(ModuloObsSeq(FirstVoiceObsSeq(), interval_size))
+        self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         self.obsSeqBuilder= ModuloObsSeq(FirstVoiceObsSeq(), interval_size)
         self.interval_size= interval_size
         self.multipart= multipart
         
     def create_model(self):
-        initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
+        a_state= iter(self.hidden_states).next()
+        if isinstance(a_state, int):
+            initial_probability= dict( ((s,1.0 if s == 0 else 0) for s in self.hidden_states) )
+        else:
+            initial_probability= dict( ((s,1.0 if s[1] == 0 else 0) for s in self.hidden_states) )
+            s= sum(initial_probability.itervalues())
+            for k, v in initial_probability.iteritems():
+                initial_probability[k]= v/s
         hmm= self.learner.get_trainned_model(initial_probability, lambda: RythmModel(interval_size=self.interval_size))
         hmm.make_walkable()
         self.model= hmm
@@ -59,7 +71,8 @@ class RythmHMM(HmmAlgorithm):
             self.ec.robs= RandomObservation(self.ec.hmm)
             #self.ec.robs= FullyRepeatableObservation(self.ec.hmm)
         self.ec.actual_interval= 0
-        self.ec.actual_state= 0
+        # XXX para order 2 esto no va, puede que sea necesario igual
+        #self.ec.actual_state= 0
 
     def get_current_robs(self, robsid):
         if not self.multipart:
@@ -112,9 +125,8 @@ class RythmHMM(HmmAlgorithm):
             n.start+= n_intervals*self.interval_size
         return res            
         
-
-    def draw_model(self, fname):
-        self.model.draw(fname, str)
+    def draw_model(self, fname, divisions):
+        self.model.draw(fname, divisions)
 
 
 

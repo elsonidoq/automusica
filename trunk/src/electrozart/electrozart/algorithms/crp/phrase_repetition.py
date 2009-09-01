@@ -23,7 +23,8 @@ class PhraseRepetitions(Algorithm):
                             input.prox_chord.get_canonical())
         else:
             phrase_moment= (input.now_chord.get_canonical(), 
-                            input.prox_chord.get_canonical())
+                            input.prox_chord.get_canonical(),
+                            input.now_chord.duration)
 
         #import ipdb;ipdb.set_trace()
         if phrase_moment not in self.ec.crps:

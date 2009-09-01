@@ -16,6 +16,14 @@ class RythmModel(HiddenMarkovModel):
             return "%s;%s" % (Fraction(node, divisions), self.metrical_accents[node/self.global_gcd])
         return self.draw(fname, f)
 
+    def draw(self, fname, divisions):
+        def f(node):
+            if isinstance(node, int):
+                return "%s" % Fraction(node, divisions)
+            else:
+                return "%s->%s" % (Fraction(node[0], divisions), Fraction(node[1], divisions))
+        return super(RythmModel, self).draw(fname, f)
+
     def get_metrical_accent(self, note):
         if self.metrical_accents is None:
             self.calculate_metrical_accents()
@@ -44,11 +52,11 @@ class RythmModel(HiddenMarkovModel):
         nodes.sort()
 
         result= defaultdict(lambda :0)
-        self.recursive_metrical_accents(nodes, self.interval_size/self.global_gcd, result)
+        self._recursive_metrical_accents(nodes, self.interval_size/self.global_gcd, result)
         self.metrical_accents= dict(result)
 
 
-    def recursive_metrical_accents(self, nodes, interval_size, result):
+    def _recursive_metrical_accents(self, nodes, interval_size, result):
         assert interval_size + nodes[0] not in nodes
         assert nodes[-1] < interval_size + nodes[0]
 
@@ -71,7 +79,7 @@ class RythmModel(HiddenMarkovModel):
                     index2= nodes.index(n2)
                     recursive_nodes= nodes[index1:index2]
                     if len(recursive_nodes) > 1:
-                        self.recursive_metrical_accents(recursive_nodes, n2-n1, result)
+                        self._recursive_metrical_accents(recursive_nodes, n2-n1, result)
 
                 # me estoy comiendo el ultimo cacho, lo hago fuera del while                    
                 n1= (divisor-1)*interval_size/divisor + nodes[0]
@@ -79,7 +87,7 @@ class RythmModel(HiddenMarkovModel):
                 recursive_nodes= nodes[index1:]
                 if len(recursive_nodes) > 1:
                     #import ipdb;ipdb.set_trace()
-                    self.recursive_metrical_accents(recursive_nodes, interval_size + nodes[0]-n1, result)
+                    self._recursive_metrical_accents(recursive_nodes, interval_size + nodes[0]-n1, result)
                 
                 break
 

@@ -1,7 +1,7 @@
 from electrozart import Instrument, PlayedNote, Silence
-from electrozart.algorithms.hmm.rythm import PhraseRythm, RythmHMM, RythmCacheAlgorithm
+from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgorithm
 from electrozart.algorithms.harmonic_context import YamlHarmonicContext
-from electrozart.algorithms.hmm.melody import NarmourHMM, PhraseMelody
+from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
 
 from electrozart.algorithms import AlgorithmsApplier, CacheAlgorithm
@@ -36,12 +36,12 @@ class YamlComposer(object):
         harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
         rythm_alg= RythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
-        phrase_rythm_alg= RythmCacheAlgorithm(PhraseRythm(rythm_alg), 'part_id')
+        phrase_rythm_alg= RythmCacheAlgorithm(ListRythm(rythm_alg), 'part_id')
         #phrase_rythm_alg= rythm_alg
 
         melody_alg= NarmourHMM(instrument=piano.patch, channel=piano.channel)
-        #phrase_melody_alg= PhraseMelody(melody_alg)
-        phrase_melody_alg= CacheAlgorithm(PhraseMelody(melody_alg), 'part_id')
+        #phrase_melody_alg= ListMelody(melody_alg)
+        phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'part_id')
         #phrase_melody_alg= melody_alg
 
         rythm_alg.train(score)

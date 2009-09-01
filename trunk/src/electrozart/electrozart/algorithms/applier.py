@@ -4,10 +4,16 @@ from time import time as time_tell
 class AlgorithmsApplier(object):
     def __init__(self, *algorithms):
         self.algorithms= algorithms
+        self.started=False
     
-    def create_melody(self, time, print_info=False):
+    def start_creation(self):
         for alg in self.algorithms:
             alg.start_creation()
+        self.started= True
+
+    def create_melody(self, time, print_info=False):
+        if not self.started:
+            self.start_creation()
 
         t0= time_tell()
         last_end= 0
@@ -34,6 +40,7 @@ class AlgorithmsApplier(object):
             # construyo la nota y meto los branchers que aparezcan
             result= PartialNote()
             result.volume= 100
+            #if input.now == 53520: import ipdb;ipdb.set_trace()
             for i, alg in enumerate(self.algorithms[start_alg:]):
                 brancher= alg.next(input, result, notes)
                 if brancher is not None:

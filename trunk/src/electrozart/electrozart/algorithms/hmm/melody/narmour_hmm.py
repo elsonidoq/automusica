@@ -152,7 +152,13 @@ class NarmourHMM(HmmAlgorithm):
     def create_model(self):
         initial_probability= dict( ((s,1.0/len(self.hidden_states)) for s in self.hidden_states) )
         hmm= self.learner.get_trainned_model(initial_probability)
-        #hmm.make_walkable()
+        #import ipdb;ipdb.set_trace()
+
+        # XXX saco los intervalos ultragrandes
+        for state in hmm.states():
+            if 'ug' in repr(state):
+                hmm.remove_state(state)
+        hmm.make_walkable()
         self.model= hmm
         for n, d in self.matching_notes.iteritems():
             s= sum(d.itervalues())

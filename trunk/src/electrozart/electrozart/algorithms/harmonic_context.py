@@ -19,8 +19,8 @@ class ScoreHarmonicContext(Algorithm):
             chords.append(Chord(n.start, n.duration, [n]))
         self.ec.chords= chords
 
+    @child_input('now_notes')
     def next(self, input, result, prev_notes):
-        result.volume= 100
         input.now_notes= \
                 [n for n in self.context_score.get_notes(skip_silences=True) \
                     if n.start < result.start+result.duration and \
