@@ -1,4 +1,5 @@
 from itertools import groupby
+from time import time
 
 from math import log
 from md5 import md5
@@ -29,7 +30,8 @@ def get_node_name(score, ticks):
 def main(argv):
     usage= 'usage: %prog [options] infname outfname'
     parser= OptionParser(usage=usage)
-    parser.add_option('-p', '--patch', dest='patch', type='int', help='patch to select')
+    parser.add_option('--rythm-patch', dest='rythm_patch', type='int', help='rythm patch to select')
+    parser.add_option('--melody-patch', dest='melody_patch', type='int', help='melody patch to select')
     parser.add_option('-c', '--channel', dest='channel', type='int', help='channel to select')
     parser.add_option('-d', '--is-drums', dest='is_drums', \
                       help='create a drums midi', default=False, action='store_true')
@@ -44,17 +46,27 @@ def main(argv):
     options, args= parser.parse_args(argv[1:])
     if len(args) < 2: parser.error('not enaught args')
 
-    patch= options.patch
+    rythm_patch= options.rythm_patch
+    melody_patch= options.melody_patch
     channel= options.channel
     level= options.level
-    if patch is not None and channel is not None:
+    if rythm_patch is not None and channel is not None:
         parser.error('options -p and -c are mutually exclusive')
 
     partition_algorithm= options.partition_algorithm
     if partition_algorithm not in ('MGRID', 'MEASURE'):
         parser.error('unknown partition algorithm')
 
-    if options.seed is not None: random.seed(options.seed)
+    #print "seed 1"
+    #options.seed= 1
+    #options.patch= 5
+    if options.seed is not None: 
+        random.seed(options.seed)
+    else:
+        seed= time()
+        print "using seed", seed
+        random.seed(seed)
+
 
     train3(options, args)
 
@@ -69,7 +81,8 @@ from electrozart.writing.midi import MidiScoreWriter
 
 def train3(options, args):
     partition_algorithm= options.partition_algorithm
-    patch= options.patch
+    rythm_patch= options.rythm_patch
+    melody_patch= options.melody_patch
     channel= options.channel
     level= options.level
     infname= args[0]
@@ -80,9 +93,9 @@ def train3(options, args):
     #score= quantize(score)
     
     composer= NarmourMarkov()
-    composer= SupportNotesComposer()
     composer= YamlComposer()
-    composed_score= composer.compose(score)
+    composer= SupportNotesComposer()
+    composed_score= composer.compose(score, **options.__dict__)
 
     writer= NotesScoreWriter()
     writer= MidiScoreWriter()

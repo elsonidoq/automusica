@@ -3,7 +3,7 @@ from electrozart.algorithms import needs, produces
 
 from impl import RythmHMM
 
-class PhraseRythm(ListAlgorithm):
+class ListRythm(ListAlgorithm):
     def __init__(self, rythm_hmm):
         self.rythm_hmm= rythm_hmm
 
@@ -11,18 +11,19 @@ class PhraseRythm(ListAlgorithm):
         self.rythm_hmm.train(score)
 
     def start_creation(self):
-        super(PhraseRythm, self).start_creation()
+        super(ListRythm, self).start_creation()
         self.rythm_hmm.start_creation()
 
     @needs('now_chord', 'now')
     @produces('start', 'duration')
     def next(self, input, result, prev_notes):
-        return super(PhraseRythm, self).next(input, result, prev_notes)
+        return super(ListRythm, self).next(input, result, prev_notes)
 
     @needs('now_chord', 'now')
     def generate_list(self, input, result, prev_notes):
         if not ( input.now == 0 or input.now_chord.start == input.now ) : import ipdb;ipdb.set_trace()
 
+        #if input.now == 51840: import ipdb;ipdb.set_trace()
         phrase_end= input.now_chord.end 
         start_node= input.now % self.rythm_hmm.interval_size 
 

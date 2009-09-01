@@ -1,7 +1,9 @@
 from random import uniform, random
 from random_variable import *
-from pygraphviz import AGraph
+import pygraphviz 
+import igraph 
 from utils.fraction import Fraction
+from itertools import count
 
 from collections import defaultdict
 
@@ -32,11 +34,29 @@ class HiddenMarkovModel(object):
         # es un dic(estado, prob)
         self.initial_probability= {}
 
+    def remove_state(self, state):
+        self.state_transition.pop(state)
+        for prev_state, nexts in self.state_transition.iteritems():
+            if state in nexts:
+                nexts.pop(state)
+
+                s= sum(nexts.itervalues())
+                for k, v in nexts.iteritems():
+                    nexts[k]= v/s
+
+        self.initial_probability.pop(state)
+        s= sum(self.initial_probability.itervalues())
+        for k, v in self.initial_probability.iteritems():
+            self.initial_probability[k]= v/s
+ 
+        self.state_observation.pop(state)
+
+
     def initial_probability(self, state):
         return self.initial_probability[state]
 
     def draw(self, fname, state2str):
-        g= AGraph(directed=True, strict=False)
+        g= pygraphviz.AGraph(directed=True, strict=False)
         for n1, adj in self.state_transition.iteritems():
             n1_name= state2str(n1)
             for n2, prob in adj.iteritems():
@@ -48,6 +68,20 @@ class HiddenMarkovModel(object):
                 e.attr['label']= str(round(prob, 3))[:5]
         g.draw(fname, prog='dot', args='-Grankdir=LR')
 
+    def to_igraph(self):
+        g= igraph.Graph(directed=True, strict=False)
+
+        g.add_vertices(len(self.state_transition)-1)
+        c= count()
+        state2int= defaultdict(c.next)
+        for state1, nexts in self.state_transition.iteritems():
+            state1_id= state2int[state1]
+            for state2, prob in nexts.iteritems():
+                state2_id= state2int[state2]
+                g.add_edges([(state1, state2)])
+
+        return state2int, g
+
     def make_walkable(self):
         """
         hace universal a los nodos solitarios
@@ -56,14 +90,6 @@ class HiddenMarkovModel(object):
         for s, info in self.state_transition.iteritems():
             if len(info) > 0: continue
             self.state_transition[s]= dict(((s, prob) for s in self.state_transition))
-
-    #def create_river_model(self, path):
-    #    """
-    #    crea un modelo basado en la metafora del rio que pasa por
-    #    el camino de hidden states `path`
-    #    """
-    #    res= self.copy()
-    #    
 
     def copy(self):
         res= HiddenMarkovModel()
@@ -455,6 +481,46 @@ class MemoizationObservation(RandomObservation):
 
         res.state_observation= dict(self.hmm.state_observation.iteritems())
         res.initial_probability= self.hmm.initial_probability.copy()
+        return res
+
+class RiverRandomObservation(RandomObservation):
+    def __init__(self, hmm, path, alpha=0.5):
+        super(RiverRandomObservation, self).__init__(hmm)
+        g, state2int= hmm.to_igraph()
+        int2state= dict((v,k) for (k,v) in self.state2int.iteritems())
+
+        int_shortest_paths= g.shortest_paths()
+        state_shortest_paths= defaultdict(dict)
+        for state1_id, distances in enumerate(int_shortest_paths):
+            state1= int2state[state1_id]
+            for state2_id, distance in enumerate(distances):
+                state2= int2state[state2_id]
+                if distance < 0:
+                    # desconectados
+                    distance= None
+                state_shortest_paths[state1][state2]= distance
+
+        self.distances= state_shortest_paths                
+        self.path_pos= 0
+        self.path= path
+        self.alpha= alpha
+    
+    def next(self):
+        original_distr= self.hmm.nexts(self.actual_state)
+        new_distr= {}
+        distances= dict((state, self.distances[state][self.path[self.path_pos+1]]) for state in original_distr)
+        s= sum(distances.itervalues())
+        for state, prob in original_distr.iteritems():
+            new_distr[state]= self.alpha*original_distr[state] + (1-self.alpha)*float(distances[state])/s
+        
+        rnd_picker= RandomPicker("",distr)
+        self.actual_state= rnd_picker.get_value()
+
+        res= {}
+        for random_variable in self.hmm.observators(self.actual_state):
+            res[random_variable]= random_variable.get_value()
+        
+        self.path_pos+=1
         return res
 
 class FullyRepeatableObservation(MemoizationObservation):

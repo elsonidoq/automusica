@@ -29,6 +29,7 @@ class Chord(Figure):
     def __repr__(self):
         return "Chord(%s)" % map(lambda n:n.get_canonical_note(), self.notes)
     def __eq__(self, other): 
+        if not isinstance(other, Chord): return False
         return set(self.canon_notes) == set(other.canon_notes)
 
     def __hash__(self): return hash(tuple(self.notes))
@@ -40,11 +41,13 @@ class Chord(Figure):
         last_start= None
         for start, ns in groupby(all_notes, key=lambda n:n.start):
             ns= list(ns)
-            chord_notes= len(set(n.get_canonical_note() for n in ns))
+            chord_notes= set(n.get_canonical_note() for n in ns)
             #print len(ns)
-            if chord_notes >= min_notes_per_chord: 
+            if len(chord_notes) >= min_notes_per_chord: 
                 chord= cls(start, None, ns)
-                if len(res) > 0: res[-1].duration= start - res[-1].start
+                if len(res) > 0: 
+                    if set(n.get_canonical_note() for n in res[-1].notes) == chord_notes: continue
+                    res[-1].duration= start - res[-1].start
                 res.append(chord)
 
         if len(res) > 0: 
@@ -93,7 +96,9 @@ class Note(object):
 
 class PitchClass(object):
     def __init__(self, pitch): self.pitch= pitch%12
-    def __eq__(self, other): return self.pitch == other.pitch
+    def __eq__(self, other): 
+        if not isinstance(other, PitchClass): return False
+        return self.pitch == other.pitch
     def __hash__(self): return hash(self.pitch)
     def __repr__(self): return "PitchClass(%s)" % self.pitch
 
@@ -110,7 +115,9 @@ class Interval(object):
         return PitchClass(n.pitch+self.length)
     
     def __repr__(self): return 'Interval(%s)' % self.length
-    def __eq__(self, other): return self.length == other.length
+    def __eq__(self, other): 
+        if not isinstance(other, Interval): return False
+        return self.length == other.length
     def __hash__(self): return hash(self.length)
 
 class Annotation(Figure):

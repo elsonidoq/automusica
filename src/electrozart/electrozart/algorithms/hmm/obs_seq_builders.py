@@ -70,6 +70,13 @@ class MidiChannelObsSeq(ConditionalMidiObsSeq):
         return self.channel == instrument.channel
         
 
+class MidiObsSeqOrder2(object):
+    def __init__(self, obsseq):
+        self.obsseq= obsseq
+    def __call__(self, score):
+        res= self.obsseq(score)
+        res= [((s0,s1), d1) for ((s0, d0), (s1, d1)) in zip(res, res[1:])]
+        return res
 class MidiObsSeqOrder3(object):
     def __init__(self, obsseq):
         self.obsseq= obsseq

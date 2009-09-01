@@ -47,6 +47,9 @@ class NarmourRandomObservation(RandomObservation):
             if len(intersections[state]) > 0:
                 nexts[state]= prob
 
+        if len(nexts) == 0:
+            raise Exception('Impossible phrase: start_pitch: %(n0)s, end_pitch: %(nf)s, length:%(length)s' % self.__dict__)
+
         s= sum(nexts.itervalues())
         for state, prob in nexts.iteritems():
             nexts[state]= prob/s
@@ -106,18 +109,18 @@ class NarmourRandomObservation(RandomObservation):
         return dict(res)
 
 
-class PhraseMelody(ListAlgorithm):
+class ListMelody(ListAlgorithm):
     def __init__(self, melody_alg, *args, **kwargs):
-        super(PhraseMelody, self).__init__(*args, **kwargs)
+        super(ListMelody, self).__init__(*args, **kwargs)
         self.melody_alg= melody_alg
         self.ncalls= 0
     
     @produces('pitch')
     def next(self, input, result, prev_notes):
-        return super(PhraseMelody, self).next(input, result, prev_notes)
+        return super(ListMelody, self).next(input, result, prev_notes)
 
     def start_creation(self):
-        super(PhraseMelody, self).start_creation()
+        super(ListMelody, self).start_creation()
         self.melody_alg.start_creation()
         self.ec.last_state= None
         self.ec.last_support_note= None
@@ -127,15 +130,24 @@ class PhraseMelody(ListAlgorithm):
         if self.ec.last_support_note is None:
             res= choice(chord.notes).pitch 
         else:
-            #res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
+            # la mas cerca
+            res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
 
-            if chord in self.ec.support_note_cache:
-                res= self.ec.support_note_cache[chord]
+            # RANDOM con cache
+            if (chord, self.ec.last_support_note) in self.ec.support_note_cache:
+                res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
             else:
                 notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
                 r= randint(1, 2**len(notes)-1)
                 res= notes[int(floor(log(r, 2)))].pitch
-                self.ec.support_note_cache[chord]= res
+                self.ec.support_note_cache[(chord, self.ec.last_support_note)]= res
+
+            # RANDOM sin cache
+            #notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
+            #r= randint(1, 2**len(notes)-1)
+            #res= notes[int(floor(log(r, 2)))].pitch
+            #self.ec.support_note_cache[chord]= res
+
         self.ec.last_support_note= res
         return res
 
