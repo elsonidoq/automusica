@@ -5,6 +5,9 @@ from math import log
 from md5 import md5
 import cPickle as pickle
 import random
+import os
+from os import path
+from datetime import datetime
 
 
 from utils.melisma.meter import meter
@@ -42,9 +45,12 @@ def main(argv):
     parser.add_option('--part-alg', dest='partition_algorithm', default='MEASURE', help='select the partition algorithm, only MEASURE and MGRID are available. Default MEASURE')
     parser.add_option('--seed', dest='seed',help='random seed')
 
+    parser.add_option('--output-dir', dest='output_dir', default='output-mids', help='the default output dir')
+    parser.add_option('-O', '--override', dest='override', default='override', help='if the outputfile exists, overrides. Default False', default=False, action='store_true')
+
 
     options, args= parser.parse_args(argv[1:])
-    if len(args) < 2: parser.error('not enaught args')
+    if len(args) < 1: parser.error('not enaught args')
 
     rythm_patch= options.rythm_patch
     melody_patch= options.melody_patch
@@ -86,7 +92,32 @@ def train3(options, args):
     channel= options.channel
     level= options.level
     infname= args[0]
-    outfname= args[1]
+    if len(args) >= 2:
+        outfname= args[1]
+    else:
+        import electrozart
+        outpath= path.abspath(path.join(electrozart.__path__[0], '../..', options.output_dir, datetime.now().strftime('%Y-%m-%d')))
+        if not path.isdir(outpath):
+            print "Creating dir", outpath
+            os.makedirs(outpath)
+
+        outfname= path.basename(infname)
+        if outfname in os.listdir(outpath) and not options.override:
+            # -4 por el .mid +1 por el -
+            versions= [fname[len(outfname)-4+1:-4] for fname in os.listdir(outpath) if fname.startswith(outfname[:-4])]
+            versions= [str for str in versions if len(str) > 0]
+            for i in reversed(xrange(len(versions))):
+                try:
+                    versions[i]= int(versions[i])
+                except:
+                    versions.pop(i)
+            if len(versions) == 0:
+                versions= [0]
+            outfname= '%s-%s.mid' % (outfname[:-4], max(versions)+1)
+        
+        outfname= path.join(outpath, outfname)
+        print "saving in ", outfname
+
 
     parser= MidiScoreParser()
     score= parser.parse(infname)
