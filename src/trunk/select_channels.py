@@ -1,11 +1,6 @@
-from midistuff.writers.MidiOutFile import MidiOutFile
-from midistuff.writers.RetardedOutFile import RetardedOutFile
-from midistuff.readers.MidiInFile import MidiInFile
-
 from config import parserclass, writerclass
-
-
 from sys import argv
+
 in_file= argv[1]
 channel= int(argv[2])
 out_file = in_file.replace('.mid', '-%s.mid' % channel)

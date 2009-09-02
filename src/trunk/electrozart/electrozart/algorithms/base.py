@@ -177,6 +177,7 @@ class CacheAlgorithm(ListAlgorithm):
         algorithm.generate_list= self.generate_list
 
         self.cache= {}
+        self.generate_list= needs(input_key)(self.generate_list)
     
     def start_creation(self):
         self.algorithm.start_creation()

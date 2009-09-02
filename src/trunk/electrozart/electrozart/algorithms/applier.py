@@ -11,7 +11,7 @@ class AlgorithmsApplier(object):
             alg.start_creation()
         self.started= True
 
-    def create_melody(self, time, print_info=False):
+    def create_melody(self, time, print_info=False, general_input=None):
         if not self.started:
             self.start_creation()
 
@@ -30,7 +30,11 @@ class AlgorithmsApplier(object):
             
             # voy a partir del ultimo algoritmo de brancheo
             start_alg= 0
-            input= AcumulatedInput()
+            if general_input is None:
+                input= AcumulatedInput()
+            else:
+                input= general_input.copy()
+
             if len(stack) > 0:
                 start_alg= stack[-1][0] + 1
                 input= stack[-1][-1].copy()

@@ -44,7 +44,7 @@ class Chord(Figure):
             chord_notes= set(n.get_canonical_note() for n in ns)
             #print len(ns)
             if len(chord_notes) >= min_notes_per_chord: 
-                chord= cls(start, None, ns)
+                chord= cls(start, None, list(chord_notes))
                 if len(res) > 0: 
                     if set(n.get_canonical_note() for n in res[-1].notes) == chord_notes: continue
                     res[-1].duration= start - res[-1].start

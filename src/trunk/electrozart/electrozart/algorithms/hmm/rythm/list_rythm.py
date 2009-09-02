@@ -22,17 +22,12 @@ class ListRythm(ListAlgorithm):
     @needs('now_chord', 'now')
     def generate_list(self, input, result, prev_notes):
         if not ( input.now == 0 or input.now_chord.start == input.now ) : import ipdb;ipdb.set_trace()
-
-        #if input.now == 51840: import ipdb;ipdb.set_trace()
-        phrase_end= input.now_chord.end 
-        start_node= input.now % self.rythm_hmm.interval_size 
-
-        robs= self.rythm_hmm.get_current_robs(None)
-        robs.actual_state= start_node
         # XXX ver commo hacerlo mas elegante
+        self.rythm_hmm.ec.actual_state= input.now % self.rythm_hmm.interval_size 
         self.rythm_hmm.ec.actual_interval= input.now/self.rythm_hmm.interval_size
         
         res= []
+        phrase_end= input.now_chord.end 
         while True:
             child_result= result.copy()
             child_input= input.copy()

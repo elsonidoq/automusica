@@ -39,13 +39,12 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         return res
 
 class RythmHMM(HmmAlgorithm):
-    def __init__(self, interval_size, multipart=True, *args, **kwargs):
+    def __init__(self, interval_size, *args, **kwargs):
         super(RythmHMM, self).__init__(*args, **kwargs)
         #self.obsSeqBuilder= MidiObsSeqOrder2(ModuloObsSeq(FirstVoiceObsSeq(), interval_size))
         self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
-        self.obsSeqBuilder= ModuloObsSeq(FirstVoiceObsSeq(), interval_size)
+        #self.obsSeqBuilder= ModuloObsSeq(FirstVoiceObsSeq(), interval_size)
         self.interval_size= interval_size
-        self.multipart= multipart
         
     def create_model(self):
         a_state= iter(self.hidden_states).next()
@@ -64,20 +63,11 @@ class RythmHMM(HmmAlgorithm):
     def start_creation(self):
         self.ec= ExecutionContext()
         self.ec.hmm= self.create_model()
-        if self.multipart:
-            self.ec.robses= {}
-        else:
-            self.ec.robs= RandomObservation(self.ec.hmm)
-            self.ec.robs= RandomObservation(self.ec.hmm)
-            #self.ec.robs= FullyRepeatableObservation(self.ec.hmm)
+        self.ec.robses= {}
         self.ec.actual_interval= 0
-        # XXX para order 2 esto no va, puede que sea necesario igual
-        #self.ec.actual_state= 0
+        self.ec.actual_state= 0
 
     def get_current_robs(self, robsid):
-        if not self.multipart:
-            return self.ec.robs
-
         robs= self.ec.robses.get(robsid)
         if robs is None:
             robs= DPRandomObservation(self.ec.hmm, 1)

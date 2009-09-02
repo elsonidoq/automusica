@@ -7,7 +7,7 @@ from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordH
 from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
 
-from electrozart.algorithms import AlgorithmsApplier, CacheAlgorithm
+from electrozart.algorithms import AlgorithmsApplier, CacheAlgorithm, AcumulatedInput
 
 def measure_interval_size(score, nmeasures):
     nunits, unit_type= score.time_signature
@@ -26,9 +26,12 @@ class SupportNotesComposer(object):
         self.params= dict(
             n_measures= 1,
             print_info= False,
-            melody_instrument= 33,
+            melody_patch_to_dump= 33,
             patch= None 
         )
+
+    def matches_description(self, instrument, patch, channel):
+        return instrument.patch == patch and (channel is None or instrument.channel == channel)
 
     def compose(self, score, **optional):
         params= bind_params(self.params, optional)
@@ -36,9 +39,9 @@ class SupportNotesComposer(object):
         melody_instrument= None
         rythm_instrument= None
         for instrument in score.instruments:
-            if instrument.patch == params['melody_patch']:
+            if self.matches_description(instrument, params['melody_patch'], params['melody_channel']):
                 melody_instrument= instrument
-            if instrument.patch == params['rythm_patch']:
+            if self.matches_description(instrument, params['rythm_patch'], params['rythm_channel']):
                 rythm_instrument= instrument
         if (melody_instrument is None or rythm_instrument is None) and len(score.instruments) > 1: raise Exception("Que instrument?")
         else: 
@@ -51,14 +54,15 @@ class SupportNotesComposer(object):
         harmonic_context_alg= ChordHarmonicContext(score)
         #harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
-        rythm_alg= RythmHMM(interval_size, multipart=False, instrument=rythm_instrument.patch, channel=rythm_instrument.channel)
-        #phrase_rythm_alg= RythmCacheAlgorithm(ListRythm(rythm_alg), 'part_id')
+        rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel)
         phrase_rythm_alg= rythm_alg
+        phrase_rythm_alg= ListRythm(rythm_alg)
+        phrase_rythm_alg= RythmCacheAlgorithm(ListRythm(rythm_alg), 'phrase_id')
 
         melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel)
-        #phrase_melody_alg= ListMelody(melody_alg)
-        #phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'part_id')
         phrase_melody_alg= melody_alg
+        phrase_melody_alg= ListMelody(melody_alg)
+        #phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
 
         rythm_score= score.copy()
         #rythm_score.notes_per_instrument.pop(piano)
@@ -69,14 +73,25 @@ class SupportNotesComposer(object):
 
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, phrase_melody_alg)
         applier.start_creation()
-        rythm_alg.draw_model('rythm.png', score.divisions)
+        #rythm_alg.draw_model('rythm.png', score.divisions)
 
         duration= score.duration
         #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
         #duration= harmonic_context_alg.chordlist[-1].end
+        
+        # octave range
+        score_notes= score.get_notes(skip_silences=True)
+        mean_pitch= sum(float(n.pitch) for n in score_notes)/len(score_notes)
+        octave= int(mean_pitch/12)
+        min_pitch= octave*12
+        max_pitch= (octave+1)*12
+        general_input= AcumulatedInput()
+        general_input.min_pitch= min_pitch
+        general_input.max_pitch= max_pitch
 
-        notes= applier.create_melody(duration, params['print_info'])
-        seed(time())
+
+        notes= applier.create_melody(duration, params['print_info'], general_input=general_input)
+        #seed(time())
 
         #chord_notes= []
         #for c in harmonic_context_alg.chordlist:
@@ -140,7 +155,7 @@ class SupportNotesComposer(object):
         #piano= res.notes_per_instrument.keys()[0]
         #piano= Instrument()
         instrument= Instrument()
-        instrument.patch= params['melody_instrument']
+        instrument.patch= params['melody_patch_to_dump']
         instrument.patch= 26
         instrument.patch= 73
         res.notes_per_instrument[instrument]= notes
