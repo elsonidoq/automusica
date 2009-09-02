@@ -178,7 +178,7 @@ class NarmourHMM(HmmAlgorithm):
 
         #notes= context_score.get_notes(skip_silences=True)
         #self.ec.octave= int(sum((n.pitch for n in notes))/(len(notes)*12)) +1
-        self.ec.octave= 6
+        #self.ec.octave= 6
 
     def get_current_robs(self):
         return self.ec.robs
@@ -196,7 +196,7 @@ class NarmourHMM(HmmAlgorithm):
             res= convex_combination(res, new_distr)
         return res            
 
-    def next_candidates(self, now_notes):
+    def next_candidates(self, now_notes, min_pitch, max_pitch):
         if len(now_notes) == 0: return {}
 
         now_pitches= list(set([n.get_canonical_note() for n in now_notes]))
@@ -208,22 +208,24 @@ class NarmourHMM(HmmAlgorithm):
         assert len(candidate_pitches_distr) == len(dict(candidate_pitches_distr))
         candidate_pitches_distr= dict(candidate_pitches_distr)
 
-        max_note= max(now_notes, key=lambda x:x.pitch)
-        octave= max_note.pitch/12
-
         last_pitch= self.ec.last_pitch
         last_note= self.ec.last_note
         if last_pitch is None:
+            assert min_pitch % 12  == 0
+            assert max_pitch % 12  == 0
+
+            min_octave= min_pitch/12
+            max_octave= max_pitch/12
+
             notes_distr= {}
             for pitch, prob in candidate_pitches_distr.iteritems():
-                notes_distr[pitch.pitch+octave*12]= prob
+                for octave in xrange(min_octave, max_octave+1):
+                    notes_distr[pitch.pitch+octave*12]= prob
             return notes_distr
         else:
-            center_octave= self.ec.octave
             candidate_pitches_distr= dict(sorted(candidate_pitches_distr.items(), key=lambda x:x[1], reverse=True)[:5])
             candidate_pitches_distr=[p.pitch for p in candidate_pitches_distr]
-            candidate_intervals= [Interval(last_note, Note(p)) for p in range((center_octave-1)*12, (center_octave+1)*12) \
-                                  if p%12 in candidate_pitches_distr]
+            candidate_intervals= [Interval(last_note, Note(p)) for p in range(min_pitch, max_pitch+1) if p%12 in candidate_pitches_distr]
             candidate_intervals= [i for i in candidate_intervals if i.length <= 12]                                      
             #candidate_intervals= [Interval(last_pitch, p) for p in candidate_pitches_distr]
             #candidate_intervals.extend((Interval(p, last_pitch)) for p in candidate_pitches_distr)
@@ -238,7 +240,8 @@ class NarmourHMM(HmmAlgorithm):
                 robs.next(available_states)
             except:
                 print "AS"
-                robs.actual_state= choice(available_states)
+                try: robs.actual_state= choice(available_states)
+                except: import ipdb;ipdb.set_trace()
 
             available_intervals=[ni.interval for ni in available_states if ni == robs.actual_state]
             available_notes= {}
@@ -249,10 +252,10 @@ class NarmourHMM(HmmAlgorithm):
             return available_notes
 
 
-    @needs('now_chord')
+    @needs('now_chord', 'min_pitch', 'max_pitch')
     @produces('pitch')
     def next(self, input, result, prev_notes):
-        available_notes= self.next_candidates(input.now_chord.notes)
+        available_notes= self.next_candidates(input.now_chord.notes, input.min_pitch, input.max_pitch)
         if len(available_notes) == 0: 
             result.pitch= -1
             return

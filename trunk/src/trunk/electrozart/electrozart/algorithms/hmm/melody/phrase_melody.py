@@ -126,9 +126,10 @@ class ListMelody(ListAlgorithm):
         self.ec.last_support_note= None
         self.ec.support_note_cache= {}
 
-    def pick_support_note(self, chord):
+    def pick_support_note(self, chord, min_pitch, max_pitch):
         if self.ec.last_support_note is None:
-            res= choice(chord.notes).pitch 
+            res_pitch= choice(chord.notes).pitch 
+            res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
         else:
             # la mas cerca
             res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
@@ -138,8 +139,10 @@ class ListMelody(ListAlgorithm):
                 res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
             else:
                 notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
-                r= randint(1, 2**len(notes)-1)
-                res= notes[int(floor(log(r, 2)))].pitch
+                exp_index= randint(1, 2**len(notes)-1)
+                index= int(floor(log(exp_index, 2)))
+                res_pitch= notes[index].pitch
+                res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
                 self.ec.support_note_cache[(chord, self.ec.last_support_note)]= res
 
             # RANDOM sin cache
@@ -151,11 +154,11 @@ class ListMelody(ListAlgorithm):
         self.ec.last_support_note= res
         return res
 
-    @needs('rythm_phrase_len', 'now_chord', 'prox_chord')
+    @needs('rythm_phrase_len', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     def generate_list(self, input, result, prev_notes):
         self.ncalls+=1
-        start_pitch= self.pick_support_note(input.now_chord)
-        end_pitch= self.pick_support_note(input.prox_chord)
+        start_pitch= self.pick_support_note(input.now_chord, input.min_pitch, input.max_pitch)
+        end_pitch= self.pick_support_note(input.prox_chord, input.min_pitch, input.max_pitch)
         phrase_length= input.rythm_phrase_len
         
         assert phrase_length > 0

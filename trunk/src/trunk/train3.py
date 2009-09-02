@@ -33,9 +33,8 @@ def get_node_name(score, ticks):
 def main(argv):
     usage= 'usage: %prog [options] infname outfname'
     parser= OptionParser(usage=usage)
-    parser.add_option('--rythm-patch', dest='rythm_patch', type='int', help='rythm patch to select')
-    parser.add_option('--melody-patch', dest='melody_patch', type='int', help='melody patch to select')
-    parser.add_option('-c', '--channel', dest='channel', type='int', help='channel to select')
+    parser.add_option('--rythm-instr', dest='rythm_instr', help='If its an integer, is interpreted as a patch, if it is a tuple, (patch, channel)')
+    parser.add_option('--melody-instr', dest='melody_instr', help='If its an integer, is interpreted as a patch, if it is a tuple, (patch, channel)')
     parser.add_option('-d', '--is-drums', dest='is_drums', \
                       help='create a drums midi', default=False, action='store_true')
     parser.add_option('-m', '--print-model', dest= 'print_model', default=False, action='store_true')
@@ -52,12 +51,29 @@ def main(argv):
     options, args= parser.parse_args(argv[1:])
     if len(args) < 1: parser.error('not enaught args')
 
+    def parse_instr(preffix):
+        patch_attr= preffix + 'patch'
+        channel_attr= preffix + 'channel'
+        instr_attr= preffix + 'instr'
+
+        if getattr(options, instr_attr) is None:
+            setattr(options, patch_attr, None)
+            setattr(options, channel_attr, None)
+        else:
+            instr= eval(getattr(options, instr_attr))
+            if isinstance(instr, int):
+                setattr(options, patch_attr, instr)
+                setattr(options, channel_attr, None)
+            else:
+                setattr(options, patch_attr, instr[0])
+                setattr(options, channel_attr, instr[1])
+
+    parse_instr('rythm_')
+    parse_instr('melody_')
+
     rythm_patch= options.rythm_patch
     melody_patch= options.melody_patch
-    channel= options.channel
     level= options.level
-    if rythm_patch is not None and channel is not None:
-        parser.error('options -p and -c are mutually exclusive')
 
     partition_algorithm= options.partition_algorithm
     if partition_algorithm not in ('MGRID', 'MEASURE'):
@@ -89,7 +105,6 @@ def train3(options, args):
     partition_algorithm= options.partition_algorithm
     rythm_patch= options.rythm_patch
     melody_patch= options.melody_patch
-    channel= options.channel
     level= options.level
     infname= args[0]
     if len(args) >= 2:
@@ -116,7 +131,6 @@ def train3(options, args):
             outfname= '%s-%s.mid' % (outfname[:-4], max(versions)+1)
         
         outfname= path.join(outpath, outfname)
-        print "saving in ", outfname
 
 
     parser= MidiScoreParser()
@@ -131,6 +145,7 @@ def train3(options, args):
     writer= NotesScoreWriter()
     writer= MidiScoreWriter()
     writer.dump(composed_score, outfname)
+    print "saving in ", outfname
     print 'done!'
 
 if __name__ == '__main__':
