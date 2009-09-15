@@ -11,6 +11,7 @@ except ImportError:
 
 setup(
     name="electrozart",
+    version=0.1,
     description="",
     long_description="",
     url="",

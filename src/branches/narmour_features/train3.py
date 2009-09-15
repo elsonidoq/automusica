@@ -13,11 +13,11 @@ from datetime import datetime
 from utils.melisma.meter import meter
 
 from optparse import OptionParser
-from electrozart.algorithms.hmm.melody.narmour_hmm import NarmourInterval
+from electrozart.algorithms.hmm.melody.narmour_hmm import NarmourState
 from utils.fraction import Fraction
 
 def get_node_name(score, ticks):
-    if isinstance(ticks, NarmourInterval):
+    if isinstance(ticks, NarmourState):
         return repr(ticks)
     n_quarters= 0
     while ticks >= score.divisions:

@@ -106,7 +106,12 @@ class Interval(object):
     """
     representa el intervalo entre dos notas
     """
-    def __init__(self, n1, n2): self.length= n2.pitch - n1.pitch
+    def __init__(self, n1, n2): 
+        self.n1= n1
+        self.n2= n2
+        if n1 is None or n2 is None: import ipdb;ipdb.set_trace()
+        self.length= n2.pitch - n1.pitch
+    
     def apply(self, n):
         """
         aplica el intervalo a `n` y devuelve una nota `m` cuyo intervalo 
