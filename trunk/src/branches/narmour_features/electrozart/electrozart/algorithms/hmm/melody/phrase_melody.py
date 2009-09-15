@@ -5,27 +5,28 @@ from collections import defaultdict
 from utils.hmm import RandomObservation, HiddenMarkovModel
 from utils.hmm.random_variable import RandomPicker
 from electrozart.algorithms import ListAlgorithm, needs, produces
-from narmour_hmm import NarmourInterval, length2str 
+from narmour_hmm import NarmourState
 
-class PathNarmourInterval(NarmourInterval):
+class PathNarmourState(NarmourState):
     def __init__(self, ni, pos):
-        super(PathNarmourInterval, self).__init__(ni.interval)
+        super(PathNarmourState, self).__init__(ni.interval)
         self.pos= pos
     
     def __eq__(self, other):
-        return isinstance(other, PathNarmourInterval) and self.pos == other.pos
+        return isinstance(other, PathNarmourState) and self.pos == other.pos
 
     def __repr__(self):
-        res= super(PathNarmourInterval, self).__repr__()
+        res= super(PathNarmourState, self).__repr__()
         return res.replace('>', ', %s>' % self.pos)
 
 class NarmourRandomObservation(RandomObservation):
-    def __init__(self, n0, nf, length, hmm, start=None):
+    def __init__(self, n0, n1, nf, length, hmm, available_notes, start=None):
         super(NarmourRandomObservation, self).__init__(hmm)
         if start is not None: 
             self.actual_state= start
 
         self.n0= n0
+        self.n1= n1
         self.nf= nf
         self.length= length
         self.nsteps= 1
@@ -34,7 +35,7 @@ class NarmourRandomObservation(RandomObservation):
         self.history= [(self.now_pitches, self.actual_state)]
 
         #distance_dict= self.build_state_distance_dict(length)
-        self.must_dict= self.build_must_dict()
+        self.must_dict= self.build_must_dict(available_notes)
 
     def next(self):
         #if self.nsteps == self.length: raise StopIteration()
@@ -66,7 +67,7 @@ class NarmourRandomObservation(RandomObservation):
         self.nsteps+=1
         return next
 
-    def build_must_dict(self):
+    def build_must_dict(self, available_notes):
         """
         Devuelve un diccionario con los conjuntos Must.
 
@@ -74,22 +75,26 @@ class NarmourRandomObservation(RandomObservation):
                          antes que el nodo N, puedo asegurar que en d pasos a partir de N
                          puedo tocar nf 
 
-        Must(N, nf, d) = {n / \exists N' \in Adj(N) \land 
-                               \exists n' \in Must(N', nf, d-1) \land
-                               <n, n'> \in N}
-        Must(N, nf, 0) = {n / <n, nf> \in N}
+        Must(N, nf, 0)   = {<n1, n2> / <n1, n2, nf> \in N}
+        Must(N, nf, d+1) = {<n1, n2> / \exists N' \in Adj(N) 
+                                       \land \exists <n2, n3> \in Must(N', nf, d) 
+                                       \land <n1, n2, n3> \in N}
+
 
         must[i][N] = Must(N, self.nf, i)
         """
         must= defaultdict(lambda : defaultdict(set))
+
         for node in self.hmm.states():
-            must[0][node]= set(node.related_notes(self.nf, reverse=True))
+            for n in available_notes:
+                must[0][node]= set(node.related_notes(self.nf, available_notes, reverse=True))
 
         for d in xrange(1, self.length+1):
             for node in self.hmm.states():
                 for node_adj in self.hmm.nexts(node):
-                    for pitch in must[d-1][node_adj]:
-                        must[d][node].update(node.related_notes(pitch, reverse=True))
+                    for pitch2, pitch3 in must[d-1][node_adj]:
+                        must[d][node].update(node.related_notes(pitch3, available_notes, reverse=True))
+
         return dict((k, dict(v)) for (k,v) in must.iteritems())
 
     def build_state_distance_dict(self, max_distance):
@@ -177,11 +182,14 @@ class ListMelody(ListAlgorithm):
 
         # construyo el camino en la cadena de narmour
         robs= NarmourRandomObservation(start_pitch, 
+                                       start_pitch,
                                        end_pitch, 
                                        phrase_length, 
                                        self.melody_alg.model, 
+                                       available_notes=range(input.min_pitch, input.max_pitch),
                                        start=self.ec.last_state)
 
+        import ipdb;ipdb.set_trace()
         path= [robs.actual_state]
         #if self.ncalls == 15: import ipdb;ipdb.set_trace()
         for i in xrange(phrase_length):
@@ -192,7 +200,7 @@ class ListMelody(ListAlgorithm):
 
         # los estados del hmm van a ser tupla (pos, narmour_interval) para 
         # permitir que haya varias veces el mismo estado en la cadena
-        states= [PathNarmourInterval(ni, i) for (i, ni) in enumerate(path)]
+        states= [PathNarmourState(ni, i) for (i, ni) in enumerate(path)]
         hmm= HiddenMarkovModel()
         hmm.add_hidden_state(states[0], 1.0)
         for prev, next in zip(states, states[1:]):
