@@ -1,39 +1,46 @@
 \section{Modelando la m\'etrica}
-\begin{itemize}
- \item retomar la importancia de los acentos metricos contada en la seccion \ref{sec_cogn_bg} y citar el articulo que dice que el tiempo se 
- puede partir en clases de equivalencia por los acentos metricos. 
+ \comment{retomar la importancia de los acentos metricos contada en la seccion \ref{sec_cogn_bg} y citar el articulo que dice que el tiempo se 
+ puede partir en clases de equivalencia por los acentos metricos. }\newline
+El acento m'etrico es una caracter'istica inherente a la m'usica tonal; cualquier pieza musical se enmarca en una estructura 
+(posiblemente ambigua) de beats fuertes y d'ebiles. Esta estructura permite medir el tiempo permitiendo a un interprete reproducir y a un oyente
+reconocer un cierto conjunto de relaci'ones temporales. La estructura m'etrica contribuye a la organizaci'on r'itmica de una pieza musical, 
+refiri'endose a la r'itmica como un grupo de al menos dos eventos musicales en donde hay uno acentuado con respecto al resto \cite{CooperMeyer60}.
+Un patr'on temporal as'i descripto es interpretado de forma distinta seg'un el contexto m'etrico donde sea escuchado. 
 
- \item Definir el paso del tiempo como saltos entre las clases de equivalencia
+ \comment{Mencionar la ``localidad'' de los acentos metricos (no se perciben a niveles altos)}\newline
+Siguiendo la teor\'ia de Lerdahl y Jackendoff, el acento m'etrico es una construcci'on mental, que si bien es jer'arquica, lo niveles altos no son percibidos, puesto
+que a esos niveles entran en juego los acentos estructurales y los acentos fenom'enicos. De esta forma se habla de la \emph{localidad} de los acentos m'etricos: s'olo se perciben a 
+niveles bajos en la jerarqu'ia\footnote{meter en la intro la nocion de nivel alto $\leftrightarrow$ timespan largo}. 
 
- \item Mencionar la ``localidad'' de los acentos metricos (no se perciben a niveles altos), y concluir que esto sugiere que el modelo en algun momento
- el nivel de acento metrico se satura, por lo que eventualmente se vuelve ciclico.
+\comment{Mencionar la periodicidad como parte de la definicion de acento metrico que utilizo}
 
- \item Concluir que pensando al paso del tiempo como saltos entre clases de equivalencias, y la localidad del acento metrico hace que sea
- mas o menos natural pensar una suceci'on de duraciones sea cocientadando por el periodo del ciclo\ldots el unico problema es inferir ese periodo
 
- \item Primer aprouch: tratar de inferir el acento metrico y construir un algoritmo que dado un mapping de acentos metricos encuentre el periodo,
+ \comment{Definir el paso del tiempo como saltos entre las clases de equivalencia}\newline
+La estructura m'etrica permite organizar los distintos puntos en el tiempo en clases de 
+equivalencia de forma tal que dos puntos distintos en el tiempo que pertenezcan a la misma clase de equivalencia ser'an percibidos de forma similar\cite{Benjamin84}. 
+De esta forma, es posible pensar al paso del tiempo como saltos entre estas clases de equivalencia. 
+
+La propiedad de localidad, junto con la propiedad de periodicidad, indica que para modelar este tipo de acentos, no es necesario un modelo que capture dependencias 
+por ensima del ``punto de localidad``. 
+
+
+ \comment{Concluir que pensando al paso del tiempo como saltos entre clases de equivalencias, y la localidad del acento metrico hace que sea
+ mas o menos natural pensar una suceci'on de duraciones sea cocientadando por el periodo del ciclo\ldots el unico problema es inferir ese periodo}
+
+ \comment{Primer aprouch: tratar de inferir el acento metrico y construir un algoritmo que dado un mapping de acentos metricos encuentre el periodo,
        Segundo aprouch: usar el compas.
-       Mencionar problemas de ambas aproximaciones
+       Mencionar problemas de ambas aproximaciones}
 
- \item hasta ahora podemos traducir de una partitura a una sucesion de clases de equivalencia, se puede tratar de aprender esto como un lenguaje,
- explicar el modelo de markov
+ \comment{hasta ahora podemos traducir de una partitura a una sucesion de clases de equivalencia, se puede tratar de aprender esto como un lenguaje,
+ explicar el modelo de markov}
 
- \item formalizar y poner dibujitos
+ \comment{formalizar y poner dibujitos}
 
- \item explicar el proceso generativo
+ \comment{explicar el proceso generativo}
 
- \item relacionar esto con lo de contexto horizontal definido en \ref{subsec_tension}
+ \comment{relacionar esto con lo de contexto horizontal definido en \ref{subsec_tension}}
 
-\end{itemize}
 
-%El acento m'etrico es una caracter'istica inherente a la m'usica tonal; cualquier pieza musical tonal se enmarca en una estructura 
-%(posiblemente ambigua) de pulsos fuertes y d'ebiles. Esta estructura permite medir el tiempo permitiendo a un interprete reproducir y a un oyente
-%reconocer un cierto conjunto de relaci'ones temporales. La estructura m'etrica contribuye a la organizaci'on r'itmica de una pieza musical, 
-%refiri'endose a la r'itmica como un grupo de al menos dos eventos musicales en donde hay uno acentuado con respecto al resto (Cooper y Meyer 1960).
-%Un patr'on temporal as'i descripto es interpretado de forma distinta seg'un el contexto m'etrico donde sea escuchado. 
-%
-%La estructura m'etrica permite organizar los distintos puntos en el tiempo en clases de 
-%equivalencia de forma tal que dos puntos distintos en el tiempo que pertenezcan a la misma clase de equivalencia ser'an percibidos de forma similar. 
 %
 %\subsection{El modelo}
 %
