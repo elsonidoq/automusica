@@ -22,6 +22,40 @@
 %\renewcommand{\comment}[1]{\ }
 \theoremstyle{definition} \newtheorem{definition}{Definici'on}
 
+\newcommand{\image}[3]{
+    \begin{figure}[h]
+    \begin{center}
+    \includegraphics[width=15cm]{#1}
+    \label{#2}
+    \newline \ref{#2} #3
+    \end{center}
+    \end{figure}
+}
+
+
+\newenvironment{imagen}{
+\let\File\empty
+\let\Desc\empty
+\let\LabelName\empty
+\let\Width\empty
+}{
+    \begin{figure}[h]
+    \begin{center}
+    \includegraphics[width=\Width]{\File}
+    \caption{\Desc}
+    \label{\LabelName}
+    \end{center}
+    \end{figure}
+
+}
+
+\newcommand{\file}[1]{\def\File{#1}}
+\newcommand{\desc}[1]{\def\Desc{#1}}
+\newcommand{\labelname}[1]{\def\LabelName{#1}}
+\newcommand{\width}[1]{\def\Width{#1}}
+
+
+
 \tableofcontents
 
 \input{abstract}

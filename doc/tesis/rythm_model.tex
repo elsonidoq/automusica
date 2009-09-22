@@ -65,18 +65,39 @@ siendo $n(c_i, c_j)$ la cantidad de veces que se observ'o la clase de equivalenc
 veces que se observ'o la clase de equivalencia $c_i$.
 
 \subsection{Ejemplo}
-\comment{poner dibujitos}
 La figura \ref{fig:reggae_rhythm} muestra una partitura sencilla con dos c'elulas r'itmicas.
 
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[width=12cm]{images/reggae.png}
-\label{fig:reggae_rhythm}
-\end{center}
-\end{figure}
+\begin{imagen}
+    \file{images/reggae.png}
+    \labelname{fig:reggae_rhythm}
+    \desc{Una celula r\'itmica de ejemplo}
+    \width{15cm}
+\end{imagen}
 
-Suponiendo que el valor elegido para el per'iodo $p$ es el de $4$ negras, 
+Suponiendo que el valor elegido para el per'iodo $p$ es el de $4$ negras, entonces, la partitura quedar'ia segmentada en sus dos compases. 
+De esta forma, la secuencia de onsets medidos en multiplos de una negra ser'a $0, 3/4, 1, 2, 2+3/4, 3$ para el primer comp'as, 
+y para el segundo comp'as $4, 4+1/3, 4+2/3, 5, 5+1/3, 5+2/3, 6, 6+3/4, 7$.
+
+Por lo tanto, cocientando los onsets m'odulo el per'iodo y estimando las transiciones resulta la cadena de Markov de la figura \ref{fig:reggae_rhythm_markov}.
+
+\begin{imagen}
+    \file{images/rhythm_markov_example.png}
+    \labelname{fig:reggae_rhythm_markov}
+    \desc{El modelo generado a partir de la r'itmica de la Figura \ref{fig:reggae_rhythm_markov}}
+    \width{15cm}
+\end{imagen}
+
+No se han dibujado las probabilidades en las transiciones puesto que no tienen sentido en este ejemplo por ser muy chico. Sin embargo, a partir de este ejemplo se 
+puede observar que este modelo ahora es capaz de generar una nueva celula ritmica que no es ninguna de las que estaban en el conjunto de entrenamiento, esa
+ritmica es la que se muestra en la figura \ref{fig:rhythm_markov_generated}.
+
+\begin{imagen}
+    \file{images/reggae_generated.png}
+    \labelname{fig:rhythm_markov_generated}
+    \desc{Una posible r'itmica generada por el modelo}
+    \width{15cm}
+\end{imagen}
 
 \subsection{El proceso generativo}
 
