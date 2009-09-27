@@ -1,1 +1,1 @@
-from hidden_markov_model import HiddenMarkovModel, RandomObservation
+from hidden_markov_model import HiddenMarkovModel, RandomObservation, DPRandomObservation
