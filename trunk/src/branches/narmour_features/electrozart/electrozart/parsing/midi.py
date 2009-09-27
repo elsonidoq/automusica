@@ -132,7 +132,7 @@ class MidiToScore(MidiOutStream):
         #if channel == 3: import ipdb;ipdb.set_trace()
         msg= MidiControllerFactory([controller, value], self.abs_time())
         if channel not in self.actual_instruments:
-            self.actual_instruments[channel]= Instrument()
+            self.actual_instruments[channel]= Instrument(is_drums=channel==9)
         instrument= self.actual_instruments[channel]
         instrument.messages.append(msg)
 

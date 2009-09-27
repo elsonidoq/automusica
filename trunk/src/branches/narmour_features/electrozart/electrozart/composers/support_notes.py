@@ -1,4 +1,5 @@
 from random import randint, seed
+from math import sqrt
 from time import time
 
 from electrozart import Instrument, PlayedNote, Silence
@@ -49,10 +50,9 @@ class SupportNotesComposer(object):
         
         interval_size= measure_interval_size(score, params['n_measures']) 
         
-        harmonic_context_alg= ScoreHarmonicContext(score)
         #harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base2.yaml', score.divisions)
         harmonic_context_alg= ChordHarmonicContext(score)
-        #harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
+        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, alpha=7)
 
         rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel)
         phrase_rythm_alg= rythm_alg
@@ -62,16 +62,22 @@ class SupportNotesComposer(object):
         melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel)
         phrase_melody_alg= melody_alg
         phrase_melody_alg= ListMelody(melody_alg)
-        #phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
+        phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
 
-        rythm_score= score.copy()
+        #rythm_score= score.copy()
         #rythm_score.notes_per_instrument.pop(piano)
-        rythm_alg.train(rythm_score)
-        melody_alg.train(rythm_score)
+        print "todos los intrsumentos"
+        for instrument in score.instruments:
+            if not instrument.is_drums:
+                melody_alg.obsSeqBuilder.builder.patch= instrument.patch
+                melody_alg.train(score)
+            rythm_alg.obsSeqBuilder.builder.patch= instrument.patch
+            rythm_alg.train(score)
 
         harmonic_context_alg.train(score)
 
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, phrase_melody_alg)
+        self.applier= applier
         applier.start_creation()
         rythm_alg.draw_model('rythm.png', score.divisions)
         melody_alg.model.draw('melody.png', str)
@@ -83,9 +89,17 @@ class SupportNotesComposer(object):
         # octave range
         score_notes= score.get_notes(skip_silences=True)
         mean_pitch= sum(float(n.pitch) for n in score_notes)/len(score_notes)
-        octave= int(mean_pitch/12)
+        std_dev= sqrt(sum((n.pitch-mean_pitch)**2 for n in score_notes)/len(score_notes))
+        #import ipdb;ipdb.set_trace()
+        octave= int(mean_pitch/12) #+ 1
         min_pitch= octave*12
-        max_pitch= (octave+1)*12
+        max_pitch= (octave+2)*12 + 6
+        offset= 0
+        min_pitch= int(mean_pitch - std_dev+offset)
+        max_pitch= int(mean_pitch + std_dev+offset)
+
+        print "MIN PITCH", min_pitch
+        print "MAX PITCH", max_pitch
         general_input= AcumulatedInput()
         general_input.min_pitch= min_pitch
         general_input.max_pitch= max_pitch
@@ -159,6 +173,8 @@ class SupportNotesComposer(object):
         instrument.patch= params['melody_patch_to_dump']
         instrument.patch= 26
         instrument.patch= 73
+        instrument.patch= 21
+        instrument.patch= 74
         res.notes_per_instrument[instrument]= notes
         #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
         #res.notes_per_instrument= {instrument: notes}
@@ -169,11 +185,11 @@ class SupportNotesComposer(object):
         import electrozart
         from electrozart import base
         from electrozart.algorithms import ExecutionContext
-        from pycana import CodeAnalyzer
+        #from pycana import CodeAnalyzer
 
-        analyzer= CodeAnalyzer(electrozart)
-        relations= analyzer.analyze(exceptions= [ExecutionContext])
-        analyzer.draw_relations(relations, 'relations.png')
+        #analyzer= CodeAnalyzer(electrozart)
+        #relations= analyzer.analyze(exceptions= [ExecutionContext])
+        #analyzer.draw_relations(relations, 'relations.png')
 
 
         return res
