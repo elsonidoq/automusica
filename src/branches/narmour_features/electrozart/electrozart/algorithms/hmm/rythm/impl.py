@@ -71,6 +71,7 @@ class RythmHMM(HmmAlgorithm):
         robs= self.ec.robses.get(robsid)
         if robs is None:
             robs= DPRandomObservation(self.ec.hmm, 1)
+            #robs= RandomObservation(self.ec.hmm)
             for i in xrange(1000): robs.next()
             self.ec.robses[robsid]= robs
 
