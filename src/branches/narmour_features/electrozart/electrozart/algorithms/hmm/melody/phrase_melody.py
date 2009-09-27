@@ -30,7 +30,7 @@ class NarmourRandomObservation(RandomObservation):
         self.nf= nf
         self.length= length
         self.nsteps= 1
-        self.now_pitches= set([n0])
+        self.now_pitches= set([(n0, n1)])
 
         self.history= [(self.now_pitches, self.actual_state)]
 
@@ -162,6 +162,13 @@ class ListMelody(ListAlgorithm):
     @needs('rythm_phrase_len', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     def generate_list(self, input, result, prev_notes):
         self.ncalls+=1
+
+        if self.ec.last_support_note is None:
+            start_pitch= self.pick_support_note(input.now_chord, input.min_pitch, input.max_pitch)
+        else:
+            start_pitch= self.ec.last_support_note
+        end_pitch= self.pick_support_note(input.prox_chord, input.min_pitch, input.max_pitch)
+
         start_pitch= self.pick_support_note(input.now_chord, input.min_pitch, input.max_pitch)
         end_pitch= self.pick_support_note(input.prox_chord, input.min_pitch, input.max_pitch)
         phrase_length= input.rythm_phrase_len
@@ -169,6 +176,7 @@ class ListMelody(ListAlgorithm):
         assert phrase_length > 0
 
         if phrase_length <= 2:
+            print "frase muy corta"
             child_result= result.copy()
             child_input= input.copy()
             child_result.pitch= start_pitch
@@ -179,6 +187,9 @@ class ListMelody(ListAlgorithm):
                 child_result.pitch= end_pitch
                 res.append((child_input, child_result))
             return res
+
+        import ipdb;ipdb.set_trace()
+        if phrase_length == 3 : import ipdb;ipdb.set_trace()            
 
         # construyo el camino en la cadena de narmour
         robs= NarmourRandomObservation(start_pitch, 

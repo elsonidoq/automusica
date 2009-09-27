@@ -73,7 +73,7 @@ class SupportNotesComposer(object):
 
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, phrase_melody_alg)
         applier.start_creation()
-        #rythm_alg.draw_model('rythm.png', score.divisions)
+        rythm_alg.draw_model('rythm.png', score.divisions)
         melody_alg.model.draw('melody.png', str)
 
         duration= score.duration
