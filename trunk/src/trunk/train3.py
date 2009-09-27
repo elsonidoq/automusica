@@ -90,7 +90,7 @@ def main(argv):
         random.seed(seed)
 
 
-    train3(options, args)
+    return train3(options, args)
 
 
 from electrozart.composers.narmour_markov import NarmourMarkov
@@ -142,15 +142,19 @@ def train3(options, args):
     composer= SupportNotesComposer()
     composed_score= composer.compose(score, **options.__dict__)
 
+    composer.original_score= score
+    composer.composed_score= composed_score
+
     writer= NotesScoreWriter()
     writer= MidiScoreWriter()
     writer.dump(composed_score, outfname)
     print "saving in ", outfname
     print 'done!'
+    return composer
 
 if __name__ == '__main__':
     from sys import argv
-    main(argv)
+    composer= main(argv)
     
 
     
