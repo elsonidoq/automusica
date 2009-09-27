@@ -557,7 +557,7 @@ class DPRandomObservation(MemoizationObservation):
         for state, prob in nexts.iteritems():
             #if prob < 1:
             distr[state]= alpha/(alpha+n)*prob + state_counters[state]/(alpha+n)
-        assert abs(sum(distr.values()) -1) < 0.00001
+        if abs(sum(distr.values()) -1) >= 0.00001: import ipdb;ipdb.set_trace()
         return distr
 
 
