@@ -30,25 +30,54 @@ class NarmourState(object):
     def features(self):
         return self._features
     
+    def __contains__(self, (p1, p2, p3)):
+        f= self._get_features(p2-p1, p3-p2) 
+        return f == self._features
 
-    def related_notes(self, pitch3, available_notes, reverse=False):
+    def related_notes(self, pitch2=None, pitch3=None, available_notes=None, reverse=False):
         """
-        Devuelve tuplas <pitch1, pitch2> tales que:
             pitch1 \in available_notes \land pitch2 \in available_notes
-            si reverse == False <pitch3, pitch1, pitch2> \in self
-            si reverse == True <pitch1, pitch2, pitch3> \in self
-        """
-        ans= []
-        # XXX agregar un cache
-        for pitch1 in available_notes:
-            for pitch2 in available_notes:
-                if not reverse:
-                    features= self._get_features(pitch1 - pitch3, pitch2 - pitch1)
-                else:
-                    features= self._get_features(pitch2 - pitch1, pitch3 - pitch2)
+            si reverse == True:
+                <pitch1, pitch2, pitch3> \in self
 
-                if features == self.features:                        
-                    ans.append((pitch1, pitch2))
+            si reverse == False and pitch2 is not None
+                <pitch2, pitch3, pitch1> \in self
+
+            si reverse == False and pitch2 is None:
+                <pitch3, pitch1, pitch2> \in self
+
+        se devuelve siempre las ultimas dos componentes
+        """
+        assert available_notes is not None and (pitch2 is not None or pitch3 is not None)
+        if pitch3 is None:
+            pitch3, pitch2= pitch2, pitch3
+
+        if pitch2 is None:
+            pitch2_notes= available_notes
+        else:
+            pitch2_notes= [pitch2] 
+        
+        # XXX agregar un cache
+        ans= []
+        for pitch1 in available_notes:
+            for p2 in pitch2_notes:
+                if reverse:
+                    trio= (pitch1, p2, pitch3)
+                    ans_candidate= (pitch1, p2)
+                    #features= self._get_features(p2 - pitch1, pitch3 - p2)
+                elif pitch2 is not None:
+                    trio= (p2, pitch3, pitch1)
+                    ans_candidate= (pitch3, pitch1)
+                    #features= self._get_features(p2 - pitch3, pitch3 - pitch1)
+                else:
+                    trio= (pitch3, pitch1, p2)
+                    ans_candidate= (pitch1, p2)
+                    #features= self._get_features(pitch3 - pitch1, pitch1 - p2)
+                
+                features= self._get_features(trio[1] - trio[0], trio[2] - trio[1])
+
+                if features == self._features:                        
+                    ans.append(ans_candidate)
 
         return ans
 

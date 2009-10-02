@@ -9,7 +9,7 @@ from narmour_hmm import NarmourState
 
 class PathNarmourState(NarmourState):
     def __init__(self, ni, pos):
-        super(PathNarmourState, self).__init__(ni.interval)
+        super(PathNarmourState, self).__init__(ni.interval1, ni.interval2)
         self.pos= pos
     
     def __eq__(self, other):
@@ -20,25 +20,27 @@ class PathNarmourState(NarmourState):
         return res.replace('>', ', %s>' % self.pos)
 
 # XXX era RandomObservation
-class NarmourRandomObservation(DPRandomObservation):
-    def __init__(self, n0, nf, length, hmm, min_pitch, max_pitch, start=None):
-        super(NarmourRandomObservation, self).__init__(hmm, 5)
+class NarmourRandomObservation(RandomObservation):
+    def __init__(self, n0, n1, nfs, length, hmm, min_pitch, max_pitch, start=None):
+        super(NarmourRandomObservation, self).__init__(hmm)
 
-        for i in xrange(1000):
-            super(NarmourRandomObservation, self).next()
+        #for i in xrange(1000):
+        #    super(NarmourRandomObservation, self).next()
 
         if start is not None: 
             self.actual_state= start
 
         self.n0= n0
         self.n1= n1
-        self.nf= nf
+        self.nfs= nfs
         self.length= length
         self.nsteps= 1
+        # lo que puedo tocar ahora
         self.now_pitches= set([(n0, n1)])
 
         self.history= [(self.now_pitches, self.actual_state)]
 
+        self.available_notes= set(xrange(min_pitch, max_pitch+1))
         self.must_dict= self.build_must_dict(min_pitch, max_pitch)
 
     def next(self):
@@ -55,7 +57,8 @@ class NarmourRandomObservation(DPRandomObservation):
                 nexts[state]= prob
 
         if len(nexts) == 0:
-            raise Exception('Impossible phrase: start_pitch: %(n0)s, end_pitch: %(nf)s, length:%(length)s' % self.__dict__)
+            import ipdb;ipdb.set_trace()
+            raise Exception('Impossible phrase: actual_state= %(actual_state)s, start_pitch: %(n0)s, %(n1)s end_pitch: %(nfs)s, length:%(length)s' % self.__dict__)
 
         s= sum(nexts.itervalues())
         for state, prob in nexts.iteritems():
@@ -66,14 +69,14 @@ class NarmourRandomObservation(DPRandomObservation):
 
         now_pitches= set()
         for p in intersections[next]:
-            now_pitches.update(next.related_notes(p, reverse=False))
+            now_pitches.update(next.related_notes(p[0], p[1], self.available_notes, reverse=False))
         self.now_pitches= now_pitches
 
         self.history.append((self.now_pitches, self.actual_state))
         self.nsteps+=1
         return next
 
-    def build_must_dict(self, available_notes):
+    def build_must_dict(self, min_pitch, max_pitch):
         """
         Devuelve un diccionario con los conjuntos Must.
 
@@ -89,18 +92,23 @@ class NarmourRandomObservation(DPRandomObservation):
 
         must[i][N] = Must(N, self.nf, i)
         """
-        notes_range= set(xrange(min_pitch, max_pitch+1))
         must= defaultdict(lambda : defaultdict(set))
 
         for node in self.hmm.states():
-            for n in available_notes:
-                must[0][node]= set(node.related_notes(self.nf, available_notes, reverse=True))
+            for nf in self.nfs: 
+                for n in self.available_notes:
+                    must[0][node]= set(node.related_notes(pitch3=nf, available_notes=self.available_notes, reverse=True))
 
+        i=0
         for d in xrange(1, self.length+1):
             for node in self.hmm.states():
                 for node_adj in self.hmm.nexts(node):
-                    for pitch2, pitch3 in must[d-1][node_adj]:
-                        must[d][node].update(node.related_notes(pitch3, available_notes, reverse=True))
+                    for (pitch2, pitch3) in must[d-1][node_adj]:
+                        related_notes= node.related_notes(pitch2, pitch3, self.available_notes, reverse=True)
+                        if len(related_notes) > 0: 
+                            must[d][node].update(related_notes)
+                        i+=1
+                        if i % 100 == 0: print i
 
         return dict((k, dict(v)) for (k,v) in must.iteritems())
 
@@ -123,7 +131,7 @@ class ListMelody(ListAlgorithm):
         self.ec.last_support_note= None
         self.ec.support_note_cache= {}
 
-    def pick_support_note(self, chord, min_pitch, max_pitch):
+    def pick_support_note(self, chord, min_pitch, max_pitch, phrase_length=None):
         if self.ec.last_support_note is None:
             res_pitch= choice(chord.notes).pitch 
             res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
@@ -164,15 +172,13 @@ class ListMelody(ListAlgorithm):
             start_pitch= self.ec.last_support_note
         end_pitch= self.pick_support_note(input.prox_chord, input.min_pitch, input.max_pitch)
 
-        start_pitch= self.pick_support_note(input.now_chord, input.min_pitch, input.max_pitch)
-        end_pitch= self.pick_support_note(input.prox_chord, input.min_pitch, input.max_pitch)
-
         phrase_length= input.rythm_phrase_len
         
         assert phrase_length > 0
 
         if phrase_length <= 2:
             print "frase muy corta"
+            pitches= [start_pitch]
             child_result= result.copy()
             child_input= input.copy()
             child_result.pitch= start_pitch
@@ -181,31 +187,43 @@ class ListMelody(ListAlgorithm):
                 child_result= result.copy()
                 child_input= input.copy()
                 child_result.pitch= end_pitch
+                pitches.append(end_pitch)
                 res.append((child_input, child_result))
+            self.ec.last_pitches= pitches
             return res
 
-        import ipdb;ipdb.set_trace()
         if phrase_length == 3 : import ipdb;ipdb.set_trace()            
 
         # construyo el camino en la cadena de narmour
         if self.ec.last_pitches is None:
-            second_pitch= choice(range(input.min_pitch, input.max_pitch+1))
+            #second_pitch= choice(range(input.min_pitch, input.max_pitch+1))
+            second_pitch= None
         else:
-            import ipdb;ipdb.set_trace()
-            second_pitch= self.ec.last_pitches
+            second_pitch= self.ec.last_pitches[-2]
 
+
+        next_chord_pitches= set([n.pitch%12 for n in input.prox_chord.notes])
+        available_notes= set(xrange(input.min_pitch, input.max_pitch+1))
+        end_pitches= [p for p in available_notes if p%12 in next_chord_pitches]
         robs= NarmourRandomObservation(start_pitch, 
                                        second_pitch,
-                                       end_pitch, 
-                                       phrase_length, 
+                                       end_pitches,
+                                       phrase_length-1, 
                                        self.melody_alg.model, 
-                                       available_notes=range(input.min_pitch, input.max_pitch+1),
+                                       min_pitch=input.min_pitch,
+                                       max_pitch=input.max_pitch,
                                        start=self.ec.last_state)
+        if second_pitch is None:
+            #XXX hack
+            the_state, the_notes= choice([i for i in robs.must_dict[phrase_length-1].iteritems() if i[0] in robs._get_state_distr(robs.actual_state)])
+            if len(the_notes) == 0: import ipdb;ipdb.set_trace()
+            second_pitch= robs.n1= choice([i[1] for i in the_notes if i[0] == start_pitch])
+            robs.now_pitches= set([(robs.n0, robs.n1)])
 
-        import ipdb;ipdb.set_trace()
+        #import ipdb;ipdb.set_trace()
         path= [robs.actual_state]
         #if self.ncalls == 15: import ipdb;ipdb.set_trace()
-        for i in xrange(phrase_length):
+        for i in xrange(phrase_length-1):
             robs.next()
             path.append(robs.actual_state)
 
@@ -223,39 +241,43 @@ class ListMelody(ListAlgorithm):
         #import ipdb;ipdb.set_trace()
         hmm.make_walkable()
         robs2= NarmourRandomObservation(start_pitch, 
-                                        end_pitch, 
-                                        phrase_length, 
+                                        second_pitch,
+                                        end_pitches, 
+                                        phrase_length-1, 
                                         hmm, 
                                         min_pitch=input.min_pitch,
                                         max_pitch=input.max_pitch)
-        if start_pitch not in robs2.must_dict[phrase_length-1][states[1]]: import ipdb;ipdb.set_trace()
 
-        pitches= [start_pitch]
+        # si hay frase muy corta, despues se rompe todo
+        a=1/0
+        if (start_pitch, second_pitch) not in robs2.must_dict[phrase_length-1][states[1]]: import ipdb;ipdb.set_trace()
+
+        pitches= [start_pitch, second_pitch]
         context_distr= dict((n.pitch, prob) for (n,prob) in self.melody_alg.candidate_pitches(input.now_chord.notes))
-        for i in xrange(1, phrase_length):
+        for i in xrange(1, phrase_length-1):
             # candidates lo inicializo en las que tengo que tocar antes del proximo estado
             candidates= robs2.must_dict[phrase_length-1-i][states[i+1]]
-            candidates= candidates.intersection(path[i].related_notes(pitches[-1]))
-            if not candidates.issubset(xrange(input.min_pitch, input.max_pitch+1)): import ipdb;ipdb.set_trace()
+            candidates= candidates.intersection(path[i].related_notes(pitches[-2], pitches[-1], available_notes, reverse=False))
+            #if not candidates.issubset(xrange(input.min_pitch, input.max_pitch+1)): import ipdb;ipdb.set_trace()
             #candidates= candidates.intersection(xrange(input.min_pitch, input.max_pitch+1))
 
             if len(candidates) == 0: import ipdb;ipdb.set_trace()
 
-            candidates_distr= dict((p, context_distr.get(p%12)*1.0/(2**abs(p-pitches[-1])+1)) for p in candidates if context_distr.get(p%12) is not None)
+            candidates_distr= dict((p[1], context_distr.get(p[1]%12)*1.0/(2**abs(p[1]-pitches[-1])+1)) for p in candidates if context_distr.get(p[1]%12) is not None)
             # XXX ver que hacer cuando el contexto no me deja tocar (paso el contexto a la definicion de Must?)
             if len(candidates_distr) == 0: 
                 print "CONTEXTO NO ME DEJO"
-                candidates_distr= dict((p,1.0/(1+2**abs(p-pitches[-1]))) for p in candidates)
+                candidates_distr= dict((p[1],1.0/(1+2**abs(p[1]-pitches[-1]))) for p in candidates)
 
             new_pitch= RandomPicker(values=candidates_distr).get_value(normalize=True)
             #if not (new_pitch >= input.min_pitch and new_pitch <= input.max_pitch): import ipdb;ipdb.set_trace()
             pitches.append(new_pitch)
 
-        #import ipdb;ipdb.set_trace()
 
-        for i, (p1, p2) in enumerate(zip(pitches, pitches[1:])):
+        for i, (p1, p2, p3) in enumerate(zip(pitches, pitches[1:], pitches[2:])):
             node= path[i+1]
-            if p2 not in node.related_notes(p1): import ipdb;ipdb.set_trace()
+            if (p1, p2, p3) not in node: import ipdb;ipdb.set_trace()
+            #if p2 not in node.related_notes(p1): import ipdb;ipdb.set_trace()
 
         self.ec.last_pitches= pitches[:]
         if len(pitches) != phrase_length: import ipdb;ipdb.set_trace()

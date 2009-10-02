@@ -394,10 +394,13 @@ class RandomObservation(object):
         self.hmm= hmm
         self.actual_state= hmm.get_initial_state()
 
+    def _get_state_distr(self, state):
+        return self.hmm.nexts(state)
+
     def next(self):
         """ devuelve la proxima observacion en forma de 
         diccionario de random variable en valor """
-        nexts= self.hmm.nexts(self.actual_state)
+        nexts= self._get_state_distr(self.actual_state)
         rnd_picker= RandomPicker("",nexts)
         self.actual_state= rnd_picker.get_value()
 
