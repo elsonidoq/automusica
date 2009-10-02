@@ -83,9 +83,9 @@ def main(argv):
     #options.seed= 1
     #options.patch= 5
     if options.seed is not None: 
-        random.seed(options.seed)
+        random.seed(int(options.seed))
     else:
-        seed= time()
+        seed= int(time())
         print "using seed", seed
         random.seed(seed)
 
