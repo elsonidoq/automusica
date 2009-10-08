@@ -17,11 +17,12 @@ class Figure(object):
     def end(self): return self.start+self.duration
 
 class Chord(Figure):
-    def __init__(self, start, duration, notes, volume=None):
+    def __init__(self, start, duration, notes, volume=None, context_score=None):
         super(Chord, self).__init__(start, duration)
         self.volume= volume
         self.notes= notes[:]
         self.canon_notes= [n.get_canonical_note() for n in notes]
+        self.context_score= context_score
         
     def get_canonical(self):
         return Chord(self.start, self.duration, list(set(n.get_canonical_note() for n in self.notes)), volume=self.volume)
@@ -34,25 +35,34 @@ class Chord(Figure):
 
     def __hash__(self): return hash(tuple(self.notes))
     
+    def canon_duration(self, context_score=None):
+        if self.context_score is None and context_score is None:
+            raise Exception('I need a context score in order to calculate this')
+
+        # priorizo el parametro por sobre self.context_score
+        if context_score is None: context_score= self.context_score
+        return Fraction(self.duration,context_score.divisions)
+
     @classmethod
     def chordlist(cls, score, min_notes_per_chord=3):
         all_notes= score.get_notes(skip_silences=True)
-        res= []
+        candidate_chords= []
         last_start= None
         for start, ns in groupby(all_notes, key=lambda n:n.start):
             ns= list(ns)
             chord_notes= set(n.get_canonical_note() for n in ns)
             #print len(ns)
             if len(chord_notes) >= min_notes_per_chord: 
-                chord= cls(start, None, list(chord_notes))
-                if len(res) > 0: 
-                    if set(n.get_canonical_note() for n in res[-1].notes) == chord_notes: continue
-                    res[-1].duration= start - res[-1].start
-                res.append(chord)
+                chord= cls(start, None, list(chord_notes), context_score=score)
+                if len(candidate_chords) > 0: 
+                    if set(n.get_canonical_note() for n in candidate_chords[-1].notes) == chord_notes: continue
+                    candidate_chords[-1].duration= start - candidate_chords[-1].start
+                candidate_chords.append(chord)
 
-        if len(res) > 0: 
-            res[-1].duration= all_notes[-1].end - res[-1].start 
-        return res
+        if len(candidate_chords) > 0: 
+            candidate_chords[-1].duration= all_notes[-1].end - candidate_chords[-1].start 
+
+        return candidate_chords
 
     def to_notelist(self):
         notes= []
