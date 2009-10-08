@@ -19,7 +19,6 @@ class PathNarmourState(NarmourState):
         res= super(PathNarmourState, self).__repr__()
         return res.replace(')', ', pos = %s)' % self.pos)
 
-# XXX era RandomObservation
 class NarmourRandomObservation(RandomObservation):
     def __init__(self, n0, n1, nfs, length, hmm, min_pitch, max_pitch, start=None):
         super(NarmourRandomObservation, self).__init__(hmm)
@@ -104,8 +103,10 @@ class NarmourRandomObservation(RandomObservation):
                 for node_adj in self.hmm.nexts(node):
                     for (pitch2, pitch3) in must[d-1][node_adj]:
                         related_notes= node.related_notes(pitch2, pitch3, self.available_notes, reverse=True)
+                        if any([(kk[0], kk[1], pitch3) not in node for kk in related_notes]): import ipdb;ipdb.set_trace()
                         if len(related_notes) > 0: 
                             must[d][node].update(related_notes)
+
                         i+=1
                         if i % 100 == 0: print i
 
@@ -158,7 +159,6 @@ class ListMelody(ListAlgorithm):
             #res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
 
         assert res >= min_pitch and res <=max_pitch
-        self.ec.last_support_note= res
         return res
 
     def _generate_result(self, input, result, pitches):
@@ -171,38 +171,33 @@ class ListMelody(ListAlgorithm):
         return res            
 
     def is_first_phrase(self):
+        if self.ec.last_support_note is None != self.ec.last_pitches is None: import ipdb;ipdb.set_trace()
         return self.ec.last_support_note is None
 
     @needs('rythm_phrase_len', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     def generate_list(self, input, result, prev_notes):
         self.ncalls+=1
 
-        if not self.ec.last_support_note is None == self.ec.last_pitches is None: import ipdb;ipdb.set_trace()
-
         is_first_phrase= self.is_first_phrase()
         if is_first_phrase:
             start_pitch= self.pick_support_note(input.now_chord, input.min_pitch, input.max_pitch)
             second_pitch= None
         else:
-            import ipdb;ipdb.set_trace()
             second_pitch= self.ec.last_support_note
-            start_pitch= self.ec.last_pitches[-2]
+            start_pitch= self.ec.last_pitches[-1]
 
         end_pitch= self.pick_support_note(input.prox_chord, input.min_pitch, input.max_pitch)
 
         phrase_length= input.rythm_phrase_len
         assert phrase_length > 0
 
-        if phrase_length == 1:
-            pitches= [end_pitch]
-            self.ec.last_pitches.append(end_pitch)
-            # XXX self.ec.last_state
-            return self._generate_result(input, result, pitches)
-        elif phrase_length == 2:
-            pitches= [start_pitch, end_pitch]
-            self.ec.last_pitches= pitches[:]
-            # XXX self.ec.last_state
-            return self._generate_result(input, result, pitches)
+        if phrase_length == 1 and is_first_phrase: import ipdb;ipdb.set_trace()
+
+        if phrase_length == 1 and not is_first_phrase:
+            self.ec.last_support_note= end_pitch
+            self.ec.last_state= self._choose_state(self.ec.last_pitches[-2], self.ec.last_pitches[-1], second_pitch)
+            self.ec.last_pitches.append(second_pitch)
+            return self._generate_result(input, result, [second_pitch])
 
 
 
@@ -228,13 +223,9 @@ class ListMelody(ListAlgorithm):
                 break
             print state                
 
+            if len(second_note_candidates) == 0: import ipdb;ipdb.set_trace()
             second_pitch= robs.n1= choice(second_note_candidates)
             robs.now_pitches= set([(robs.n0, robs.n1)])
-            if phrase_length == 3:
-                pitches= [start_pitch, second_pitch, end_pitches]
-                self.ec.last_pitches= pitches[:]
-                # XXX self.ec.last_state
-                return self._generate_result(input, result, pitches)
 
         path= [robs.actual_state]
         for i in xrange(phrase_length-1):
@@ -252,8 +243,13 @@ class ListMelody(ListAlgorithm):
             hmm.add_hidden_state(next, 0.0)
             hmm.add_transition(prev, next, 1.0)
         
+        for next, prob in self.melody_alg.model.nexts(path[-1]).iteritems():
+            next= PathNarmourState(next, len(states))
+            hmm.add_hidden_state(next, 0.0)
+            hmm.add_transition(states[-1], next, prob)
+
+        #hmm.make_walkable()
         #import ipdb;ipdb.set_trace()
-        hmm.make_walkable()
         robs2= NarmourRandomObservation(start_pitch, 
                                         second_pitch,
                                         end_pitches, 
@@ -261,6 +257,8 @@ class ListMelody(ListAlgorithm):
                                         hmm, 
                                         min_pitch=input.min_pitch,
                                         max_pitch=input.max_pitch)
+
+        self._check_sub_model(robs, robs2)
 
         if (start_pitch, second_pitch) not in robs2.must_dict[phrase_length-1][states[1]]: import ipdb;ipdb.set_trace()
         if (start_pitch, second_pitch) not in robs.must_dict[phrase_length-1][path[1]]: import ipdb;ipdb.set_trace()
@@ -273,7 +271,9 @@ class ListMelody(ListAlgorithm):
         for i in xrange(1, phrase_length - 1):
             # candidates lo inicializo en las que tengo que tocar antes del proximo estado
             candidates= robs2.must_dict[phrase_length-1-i][states[i+1]]
-            candidates= candidates.intersection(path[i].related_notes(pitches[-2], pitches[-1], available_notes, reverse=False))
+            if len(pitches) == 1: prev_pitch= start_pitch
+            else: prev_pitch= pitches[-2]
+            candidates= candidates.intersection(path[i].related_notes(prev_pitch, pitches[-1], available_notes, reverse=False))
             #if not candidates.issubset(xrange(input.min_pitch, input.max_pitch+1)): import ipdb;ipdb.set_trace()
             #candidates= candidates.intersection(xrange(input.min_pitch, input.max_pitch+1))
 
@@ -304,6 +304,26 @@ class ListMelody(ListAlgorithm):
             child_result.pitch= pitch
             res.append((child_input, child_result))
         
+        self.ec.last_support_note= end_pitch
         return res
         
     
+    def _check_sub_model(self, robs, robs2):
+        for length, states_pitches in robs2.must_dict.iteritems():
+            for robs2_state, robs2_state_pitches in states_pitches.iteritems():
+                robs_state= NarmourState(robs2_state.interval1, robs2_state.interval2) 
+                robs_state_pitches= robs.must_dict[length][robs_state]
+
+                d1= robs2_state_pitches-robs_state_pitches
+                d2= robs_state_pitches-robs2_state_pitches
+                if not (robs2_state_pitches <= robs_state_pitches): import ipdb;ipdb.set_trace()
+
+
+    def _choose_state(self, n0, n1, n2):
+        t= (n0, n1, n2)
+        filtered_nexts= dict((state, prob) for (state, prob) in self.melody_alg.model.nexts(self.ec.last_state).iteritems() if t in state)
+        if filtered_nexts:
+            state= RandomPicker(values=filtered_nexts).get_value(normalize=True)
+        else:
+            state= choice(self.melody_alg.model.states())
+        return state            

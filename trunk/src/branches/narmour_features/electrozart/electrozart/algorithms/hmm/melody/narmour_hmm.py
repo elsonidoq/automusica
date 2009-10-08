@@ -26,6 +26,42 @@ class NarmourState(object):
         self._features= self._get_features(i1_length, i2_length)
         self._frozen_features= tuple(self.features.items())
 
+    @staticmethod
+    def test():
+        def ns_builder(i1_length, i2_length):
+            interval1= Interval(Note(0), Note(i1_length))
+            interval2= Interval(Note(0), Note(i2_length))
+            return NarmourState(interval1, interval2)
+            
+        for i1_length in xrange(13):
+            for i2_length in xrange(13):
+                ns= ns_builder(i1_length, i2_length)
+
+                available_notes= set(xrange(48, 48+24))
+                for pitch3 in available_notes:
+                    # reverse == True
+                    related= ns.related_notes(pitch3=pitch3, available_notes=available_notes, reverse=True)
+                    for pitch1, pitch2 in related:
+                        if (pitch1, pitch2, pitch3) not in ns: import ipdb;ipdb.set_trace()
+
+                    # reverse == False
+                    related= ns.related_notes(pitch3=pitch3, available_notes=available_notes, reverse=False)
+                    for pitch1, pitch2 in related:
+                        if (pitch3, pitch1, pitch2) not in ns: import ipdb;ipdb.set_trace()
+
+                    # reverse == False && pitch2 not None
+                    for pitch2 in available_notes:
+                        related= ns.related_notes(pitch2=pitch2, pitch3=pitch3, available_notes=available_notes, reverse=False)
+                        for p3, pitch4 in related:
+                            if p3 != pitch3: import ipdb;ipdb.set_trace()
+                            if (pitch2, pitch3, pitch4) not in ns: import ipdb;ipdb.set_trace()
+
+                    # reverse == True && pitch2 not None
+                    for pitch2 in available_notes:
+                        related= ns.related_notes(pitch2=pitch2, pitch3=pitch3, available_notes=available_notes, reverse=True)
+                        for p1, p2 in related:
+                            if p2 != pitch2: import ipdb;ipdb.set_trace()
+                            if (p1, pitch2, pitch3) not in ns: import ipdb;ipdb.set_trace()
     @property
     def features(self):
         return self._features
@@ -36,7 +72,6 @@ class NarmourState(object):
 
     def related_notes(self, pitch2=None, pitch3=None, available_notes=None, reverse=False):
         """
-            pitch1 \in available_notes \land pitch2 \in available_notes
             si reverse == True:
                 <pitch1, pitch2, pitch3> \in self
 
