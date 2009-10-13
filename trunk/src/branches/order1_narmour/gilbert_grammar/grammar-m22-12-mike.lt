@@ -1,0 +1,236 @@
+A --> I0
+A --> I0 A
+A --> I1
+A --> I1 A
+A --> I10
+A --> I10 A
+A --> I11
+A --> I11 A
+A --> I12
+A --> I12 A
+A --> I2
+A --> I2 A
+A --> I3
+A --> I3 A
+A --> I4
+A --> I4 A
+A --> I5
+A --> I5 A
+A --> I6
+A --> I6 A
+A --> I7
+A --> I7 A
+A --> I8
+A --> I8 A
+A --> I9
+A --> I9 A
+A --> Im1
+A --> Im1 A
+A --> Im10
+A --> Im10 A
+A --> Im11
+A --> Im11 A
+A --> Im12
+A --> Im12 A
+A --> Im13
+A --> Im13 A
+A --> Im14
+A --> Im14 A
+A --> Im15
+A --> Im15 A
+A --> Im16
+A --> Im16 A
+A --> Im17
+A --> Im17 A
+A --> Im18
+A --> Im18 A
+A --> Im19
+A --> Im19 A
+A --> Im2
+A --> Im2 A
+A --> Im20
+A --> Im20 A
+A --> Im21
+A --> Im21 A
+A --> Im22
+A --> Im22 A
+A --> Im3
+A --> Im3 A
+A --> Im4
+A --> Im4 A
+A --> Im5
+A --> Im5 A
+A --> Im6
+A --> Im6 A
+A --> Im7
+A --> Im7 A
+A --> Im8
+A --> Im8 A
+A --> Im9
+A --> Im9 A
+I0 --> 0
+I0 --> I0 I0
+I0 --> I1 Im1
+I0 --> I2 Im2
+I0 --> Im1 I1
+I0 --> Im2 I2
+I1 --> 1
+I1 --> I1 I0
+I1 --> I10 Im9
+I1 --> I11 Im10
+I1 --> I12 Im11
+I1 --> I2 Im1
+I1 --> I3 Im2
+I1 --> I4 Im3
+I1 --> I5 Im4
+I1 --> I6 Im5
+I1 --> I7 Im6
+I1 --> I8 Im7
+I1 --> I9 Im8
+I1 --> Im1 I2
+I1 --> Im10 I11
+I1 --> Im11 I12
+I1 --> Im2 I3
+I1 --> Im3 I4
+I1 --> Im4 I5
+I1 --> Im5 I6
+I1 --> Im6 I7
+I1 --> Im7 I8
+I1 --> Im8 I9
+I1 --> Im9 I10
+I10 --> 10
+I10 --> I10 I0
+I11 --> 11
+I11 --> I11 I0
+I12 --> 12
+I12 --> I12 I0
+I2 --> 2
+I2 --> I1 I1
+I2 --> I10 Im8
+I2 --> I11 Im9
+I2 --> I12 Im10
+I2 --> I2 I0
+I2 --> I3 Im1
+I2 --> I4 Im2
+I2 --> I5 Im3
+I2 --> I6 Im4
+I2 --> I7 Im5
+I2 --> I8 Im6
+I2 --> I9 Im7
+I2 --> Im1 I3
+I2 --> Im10 I12
+I2 --> Im2 I4
+I2 --> Im3 I5
+I2 --> Im4 I6
+I2 --> Im5 I7
+I2 --> Im6 I8
+I2 --> Im7 I9
+I2 --> Im8 I10
+I2 --> Im9 I11
+I3 --> 3
+I3 --> I3 I0
+I4 --> 4
+I4 --> I4 I0
+I5 --> 5
+I5 --> I5 I0
+I6 --> 6
+I6 --> I6 I0
+I7 --> 7
+I7 --> I7 I0
+I8 --> 8
+I8 --> I8 I0
+I9 --> 9
+I9 --> I9 I0
+Im1 --> I1 Im2
+Im1 --> I10 Im11
+Im1 --> I11 Im12
+Im1 --> I12 Im13
+Im1 --> I2 Im3
+Im1 --> I3 Im4
+Im1 --> I4 Im5
+Im1 --> I5 Im6
+Im1 --> I6 Im7
+Im1 --> I7 Im8
+Im1 --> I8 Im9
+Im1 --> I9 Im10
+Im1 --> Im1 I0
+Im1 --> Im10 I9
+Im1 --> Im11 I10
+Im1 --> Im12 I11
+Im1 --> Im13 I12
+Im1 --> Im2 I1
+Im1 --> Im3 I2
+Im1 --> Im4 I3
+Im1 --> Im5 I4
+Im1 --> Im6 I5
+Im1 --> Im7 I6
+Im1 --> Im8 I7
+Im1 --> Im9 I8
+Im1 --> m1
+Im10 --> Im10 I0
+Im10 --> m10
+Im11 --> Im11 I0
+Im11 --> m11
+Im12 --> Im12 I0
+Im12 --> m12
+Im13 --> Im13 I0
+Im13 --> m13
+Im14 --> Im14 I0
+Im14 --> m14
+Im15 --> Im15 I0
+Im15 --> m15
+Im16 --> Im16 I0
+Im16 --> m16
+Im17 --> Im17 I0
+Im17 --> m17
+Im18 --> Im18 I0
+Im18 --> m18
+Im19 --> Im19 I0
+Im19 --> m19
+Im2 --> I1 Im3
+Im2 --> I10 Im12
+Im2 --> I11 Im13
+Im2 --> I12 Im14
+Im2 --> I2 Im4
+Im2 --> I3 Im5
+Im2 --> I4 Im6
+Im2 --> I5 Im7
+Im2 --> I6 Im8
+Im2 --> I7 Im9
+Im2 --> I8 Im10
+Im2 --> I9 Im11
+Im2 --> Im1 Im1
+Im2 --> Im10 I8
+Im2 --> Im11 I9
+Im2 --> Im12 I10
+Im2 --> Im13 I11
+Im2 --> Im14 I12
+Im2 --> Im2 I0
+Im2 --> Im3 I1
+Im2 --> Im4 I2
+Im2 --> Im5 I3
+Im2 --> Im6 I4
+Im2 --> Im7 I5
+Im2 --> Im8 I6
+Im2 --> Im9 I7
+Im2 --> m2
+Im20 --> Im20 I0
+Im20 --> m20
+Im21 --> Im21 I0
+Im21 --> m21
+Im22 --> Im22 I0
+Im22 --> m22
+Im3 --> Im3 I0
+Im3 --> m3
+Im4 --> Im4 I0
+Im4 --> m4
+Im5 --> Im5 I0
+Im5 --> m5
+Im6 --> Im6 I0
+Im6 --> m6
+Im7 --> Im7 I0
+Im7 --> m7
+Im8 --> Im8 I0
+Im8 --> m8
+Im9 --> Im9 I0
+Im9 --> m9

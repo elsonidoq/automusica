@@ -1,0 +1,15 @@
+duple_bonus = 0.2
+meter_change_penalty = 0.3
+beat_slop = 35
+tactus_min = 420
+tactus_width = 1.8
+raising_change_penalty = 3.0
+pip_time = 12
+beat_interval_factor = 3.0
+verbosity = 0
+tactus_max = 1600
+note_bonus = 0.2
+triple_bonus = 1.4
+tactus_step = 1.1
+note_factor = 1.0
+max_effective_length = 1.0
