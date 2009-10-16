@@ -148,6 +148,14 @@ class MidiToScore(MidiOutStream):
         if bb != 8: print "WARNING: bb != 8"
     
     def key_signature(self, sf, mi):
+        self.score.key= None
+        self.score.mode= None
+        if sf <= 7 and sf >= 0:
+            self.score.key= sf*7 % 12
+            self.score.mode= mi
+        elif sf < 0:
+            self.score.key= abs(sf)*5 % 12
+            self.score.mode= mi
         self.score.key_signature= (sf, mi)
 
     def tempo(self, tempo):
