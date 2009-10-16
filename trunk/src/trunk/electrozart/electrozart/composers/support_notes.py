@@ -44,7 +44,8 @@ class SupportNotesComposer(object):
                 melody_instrument= instrument
             if self.matches_description(instrument, params['rythm_patch'], params['rythm_channel']):
                 rythm_instrument= instrument
-        if (melody_instrument is None or rythm_instrument is None) and len(score.instruments) > 1: raise Exception("Que instrument?")
+        # XXX
+        #if (melody_instrument is None or rythm_instrument is None) and len(score.instruments) > 1: raise Exception("Que instrument?")
         else: 
             rythm_instrument= melody_instrument= score.instruments[0]
         
@@ -79,8 +80,8 @@ class SupportNotesComposer(object):
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, phrase_melody_alg)
         self.applier= applier
         applier.start_creation()
-        rythm_alg.draw_model('rythm.png', score.divisions)
-        melody_alg.model.draw('melody.png', str)
+        #rythm_alg.draw_model('rythm.png', score.divisions)
+        #melody_alg.model.draw('melody.png', str)
 
         duration= score.duration
         #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
@@ -91,10 +92,10 @@ class SupportNotesComposer(object):
         mean_pitch= sum(float(n.pitch) for n in score_notes)/len(score_notes)
         std_dev= sqrt(sum((n.pitch-mean_pitch)**2 for n in score_notes)/len(score_notes))
         #import ipdb;ipdb.set_trace()
-        octave= int(mean_pitch/12) #+ 1
-        min_pitch= octave*12
-        max_pitch= (octave+2)*12 + 6
-        offset= 0
+        #octave= int(mean_pitch/12) + 1
+        #min_pitch= octave*12 #+ 6
+        #max_pitch= (octave+2)*12 + 6
+        offset= 12
         min_pitch= int(mean_pitch - std_dev+offset)
         max_pitch= int(mean_pitch + std_dev+offset)
 
