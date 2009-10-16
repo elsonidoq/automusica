@@ -20,12 +20,12 @@ class PathNarmourInterval(NarmourInterval):
         return res.replace('>', ', %s>' % self.pos)
 
 # XXX era RandomObservation
-class NarmourRandomObservation(DPRandomObservation):
+class NarmourRandomObservation(RandomObservation):
     def __init__(self, n0, nf, length, hmm, min_pitch, max_pitch, start=None):
-        super(NarmourRandomObservation, self).__init__(hmm, 5)
+        super(NarmourRandomObservation, self).__init__(hmm)#, 5)
 
-        for i in xrange(1000):
-            super(NarmourRandomObservation, self).next()
+        #for i in xrange(1000):
+        #    super(NarmourRandomObservation, self).next()
 
         if start is not None: 
             self.actual_state= start
@@ -127,7 +127,7 @@ class ListMelody(ListAlgorithm):
             #res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res])
             #print res
 
-             #RANDOM con cache
+            ##RANDOM con cache
             if (chord, self.ec.last_support_note) in self.ec.support_note_cache:
                 res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
             else:
@@ -200,13 +200,15 @@ class ListMelody(ListAlgorithm):
             hmm.add_transition(prev, next, 1.0)
         
         #import ipdb;ipdb.set_trace()
-        hmm.make_walkable()
+        #hmm.make_walkable()
         robs2= NarmourRandomObservation(start_pitch, 
                                         end_pitch, 
                                         phrase_length, 
                                         hmm, 
                                         min_pitch=input.min_pitch,
                                         max_pitch=input.max_pitch)
+        
+        self._check_sub_model(robs, robs2)
         if start_pitch not in robs2.must_dict[phrase_length-1][states[1]]: import ipdb;ipdb.set_trace()
 
         pitches= [start_pitch]
@@ -246,4 +248,15 @@ class ListMelody(ListAlgorithm):
         
         return res
         
+    def _check_sub_model(self, robs, robs2):
+        for length, states_pitches in robs2.must_dict.iteritems():
+            for robs2_state, robs2_state_pitches in states_pitches.iteritems():
+                robs_state= NarmourInterval(robs2_state.interval)
+                robs_state_pitches= robs.must_dict[length][robs_state]
+
+                d1= robs2_state_pitches-robs_state_pitches
+                d2= robs_state_pitches-robs2_state_pitches
+                if not (robs2_state_pitches <= robs_state_pitches): import ipdb;ipdb.set_trace()
+
+
     
