@@ -176,6 +176,7 @@ from itertools import chain, groupby
 class Score(object):
     def __init__(self, divisions, notes_per_instrument=None):
         assert divisions > 0
+        self.key= self.mode= None
         self.divisions= divisions
         self.notes_per_instrument= notes_per_instrument
         if notes_per_instrument is None:
