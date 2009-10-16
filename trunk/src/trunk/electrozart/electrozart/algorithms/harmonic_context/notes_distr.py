@@ -13,10 +13,13 @@ class NotesDistr(Algorithm):
         self.score= score
 
         score_profile= get_score_profile(score)
-        self.matching_notes= get_matching_notes(score, TriadPrior(5, score_profile))
+        self.matching_notes= get_matching_notes(score, TriadPrior(2, score_profile))
+        for n, d in self.matching_notes.iteritems():
+            if abs(sum(d.itervalues())-1) > 0.001: import ipdb;ipdb.set_trace()
         #self.matching_notes= get_matching_notes(score, NoPrior())
 
         self.score_profile= sorted(score_profile.items(), key=lambda x:x[0])
+        if abs(sum(score_profile.values())-1) > 0.001: import ipdb;ipdb.set_trace()
 
     def pitches_distr(self, now_notes):
         if len(now_notes) == 0:
@@ -32,7 +35,7 @@ class NotesDistr(Algorithm):
             new_distr.sort()
             pitches_distr= convex_combination(pitches_distr, new_distr)
 
-        pitches_distr= convex_combination(pitches_distr, self.score_profile, 0.9 )
+        pitches_distr= convex_combination(pitches_distr, self.score_profile, 0.7 )
 
         # asserts
         if abs(sum(i[1] for i in pitches_distr) -1) > 0.0001:import ipdb;ipdb.set_trace()
@@ -42,18 +45,18 @@ class NotesDistr(Algorithm):
         return pitches_distr            
 
         
-    def notes_distr(self, now_notes, min_note, max_note):
+    def notes_distr(self, now_notes, min_pitch, max_pitch):
         pitches_repetition= defaultdict(int)
-        for i in xrange(min_note, max_note+1):
+        for i in xrange(min_pitch, max_pitch+1):
             pitches_repetition[i%12]+=1
 
-        pitches_distr= self.pitches_distr(now_notes)
-        return dict((Note(i), pitches_distr[Note(i%12)]/pitches_repetition[i%12]) for i in xrange(min_note, max_note+1))
+        pitches_distr= dict(self.pitches_distr(now_notes))
+        return dict((Note(i), pitches_distr[Note(i%12)]/pitches_repetition[i%12]) for i in xrange(min_pitch, max_pitch+1))
 
-    @needs('now_notes', 'min_note', 'max_note')
+    @needs('now_chord', 'min_pitch', 'max_pitch')
     @child_input('notes_distr')
     def next(self, input, result, prev_notes):
-        input.notes_distr= self.notes_distr(input.now_notes, input.min_note, input.max_note)
+        input.notes_distr= self.notes_distr(input.now_chord.notes, input.min_pitch, input.max_pitch)
         
 
 def get_score_profile(score, smooth_factor=0.1):
@@ -71,7 +74,7 @@ def get_score_profile(score, smooth_factor=0.1):
     
     s= sum(score_profile.itervalues())
     for pitch, weight in score_profile.iteritems():
-        score_profile[pitch]= weight/s
+        score_profile[pitch]= float(weight)/s
 
     return dict(score_profile)
 
@@ -83,22 +86,21 @@ def get_matching_notes(score, prior):
     for i, n1 in enumerate(notes):
         n1_can= n1.get_canonical_note()
         # recorro todas las notas que suenan con n1
-        for j in xrange(i, len(notes)):
+        for j in xrange(i+1, len(notes)):
             n2= notes[j]
             # quiere decir que n2 no esta sonando con n1
             if n2.start > n1.start + n1.duration: break
+
             n2_can= n2.get_canonical_note()
-
+            matching_notes[n1_can][n1_can]+=1
             matching_notes[n1_can][n2_can]+=1
-
-            if j > i: 
-                matching_notes[n2_can][n1_can]+=1
+            matching_notes[n2_can][n1_can]+=1
 
     for n, d in matching_notes.iteritems():
         s= sum(d.itervalues()) + sum(prior[n].itervalues())
         all_notes= set(d.keys()).union(prior[n])
         for n2 in all_notes:
-            d[n2]=(float(d[n2]) + prior[n][n2])/s
+            d[n2]=float(d[n2] + prior[n].get(n2, 0))/s
 
         #d= dict(sorted(d.iteritems(), key=lambda x:x[1], reverse=True)[:5])
         #matching_notes[n]= set(d.keys())
@@ -107,7 +109,7 @@ def get_matching_notes(score, prior):
         if n not in matching_notes:
             s= sum(prior[n].itervalues())
             for n2, cnt in prior[n].iteritems():
-                matching_notes[n][n2]= cnt/s
+                matching_notes[n][n2]= float(cnt)/s
 
     matching_notes= dict(matching_notes)
 
@@ -132,11 +134,16 @@ class TriadPrior(object):
         d[minor_third]= self.score_profile[minor_third]*self.strongness
         d[note]= self.score_profile[note]*self.strongness
 
+        d[fifth]= self.strongness
+        d[major_third]= self.strongness
+        d[minor_third]= self.strongness
+        d[note]= self.strongness
+
         m= min(d.itervalues())*0.1
-        for i in xrange(12):
-            n= Note(i)
-            if n in d: continue
-            d[n]= m
+        #for i in xrange(12):
+        #    n= Note(i)
+        #    if n in d: continue
+        #    d[n]= m
         return d
 
 class NoPrior(object):

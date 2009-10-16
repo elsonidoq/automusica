@@ -7,6 +7,7 @@ from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgo
 from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext, YamlHarmonicContext
 from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
+from electrozart.algorithms.harmonic_context.notes_distr import NotesDistr
 
 from electrozart.algorithms import AlgorithmsApplier, CacheAlgorithm, AcumulatedInput
 
@@ -77,7 +78,9 @@ class SupportNotesComposer(object):
 
         harmonic_context_alg.train(score)
 
-        applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, phrase_melody_alg)
+        notes_distr= NotesDistr(score)
+
+        applier= AlgorithmsApplier(harmonic_context_alg, notes_distr, phrase_rythm_alg, phrase_melody_alg)
         self.applier= applier
         applier.start_creation()
         #rythm_alg.draw_model('rythm.png', score.divisions)
@@ -95,7 +98,7 @@ class SupportNotesComposer(object):
         #octave= int(mean_pitch/12) + 1
         #min_pitch= octave*12 #+ 6
         #max_pitch= (octave+2)*12 + 6
-        offset= 12
+        offset= 0#12
         min_pitch= int(mean_pitch - std_dev+offset)
         max_pitch= int(mean_pitch + std_dev+offset)
 

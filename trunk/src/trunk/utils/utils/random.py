@@ -25,11 +25,11 @@ def convex_combination(distr1, distr2, factor=0.5):
             thing1, prob1= distr1[i]
             thing2, prob2= distr2[j]
             if thing1 == thing2:
-                new_distr.append((thing1, (prob1+prob2)*factor))
+                new_distr.append((thing1, prob1*factor+prob2*(1-factor)))
                 i+=1
                 j+=1
             elif thing1 > thing2:
-                new_distr.append((thing2, prob2*factor))
+                new_distr.append((thing2, prob2*(1-factor)))
                 j+=1
             else:
                 new_distr.append((thing1, prob1*factor))
@@ -40,7 +40,7 @@ def convex_combination(distr1, distr2, factor=0.5):
             i+=1
         else:
             thing2, prob2= distr2[j]
-            new_distr.append((thing2, prob2*factor))
+            new_distr.append((thing2, prob2*(1-factor)))
             j+=1
 
     return new_distr
