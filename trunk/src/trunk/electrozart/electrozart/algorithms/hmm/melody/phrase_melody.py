@@ -207,6 +207,11 @@ class ListMelody(ListAlgorithm):
                                         hmm, 
                                         min_pitch=input.min_pitch,
                                         max_pitch=input.max_pitch)
+
+        for next, prob in self.melody_alg.model.nexts(path[-1]).iteritems():
+            next= PathNarmourInterval(next, len(states))
+            hmm.add_hidden_state(next, 0.0)
+            hmm.add_transition(states[-1], next, prob)
         
         self._check_sub_model(robs, robs2)
         if start_pitch not in robs2.must_dict[phrase_length-1][states[1]]: import ipdb;ipdb.set_trace()
