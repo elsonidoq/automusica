@@ -25,24 +25,28 @@ class NotesDistr(Algorithm):
         if len(now_notes) == 0:
             return self.score_profile
 
-        now_pitches= list(set([n.get_canonical_note() for n in now_notes]))
-        if now_pitches[0] not in self.matching_notes: import ipdb;ipdb.set_trace() 
+        now_pc= [n.get_canonical_note() for n in now_notes]
 
-        pitches_distr= self.matching_notes[now_pitches[0]].items()
+        pitches_distr= defaultdict(int)
+        #pitches_distr= dict(self.score_profile)
+        for i, pc in enumerate(now_pc):
+            new_distr= self.matching_notes[pc]
+            for pc2, weight in new_distr.iteritems():
+                pitches_distr[pc2]+=weight#*now_notes[i].duration
+
+        s= float(sum(pitches_distr.itervalues()))
+        for k, v in pitches_distr.iteritems():
+            pitches_distr[k]= v/s
+
+        # build result
+        pitches_distr= pitches_distr.items()
         pitches_distr.sort()
-        for pitch in now_pitches[1:]:
-            new_distr= self.matching_notes[pitch].items()
-            new_distr.sort()
-            pitches_distr= convex_combination(pitches_distr, new_distr)
-
-        pitches_distr= convex_combination(pitches_distr, self.score_profile, 0.7 )
-
+        pitches_distr= convex_combination(pitches_distr, self.score_profile, 0.8)
         # asserts
         if abs(sum(i[1] for i in pitches_distr) -1) > 0.0001:import ipdb;ipdb.set_trace()
         if len(pitches_distr) == 0: import ipdb;ipdb.set_trace()            
-        assert len(pitches_distr) == len(dict(pitches_distr))
 
-        return pitches_distr            
+        return pitches_distr
 
         
     def notes_distr(self, now_notes, min_pitch, max_pitch):
@@ -82,6 +86,7 @@ def get_matching_notes(score, prior):
     matching_notes= defaultdict(lambda: defaultdict(lambda :0))
     notes= score.get_notes(skip_silences=True)
     notes.sort(key=lambda n:n.start)
+    max_duration= max(notes, key=lambda n:n.duration).duration
 
     for i, n1 in enumerate(notes):
         n1_can= n1.get_canonical_note()
@@ -92,9 +97,9 @@ def get_matching_notes(score, prior):
             if n2.start > n1.start + n1.duration: break
 
             n2_can= n2.get_canonical_note()
-            matching_notes[n1_can][n1_can]+=1
-            matching_notes[n1_can][n2_can]+=1
-            matching_notes[n2_can][n1_can]+=1
+            #matching_notes[n1_can][n1_can]+=float(n1.duration)/max_duration
+            matching_notes[n1_can][n2_can]+=float(n2.duration)/max_duration
+            matching_notes[n2_can][n1_can]+=float(n1.duration)/max_duration
 
     for n, d in matching_notes.iteritems():
         s= sum(d.itervalues()) + sum(prior[n].itervalues())
@@ -139,11 +144,12 @@ class TriadPrior(object):
         d[minor_third]= self.strongness
         d[note]= self.strongness
 
+        # XXX ver como afecta esto
         m= min(d.itervalues())*0.1
-        #for i in xrange(12):
-        #    n= Note(i)
-        #    if n in d: continue
-        #    d[n]= m
+        for i in xrange(12):
+            n= Note(i)
+            if n in d: continue
+            #d[n]= m
         return d
 
 class NoPrior(object):
