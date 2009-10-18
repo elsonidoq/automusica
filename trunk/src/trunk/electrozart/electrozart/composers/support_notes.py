@@ -98,7 +98,7 @@ class SupportNotesComposer(object):
         #octave= int(mean_pitch/12) + 1
         #min_pitch= octave*12 #+ 6
         #max_pitch= (octave+2)*12 + 6
-        offset= 0#12
+        offset= 0 #6#12
         min_pitch= int(mean_pitch - std_dev+offset)
         max_pitch= int(mean_pitch + std_dev+offset)
 
@@ -175,10 +175,12 @@ class SupportNotesComposer(object):
         #piano= Instrument()
         instrument= Instrument()
         instrument.patch= params['melody_patch_to_dump']
-        instrument.patch= 26
         instrument.patch= 73
-        instrument.patch= 21
-        instrument.patch= 74
+        instrument.patch= 26 
+        instrument.patch= 32
+        instrument.patch= 30 #electrica
+        instrument.patch= 74 #flauta
+        instrument.patch= 25
         res.notes_per_instrument[instrument]= notes
         #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
         #res.notes_per_instrument= {instrument: notes}
