@@ -28,15 +28,16 @@ class SupportNotesComposer(object):
         self.params= dict(
             n_measures= 1,
             print_info= False,
-            melody_patch_to_dump= 33,
-            patch= None 
+            output_patch= 33,
+            patch= None,
+            offset= 0
         )
 
     def matches_description(self, instrument, patch, channel):
         return instrument.patch == patch and (channel is None or instrument.channel == channel)
 
     def compose(self, score, **optional):
-        params= bind_params(self.params, optional)
+        params= self.params= bind_params(self.params, optional)
         
         melody_instrument= None
         rythm_instrument= None
@@ -78,7 +79,7 @@ class SupportNotesComposer(object):
 
         harmonic_context_alg.train(score)
 
-        notes_distr= NotesDistr(score)
+        notes_distr= NotesDistr(score)#, 0.5)
 
         applier= AlgorithmsApplier(harmonic_context_alg, notes_distr, phrase_rythm_alg, phrase_melody_alg)
         self.applier= applier
@@ -98,9 +99,11 @@ class SupportNotesComposer(object):
         #octave= int(mean_pitch/12) + 1
         #min_pitch= octave*12 #+ 6
         #max_pitch= (octave+2)*12 + 6
-        offset= 0 #6#12
+        offset= params['offset'] #6#12
         min_pitch= int(mean_pitch - std_dev+offset)
         max_pitch= int(mean_pitch + std_dev+offset)
+        self.params['min_pitch']= min_pitch
+        self.params['max_pitch']= max_pitch
 
         print "MIN PITCH", min_pitch
         print "MAX PITCH", max_pitch
@@ -162,9 +165,16 @@ class SupportNotesComposer(object):
             #    pass
             #    #notes[i]= Silence(n.start, n.duration)
 
-        print "min volume:", min(n.volume for n in notes if not n.is_silence) 
-        print "max volume:", max(n.volume for n in notes if not n.is_silence)
+        min_volume= min(n.volume for n in notes if not n.is_silence) 
+        max_volume= max(n.volume for n in notes if not n.is_silence)
+        self.params['min volume']= min_volume 
+        self.params['max volume']= max_volume 
+        print "min volume:", min_volume 
+        print "max volume:", max_volume 
 
+        self.params['algorithms params']= applier.algorithms_params()
+
+        self.params['accent mapping']= cache
         print "accent mapping"
         for moment, accent in sorted(cache.items(), key=lambda x:x[0]):
             print moment, accent
@@ -174,13 +184,13 @@ class SupportNotesComposer(object):
         #piano= res.notes_per_instrument.keys()[0]
         #piano= Instrument()
         instrument= Instrument()
-        instrument.patch= params['melody_patch_to_dump']
         instrument.patch= 73
         instrument.patch= 26 
         instrument.patch= 32
         instrument.patch= 30 #electrica
         instrument.patch= 74 #flauta
         instrument.patch= 25
+        instrument.patch= params['output_patch']
         res.notes_per_instrument[instrument]= notes
         #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
         #res.notes_per_instrument= {instrument: notes}

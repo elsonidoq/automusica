@@ -280,7 +280,7 @@ class Score(object):
         allnotes.sort(key=lambda n:n.start)            
 
         if relative_to is not None:
-            allnotes= self._relative_notes(notes, relative_to)
+            allnotes= self._relative_notes(allnotes, relative_to)
         return allnotes
 
     def _relative_notes(self, notes, relative_to):

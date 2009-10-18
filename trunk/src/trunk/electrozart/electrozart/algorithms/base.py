@@ -74,7 +74,16 @@ class PartialNote(AttrDict):
         else:
             return PlayedNote(self.pitch, self.start, self.duration, self.volume)
 
+def bind_params(default, updater):
+    res= dict(default.iteritems())
+    res.updater(updater)
+    return res
+
 class Algorithm(object):
+    def __init__(self, *args, **kwargs):
+        self.ec= ExecutionContext()
+        self.params= {} 
+        
     def start_creation(self): 
         self.ec= ExecutionContext()
 
@@ -82,6 +91,7 @@ class Algorithm(object):
     def print_info(self): pass
     def draw_models(self, prefix): pass
     def train(self, score): pass
+        
 
 class StackAlgorithm(Algorithm):
     """
@@ -97,8 +107,11 @@ class StackAlgorithm(Algorithm):
 
     """
     def __init__(self, *algorithms):
+        super(self, StackAlgorithm).__init__()
         self.algorithms= list(algorithms)
         self.independent= False
+        for alg in algorithms:
+            self.params[alg.__class__.__name__]= alg.params
     
     def start_creation(self):
         super(StackAlgorithm, self).start_creation()

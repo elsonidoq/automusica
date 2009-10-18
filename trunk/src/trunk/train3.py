@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from itertools import groupby
 from time import time
 
@@ -82,13 +83,6 @@ def main(argv):
     #print "seed 1"
     #options.seed= 1
     #options.patch= 5
-    if options.seed is not None: 
-        random.seed(options.seed)
-    else:
-        seed= time()
-        print "using seed", seed
-        random.seed(seed)
-
 
     return train3(options, args)
 
@@ -102,6 +96,9 @@ from electrozart.writing.notes import NotesScoreWriter
 from electrozart.writing.midi import MidiScoreWriter
 
 def train3(options, args):
+    print "using seed", options.seed
+    random.seed(options.seed)
+
     partition_algorithm= options.partition_algorithm
     rythm_patch= options.rythm_patch
     melody_patch= options.melody_patch
@@ -148,13 +145,35 @@ def train3(options, args):
     writer= NotesScoreWriter()
     writer= MidiScoreWriter()
     writer.dump(composed_score, outfname)
+
+    # save state
+    params_file= outfname[:-3] + 'log'
+    params= composer.params
+    params['options']= options.__dict__
+    params['args']= args
+    from pprint import pprint
+    with open(params_file, 'w') as f:
+        pprint(composer.params, f)
+
+    diff_file= outfname[:-3] + 'diff'
+    import subprocess
+    with open(diff_file, 'w') as f:
+        p= subprocess.Popen('svn diff .'.split(), stdout=subprocess.PIPE)
+        f.write(p.stdout.read())
+
+    svn_version= outfname[:-3] + 'svn'
+    with open(svn_version, 'w') as f:
+        p= subprocess.Popen('svn info'.split(), stdout=subprocess.PIPE)
+        f.write(p.stdout.read())
+        
     print "saving in ", outfname
     print 'done!'
+
     return composer
 
 if __name__ == '__main__':
-    from sys import argv
-    composer= main(argv)
+    import sys
+    composer= main(sys.argv)
     
 
     
