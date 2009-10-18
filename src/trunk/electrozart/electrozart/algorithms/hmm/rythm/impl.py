@@ -85,7 +85,7 @@ class RythmHMM(HmmAlgorithm):
         last_interval_time= robs.actual_state
         actual_interval= self.ec.actual_interval
 
-        obs= robs.actual_obs()
+        #obs= robs.actual_obs()
         robs.next()
         self.ec.actual_state= robs.actual_state
         interval_time= robs.actual_state

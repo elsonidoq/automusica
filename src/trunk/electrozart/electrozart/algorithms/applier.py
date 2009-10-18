@@ -1,4 +1,4 @@
-from base import ExecutionContext, AcumulatedInput, PartialNote, Algorithm, StackAlgorithm
+from base import ExecutionContext, AcumulatedInput, PartialNote, Algorithm
 from time import time as time_tell
 
 class AlgorithmsApplier(object):
@@ -10,6 +10,12 @@ class AlgorithmsApplier(object):
         for alg in self.algorithms:
             alg.start_creation()
         self.started= True
+
+    def algorithms_params(self):
+        res= {}
+        for alg in self.algorithms:
+            res[alg.__class__.__name__]= alg.params
+        return res
 
     def create_melody(self, time, print_info=False, general_input=None):
         if not self.started:

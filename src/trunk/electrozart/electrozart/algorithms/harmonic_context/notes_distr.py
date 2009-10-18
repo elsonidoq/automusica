@@ -12,6 +12,8 @@ class NotesDistr(Algorithm):
     def __init__(self, score):
         self.score= score
 
+        self.params= dict(score_profile_combination_factor= 0.05)
+
         score_profile= get_score_profile(score)
         self.matching_notes= get_matching_notes(score, TriadPrior(2, score_profile))
         for n, d in self.matching_notes.iteritems():
@@ -33,6 +35,7 @@ class NotesDistr(Algorithm):
             new_distr= self.matching_notes[pc]
             for pc2, weight in new_distr.iteritems():
                 pitches_distr[pc2]+=weight#*now_notes[i].duration
+            pitches_distr[pc]+=1
 
         s= float(sum(pitches_distr.itervalues()))
         for k, v in pitches_distr.iteritems():
@@ -41,7 +44,7 @@ class NotesDistr(Algorithm):
         # build result
         pitches_distr= pitches_distr.items()
         pitches_distr.sort()
-        pitches_distr= convex_combination(pitches_distr, self.score_profile, 0.8)
+        pitches_distr= convex_combination(pitches_distr, self.score_profile, self.params['score_profile_combination_factor'])
         # asserts
         if abs(sum(i[1] for i in pitches_distr) -1) > 0.0001:import ipdb;ipdb.set_trace()
         if len(pitches_distr) == 0: import ipdb;ipdb.set_trace()            
@@ -101,6 +104,7 @@ def get_matching_notes(score, prior):
             matching_notes[n1_can][n2_can]+=float(n2.duration)/max_duration
             matching_notes[n2_can][n1_can]+=float(n1.duration)/max_duration
 
+    #import ipdb;ipdb.set_trace()
     for n, d in matching_notes.iteritems():
         s= sum(d.itervalues()) + sum(prior[n].itervalues())
         all_notes= set(d.keys()).union(prior[n])
@@ -139,10 +143,10 @@ class TriadPrior(object):
         d[minor_third]= self.score_profile[minor_third]*self.strongness
         d[note]= self.score_profile[note]*self.strongness
 
-        d[fifth]= self.strongness
-        d[major_third]= self.strongness
-        d[minor_third]= self.strongness
-        d[note]= self.strongness
+        #d[fifth]= self.strongness
+        #d[major_third]= self.strongness
+        #d[minor_third]= self.strongness
+        #d[note]= self.strongness
 
         # XXX ver como afecta esto
         m= min(d.itervalues())*0.1
