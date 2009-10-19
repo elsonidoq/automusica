@@ -147,26 +147,33 @@ def train3(options, args):
     writer.dump(composed_score, outfname)
 
     # save state
-    params_file= outfname[:-3] + 'log'
     params= composer.params
     params['options']= options.__dict__
     params['args']= args
     from pprint import pprint
+    params_file= outfname[:-3] + 'log'
+    print "params file", params_file
     with open(params_file, 'w') as f:
         pprint(composer.params, f)
 
     diff_file= outfname[:-3] + 'diff'
+    print "diff file", diff_file
     import subprocess
     with open(diff_file, 'w') as f:
         p= subprocess.Popen('svn diff .'.split(), stdout=subprocess.PIPE)
         f.write(p.stdout.read())
 
     svn_version= outfname[:-3] + 'svn'
+    print "svn info file", svn_version
     with open(svn_version, 'w') as f:
         p= subprocess.Popen('svn info'.split(), stdout=subprocess.PIPE)
         f.write(p.stdout.read())
         
-    print "saving in ", outfname
+    from utils.console import get_terminal_size
+    width, height= get_terminal_size()
+    print "*"*width
+    print "midi file ", outfname
+    print "*"*width
     print 'done!'
 
     return composer
