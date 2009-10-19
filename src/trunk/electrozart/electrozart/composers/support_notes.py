@@ -99,7 +99,7 @@ class SupportNotesComposer(object):
         #octave= int(mean_pitch/12) + 1
         #min_pitch= octave*12 #+ 6
         #max_pitch= (octave+2)*12 + 6
-        offset= params['offset'] #6#12
+        offset= params['offset'] - 12 #6#12
         min_pitch= int(mean_pitch - std_dev+offset)
         max_pitch= int(mean_pitch + std_dev+offset)
         self.params['min_pitch']= min_pitch
@@ -187,10 +187,10 @@ class SupportNotesComposer(object):
         instrument.patch= 73
         instrument.patch= 26 
         instrument.patch= 32
+        instrument.patch= params['output_patch']
         instrument.patch= 30 #electrica
         instrument.patch= 74 #flauta
         instrument.patch= 25
-        instrument.patch= params['output_patch']
         res.notes_per_instrument[instrument]= notes
         #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
         #res.notes_per_instrument= {instrument: notes}
