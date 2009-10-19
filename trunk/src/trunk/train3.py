@@ -112,6 +112,9 @@ def train3(options, args):
         if not path.isdir(outpath):
             print "Creating dir", outpath
             os.makedirs(outpath)
+        try: os.system('rm output')
+        except: pass
+        os.system('ln -s %s output' % outpath)
 
         outfname= path.basename(infname)
         if outfname in os.listdir(outpath) and not options.override:
