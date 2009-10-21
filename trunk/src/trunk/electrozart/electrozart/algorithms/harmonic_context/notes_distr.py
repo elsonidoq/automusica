@@ -1,18 +1,19 @@
 from collections import defaultdict
 
 from utils.random import convex_combination
+from utils.params import bind_params
 from electrozart import Note
 
 from electrozart.algorithms.applier import Algorithm
 from electrozart.algorithms import ExecutionContext, needs, child_input
 
 
-
 class NotesDistr(Algorithm):
     def __init__(self, score):
         self.score= score
 
-        self.params= dict(score_profile_combination_factor= 0.05)
+        self.params= dict(prior_weight= 10)
+        self.params= bind_params(self, self.params)
 
         score_profile= get_score_profile(score)
         self.matching_notes= get_matching_notes(score, TriadPrior(2, score_profile))
@@ -23,18 +24,20 @@ class NotesDistr(Algorithm):
         self.score_profile= sorted(score_profile.items(), key=lambda x:x[0])
         if abs(sum(score_profile.values())-1) > 0.001: import ipdb;ipdb.set_trace()
 
-    def pitches_distr(self, now_notes):
-        if len(now_notes) == 0:
+    def pitches_distr(self, now_notes=None):
+        if now_notes is None or len(now_notes) == 0:
             return self.score_profile
 
         now_pc= [n.get_canonical_note() for n in now_notes]
 
-        pitches_distr= defaultdict(int)
-        #pitches_distr= dict(self.score_profile)
+        pitches_distr= {}
+        for pc, prob in self.score_profile:
+            pitches_distr[pc]= prob*self.params['prior_weight']
+
         for i, pc in enumerate(now_pc):
-            new_distr= self.matching_notes[pc]
-            for pc2, weight in new_distr.iteritems():
-                pitches_distr[pc2]+=weight#*now_notes[i].duration
+            #new_distr= self.matching_notes[pc]
+            #for pc2, weight in new_distr.iteritems():
+            #    pitches_distr[pc2]+=weight#*now_notes[i].duration
             pitches_distr[pc]+=1
 
         s= float(sum(pitches_distr.itervalues()))
@@ -44,7 +47,7 @@ class NotesDistr(Algorithm):
         # build result
         pitches_distr= pitches_distr.items()
         pitches_distr.sort()
-        pitches_distr= convex_combination(pitches_distr, self.score_profile, self.params['score_profile_combination_factor'])
+        #pitches_distr= convex_combination(pitches_distr, self.score_profile, self.params['score_profile_combination_factor'])
         # asserts
         if abs(sum(i[1] for i in pitches_distr) -1) > 0.0001:import ipdb;ipdb.set_trace()
         if len(pitches_distr) == 0: import ipdb;ipdb.set_trace()            
