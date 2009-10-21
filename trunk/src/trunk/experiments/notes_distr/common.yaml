@@ -1,0 +1,6 @@
+options:
+    seed: 10
+main:
+    train3:main
+args:
+    - input-mids/Chacarerasa.mid
