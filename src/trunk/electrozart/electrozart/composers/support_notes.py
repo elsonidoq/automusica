@@ -8,6 +8,7 @@ from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordH
 from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
 from electrozart.algorithms.harmonic_context.notes_distr import NotesDistr
+from electrozart.algorithms.harmonic_context.notes_distr_duration import NotesDistrDuration
 
 from electrozart.algorithms import AlgorithmsApplier, CacheAlgorithm, AcumulatedInput
 
@@ -73,15 +74,18 @@ class SupportNotesComposer(object):
         for instrument in score.instruments:
             if not instrument.is_drums:
                 melody_alg.obsSeqBuilder.builder.patch= instrument.patch
+                melody_alg.obsSeqBuilder.builder.channel= instrument.channel
                 melody_alg.train(score)
             rythm_alg.obsSeqBuilder.builder.patch= instrument.patch
+            rythm_alg.obsSeqBuilder.builder.channel= instrument.channel
             rythm_alg.train(score)
 
         harmonic_context_alg.train(score)
 
         notes_distr= NotesDistr(score)#, 0.5)
+        notes_distr= NotesDistrDuration(score)#, 0.5)
 
-        applier= AlgorithmsApplier(harmonic_context_alg, notes_distr, phrase_rythm_alg, phrase_melody_alg)
+        applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
         self.applier= applier
         applier.start_creation()
         #rythm_alg.draw_model('rythm.png', score.divisions)
@@ -193,7 +197,7 @@ class SupportNotesComposer(object):
         instrument.patch= 25
         res.notes_per_instrument[instrument]= notes
         #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
-        #res.notes_per_instrument= {instrument: notes}
+        res.notes_per_instrument= {instrument: notes}
         #res.notes_per_instrument[piano]= chord_notes
 
         #rythm_alg.draw_model('rythm.png')
