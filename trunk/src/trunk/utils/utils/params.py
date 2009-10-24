@@ -1,5 +1,5 @@
-def bind_params(klass, default):
-    override= getattr(klass, 'override parameters', {})
+def bind_params(obj, default):
+    override= getattr(obj, 'override parameters', {})
     res= dict(default.iteritems())
     for k, v in override.iteritems():
         res[k]= v
@@ -13,4 +13,8 @@ def set_params(klass, params):
     setattr(klass, 'override parameters', d)
 
         
-            
+class Parametrizable(object):
+    def __new__(cls, *args, **kwargs):
+        i= super(Parametrizable, cls).__new__(cls, *args, **kwargs)
+        i.params= {}
+        return i
