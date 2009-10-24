@@ -9,13 +9,20 @@ from electrozart.algorithms import ExecutionContext, needs, child_input
 
 
 class NotesDistr(Algorithm):
-    def __init__(self, score):
+    def __new__(cls, *args, **kwargs):
+        instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
+        instance.params.update(dict(prior_weight= 10, 
+                          proportional_to_duration=True,
+                          profile_smooth_factor=0.1))
+        return instance
+        
+    def __init__(self, score, **optional):
         self.score= score
 
-        self.params= dict(prior_weight= 10)
+        self.params.update(optional)
         self.params= bind_params(self, self.params)
 
-        score_profile= get_score_profile(score)
+        score_profile= get_score_profile(score, **self.params)
         self.matching_notes= get_matching_notes(score, TriadPrior(2, score_profile))
         for n, d in self.matching_notes.iteritems():
             if abs(sum(d.itervalues())-1) > 0.001: import ipdb;ipdb.set_trace()
@@ -69,18 +76,20 @@ class NotesDistr(Algorithm):
         input.notes_distr= self.notes_distr(input.now_chord.notes, input.min_pitch, input.max_pitch)
         
 
-def get_score_profile(score, smooth_factor=0.1):
+def get_score_profile(score, profile_smooth_factor=0.1, proportional_to_duration=True, **kwargs):
     score_profile= defaultdict(int)
 
     for i in score.instruments:
         if i.is_drums: continue
         for n in score.get_notes(instrument=i, skip_silences=True):
-            score_profile[n.get_canonical_note()]+= n.duration 
+            if proportional_to_duration: weight= n.duration 
+            else: weight= 1
+            score_profile[n.get_canonical_note()]+= weight
 
     min_weight= min(score_profile.itervalues())
     for i in xrange(12): 
         n= Note(i)
-        if n not in score_profile: score_profile[n]= min_weight*smooth_factor
+        if n not in score_profile: score_profile[n]= min_weight*profile_smooth_factor
     
     s= sum(score_profile.itervalues())
     for pitch, weight in score_profile.iteritems():

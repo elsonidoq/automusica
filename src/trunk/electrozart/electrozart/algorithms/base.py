@@ -1,5 +1,6 @@
 from electrozart import PlayedNote, Silence
 from functools import wraps
+from utils.params import Parametrizable
 
 def needs(*attrs):
     def dec(f):
@@ -79,10 +80,9 @@ def bind_params(default, updater):
     res.updater(updater)
     return res
 
-class Algorithm(object):
+class Algorithm(Parametrizable):
     def __init__(self, *args, **kwargs):
         self.ec= ExecutionContext()
-        self.params= {} 
         
     def start_creation(self): 
         self.ec= ExecutionContext()
