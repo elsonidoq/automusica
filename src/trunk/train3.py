@@ -112,8 +112,7 @@ def train3(options, args):
         if not path.isdir(outpath):
             print "Creating dir", outpath
             os.makedirs(outpath)
-        try: os.system('rm output')
-        except: pass
+        if os.path.exists('output'): os.unlink('output')
         os.system('ln -s %s output' % outpath)
 
         outfname= path.basename(infname)
