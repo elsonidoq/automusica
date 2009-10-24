@@ -15,13 +15,31 @@ def import_a_thing(class_path):
 
     return klass
        
+def override(default_dict, override_dict):
+    res= dict(default_dict.items())
+    for k, v in override_dict.iteritems():
+        if k not in default_dict: res[k]= v
+        else:
+            import ipdb;ipdb.set_trace()
+            default_v= default_dict[k]
+            if isinstance(default_v, dict):
+                res[k]= override(default_v, v)
+            elif isinstance(default_v, list):
+                print 'WARNING: list overriding'
+                res[k]= v
+            else:
+                res[k]= v
+    return res                
+                
+
 def _parse_experiment_yaml(fname):
     with open(fname) as f:
         fname_yaml= yaml.load(f)
 
     for included_fname in fname_yaml.get('include', []):
         included_fname= os.path.join(os.path.dirname(fname), included_fname)
-        fname_yaml.update(_parse_experiment_yaml(included_fname))
+        included_yaml= _parse_experiment_yaml(included_fname)
+        fname_yaml= override(included_yaml, fname_yaml)
     
     return fname_yaml
     
