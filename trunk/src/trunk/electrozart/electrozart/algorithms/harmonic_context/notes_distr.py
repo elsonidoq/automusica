@@ -11,7 +11,7 @@ from electrozart.algorithms import ExecutionContext, needs, child_input
 class NotesDistr(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
-        instance.params.update(dict(global_profile_prior_weight= 10, 
+        instance.params.update(dict(global_profile_prior_weight= 1, 
                           proportional_to_duration=True,
                           profile_smooth_factor=0.1))
         return instance
