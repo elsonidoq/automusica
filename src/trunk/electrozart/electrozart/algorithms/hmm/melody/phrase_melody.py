@@ -19,6 +19,8 @@ class PathNarmourInterval(NarmourInterval):
         res= super(PathNarmourInterval, self).__repr__()
         return res.replace('>', ', %s>' % self.pos)
 
+class ImpossiblePhraseException(Exception): pass
+
 # XXX era RandomObservation
 class NarmourRandomObservation(RandomObservation):
     def __init__(self, n0, nf, length, hmm, min_pitch, max_pitch, start=None):
@@ -54,7 +56,7 @@ class NarmourRandomObservation(RandomObservation):
                 nexts[state]= prob
 
         if len(nexts) == 0:
-            raise Exception('Impossible phrase: start_pitch: %(n0)s, end_pitch: %(nf)s, length:%(length)s' % self.__dict__)
+            raise ImpossiblePhraseException('Impossible phrase: start_pitch: %(n0)s, end_pitch: %(nf)s, length:%(length)s' % self.__dict__)
 
         s= sum(nexts.itervalues())
         for state, prob in nexts.iteritems():
