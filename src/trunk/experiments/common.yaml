@@ -1,0 +1,4 @@
+main:
+    train3:main
+options:
+    seed: 3567

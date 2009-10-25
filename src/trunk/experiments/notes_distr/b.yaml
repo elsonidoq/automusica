@@ -1,4 +1,4 @@
 include:
     - common.yaml
 electrozart.algorithms.harmonic_context.notes_distr:NotesDistr:
-     prior_weight: 1
+     global_profile_prior_weight: 1
