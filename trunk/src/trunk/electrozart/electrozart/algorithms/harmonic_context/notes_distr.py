@@ -11,7 +11,7 @@ from electrozart.algorithms import ExecutionContext, needs, child_input
 class NotesDistr(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
-        instance.params.update(dict(prior_weight= 10, 
+        instance.params.update(dict(global_profile_prior_weight= 10, 
                           proportional_to_duration=True,
                           profile_smooth_factor=0.1))
         return instance
@@ -39,7 +39,7 @@ class NotesDistr(Algorithm):
 
         pitches_distr= {}
         for pc, prob in self.score_profile:
-            pitches_distr[pc]= prob*self.params['prior_weight']
+            pitches_distr[pc]= prob*self.params['global_profile_prior_weight']
 
         for i, pc in enumerate(now_pc):
             #new_distr= self.matching_notes[pc]
