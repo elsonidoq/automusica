@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from __future__ import with_statement
 from itertools import groupby
 from time import time
@@ -46,7 +47,8 @@ def main(argv):
     parser.add_option('--seed', dest='seed',help='random seed')
 
     parser.add_option('--output-dir', dest='output_dir', default='output-mids', help='the default output dir')
-    parser.add_option('-O', '--override', dest='override', default='override', help='if the outputfile exists, overrides. Default False', default=False, action='store_true')
+    parser.add_option('-O', '--override', dest='override', help='if the outputfile exists, overrides. Default False', default=False, action='store_true')
+    parser.add_option('--pitch-offset', dest='offset', default=0, type='int')
 
 
     options, args= parser.parse_args(argv[1:])
