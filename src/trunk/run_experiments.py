@@ -95,21 +95,33 @@ class Experiment(object):
         argv+= self.args
         self.main(argv)
 
+from electrozart.algorithms.hmm.melody.phrase_melody import ImpossiblePhraseException
 from optparse import OptionParser 
 def main(argv):
     parser= OptionParser('%prog experiment1 experiment2 ...')
-    
+    parser.add_option('--disable-pdb', dest='disable_pdb', action='store_true', default=False)
+
     options, args= parser.parse_args(argv[1:])
+
+    if len(args) == 0: parser.error('give me any experiment to run!')
+
+    if options.disable_pdb:
+        import ipdb
+        ipdb.set_trace= lambda :0
+
     for experiment_fname in args:
         experiment= parse_experiment(experiment_fname)
         print 'running %s' % experiment_fname
-        retries= 3
-        while retries > 0:            
-            try:
-                experiment.run()
-                break
-            except:
-                retries-=1
+        experiment.run()
+        #retries= 3
+        #while retries > 0:            
+        #    try:
+        #        experiment.run()
+        #        break
+        #    except ImpossiblePhraseException, e:
+        #        retries-=1
+        #    except Exception, e:
+        #        raise e
 
 
 if __name__ == '__main__':

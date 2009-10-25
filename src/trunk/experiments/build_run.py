@@ -5,10 +5,10 @@ import yaml
 import os
 
 def build_run(include_fname, mid_fnames):
-    output_dir= os.path.join(os.path.dirname(include_fname), os.path.basename(include_fname).replace('.yaml', '') + '_runs')
+    output_dir= os.path.abspath(os.path.join(os.path.dirname(include_fname), os.path.basename(include_fname).replace('.yaml', '') + '_runs'))
     if not os.path.exists(output_dir): os.makedirs(output_dir)
 
-    mids_output_dir= os.path.join(output_dir, 'mids')
+    mids_output_dir= os.path.abspath(os.path.join(output_dir, 'mids'))
     if not os.path.exists(mids_output_dir): os.makedirs(mids_output_dir)
 
     for mid_fname in mid_fnames:
