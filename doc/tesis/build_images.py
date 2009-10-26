@@ -34,12 +34,13 @@ builders= dict(dot = dot_builder,
 images_src_dir= 'images_src'
 images_dst_dir= 'images'
 
-fnames= os.walk(images_src_dir).next()[-1]
-for fname in fnames:
-    extension= fname[fname.rindex('.')+1:]
-    if extension not in builders:
-        print 'WARNING: not building %s' % fname
-    else:
-        builders[extension](os.path.join(images_src_dir, fname), images_dst_dir) 
-    
+if __name__ == '__main__':
+    fnames= os.walk(images_src_dir).next()[-1]
+    for fname in fnames:
+        extension= fname[fname.rindex('.')+1:]
+        if extension not in builders:
+            print 'WARNING: not building %s' % fname
+        else:
+            builders[extension](os.path.join(images_src_dir, fname), images_dst_dir) 
+        
 

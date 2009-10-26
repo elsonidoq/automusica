@@ -1,33 +1,27 @@
 \section{Modelando la m\'etrica}
 \subsection{Fundamentos}
 El acento m'etrico es una caracter'istica inherente a la m'usica tonal; cualquier pieza musical se enmarca en una estructura 
-(posiblemente ambigua) de beats fuertes y d'ebiles. Si bien 'esta existe solamente en la mente del escucha, las reglas para inferirla son culturalmente conocidas, 
+(posiblemente ambigua) de beats fuertes y d'ebiles. Si bien 'esta existe solamente en la mente del escucha, las reglas para inferirla son culturalmente conocidas 
 y colocan al acento m'etrico como un elemento importante dentro del lenguaje musical. La estructura m'etrica ayuda a medir el tiempo permitiendo a un interprete 
 reproducir y a un oyente reconocer un cierto conjunto de relaci'ones temporales. Esta estructura da contexto para interpretar la r'itmica,  
 donde por r'itmica se refiere a un grupo de al menos dos eventos musicales en donde hay uno acentuado con respecto al resto \cite{CooperMeyer60}.
 Es por esto que un patr'on temporal as'i descripto es interpretado de forma distinta seg'un el contexto m'etrico\footnote{como hago para explicar en dos palabras que es contexto metrico? no se entiende de este parrafo que es un patron de beats fuertes y debiles?} donde sea escuchado. 
 
- \comment{Mencionar la ``localidad'' de los acentos metricos (no se perciben a niveles altos)}
 Siguiendo la teor\'ia de Lerdahl y Jackendoff el acento m'etrico es una construcci'on que si bien es jer'arquica, lo niveles altos no son percibidos, puesto
 que en esos niveles entran en juego los acentos estructurales y los acentos fenom'enicos. De esta forma se habla de la \emph{localidad} de los acentos m'etricos: 
 s'olo se perciben a niveles bajos en la jerarqu'ia\footnote{meter en la intro la nocion de nivel alto $\leftrightarrow$ timespan largo}. 
 
- \comment{Definir el paso del tiempo como saltos entre las clases de equivalencia}
 La estructura m'etrica permite organizar los distintos puntos en el tiempo en clases de 
 equivalencia de forma tal que dos puntos distintos en el tiempo que pertenezcan a la misma clase de equivalencia ser'an percibidos de forma similar\cite{Benjamin84}. 
-De esta forma, es posible pensar al paso del tiempo como saltos entre estas clases de equivalencia. 
+De esta forma, es posible pensar al paso del tiempo como saltos entre estas clases de equivalencia.
 
-\comment{Mencionar la periodicidad como parte de la definicion de acento metrico que utilizo}
-Es importante resaltar que dentro de la definici'on de acento m'etrico, se encuentra la condicion de que este debe ser regular, es decir, \emph{peri'odico}. 
+Es importante resaltar que dentro de la definici'on de acento m'etrico, se encuentra la condici'on de que este debe ser regular, es decir, \emph{peri'odico}. 
 
- \comment{Concluir que pensando al paso del tiempo como saltos entre clases de equivalencias, y la localidad del acento metrico hace que sea
- mas o menos natural pensar una suceci'on de duraciones sea cocientadando por el periodo del ciclo\ldots el unico problema es inferir ese periodo}
-
-Las propiedades de \texttt{localidad, periodicidad y equivalencia} permiten realizar ciertas asunciones sobre las dependencias a tener en cuenta para modelar la 
-m'etrica\footnote{>estoy modelando la metrica?, >que nombre le pongo a este modelo?, porque tampoco modelo la ritmica}. En primer lugar, la propiedad de localidad, hace
-que se pueda asumir que no existen dependencias fuertes entre eventos distantes en el tiempo, permitiendo desarrollar un modelo simple en esos t'erminos. 
-A su vez, la propiedad de equivalencia, permitir'a modelar estas clases de equivalencias, definiendo el paso del tiempo como saltos entre ellas. 
-Por 'ultimo, la propiedad de periodicidad, establece que el fen'omeno no s'olo es local, sino que se vuelve a comenzar en per'iodos fijos en el tiempo.
+Las propiedades de \emph{localidad}, \emph{periodicidad} y \emph{equivalencia} permiten realizar ciertas asunciones sobre las dependencias entre variables aleatorias 
+a tener en cuenta para modelar la m'etrica. En primer lugar, la propiedad de localidad, hace que se pueda asumir que no existen dependencias fuertes entre eventos distantes 
+en el tiempo, permitiendo desarrollar un modelo simple en esos t'erminos.  A su vez, la propiedad de equivalencia, permitir'a modelar estas clases de equivalencias, 
+definiendo el paso del tiempo como saltos entre ellas. Por 'ultimo, la propiedad de periodicidad, establece que el fen'omeno no s'olo es local, 
+sino que se vuelve a comenzar en per'iodos fijos en el tiempo.
 
 \subsection{El modelo}
 El hecho de que exista un per'iodo, y que se vaya a utilizar para la construcci'on del modelo hace que sea necesario estimarlo. Por ahora, as'umase dado un valor 
@@ -37,27 +31,40 @@ $p$ que determina el per'iodo como un m'ultiplo entero de un beat. M'as adelante
 Dada una nota $n$, se define su clase de equivalencia $c$ como $$c(n) = onset(n)\mod p$$
 \end{definition}
 
-Esta definici'on pretende capturar una noci'on de clase de equivalencia entre acentos m'etricos similar a la definida en \cite{Benjamin84}. Observar que asumendo 
-una elecci'on de $p$ adecuada, todos los posibles acentos m'etricos son representados, sin embargo, 
-distintos valores de la funci'on $c$ podr'ian recibir el mismo acento m'etrico \alert{>deberia hacer un workaround un poco mas grande en ese hecho?} 
+Esta definici'on pretende capturar cierta esencia de la noci'on de clase de equivalencia entre acentos m'etricos definida por Benjamin en \cite{Benjamin84}. Observar que asumendo 
+una elecci'on de $p$ adecuada, todos los posibles acentos m'etricos son representados, sin embargo, distintos valores de la funci'on $c$ podr'ian recibir el mismo acento m'etrico 
 
-\comment{poner un ejemplo de los distintos valores de $c$ con el mismo acento metrico (un compas de 4/4)}
+P'ongase como ejemplo el de la partitura de Figura \ref{fig:simple_measure}. La sucesi'on de onsets que ocurren en ella son 
+$$0, \frac{3}{4}, 1, 2, 2+\frac{3}{4}, 3$$ 
+A modo de ilustraci'on, se elije $p=4$, de esta forma, la sucesi'on de clases de equivalencia ser'a igual a la sucesi'on de onsets, puesto que el mayor de los onsets es menor 
+estricto al per'iodo. Dado que el comp'as exhibido en la Figura \ref{fig:simple_measure} es un comp'as de $\frac{4}{4}$, tanto el primer beat como el tercero reciben la misma 
+acentuaci'on m'etrica, sin embargo, la funci'on $c$ les asigna distintas clases de equivalencia.
+
+\alert{Revisar si me estoy perdiendo el ultimo onset en la cadena de markov si no agrego un s'imbolo \$ final}
+
+\begin{imagen}
+    \file{images/simple_measure.png}
+    \labelname{fig:simple_measure}
+    \desc{Un comp'as que ejemplifica la no inyectividad de la funci'on $c$}
+\end{imagen}
 
 A partir de esta funci'on, es posible traducir una linea mel'odica $n_1,\cdots,n_k$ en una sucesi'on de clases de equivalencia $c(n_1),\cdots,c(n_k)$. 
 
-Adem'as, suponiendo que la nota que m'as dura, tiene una duraci'on menor o igual al per'iodo; formalmente $$\max_{0\leq j \leq k-1}o_{j+1}-o_j < p$$ es posible reconstruir 
-la secuencia de onsets original mediante la siguiente transformaci'on:
-$$o_i=c(n_i) + \#reset(i)$$ siendo $\#reset(i)=\#\{c(n_j) \leq c(n_{j+1}), j+1 \leq i\}$.
+Adem'as, suponiendo que el evento (nota o silencio) que m'as dura, tiene una duraci'on menor o igual al per'iodo; formalmente 
+$$\max_{0\leq j \leq k-1}o_{j+1}-o_j \leq p$$ 
+
+es posible reconstruir la secuencia de onsets original mediante la siguiente transformaci'on:
+$$o_i=c(n_i) + \#reset(i)\times p$$ siendo $\#reset(i)=\#\{c(n_j) \leq c(n_{j+1}), j+1 \leq i\}$. En lo sucesivo, se referir'a a esta propiedad como la \emph{pseudo-biyectividad} 
+entre la sucesi'on de clases de equivalencia y la sucesi'on de onsets.
 
 De esta forma, se puede construir un modelo utilizando la funci'on $c$ como mecanismo de generalizaci'on y la generaci'on de onsets es un'ivoca a partir de la secuencia de 
 clases de equivalencia. Es por eso que se propone que un modelo generativo que aprenda el lenguaje $c_i=c(n_i)$ ser'ia entonces capaz de generar una sucesi'on de onsets 
 que sean interpretados m'etricamente de la misma forma que la fuente de entrenamiento. 
 
-\comment{hasta ahora podemos traducir de una partitura a una sucesion de clases de equivalencia, se puede tratar de aprender esto como un lenguaje,
-explicar el modelo de markov}
+El principio de localidad permite realizar la asunci'on de que no existen dependencias a largo plazo en el acento m'etrico, de esta forma se propone aprender este lenguaje mediante
+una cadena de Markov de orden 1. 
 
-El principio de \texttt{localidad} permite asumir que no existen dependencias a largo plazo en el acento m'etrico, de esta forma se puede aprender el lenguaje mediante
-una cadena de Markov, y 'este es el m'etodo propuesto. \alert{es necesario hacer un workaround con otros modelos para concluir eso?}
+\alert{es necesario hacer un workaround con otros modelos para concluir eso o con argumentar que los fundamentos me permiten utilizar un markov model es suficiente?}
 
 Formalmente, el espacio de estados ser'a el conjunto de clases de equivalencia $S=\{c(n_i), i\leq k \}$, y la matriz de transici'on estar'a definida de forma standard:
 $$p(c_j|c_i) = \frac{n(c_i, c_j)}{n(c_i)}$$
@@ -65,85 +72,79 @@ siendo $n(c_i, c_j)$ la cantidad de veces que se observ'o la clase de equivalenc
 veces que se observ'o la clase de equivalencia $c_i$.
 
 \subsection{Ejemplo}
-La figura \ref{fig:reggae_rhythm} muestra una partitura sencilla con dos c'elulas r'itmicas.
-
-
+La figura \ref{fig:reggae_rhythm}  muestra una partitura sencilla con dos c'elulas r'itmicas.
 \begin{imagen}
     \file{images/reggae.png}
     \labelname{fig:reggae_rhythm}
     \desc{Una celula r\'itmica de ejemplo}
-    \width{15cm}
 \end{imagen}
 
 Suponiendo que el valor elegido para el per'iodo $p$ es el de $4$ negras, entonces, la partitura quedar'ia segmentada en sus dos compases. 
-De esta forma, la secuencia de onsets medidos en multiplos de una negra ser'a $0, 3/4, 1, 2, 2+3/4, 3$ para el primer comp'as, 
-y para el segundo comp'as $4, 4+1/3, 4+2/3, 5, 5+1/3, 5+2/3, 6, 6+3/4, 7$.
+De esta forma, la secuencia de onsets medidos en multiplos de una negra ser'a para el primer comp'as
+$$0, \frac{3}{4}, 1, 2, 2+\frac{3}{4}, 3$$
+y para el segundo comp'as 
+$$4, 4+\frac{1}{3}, 4+\frac{2}{3}, 5, 5+\frac{1}{3}, 5+\frac{2}{3}, 6, 6+\frac{3}{4}, 7$$
 
 Por lo tanto, cocientando los onsets m'odulo el per'iodo y estimando las transiciones resulta la cadena de Markov de la figura \ref{fig:reggae_rhythm_markov}.
-
 \begin{imagen}
     \file{images/rhythm_markov_example.png}
     \labelname{fig:reggae_rhythm_markov}
     \desc{El modelo generado a partir de la r'itmica de la Figura \ref{fig:reggae_rhythm_markov}}
-    \width{15cm}
 \end{imagen}
 
-No se han dibujado las probabilidades en las transiciones puesto que no tienen sentido en este ejemplo por ser muy chico. Sin embargo, a partir de este ejemplo se 
-puede observar que este modelo ahora es capaz de generar una nueva celula ritmica que no es ninguna de las que estaban en el conjunto de entrenamiento, esa
-ritmica es la que se muestra en la figura \ref{fig:rhythm_markov_generated}.
+No se han dibujado las probabilidades en las transiciones puesto que no tienen sentido en este ejemplo por ser muy chico. Sin embargo, a modo de ejemplo, en este caso
+$$p(\frac{1}{3}|0) = \frac{n(0, \frac{1}{3})}{n(0)} = \frac{1}{2}$$
+
+\subsection{El proceso generativo}
+Dada la propiedad de \emph{pseudo-biyectividad} entre la sucesi'on de clases de equivalencia y la suceci'on de onsets, el proceso generativo quedar'a esquematizado de la siguiente 
+forma:
+
+\begin{enumerate}
+  \item Sea $e$ el estado actual en la cadena de Markov. 
+  \item Sea $offset$ la suma de los onsets generados hasta el momento. 
+  \item Elejir el estado $f$ seg'un la matriz de transiciones
+  \begin{enumerate}
+    \item Si $f > e$, entonces generar el onset $offset + f-e$
+    \item Si $f \leq e$, entonces generar el onset $offset + f + p - e$
+    \item Sea $onset$ el onset reci'en generado
+  \end{enumerate}
+  \item Actualizar $offset = onset$
+\end{enumerate}
+
+El proceso generativo comienza en el estado denominado como $0$, y con la variable $offset$ inicializada en $0$.
+
+\subsection{Sobre la generaci\'on de r\'itmicas no vistas previamente}
+Una propiedad deseable que cualquier modelo propuesto en este trabajo, en particular el reci'en descripto, es que sea capaz de generar nuevo material, distinto al de entrenamiento
+pero relacionado. En este caso, el nuevo material ser'ia r'itmica \emph{nueva}, y la relaci'on con la r'itmica de entrenamiento, es que el acento m'etrico inferido por un oyente 
+sea el mismo al que se infiere de la r'itmica utilizada para el entrenamiento. 
+
+Retomando el ejemplo definido en la figura \ref{fig:reggae_rhythm}, notar que el modelo planteado es capaz de generar la r'itmica de la figura \ref{fig:rhythm_markov_generated}
+que no es ninguno de los dos ejemplos de entrenamiento.
 
 \begin{imagen}
     \file{images/reggae_generated.png}
     \labelname{fig:rhythm_markov_generated}
     \desc{Una posible r'itmica generada por el modelo}
-    \width{15cm}
 \end{imagen}
 
-\subsection{El proceso generativo}
+%\comment{relacionar esto con lo de contexto horizontal definido en \ref{subsec_tension}}
 
-\subsection{Sobre la generaci\'on de r\'itmicas no vistas previamente}
-Una propiedad deseable que cualquier modelo propuesto en este trabajo, en particular el reci'en descripto, es que sea capaz de generar nuevo material, distinto al de entrenamiento
-pero relacionado. En este caso, el nuevo material ser'ia r'itmica \emph{nueva}, y la relaci'on con la r'itmica de entrenamiento, es que el acento m'etrico inferido sea el mismo
-que la r'itmica utilizada para el entrenamiento. A continuaci'on se exhibe un ejemplo que muestra de que forma este modelo permitir'ia generar nueva r'itmica que respete 
-los acentos m'etricos.
+\subsection{Infiriendo el valor del per\'iodo}
+Hasta ahora se dio por dado el valor $p$, sin embargo es un valor cr'itico para el modelo, puesto que forma una parte importante del mecanismo de generalizaci'on que se 
+utiliza. M'as all'a de como sea inferido, este valor deber'ia representar el nivel en la jerarqu'ia m'etrica a partir del cual, en los niveles superiores el acento m'etrico 
+pasa desapercibido del resto de los acentos. Se entiende que este valor es subjetivo, y que no existe un l'imite claro a partir del cual se puede afirmar esto.
 
-\comment{relacionar esto con lo de contexto horizontal definido en \ref{subsec_tension}}
+Dado que la entrada al algoritmo, es de hecho, una partitura, una primera aproximaci'on para inferir el valor $p$, es utilizar la informaci'on del comp'as. 
+Esta aproximaci'on tiene la ventaja de que no es necesario realizar ning'un c'omputo, sin embargo, el comp'as escrito en la partitura no necesariamente refleja la jerarqu'ia
+m'etrica inferida por un oyente al escuchar esa partitura puesto que el comp'as en la partitura escrita tambi'en cumple un rol organizativo que facilite la lectura. \comment{Favio, te parece contar lo que en su momento hablamos sobre el tango y los compases alargados? (dos de 3/4 que se unen)?}
 
-\subsection{El valor del per\'iodo $p$}
-\comment{Primer aprouch: tratar de inferir el acento metrico y construir un algoritmo que dado un mapping de acentos metricos encuentre el periodo,
-       Segundo aprouch: usar el compas.
-       Mencionar problemas de ambas aproximaciones}
+Una segunda aproximaci'on consistir'ia en dise~nar un algoritmo que infiera la jerarqu'ia de acentos m'etricos de la partitura. Esto se ha realizado con anterioridad por
+David Temperley (\cita) en el Melisma Music Analyzer. Dentro de este software se encuentran implementadas distintas reglas de preferencia definidas por Lerdahl y Jackendoff y 
+en particular las relacionadas con el acento m'etrico. El problema al inferir la jerarqu'ia m'etrica, es luego decidir cual ser'a el nivel elegido para utilizar como per'iodo.
+\comment{deberia pensar si se puede hacer algo con eso?}
+\comment{Greg, se podria tratar de pensar un algoritmo de inferencia copado para esto, que opinas?}
 
 \subsection{Generando motivos r\'itmicos}
-\comment{aca voy a explicar como hacer lo de dirichlet process para generar un motivo}
+\comment{aca me gustar'ia explicar como hacer lo de dirichlet process para generar un motivo, sin embargo, todavia no me queda muy en claro como explicarlo. Todav'ia no hable
+nada de motivos, ni lei nada sobre motivos. Me gustar'ia ver de leer algo sobre \emph{qu'e} es un motivo antes de largarme a escribir esto}
 
-
-%
-%\subsection{El modelo}
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%El prop'osito de este modelo es permitir trabajar con la componente temporal de la m'usica por separado del resto, 
-%de modo que s'olo se trabajar'a con la relaci'on entre las duraciones de las distintas notas que
-%aparecen en la pieza de entrenamiento, quedando fuera del modelo tanto la altura como la falta de sonido (silencio).
-%
-%
-%    
-%
-%
-%La primer relaci'on, o al menos la m'as directa, entre la duraci'on de las notas y la escucha musical es el ac'ento 
-%m'etrico. La estructura m'etrica es una caracter'istica importante dentro de la musica tonal, y ser'ia deseable que el modelo construido, de alguna forma la 
-%respete. 
-%Supongamos por un momento que es posible realizar un algoritmo que permita inferir el acento m'etrico de cada mom Esta caracterizaci'on del tiempo permitir'ia 

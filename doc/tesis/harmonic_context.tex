@@ -1,0 +1,90 @@
+
+\section{Modelando contextos arm\'onicos}
+\subsection{Contextos}
+Una car'acteristica de la m'usica compartida con el habla es que un mismo ``s'imbolo'' es interpretado de distinta forma seg'un el contexto
+en donde este sea percibido. En el caso del habla, se refiere por ``s'imbolo'' a una palabra. Esta diferencia interpretativa es conocida 
+como polisemia, y refiere a la cualidad de una palabra de tener m'as de un significado. Por ejemplo, la palabra \emph{sierra}, refiere
+tanto a un instrumento que permite cortar madera, como a una parte de la cordillera. De esta forma, en la oraci'on 
+``Lindo viaje por la sierra'' atribuye un significado a la palabra sierra, mientras que ``Compr'e una sierra nueva, puesto que la vieja 
+estaba gastada'' atribuye el otro significado. 
+
+Este mismo fen'omeno ocurre con la m'usica, lo que cambia es la noci'on de \emph{contexto} y de \emph{interpretaci'on}. En este caso
+la interpretaci'on estar'a relacionada con el \emph{grado de de estabilidad} que genera una cierta nota. Al igual que pasa con una palabra,
+una nota por si sola no es ni estable ni inestable, lo es en un cierto \emph{contexto}. Si bien es cierto que a una nota
+se le atribuye un grado de estabilidad en el contexto de una pieza, esta definici'on es por dem'as vaga. A continuaci'on se refinar'a
+este concepto.
+
+Karol Krumhansl (\cita) refiere a estas relaciones como jer'arquicas, en el sentido de que existen elementos normativos que son tomados como punto de referencia. Este 
+fen'omeno no es exclusivo de la m'usica; los colores son frecuentemente descriptos respecto a ciertos colores ``focales'' como rojo, verde, azul, y amarillo. Los 
+n'umeros son comparados con otros que tienen un status cognitivo especial: 9 es casi 10, 95 es casi 100. De esta forma, se refiere a las relaciones entre las alturas como
+\texttt{la jerarqu'ia tonal}. Basada en estos principios, Krumhansl, propone m'etodos emp'iricos para cuantificar esta jerarqu'ia.
+
+%Karol Krumhansl refiere en \cita a la m'usica occidental como tonal-arm'onica, haciendo referencia a dos propiedades importantes que rigen
+%su coherencia. Por tonal, se refiere a el hecho de que las piezas musicales occidentales est'an organizadas al rededor de una cierta 
+%nota denominada \emph{t'onica}, a su vez, por harm'onica se refiere al marco para establecer las relaciones entre las alturas respecto a la t'onica. Krumhansl contin'ua
+%identificando tres elementos dentro de la musica tonal-arm'onica: alturas, acordes y tonalidades.
+
+%Por altura se refiere a una de las posible 12 categor'ias disponibles en la m'usica tonal, por acorde, a cualquier grupo de 3 o m'as 
+%notas que suenen en simult'aneo\footnote{esa es la definici'on que esta en la pagina 9\ldots no habla de superposici'on de 3ras}, y por 
+%tonalidad a la t'onica y su escala, que es un patr'on de intervalos definidos en relaci'on a la t'onica. 
+
+Fred Lerdhal(\cita) define en su libro A Tonal Pitch Space contin'ua en cierto grado con el trabajo de Krumhansl, y define un espacio en donde pretende 
+modelar el grado de estabilidad de una nota en un cierto contexto, definiendo contexto a partir de dos cosas: una tonalidad y un acorde. \alert{s'e que esto no es asi, pero no se como decirlo restringiendome a lo que me interesa de su teoria y dejar de lado el resto, ademas no se tanto sobre todo el libro}
+
+En lo que sigue, se presenta con mayor detalle parte de los estudios de Krumhansl y Lerdhal, para luego dar un marco bayesiano sobre el cual montar las jerarqu'ias tonales.
+
+\subsection{Pitch profiles}
+A continuaci'on se describir'a el m'etodo propuesto por Krumhansl para cuantificar la jerarqu'ia tonal, y su aplicaci'on para cuantificar el grado de estabilidad 
+de una nota en dicha jerarqu'ia. 
+El m'etodo es llamado \emph{probe tone method} y se basa en el siguiente hecho: Krumhansl observ'o en sus experimentos que cuando se presentaba a un sujeto una escala 
+incompleta, esta genera una fuerte expectativa sobre el tono faltante. Por ejemplo, si sonaran las notas C, D, E, F, G, A, B en ese orden, se generar'ia una fuerte 
+expectativa de escuchar C, y no solo esto, sino que este fen'omeno es independiente de la octava en la que se produzca el C para completar.
+Krumhansl denomina a esta 'ultima nota \emph{probe tone}, y su experimento se basa en exponer al oyente a todas las posibles continuaciones, y que este de un puntaje
+seg'un cuan buena considera la continuaci'on escuchada. Una vez presentadas todas las continuaciones para la escala con el C faltante, se rota la escala, y se procede
+de la misma forma con D. De esta forma, el experimento con D constar'ia en presentar al sujeto la siguiente sucecion de notas: D, E, F, G, A, B, C, para luego pedir
+que califique las continuaciones, esperando que la mejor continuaci'on sea D.
+
+Una vez finalizado el experimento, la informaci'on se recopila para construir el pitch profile. \alert{como cornos se construye?}
+
+El experimento se realiz'o tanto con sujetos con entrenamiento musical como con sujetos no m'usicos. Si bien el nivel de ruido aumenta a medida que los sujetos 
+tienen menor entrenamiento musical, las tendencias permanecen. En la figura \ref{fig:pitch_profile} se exhibe un ejemplo de pitch profile para la escala mayor: 
+el eje X representa todas las alturas dentro de una escala, el eje y simboliza el grado de estabilidad. De esta forma, se puede observar que los grados arm'onicos
+1, 3 y 5 (C, E y G en la escala de C mayor) son los m'as estables, luego le sigue los tonos correspondientes el resto de la escala mayor, y por 'ultimo el resto de los 
+tonos.
+
+
+\begin{imagen}
+    \file{images/pitch_profile.png}
+    \labelname{fig:pitch_profile}
+    \desc{El pitch profile para m'usicos}
+    \width{10cm}
+\end{imagen}
+
+\subsection{La tonalidad vista como una distribuc\'on sobre las alturas}
+La tonalidad es un elemento de caracter estructurante en la m'usica occidental, o m'usica tonal. Es por eso que es de inter'es para generar una melod'ia tener en cuenta
+las jerarqu'ias tonales. 
+
+En su trabajo, Krumhansl propone distintas caracter'isticas, y las analiza mediante t'ecnicas de regresi'on, llegando a la conclusi'on que la
+caracter'istica m'as importante es la duraci'on relativa de una nota respecto al resto: La nota cuya proporci\'on es mayor en el tema ser'a la t'onica. A partir de este 
+estudio, es posible entonces inferir un pitch profile. Dado que a los efectos de generar una melod'ia no es de inter'es saber el nombre de la tonalidad, se propone 
+utilizar el pitch profile como distribuci'on de probabilidades para la elecci'on de las notas.
+
+\subsection{El espacio diat\'onico}
+Hist'oricamente se han hecho una gran cantidad de intentos por encuadrar dentro de un modelo grafico/espacial las relaciones de estabilidad entre elementos de la m'usica
+tonal. 
+\footnote{definir pitch class y nota y equivalencia entre notas de diferente octava en las secciones de background} 
+
+\begin{itemize}
+ \item definir el basic space
+ \item definir el chordal space
+\end{itemize}
+\subsection{El modelo}
+
+aproximaci'on via pitch profiles y combinaciones convexas
+
+
+\comment{Yo aca uso un modelo que defini a dedo y que esta todavia sujeto a cambio, me gustaria discutir esto con Favio a ver si esta de acuerdo con lo que estoy haciendo. De todas formas me gustar'ia armar una discuci'on aca. Como contexto vertical, tambien se puede tener en cuenta la tonalidad (en menor medida que el acorde). Me gustaria ver si krumnhansl en su libro cognitive fundations of musical pitch me podria dar algo sobre como llenar esta parte o como hacer un modelo mas interesante (no se si quiero hacer un modelo mas interesante de todas formas =p)}
+
+\subsubsection{Combinaciones convexas}
+\comment{Aca explico como las combinaciones convexas de ciertas distribuciones de probabilidad me determinan el contexto armonico}
+
