@@ -66,13 +66,13 @@ def parse_experiment(fname):
     return Experiment(class_params, main, options, args)
 
 class Experiment(object):
-    def __init__(self, class_params, main, options, args):
+    def __init__(self, class_params, main=None, options=None, args=None):
         self.class_params= class_params
         self.options= options
         self.args= args
         self.main= main
     
-    def run(self):
+    def set_params(self):
         for class_path, params in self.class_params.iteritems():
             klass= import_a_thing(class_path)
 
@@ -82,7 +82,11 @@ class Experiment(object):
                 elif re.match('[0-9]+.[0-9]+', v): params[k]= float(v)
 
             set_params(klass, params)
-            
+
+    def run(self):
+        if None in (self.main, self.options, self.args): raise Exception('Bad created instance')
+
+        self.set_params()            
         argv= ['ignored']
         for k, v in self.options.iteritems():
             if len(k) == 1:

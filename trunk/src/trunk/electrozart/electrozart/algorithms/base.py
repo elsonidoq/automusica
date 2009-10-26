@@ -82,6 +82,7 @@ def bind_params(default, updater):
 
 class Algorithm(Parametrizable):
     def __init__(self, *args, **kwargs):
+        super(Algorithm, self).__init__(*args, **kwargs)
         self.ec= ExecutionContext()
         
     def start_creation(self): 
@@ -182,7 +183,7 @@ class CacheAlgorithm(ListAlgorithm):
     """
     def __init__(self, algorithm, input_key, *args, **kwargs):
         super(CacheAlgorithm, self).__init__(*args, **kwargs)
-
+        self.params['child(%s)' % algorithm.__class__.__name__]= algorithm.params
         self.input_key= input_key
         self.algorithm= algorithm
 

@@ -18,3 +18,8 @@ class Parametrizable(object):
         i= super(Parametrizable, cls).__new__(cls, *args, **kwargs)
         i.params= {}
         return i
+
+    def __init__(self, *args, **optional):
+        self.params.update(optional)
+        self.params= bind_params(self, self.params)
+        

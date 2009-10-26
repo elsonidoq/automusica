@@ -2,10 +2,14 @@ from electrozart.algorithms import ExecutionContext, needs, child_input, Algorit
 from crp import ChineseRestaurantProcess
 
 class PhraseRepetitions(Algorithm):
-    def __init__(self, harmonic_context_alg, alpha=1, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        instance= super(PhraseRepetitions, cls).__new__(cls, *args, **kwargs)
+        instance.params.update(dict(alpha= 1))
+        return instance
+
+    def __init__(self, harmonic_context_alg, *args, **kwargs):
         super(PhraseRepetitions, self).__init__(*args, **kwargs)
         self.harmonic_context_alg= harmonic_context_alg
-        self.alpha= alpha
 
     def start_creation(self):
         super(PhraseRepetitions, self).start_creation()
@@ -29,7 +33,7 @@ class PhraseRepetitions(Algorithm):
 
         #import ipdb;ipdb.set_trace()
         if phrase_moment not in self.ec.crps:
-            self.ec.crps[phrase_moment]= ChineseRestaurantProcess(self.alpha)
+            self.ec.crps[phrase_moment]= ChineseRestaurantProcess(self.params['alpha'])
 
         crp= self.ec.crps[phrase_moment]
 

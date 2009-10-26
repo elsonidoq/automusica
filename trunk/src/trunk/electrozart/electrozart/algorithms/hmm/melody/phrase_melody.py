@@ -103,6 +103,11 @@ class NarmourRandomObservation(RandomObservation):
 
 
 class ListMelody(ListAlgorithm):
+    def __new__(cls, *args, **kwargs):
+        instance= super(ListMelody, cls).__new__(cls, *args, **kwargs)
+        instance.params.update(dict(support_note_strategy  = 'random_w_cache'))
+        return instance
+
     def __init__(self, melody_alg, *args, **kwargs):
         super(ListMelody, self).__init__(*args, **kwargs)
         self.melody_alg= melody_alg
@@ -124,27 +129,31 @@ class ListMelody(ListAlgorithm):
             res_pitch= choice(chord.notes).pitch 
             res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
         else:
-            # la mas cerca
-            #res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
-            #res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res])
-            #print res
-
-            ##RANDOM con cache
-            if (chord, self.ec.last_support_note) in self.ec.support_note_cache:
-                res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
-            else:
+            if self.params['support_note_strategy'] == 'closest':
+                # la mas cerca
+                res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
+                res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res])
+                #print res
+            elif self.params['support_note_strategy'] == 'random_w_cache':
+                ##RANDOM con cache
+                if (chord, self.ec.last_support_note) in self.ec.support_note_cache:
+                    res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
+                else:
+                    notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
+                    exp_index= randint(1, 2**len(notes)-1)
+                    index= int(floor(log(exp_index, 2)))
+                    res_pitch= notes[index].pitch
+                    res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
+                    self.ec.support_note_cache[(chord, self.ec.last_support_note)]= res
+            elif self.params['support_note_strategy'] == 'random_wo_cache':                    
+                # RANDOM sin cache
                 notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
-                exp_index= randint(1, 2**len(notes)-1)
-                index= int(floor(log(exp_index, 2)))
-                res_pitch= notes[index].pitch
+                r= randint(1, 2**len(notes)-1)
+                res_pitch= notes[int(floor(log(r, 2)))].pitch
                 res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
-                self.ec.support_note_cache[(chord, self.ec.last_support_note)]= res
-
-            # RANDOM sin cache
-            #notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
-            #r= randint(1, 2**len(notes)-1)
-            #res_pitch= notes[int(floor(log(r, 2)))].pitch
-            #res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
+            else:
+                raise Exception('Wrong support_note_strategy value %s' % self.params['support_note_strategy'])
+                    
 
         assert res >= min_pitch and res <=max_pitch
         self.ec.last_support_note= res

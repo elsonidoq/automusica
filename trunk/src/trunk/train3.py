@@ -13,10 +13,12 @@ from datetime import datetime
 
 
 from utils.melisma.meter import meter
+from utils.fraction import Fraction
+
+from run_experiments import Experiment
 
 from optparse import OptionParser
 from electrozart.algorithms.hmm.melody.narmour_hmm import NarmourInterval
-from utils.fraction import Fraction
 
 def get_node_name(score, ticks):
     if isinstance(ticks, NarmourInterval):
@@ -49,10 +51,25 @@ def main(argv):
     parser.add_option('--output-dir', dest='output_dir', default='output-mids', help='the default output dir')
     parser.add_option('-O', '--override', dest='override', help='if the outputfile exists, overrides. Default False', default=False, action='store_true')
     parser.add_option('--pitch-offset', dest='offset', default=0, type='int')
+    parser.add_option('--disable-list-algorithms', dest='disable_list_algorithms', default=False, action='store_true')
+    parser.add_option('-p', '--set-param', dest='params', action='append')
 
 
     options, args= parser.parse_args(argv[1:])
     if len(args) < 1: parser.error('not enaught args')
+
+    if options.params:
+        params= {}
+        for line in options.params:
+            left_side, value= line.split('=')
+            class_path, param_name= left_side[:left_side.rindex('.')], left_side[left_side.rindex('.')+1:]
+
+            class_params= params.get(class_path, {})
+            class_params[param_name]= value
+            params[class_path]= class_params
+
+        e= Experiment(params)
+        e.set_params()
 
     def parse_instr(preffix):
         patch_attr= preffix + 'patch'
@@ -82,6 +99,7 @@ def main(argv):
     if partition_algorithm not in ('MGRID', 'MEASURE'):
         parser.error('unknown partition algorithm')
 
+    if options.seed is None: options.seed= int(time())
     #print "seed 1"
     #options.seed= 1
     #options.patch= 5

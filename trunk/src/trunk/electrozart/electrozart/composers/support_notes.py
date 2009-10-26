@@ -16,6 +16,13 @@ def measure_interval_size(score, nmeasures):
     nunits, unit_type= score.time_signature
     unit_type= 2**unit_type
     interval_size= nunits*nmeasures*score.divisions*4/unit_type
+    max_duration= max(score.get_notes(skip_silences=True), key=lambda n:n.duration).duration
+    #XXX
+    #if max_duration > interval_size:
+    #    proportion= max_duration/interval_size
+    #    if max_duration % interval_size != 0: proportion+=1
+    #    interval_size*= proportion            
+
     return interval_size
     
         
@@ -27,11 +34,12 @@ def bind_params(base, override):
 class SupportNotesComposer(object):
     def __init__(self):
         self.params= dict(
-            n_measures= 1,
-            print_info= False,
-            output_patch= 33,
-            patch= None,
-            offset= 0
+            n_measures             = 1,
+            print_info             = False,
+            output_patch           = 33,
+            patch                  = None,
+            offset                 = 0,
+            disable_list_algorithms = True
         )
 
     def matches_description(self, instrument, patch, channel):
@@ -56,17 +64,19 @@ class SupportNotesComposer(object):
         
         #harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base2.yaml', score.divisions)
         harmonic_context_alg= ChordHarmonicContext(score)
-        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, alpha=7)
+        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
         rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel)
         phrase_rythm_alg= rythm_alg
-        phrase_rythm_alg= ListRythm(rythm_alg)
-        phrase_rythm_alg= RythmCacheAlgorithm(ListRythm(rythm_alg), 'phrase_id')
+        if not params['disable_list_algorithms']:
+            phrase_rythm_alg= ListRythm(rythm_alg)
+            phrase_rythm_alg= RythmCacheAlgorithm(ListRythm(rythm_alg), 'phrase_id')
 
         melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel)
         phrase_melody_alg= melody_alg
-        phrase_melody_alg= ListMelody(melody_alg)
-        phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
+        if not params['disable_list_algorithms']:
+            phrase_melody_alg= ListMelody(melody_alg)
+            phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
 
         #rythm_score= score.copy()
         #rythm_score.notes_per_instrument.pop(piano)
@@ -82,8 +92,8 @@ class SupportNotesComposer(object):
 
         harmonic_context_alg.train(score)
 
-        notes_distr= NotesDistr(score)#, 0.5)
-        notes_distr= NotesDistrDuration(score)#, 0.5)
+        notes_distr= NotesDistr(score)
+        notes_distr= NotesDistrDuration(score)
 
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
         self.applier= applier
@@ -103,7 +113,7 @@ class SupportNotesComposer(object):
         #octave= int(mean_pitch/12) + 1
         #min_pitch= octave*12 #+ 6
         #max_pitch= (octave+2)*12 + 6
-        offset= params['offset'] - 12 #6#12
+        offset= params['offset'] #6#12
         min_pitch= int(mean_pitch - std_dev+offset)
         max_pitch= int(mean_pitch + std_dev+offset)
         self.params['min_pitch']= min_pitch
@@ -197,7 +207,7 @@ class SupportNotesComposer(object):
         instrument.patch= 25
         res.notes_per_instrument[instrument]= notes
         #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
-        res.notes_per_instrument= {instrument: notes}
+        #res.notes_per_instrument= {instrument: notes}
         #res.notes_per_instrument[piano]= chord_notes
 
         #rythm_alg.draw_model('rythm.png')

@@ -4,15 +4,16 @@ from electrozart.algorithms import needs, produces
 from impl import RythmHMM
 
 class ListRythm(ListAlgorithm):
-    def __init__(self, rythm_hmm):
-        self.rythm_hmm= rythm_hmm
+    def __init__(self, rythm_alg):
+        self.rythm_alg= rythm_alg
+        self.params['rythm_alg(%s)' % rythm_alg.__class__.__name__]= rythm_alg.params
 
     def train(self, score):
-        self.rythm_hmm.train(score)
+        self.rythm_alg.train(score)
 
     def start_creation(self):
         super(ListRythm, self).start_creation()
-        self.rythm_hmm.start_creation()
+        self.rythm_alg.start_creation()
 
     @needs('now_chord', 'now')
     @produces('start', 'duration')
@@ -23,15 +24,15 @@ class ListRythm(ListAlgorithm):
     def generate_list(self, input, result, prev_notes):
         if not ( input.now == 0 or input.now_chord.start == input.now ) : import ipdb;ipdb.set_trace()
         # XXX ver commo hacerlo mas elegante
-        self.rythm_hmm.ec.actual_state= input.now % self.rythm_hmm.interval_size 
-        self.rythm_hmm.ec.actual_interval= input.now/self.rythm_hmm.interval_size
+        self.rythm_alg.ec.actual_state= input.now % self.rythm_alg.interval_size 
+        self.rythm_alg.ec.actual_interval= input.now/self.rythm_alg.interval_size
         
         res= []
         phrase_end= input.now_chord.end 
         while True:
             child_result= result.copy()
             child_input= input.copy()
-            self.rythm_hmm.next(child_input, child_result, None)
+            self.rythm_alg.next(child_input, child_result, None)
             res.append((child_input, child_result))
             if child_result.start + child_result.duration >= phrase_end: break
 
