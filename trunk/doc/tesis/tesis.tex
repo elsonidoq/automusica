@@ -16,35 +16,30 @@
 
 \begin{document}
 \newcommand{\Nat}{\mathbb{N}}
+% intervalo melodico
+\newcommand{\IM}[1]{\underline{#1}}
 \newcommand{\cita}{\textcolor{red}{cita}}
 \newcommand{\alert}[1]{\textcolor{red}{#1}}
 \newcommand{\comment}[1]{\textcolor{blue}{#1}\newline}
 %\renewcommand{\comment}[1]{\ }
 \theoremstyle{definition} \newtheorem{definition}{Definici'on}
 
-\newcommand{\image}[3]{
-    \begin{figure}[h]
-    \begin{center}
-    \includegraphics[width=15cm]{#1}
-    \label{#2}
-    \newline \ref{#2} #3
-    \end{center}
-    \end{figure}
-}
 
-
+\newcommand{\defaultAlignment}{center}
+\newcommand{\defaultWidth}{15cm}
 \newenvironment{imagen}{
 \let\File\empty
 \let\Desc\empty
 \let\LabelName\empty
-\let\Width\empty
+\let\Width\defaultWidth
+\let\Alignment\defaultAlignment
 }{
     \begin{figure}[h]
-    \begin{center}
+    \begin{\Alignment}
     \includegraphics[width=\Width]{\File}
     \caption{\Desc}
     \label{\LabelName}
-    \end{center}
+    \end{\Alignment}
     \end{figure}
 
 }
@@ -53,18 +48,19 @@
 \newcommand{\desc}[1]{\def\Desc{#1}}
 \newcommand{\labelname}[1]{\def\LabelName{#1}}
 \newcommand{\width}[1]{\def\Width{#1}}
-
+\newcommand{\alignment}[1]{\def\Alignment{#1}}
 
 
 \tableofcontents
 
 \input{abstract}
 \input{introduction}
+\input{musical_introduction}
 \input{cogn_bg}
 \input{maths_bg}
 \input{state_of_the_art}
-\input{outline}
 \input{rythm_model}
+\input{harmonic_context}
 \input{contour_model}
 \input{compound_process}
 \input{composition_structure}
