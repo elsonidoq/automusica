@@ -39,11 +39,19 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         return res
 
 class RythmHMM(HmmAlgorithm):
-    def __init__(self, interval_size, *args, **kwargs):
-        super(RythmHMM, self).__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        instance= super(RythmHMM, cls).__new__(cls, *args, **kwargs)
+        instance.params.update(dict(robs_alpha     = 0.5, 
+                                    enable_dp_robs = True))
+        return instance
+        
+        
+    def __init__(self, interval_size, *args, **optional):
+        super(RythmHMM, self).__init__(*args, **optional)
         #self.obsSeqBuilder= MidiObsSeqOrder2(ModuloObsSeq(FirstVoiceObsSeq(), interval_size))
         self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         #self.obsSeqBuilder= ModuloObsSeq(FirstVoiceObsSeq(), interval_size)
+        self.params['interval_size']= interval_size
         self.interval_size= interval_size
         
     def create_model(self):
@@ -70,9 +78,12 @@ class RythmHMM(HmmAlgorithm):
     def get_current_robs(self, robsid):
         robs= self.ec.robses.get(robsid)
         if robs is None:
-            robs= DPRandomObservation(self.ec.hmm, 1)
-            #robs= RandomObservation(self.ec.hmm)
-            for i in xrange(1000): robs.next()
+            if self.params['enable_dp_robs']:
+                robs= DPRandomObservation(self.ec.hmm, self.params['robs_alpha'])
+                for i in xrange(1000): robs.next()
+            else:
+                #import ipdb;ipdb.set_trace()
+                robs= RandomObservation(self.ec.hmm)
             self.ec.robses[robsid]= robs
 
         robs.actual_state= self.ec.actual_state                

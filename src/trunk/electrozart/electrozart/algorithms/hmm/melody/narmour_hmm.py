@@ -93,10 +93,6 @@ class IntervalsObsSeq(ConditionalMidiObsSeq):
 
                 
 class ConstraintDPRandomObservation(DPRandomObservation):
-    def __init__(self, *args, **kwargs):
-        super(ConstraintDPRandomObservation, self).__init__(*args, **kwargs)
-        self.convex_factor= 1
-
     def next(self, available_states):
         distr= {}
         state_counters= self.states_counters[self.actual_state]
@@ -124,6 +120,12 @@ class ConstraintDPRandomObservation(DPRandomObservation):
         return res
 
 class NarmourHMM(HmmAlgorithm):
+    def __new__(cls, *args, **kwargs):
+        instance= super(NarmourHMM, cls).__new__(cls, *args, **kwargs)
+        #instance.params.update(dict(enable_dp_robs = False,
+        #                            robs_alpha     = 0.5))
+        return instance
+
     def __init__(self, *args, **kwargs):
         super(NarmourHMM, self).__init__(*args, **kwargs)
         self.obsSeqBuilder= IntervalsObsSeq(self.obsSeqBuilder)
@@ -137,9 +139,9 @@ class NarmourHMM(HmmAlgorithm):
         #import ipdb;ipdb.set_trace()
 
         # XXX saco los intervalos ultragrandes
-        for state in hmm.states():
-            if 'ug' in repr(state):
-                hmm.remove_state(state)
+        #for state in hmm.states():
+        #    if 'ug' in repr(state):
+        #        hmm.remove_state(state)
         hmm.make_walkable()
         self.model= hmm
         return hmm
@@ -189,7 +191,7 @@ class NarmourHMM(HmmAlgorithm):
             return available_notes
 
 
-    @needs('now_distr', 'min_pitch', 'max_pitch')
+    @needs('notes_distr', 'min_pitch', 'max_pitch')
     @produces('pitch')
     def next(self, input, result, prev_notes):
         available_notes= self.next_candidates(input.notes_distr, input.min_pitch, input.max_pitch)
@@ -197,7 +199,7 @@ class NarmourHMM(HmmAlgorithm):
             result.pitch= -1
             return
 
-        actual_note= Note(RandomPicker(values=available_notes).get_value())
+        actual_note= RandomPicker(values=available_notes).get_value()
 
         self.ec.last_note= actual_note
         self.ec.last_pitch= actual_note.get_canonical_note()

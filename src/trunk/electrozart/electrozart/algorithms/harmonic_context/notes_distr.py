@@ -11,16 +11,14 @@ from electrozart.algorithms import ExecutionContext, needs, child_input
 class NotesDistr(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
-        instance.params.update(dict(global_profile_prior_weight= 1, 
-                          proportional_to_duration=True,
-                          profile_smooth_factor=0.1))
+        instance.params.update(dict(global_profile_prior_weight = 1, 
+                                    proportional_to_duration    = True,
+                                    profile_smooth_factor       = 0.1))
         return instance
         
     def __init__(self, score, **optional):
+        super(NotesDistr, self).__init__(self, **optional)
         self.score= score
-
-        self.params.update(optional)
-        self.params= bind_params(self, self.params)
 
         score_profile= get_score_profile(score, **self.params)
         self.matching_notes= get_matching_notes(score, TriadPrior(2, score_profile))
