@@ -20,7 +20,9 @@ class NotesDistrDuration(NotesDistr):
         self.duration_profile= calc_duration_profile(score, dict(self.score_profile), self.params['duration_profile_prior_strength'])
 
     def pitches_distr(self, duration, now_notes=None):
-        if now_notes is None or len(now_notes) == 0 or duration not in self.duration_profile:
+        if duration not in self.duration_profile:
+            return sorted(self.score_profile, key=lambda x:x[0])
+        if now_notes is None or len(now_notes) == 0:
             return sorted(self.duration_profile[duration].iteritems(), key=lambda x:x[0])
 
         now_pc= [n.get_canonical_note() for n in now_notes]
