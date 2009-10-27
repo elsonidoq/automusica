@@ -24,7 +24,12 @@ class ListRythm(ListAlgorithm):
     def generate_list(self, input, result, prev_notes):
         if not ( input.now == 0 or input.now_chord.start == input.now ) : import ipdb;ipdb.set_trace()
         # XXX ver commo hacerlo mas elegante
-        self.rythm_alg.ec.actual_state= input.now % self.rythm_alg.interval_size 
+        new_state= input.now % self.rythm_alg.interval_size 
+        if new_state not in self.rythm_alg.get_current_robs(input.get('phrase_id')).hmm.state_transition: 
+            #XXX ver por que input.now no esta en ningun estado de la cadena de markov
+            import ipdb;ipdb.set_trace()
+
+        self.rythm_alg.ec.actual_state= new_state
         self.rythm_alg.ec.actual_interval= input.now/self.rythm_alg.interval_size
         
         res= []
