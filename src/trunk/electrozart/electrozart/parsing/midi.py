@@ -7,8 +7,12 @@ from base import ScoreParser
 from itertools import izip, islice
     
 class MidiScoreParser(ScoreParser):
+    def __init__(self, *args, **kwargs):
+        super(MidiScoreParser, self).__init__(*args, **kwargs)
+        self.print_warnings= kwargs.get('print_warnings', True)
+
     def parse(self, fname, **kwargs):
-        hdlr= MidiToScore()
+        hdlr= MidiToScore(print_warnings=self.print_warnings)
         midi_in = MidiInFile(hdlr, fname)
         midi_in.read()
         res= hdlr.score
@@ -86,13 +90,14 @@ class MidiPatchParser(MidiScoreParser):
 
 class MidiToScore(MidiOutStream):
     
-    def __init__(self):
+    def __init__(self, print_warnings=True):
         MidiOutStream.__init__(self)
         self.actual_instruments= {}
         # diccionario de channel en [*args] de note_on
         self.notes_not_finished= {}
         self.score= None
         self.track_info= {}
+        self.print_warnings=print_warnings
 
     def header(self, format=0, nTracks=1, division=96):
         self.score= Score(division)
@@ -144,8 +149,8 @@ class MidiToScore(MidiOutStream):
 
     def time_signature(self, nn, dd, cc, bb):
         self.score.time_signature= (nn,dd)
-        if cc != 24: print "WARNING: cc != 24"
-        if bb != 8: print "WARNING: bb != 8"
+        if cc != 24 and self.print_warnings: print "WARNING: cc != 24"
+        if bb != 8 and self.print_warnings: print "WARNING: bb != 8"
     
     def key_signature(self, sf, mi):
         self.score.key= None
