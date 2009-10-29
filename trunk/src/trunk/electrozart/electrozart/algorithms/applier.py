@@ -17,6 +17,10 @@ class AlgorithmsApplier(object):
             res[alg.__class__.__name__]= alg.params
         return res
 
+    def save_info(self, folder, score):
+        for algorithm in self.algorithms:
+            algorithm.save_info(folder, score)
+
     def create_melody(self, time, print_info=False, general_input=None):
         if not self.started:
             self.start_creation()

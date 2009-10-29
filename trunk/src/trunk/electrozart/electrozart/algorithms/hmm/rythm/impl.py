@@ -76,6 +76,7 @@ class RythmHMM(HmmAlgorithm):
         self.ec.actual_state= 0
 
     def get_current_robs(self, robsid):
+        #robsid=0
         robs= self.ec.robses.get(robsid)
         if robs is None:
             if self.params['enable_dp_robs']:
@@ -127,8 +128,9 @@ class RythmHMM(HmmAlgorithm):
             n.start+= n_intervals*self.interval_size
         return res            
         
-    def draw_model(self, fname, divisions):
-        self.model.draw(fname, divisions)
+    def save_info(self, folder, score):
+        import os
+        self.model.draw(os.path.join(folder, 'rhythm.png'), score.divisions)
 
 
 

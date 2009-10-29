@@ -2,6 +2,7 @@ from random import choice, randint
 from math import log, floor
 from collections import defaultdict
 
+from electrozart import Note
 from utils.hmm import RandomObservation, HiddenMarkovModel, DPRandomObservation
 from utils.hmm.random_variable import RandomPicker
 from electrozart.algorithms import ListAlgorithm, needs, produces
@@ -113,6 +114,9 @@ class ListMelody(ListAlgorithm):
         self.melody_alg= melody_alg
         self.ncalls= 0
     
+    def save_info(self, folder, score):
+        self.melody_alg.save_info(folder, score)
+
     @produces('pitch')
     def next(self, input, result, prev_notes):
         return super(ListMelody, self).next(input, result, prev_notes)
@@ -125,13 +129,16 @@ class ListMelody(ListAlgorithm):
         self.ec.support_note_cache= {}
 
     def pick_support_note(self, chord, min_pitch, max_pitch):
+        chord_pitches= [n.pitch%12 for n in chord.notes]
+        chord_notes_in_range= [Note(p) for p in xrange(min_pitch, max_pitch+1) if p%12 in chord_pitches]
+
         if self.ec.last_support_note is None:
-            res_pitch= choice(chord.notes).pitch 
-            res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
+            res= choice(chord_notes_in_range).pitch
+            #res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
         else:
             if self.params['support_note_strategy'] == 'closest':
                 # la mas cerca
-                res= min(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
+                res= min(chord_notes_in_range, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
                 res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res])
                 #print res
             elif self.params['support_note_strategy'] == 'random_w_cache':
@@ -139,18 +146,16 @@ class ListMelody(ListAlgorithm):
                 if (chord, self.ec.last_support_note) in self.ec.support_note_cache:
                     res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
                 else:
-                    notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
+                    notes= sorted(chord_notes_in_range, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
                     exp_index= randint(1, 2**len(notes)-1)
                     index= int(floor(log(exp_index, 2)))
-                    res_pitch= notes[index].pitch
-                    res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
-                    self.ec.support_note_cache[(chord, self.ec.last_support_note)]= res
+                    res= notes[index].pitch
+                self.ec.support_note_cache[(chord, self.ec.last_support_note)]= res
             elif self.params['support_note_strategy'] == 'random_wo_cache':                    
                 # RANDOM sin cache
-                notes= sorted(chord.notes, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
+                notes= sorted(chord_notes_in_range, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
                 r= randint(1, 2**len(notes)-1)
-                res_pitch= notes[int(floor(log(r, 2)))].pitch
-                res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
+                res= notes[int(floor(log(r, 2)))].pitch
             else:
                 raise Exception('Wrong support_note_strategy value %s' % self.params['support_note_strategy'])
                     

@@ -139,9 +139,9 @@ class NarmourHMM(HmmAlgorithm):
         #import ipdb;ipdb.set_trace()
 
         # XXX saco los intervalos ultragrandes
-        #for state in hmm.states():
-        #    if 'ug' in repr(state):
-        #        hmm.remove_state(state)
+        for state in hmm.states():
+            if 'ug' in repr(state):
+                hmm.remove_state(state)
         hmm.make_walkable()
         self.model= hmm
         return hmm
@@ -191,6 +191,10 @@ class NarmourHMM(HmmAlgorithm):
             return available_notes
 
 
+    def save_info(self, folder, score):
+        import os
+        self.model.draw(os.path.join(folder, 'narmour.png'), str)
+        
     @needs('notes_distr', 'min_pitch', 'max_pitch')
     @produces('pitch')
     def next(self, input, result, prev_notes):

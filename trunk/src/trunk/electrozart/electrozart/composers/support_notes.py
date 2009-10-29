@@ -34,12 +34,14 @@ def bind_params(base, override):
 class SupportNotesComposer(object):
     def __init__(self):
         self.params= dict(
-            n_measures             = 1,
-            print_info             = False,
-            output_patch           = 33,
-            patch                  = None,
-            offset                 = 0,
-            disable_list_algorithms = True
+            n_measures              = 1,
+            print_info              = False,
+            output_patch            = 33,
+            patch                   = None,
+            offset                  = 0,
+            disable_list_algorithms = False,
+            save_info               = False
+
         )
 
     def matches_description(self, instrument, patch, channel):
@@ -98,8 +100,10 @@ class SupportNotesComposer(object):
         applier= AlgorithmsApplier(harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
         self.applier= applier
         applier.start_creation()
-        #rythm_alg.draw_model('rythm.png', score.divisions)
-        #melody_alg.model.draw('melody.png', str)
+
+        # XXX
+        self.rythm_alg= rythm_alg#.draw_model('rythm.png', score.divisions)
+        self.melody_alg= melody_alg #.model.draw('melody.png', str)
 
         duration= score.duration
         #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
@@ -116,8 +120,15 @@ class SupportNotesComposer(object):
         offset= params['offset'] #6#12
         min_pitch= int(mean_pitch - std_dev+offset)
         max_pitch= int(mean_pitch + std_dev+offset)
-        self.params['min_pitch']= min_pitch
-        self.params['max_pitch']= max_pitch
+        if max_pitch - min_pitch <= 24: 
+            max_pitch= mean_pitch + 12 
+            min_pitch= mean_pitch - 12
+            max_pitch += offset
+            min_pitch += offset 
+        min_pitch= int(min_pitch)
+        max_pitch= int(max_pitch)
+        self.params['min_pitch']= int(min_pitch)
+        self.params['max_pitch']= int(max_pitch)
 
         print "MIN PITCH", min_pitch
         print "MAX PITCH", max_pitch
@@ -222,7 +233,8 @@ class SupportNotesComposer(object):
         #analyzer.draw_relations(relations, 'relations.png')
 
 
-        return res
+        #XXX
+        return res, instrument
 
     
 

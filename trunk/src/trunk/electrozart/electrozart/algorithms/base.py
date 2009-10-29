@@ -90,7 +90,7 @@ class Algorithm(Parametrizable):
 
     def next(self, input, result, prev_notes): pass
     def print_info(self): pass
-    def draw_models(self, prefix): pass
+    def save_info(self, folder, score): pass
     def train(self, score): pass
         
 
@@ -119,6 +119,10 @@ class StackAlgorithm(Algorithm):
         for alg in self.algorithms:
             alg.start_creation()
 
+    def save_info(self, folder, score):
+        for algorithm in self.algorithms:
+            algorithm.save_info(folder, score)
+
     def next_note(self, prev_notes, input= None):
         result= PartialNote()
         # XXX ver que onda esto
@@ -135,14 +139,6 @@ class StackAlgorithm(Algorithm):
         for alg in self.algorithms:
             alg.next(input, result, prev_notes)
                 
-    def print_info(self): 
-        for alg in self.algorithms:
-            alg.print_info()
-
-    def draw_models(self, prefix): 
-        for alg in self.algorithms:
-            alg.draw_models(prefix)
-
     def train(self, score):
         for alg in self.algorithms:
             alg.train(score)
@@ -198,6 +194,9 @@ class CacheAlgorithm(ListAlgorithm):
     
     def next(self, input, result, prev_notes):
         return self.algorithm.next(input, result, prev_notes)
+
+    def save_info(self, folder, score):
+        self.algorithm.save_info(folder, score)
 
     def generate_list(self, input, result, prev_notes): 
         if self.input_key in input:

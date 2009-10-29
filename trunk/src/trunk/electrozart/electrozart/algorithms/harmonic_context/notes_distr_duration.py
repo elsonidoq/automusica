@@ -1,4 +1,5 @@
 from collections import defaultdict
+import os
 
 from utils.random import convex_combination
 from utils.params import bind_params
@@ -19,6 +20,29 @@ class NotesDistrDuration(NotesDistr):
         super(NotesDistrDuration, self).__init__(score, **optional)
         self.duration_profile= calc_duration_profile(score, dict(self.score_profile), self.params['duration_profile_prior_strength'])
 
+    def save_info(self, folder, score):
+        import pylab
+        pylab.close()
+        for k, p in sorted(self.duration_profile.iteritems()):
+            label='duration %s' % k
+            y= [i[1] for i in sorted(p.items(), key=lambda x:x[0])]
+            x= [i[0].pitch for i in sorted(p.items(), key=lambda x:x[0])]
+            pylab.plot(x, y, label=label)
+            #pylab.savefig('profile-%s-probsorted.png' % k)
+        #pylab.close()
+
+            #pylab.plot([i[1] for i in sorted(p.items(), key=lambda x:x[0])])
+            #pylab.savefig('profile-%s.png' % k)
+            #pylab.close()
+
+        label='original'
+        y= [i[1] for i in sorted(self.score_profile, key=lambda x:x[0])]
+        x= [i[0].pitch for i in sorted(self.score_profile, key=lambda x:x[0])]
+        pylab.plot(x,y, label=label)
+        pylab.legend(loc='best')
+        pylab.savefig(os.path.join(folder, 'profiles-note-sorted-%s.png' % self.params['duration_profile_prior_strength']))
+
+        pylab.close()
     def pitches_distr(self, duration, now_notes=None):
         if duration not in self.duration_profile:
             return sorted(self.score_profile, key=lambda x:x[0])
@@ -68,7 +92,8 @@ class NotesDistrDuration(NotesDistr):
 
 def calc_duration_profile(score, profile, prior_strongness):
     ans= defaultdict(lambda : defaultdict(int))
-
+    
+    all_durations= set(n.duration for n in score.get_notes())
     for instrument in score.instruments:
         if instrument.is_drums: continue
         for note in score.get_notes(instrument=instrument, skip_silences=True):
