@@ -39,12 +39,8 @@ def main(argv):
     parser= OptionParser(usage=usage)
     parser.add_option('--rythm-instr', dest='rythm_instr', help='If its an integer, is interpreted as a patch, if it is a tuple, (patch, channel)')
     parser.add_option('--melody-instr', dest='melody_instr', help='If its an integer, is interpreted as a patch, if it is a tuple, (patch, channel)')
-    parser.add_option('-d', '--is-drums', dest='is_drums', \
-                      help='create a drums midi', default=False, action='store_true')
-    parser.add_option('-m', '--print-model', dest= 'print_model', default=False, action='store_true')
     parser.add_option('-l', '--level', dest='level', default=3, type='int', help='if the partition algorithm is MGRID, especifies the level from which the score is going to be parted')
     parser.add_option('--n-measures', dest='n_measures', default=1, type='int', help='if the partition algorithm is MEASURE, especifies the number of measures to take as a unit')
-    parser.add_option('--draw-model', dest='draw_model')
     parser.add_option('--part-alg', dest='partition_algorithm', default='MEASURE', help='select the partition algorithm, only MEASURE and MGRID are available. Default MEASURE')
     parser.add_option('--seed', dest='seed',help='random seed')
 
@@ -53,6 +49,7 @@ def main(argv):
     parser.add_option('--pitch-offset', dest='offset', default=0, type='int')
     parser.add_option('--disable-list-algorithms', dest='disable_list_algorithms', default=False, action='store_true')
     parser.add_option('-p', '--set-param', dest='params', action='append')
+    parser.add_option('-s', '--save-info', dest= 'save_info', default=False, action='store_true')
 
 
     options, args= parser.parse_args(argv[1:])
@@ -139,7 +136,7 @@ def train3(options, args):
         if outfname in os.listdir(outpath) and not options.override:
             # -4 por el .mid +1 por el -
             versions= [fname[len(outfname)-4+1:-4] for fname in os.listdir(outpath) if fname.startswith(outfname[:-4])]
-            versions= [str for str in versions if len(str) > 0]
+            versions= [s for s in versions if len(s) > 0]
             for i in reversed(xrange(len(versions))):
                 try:
                     versions[i]= int(versions[i])
@@ -159,8 +156,8 @@ def train3(options, args):
     composer= NarmourMarkov()
     composer= YamlComposer()
     composer= SupportNotesComposer()
-    composed_score= composer.compose(score, **options.__dict__)
-
+    composed_score, instrument= composer.compose(score, **options.__dict__)
+    # XXX
     composer.original_score= score
     composer.composed_score= composed_score
 
@@ -168,6 +165,16 @@ def train3(options, args):
     writer= MidiScoreWriter()
     writer.dump(composed_score, outfname)
 
+    #composed_score.notes_per_instrument= {instrument: composed_score.get_notes(instrument=instrument)}
+    solo_fname= outfname.replace('.mid', '-solo.mid')
+    #writer.dump(composed_score, solo_fname)
+
+    # draw things
+    if options.save_info:
+        info_folder= outfname.replace('.mid', '-info')
+        os.makedirs(info_folder)
+        composer.applier.save_info(info_folder, score)
+    
     # save state
     params= composer.params
     params['options']= options.__dict__
@@ -195,6 +202,7 @@ def train3(options, args):
     width, height= get_terminal_size()
     print "*"*width
     print "midi file ", outfname
+    print "solo file ", solo_fname
     print "*"*width
     print 'done!'
 

@@ -1,10 +1,12 @@
+from __future__ import with_statement
+import os
 from electrozart.algorithms import ExecutionContext, needs, child_input, Algorithm
 from crp import ChineseRestaurantProcess
 
 class PhraseRepetitions(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(PhraseRepetitions, cls).__new__(cls, *args, **kwargs)
-        instance.params.update(dict(alpha= 1))
+        instance.params.update(dict(alpha= 0.5))
         return instance
 
     def __init__(self, harmonic_context_alg, *args, **kwargs):
@@ -16,6 +18,12 @@ class PhraseRepetitions(Algorithm):
         self.harmonic_context_alg.start_creation()
         self.ec.last_chord= None
         self.ec.crps= {}
+
+    def save_info(self, folder, score):
+        max_width= max(len(repr(moment)) for moment in self.ec.crps)
+        with open(os.path.join(folder, 'variations_per_moment'), 'w') as f:
+            for moment, crp in self.ec.crps.iteritems():
+                f.write('%s%s\t\t\t%s\t\t%s\n' % (moment, ' '*(max_width - len(repr(moment))), crp.ntables, sum(crp.customers_per_table.itervalues())))
 
     @child_input('now_chord', 'prox_chord', 'phrase_id')
     def next(self, input, result, prev_notes):
