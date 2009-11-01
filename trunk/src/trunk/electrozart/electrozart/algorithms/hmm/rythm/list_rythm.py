@@ -28,9 +28,13 @@ class ListRythm(ListAlgorithm):
         if not ( input.now == 0 or input.now_chord.start == input.now ) : import ipdb;ipdb.set_trace()
         # XXX ver commo hacerlo mas elegante
         new_state= input.now % self.rythm_alg.interval_size 
-        if new_state not in self.rythm_alg.get_current_robs(input.get('phrase_id')).hmm.state_transition: 
+        if new_state not in self.rythm_alg.model.state_transition: 
+            sorted_states= sorted(self.rythm_alg.model.states())
+            for i, state_posta in enumerate(sorted_states):
+                if state_posta > new_state: break
+
+            new_state= sorted_states[i-1]
             #XXX ver por que input.now no esta en ningun estado de la cadena de markov
-            import ipdb;ipdb.set_trace()
 
         self.rythm_alg.ec.actual_state= new_state
         self.rythm_alg.ec.actual_interval= input.now/self.rythm_alg.interval_size
@@ -46,6 +50,10 @@ class ListRythm(ListAlgorithm):
 
         if child_result.start + child_result.duration > phrase_end: 
             child_result.duration= phrase_end - child_result.start
+
+        if input.now % self.rythm_alg.interval_size not in self.rythm_alg.model.states():
+            res[0][1].duration= res[0][1].duration - (input.now - res[0][1].start)
+            res[0][1].start= input.now
 
         if res[0][1].start != input.now: import ipdb;ipdb.set_trace()
         res[0][0].rythm_phrase_len= len(res)
