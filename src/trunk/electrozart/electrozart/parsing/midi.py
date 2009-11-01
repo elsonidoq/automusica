@@ -111,7 +111,12 @@ class MidiToScore(MidiOutStream):
     def note_off(self, channel=0, note=0x40, velocity=0x40):
         assert self.score is not None
         notes= self.notes_not_finished.get(channel, {})
-        assert note in notes
+        if not note in notes: 
+            if self.print_warnings:
+                print "WARNING: note_off without note_on ", note
+            return
+            #import ipdb;ipdb.set_trace()
+        #assert note in notes
 
         starting_vel, starting_reltime, starting_abstime= notes[note]
         if channel not in self.actual_instruments:
