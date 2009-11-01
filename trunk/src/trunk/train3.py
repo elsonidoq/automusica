@@ -132,7 +132,7 @@ def train3(options, args):
         if os.path.exists('output'): os.unlink('output')
         os.system('ln -s %s output' % outpath)
 
-        outfname= path.basename(infname)
+        outfname= path.basename(infname).lower()
         if outfname in os.listdir(outpath) and not options.override:
             # -4 por el .mid +1 por el -
             versions= [fname[len(outfname)-4+1:-4] for fname in os.listdir(outpath) if fname.startswith(outfname[:-4])]
@@ -149,6 +149,7 @@ def train3(options, args):
         outfname= path.join(outpath, outfname)
 
 
+    outfname= outfname.lower()
     parser= MidiScoreParser()
     score= parser.parse(infname)
     #score= quantize(score)
@@ -165,9 +166,9 @@ def train3(options, args):
     writer= MidiScoreWriter()
     writer.dump(composed_score, outfname)
 
-    #composed_score.notes_per_instrument= {instrument: composed_score.get_notes(instrument=instrument)}
+    composed_score.notes_per_instrument= {instrument: composed_score.get_notes(instrument=instrument)}
     solo_fname= outfname.replace('.mid', '-solo.mid')
-    #writer.dump(composed_score, solo_fname)
+    writer.dump(composed_score, solo_fname)
 
     # draw things
     if options.save_info:
