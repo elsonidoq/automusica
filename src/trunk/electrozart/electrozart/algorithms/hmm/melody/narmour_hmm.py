@@ -17,7 +17,7 @@ def length2str(interval_length):
             res= 'ch'
         elif abs(interval_length) == 6:
             res= 'm'
-        elif abs(interval_length) <=12:
+        elif abs(interval_length) < 12: #<=12:
             res= 'g'
         else:
             res= 'ug'
@@ -40,7 +40,7 @@ class NarmourInterval(object):
             res= 'ch'
         elif abs(self.interval.length) == 6:
             res= 'm'
-        elif abs(self.interval.length) <=12:
+        elif abs(self.interval.length) <12:
             res= 'g'
         else:
             res= 'ug'
@@ -65,13 +65,13 @@ class NarmourInterval(object):
             p= pitch1+6*sign(interval_length)
             if p > 0: return [p]
             else: return []
-        elif abs(interval_length) <=12:
+        elif abs(interval_length) <12:
             lbound= pitch1 + 6*sign(interval_length) + sign(interval_length) 
             ubound= pitch1 + 12*sign(interval_length)
             if lbound > ubound: lbound, ubound= ubound, lbound
             return range(max(lbound, 0), ubound+1)
         else:
-            lbound= pitch1 + 12*sign(interval_length) + sign(interval_length)
+            lbound= pitch1 + 12*sign(interval_length) #+ sign(interval_length)
             ubound= pitch1 + 24*sign(interval_length)
             if lbound > ubound: lbound, ubound= ubound, lbound
             return range(max(lbound, 0), ubound+1)
