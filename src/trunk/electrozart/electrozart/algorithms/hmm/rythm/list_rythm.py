@@ -34,7 +34,6 @@ class ListRythm(ListAlgorithm):
                 if state_posta > new_state: break
 
             new_state= sorted_states[i-1]
-            #XXX ver por que input.now no esta en ningun estado de la cadena de markov
 
         self.rythm_alg.ec.actual_state= new_state
         self.rythm_alg.ec.actual_interval= input.now/self.rythm_alg.interval_size
