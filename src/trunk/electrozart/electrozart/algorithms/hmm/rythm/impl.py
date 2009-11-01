@@ -1,4 +1,4 @@
-from itertools import chain
+from itertools import chain, imap
 from bisect import bisect
 
 from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
@@ -22,21 +22,16 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         ConditionalMidiObsSeq.__init__(self)
         self.interval_size= interval_size
         self.builder= builder
+        self.builder.note_as_hidden_state= True
 
-    def __call__(self, score):
+    def get_observations(self, score):
         prev_res= self.builder(score)
-        res= [None] * len(prev_res)
-        acum_duration= 0
-        for i, (duration, vars) in enumerate(prev_res):
-            if acum_duration == 1229: import ipdb;ipdb.set_trace()
-            res[i]= acum_duration, vars
-            if isinstance(duration, int):
-                acum_duration+= duration
-            else: # es tupla porque es order 2 o 3
-                acum_duration+= duration[-1]
-            acum_duration%= self.interval_size
+        res= []
+        for i, (note, vars) in enumerate(prev_res):
+            res.append([(note.start%self.interval_size, vars), (note.end % self.interval_size, vars)])
 
         return res
+        
 
 class RythmHMM(HmmAlgorithm):
     def __new__(cls, *args, **kwargs):
@@ -54,6 +49,12 @@ class RythmHMM(HmmAlgorithm):
         self.params['interval_size']= interval_size
         self.interval_size= interval_size
         
+    def train(self, score):
+        obs_seqs= self.obsSeqBuilder.get_observations(score)
+        for obs_seq in obs_seqs:
+            self.hidden_states.update(imap(lambda x:x[0], obs_seq))
+            self.learner.train(obs_seq)
+
     def create_model(self):
         a_state= iter(self.hidden_states).next()
         if isinstance(a_state, int):
