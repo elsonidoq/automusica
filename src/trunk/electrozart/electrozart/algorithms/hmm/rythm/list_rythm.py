@@ -55,6 +55,7 @@ class ListRythm(ListAlgorithm):
             res[0][1].start= input.now
 
         if res[0][1].start != input.now: import ipdb;ipdb.set_trace()
+        if res[-1][1].start + res[-1][1].duration != input.prox_chord.start: import ipdb;ipdb.set_trace()
         res[0][0].rythm_phrase_len= len(res)
         return res
 
