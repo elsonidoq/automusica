@@ -1,1 +1,1 @@
-from contextes import ScoreHarmonicContext, ChordHarmonicContext, YamlHarmonicContext
+from contextes import ScoreHarmonicContext, ChordHarmonicContext, YamlHarmonicContext, TonicHarmonicContext
