@@ -5,6 +5,15 @@ from electrozart.algorithms.applier import Algorithm
 from electrozart.algorithms import ExecutionContext, needs, child_input
 from electrozart import Chord, Note
 
+class TonicHarmonicContext(Algorithm):
+    def __init__(self, nd, *args, **kwargs):
+        super(TonicHarmonicContext, self).__init__(*args, **kwargs)
+        self.nd= nd
+    
+    @child_input('tonic_notes')
+    def next(self, input, result, prev_notes):
+        input.tonic_notes= [i[0] for i in sorted(self.nd.score_profile, key=lambda x:x[1], reverse=True)[:3]]
+        
 
 class ScoreHarmonicContext(Algorithm):
     def __init__(self, context_score, *args, **kwargs):
@@ -46,7 +55,7 @@ class ChordHarmonicContext(Algorithm):
     #def print_info(self):
     #    for chord in self.chords.values(): print chord.notes
 
-    @needs('now')
+    @needs('now', 'tonic_notes')
     @child_input('now_chord', 'prox_chord')
     def next(self, input, result, prev_notes):
         for i, chord in enumerate(self.chordlist):
@@ -57,8 +66,11 @@ class ChordHarmonicContext(Algorithm):
 
         now_chord= chord                
         if i+1 == len(self.chordlist):
+            #import ipdb;ipdb.set_trace()
             # XXX ver que onda con esto
             prox_chord= now_chord
+            prox_chord= Chord(now_chord.end, 1, input.tonic_notes)
+
         else:
             prox_chord= self.chordlist[i+1]
         #chord= self.get_chord(input.chord_id)
