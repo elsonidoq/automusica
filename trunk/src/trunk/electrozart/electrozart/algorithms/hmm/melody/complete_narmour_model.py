@@ -90,7 +90,7 @@ class ContourAlgorithm(ListAlgorithm):
 
         must= build_must_dict(prob_model, end_pitch, input.min_pitch, input.max_pitch, x1, x2, input.rythm_phrase_len)
 
-        if self.ec.last_support_note is None:
+        if len(prev_notes) == 0: #self.ec.last_support_note is None:
             max_key=max(must.iterkeys())
             for (n1, n2), candidates in must[max_key].iteritems():
                 if any(Note(c).get_canonical_note() in input.now_chord.notes for c in candidates): break
@@ -99,6 +99,17 @@ class ContourAlgorithm(ListAlgorithm):
                 import ipdb;ipdb.set_trace()
             context= (n1, n2)
             #start_pitch= self.pick_support_note(input.now_chord, input.min_pitch, input.max_pitch)
+        elif len(prev_notes) == 1:
+            max_key=max(must.iterkeys())
+            for (n1, n2), candidates in must[max_key].iteritems():
+                c= n2 == prev_notes[-1].pitch
+                b= any(Note(c).get_canonical_note() in input.now_chord.notes for c in candidates)
+                if c and b: break
+            else:
+                # no pude empezar
+                import ipdb;ipdb.set_trace()
+            context= (n1, n2)
+
         else:
             #import ipdb;ipdb.set_trace()
             context= tuple(prev_notes[-2:])
