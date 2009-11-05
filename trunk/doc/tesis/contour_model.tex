@@ -1,28 +1,25 @@
-\section{Modelando l\'ineas mel\'odicas}
-En la secci'on anterior se realiz'o un an'alisis respectivo a la sucesi'on de duraciones que determina una cierta partitura, ignorando la 
-suceci'on de alturas. En esta secci'on se proponen una serie de modelos para abarcar finalmente poder generar l'ineas mel'odicas.
-
-\subsection{Contextos}
-Las caracter'isticas definidas hasta ahora representan en gran parte las restricciones que deber'ian tenerse en cuenta en la construcci'on 
-de l'ineas mel'odicas respecto a una cierta pieza musical, sin embargo, ninguna de ellas habla de propiedades de la l'inea mel'odica por si s'ola.
+\section{Modelando contornos mel\'odicos}
+\label{sec:melodic_contour}
+Las caracter'isticas definidas en la secci'on anterior son en gran parte restricciones que deber'ian tenerse en cuenta en la construcci'on 
+de l'ineas mel'odicas respecto a una cierta pieza musical, sin embargo, ninguna de ellas habla de propiedades de la l'inea mel'odica 
+por si s'ola.
 
 En 1960, Leonard Meyer elabor'o una teor'ia acerca de la expectativa en la m'usica aplicando principios gest'alticos de la psicolog'ia. La 
 psicolog'ia de la Gestalt define principios que pretenden capturar la forma en que la mente configura los elementos que llegan a ella a trav'es 
 de la percepci'on o de la memoria. Por ejemplo, la ley de cierre establece que nuestra mente a~nade los elementos faltantes a para completar una 
-figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'irculo y un rectangulo, si bien en la imagen solo hay partes.
+figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'irculo y un rectangulo, si bien en la imagen s'olo hay partes.
 
 \begin{imagen}
     \file{images/Gestalt_ley_de_cierre.png}
     \labelname{fig:ley_cierre}
-    \desc{Ejemplo de la ley de cierre. Si bien en esta imagen no hay un circulo ni un rectangulo, nuestra mente lo completa. \alert{>como pongo esto al costado?}}
+    \desc{Ejemplo de la ley de cierre. Si bien en esta imagen no hay un circulo ni un rectangulo, nuestra mente lo completa. }
     \width{6cm}
 \end{imagen}
 
 Luego del trabajo de Meyer, Eugene Narmour en (\cita) cuantifica estas reglas en t'erminos de intervalos para construir una teor'ia de 
 la expectativa de los contornos mel'odicos. 
 
-En lo que sigue, se explican con mayor detalle las teor'ias de Narmour y Lerdhal, para luego detallar el modelo de las l'ineas mel'odicas.
-
+En lo que sigue, se explican con mayor detalle las teor'ias de Narmour, para luego detallar el modelo de las l'ineas mel'odicas.
 
 \footnote{definir pitch class y nota y equivalencia entre notas de diferente octava en las secciones de background} 
 
@@ -50,9 +47,24 @@ y \emph{top-down}. Los procesos bottom-up son aquellos procesos cognitivos en do
 elabora llev'andola a los niveles altos, mientras que los procesos top-down lo hacen en el orden inverso. 
 
 Narmour propone que los procesos que regulan la expectaci'on mel'odica son en mayor medida de tipo bottom-up, es decir, parten de informaci'on puramente sensorial. 
-Luego clasifica a los intervalos en dos tipos: \emph{implicativo} y \emph{realizado}. Los intervalos implicativos son aquellos que no promueven una sensaci'on de cierre, 
-y por lo tanto generan implicaciones mel'odicas. Los intervalos realizados, como es de esperarse, promueven una sensaci'on de cierre, pero no necesariamente satisface
-la implicaci'on generada por el intervalo implicativo. 
+Carol Krumhansl resume en (\cita) que seg'un este modelo, la cognici'on de melod'ias puede ser descripta como una sucesi'on de puntos 
+de \emph{cierre}, \emph{implicaci\'on} y \emph{realizaci\'on}. Cuando se alcanza un punto de cierre, las expectativas sobre la continuaci\'on 
+son d'ebiles mientras que cuando se alcanza un punto de implicaci'on, la expectativa sobre la continuaci'on es fuerte. Seg'un este modelo,
+existen seis condiciones que llevan a una sensaci'on de cierre:
+\begin{itemize}
+ \item Silencio
+ \item Una acento metro fuerte
+ \item Una disonancia resolviendo a una consonancia
+ \item Una nota corta seguido de una larga
+ \item Un intervalo grande seguido de un intervalo m'as peque~no
+ \item Un cambio en la direcci'on registral
+\end{itemize}
+
+Estas caracter'isticas no son exluyentes, y si ocurren varias en simultaneo, la sensaci'on de cierre es mayor. 
+Si no ocurre ninguna de esas condiciones, entonces se establece un punto de implicaci'on, y el 'ultimo itervalo mel'odico recibe el nombre
+de \emph{intervalo implicativo}, y el intervalo que sigue al implicativo, recibe el nombre de \emph{intervalo realizados}. 
+Un intervalo realizado, puede promover o no una sensacion de cierre, y puede satisfacer o no la implicaci'on establecida por el intervalo 
+implicativo
  
 Teniendo entonces el contorno de una melod'ia, Narmour define ciertas caracter'isticas relacionadas con la psicolog'ia de la gestalt. A continuaci'on 
 se enumeran los cinco principios de esta teor'ia, refiri'endose por intervalos peque~nos, a intervalos de valor absoluto menor o igual a 5 semi tonos, y por intervalos
@@ -63,17 +75,40 @@ grandes a aquellos que sean mayores o iguales que 7 semitonos, dejando al interv
  \item Retorno registral: se cumple cuando la segunda nota del intervalo realizado es id'entica o similar a la primera del intervalo implicativo.
  \item Proximidad: el tama~no del intervalo relizado sera peque~no.
  \item Cierre: se cumple cuando hay un cambio de direcci'on, un movimiento hacia un intervalo m'as peque~no, o ambas situaciones a la vez (\alert{reescribir})
-
 \end{enumerate}
 
-\subsection{Contexto vertical}
-\comment{Yo aca uso un modelo que defini a dedo y que esta todavia sujeto a cambio, me gustaria discutir esto con Favio a ver si esta de acuerdo con lo que estoy haciendo. De todas formas me gustar'ia armar una discuci'on aca. Como contexto vertical, tambien se puede tener en cuenta la tonalidad (en menor medida que el acorde). Me gustaria ver si krumnhansl en su libro cognitive fundations of musical pitch me podria dar algo sobre como llenar esta parte o como hacer un modelo mas interesante (no se si quiero hacer un modelo mas interesante de todas formas =p)}
-
 \subsection{El modelo}
+Como es de esperarse, no existe una 'unica forma de construir un modelo que refleje este comportamiento. A continuaci'on se proponen dos modelos. El primero 
+parte de una simplificaci'on a algunos principios de la teor'ia de Narmour. Estas simplificaciones permiten construir una cadena de Markov tradicional para el contorno 
+mel'odico. Se presenta este modelo como punto de comparaci'on con el segundo que, si bien sigue simplificando la teor'ia de Narmour, lo hace en menor medida. 
 
-\subsubsection{La cadena de Narmour}
-\comment{aca la idea es explicar la cadena de markov de los intervalos de narmour}
+\subsection{Simplificaci\'ones a I-R}
+Dada un pieza musical, en este caso es de inter'es construir un modelo y entrenarlo con el contorno mel'odico del tema en cuesti'on. De esta forma se puede proyectar
+las alturas de las notas del tema, y luego construir la sucesi'on de intervalos mel'odicos tomando la diferencia entre las sucesivas alturas. Por ahora as'umase que 
+en el tema de entrenamiento no hay notas sonando en simult'aneo, puesto que en ese caso, no es trivial construir una sucesi'on de intervalos mel'odicos que represente
+lo que esta ocurriendo. Se tratar'a con esa cuesti'on m'as adelante.
 
-\subsection{El proceso generativo}
-\comment{Aca tengo que explicar el problema de mezclar estos dos modelos no es trivial, porque se te podria trabar el proceso porque llega a un callejon sin salida, y muestro
-como deber'ia ser el proceso compuesto posta}
+La primera simplificaci'on a la teor'ia de Narmour, compartida por los dos modelos, es no analizar que intervalos las condiciones que hacen que un intervalo realizado
+no sea implicativo, es decir, se asume que todos los intervalos son implicativos. Se considera que la desici'on de donde colocar intervalos de cierre es candidata 
+a estar ubicada dentro a otro nivel en la jerarqu'ia de modelos para construir lineas mel'odicas, puesto que en general los cierres estan asociados a la estructura
+del tema, de esta forma, para mantener limitado el alcance de esta tesis, se deja para trabajo a futuro trabajar con puntos de cierre.
+
+Por otro lado, teniendo en mente el objetivo de construir de una cadena de Markov y en particular elegir el espacio de estados, se realiz'o una modificaci'on al enunciado 
+del principio de diferencia interv'alica: En lugar de codificiar que intervalos peque~nos impliquen intervalos de tama~no \texttt{similar}, se codific'o que 
+intervalos \texttt{peque~nos} implican intervalos \texttt{peque~nos}. Para los intervalos grandes se hizo lo mismo: intervalos \texttt{grandes} implican 
+intervalos \texttt{grandes}. Esta simplificaci'on hace que a la hora de generar melod'ias, no sea necesario conocer el tama~no del intervalo recien generado, y baste 
+con saber si 'este fue grande o peque~no.
+
+\subsection{La cadena de Narmour}
+Con las simplificaciones propuestas a continuaci'on se detalla el modelo de Markov para la teor'ia de Implicaci'on-Realizaci'on.
+Dada una sucesi'on de alturas $a_1, \cdots, a_n$ se construye la sucesi'on de intervalos mel'odicos $m_1, \cdots, m_{n-1}$ donde $m_i = a_{i+1}-a_i$. 
+
+Se define el predicado $T(m)$ que toma 3 valores: grande, peque~no o mediano utilizando la clasificaci'on de Narmour y definiendo mediano como el intervalo de 
+6 semitonos que queda fuera de la clasificaci'on. Se define tambi'en el predicado $D(m)$ que toma dos valores: ascendente y descendente seg'un el signo del intervalo.
+
+De esta forma, los estados de la cadena de Markov estar'an dados por vectores $<T, D>$ para los distintos valores de estos predicados. Notar que esta representaci'on
+resulta en un modelo muy compacto con $6$ estados en total, lo cual permite entrenar con temas cortos.
+
+De esta forma, la sem'antica de realizar una caminata en este modelo impone restricciones sobre el tipo de intervalo a tocar, dado que se sabe el tipo de intervalo que se 
+toc'o previamente.
+
