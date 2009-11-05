@@ -1,5 +1,25 @@
 \section{El modelo compuesto}
-\comment{aca la idea es explicar como relacionar los modelos de las secciones anteriores y explicar como se los puede usar a los dos juntos para generar una linea melodica}
+Utilizando los modelos definidos en las secciones \ref{sec:metric_model}, \ref{sec:harmonic_contexts} y \ref{sec:melodic_contour}, es posible definir
+un proceso generativo para componer lineas mel'odicas de forma relativamente sencilla. El algoritmo se definir'a en pseudoc'odigo para que quede en una representaci'on 
+compacta, sin embargo se deduce de los roles que se le asign'o a cada modelo: para cada nota a generar, el modelo de la r'itmica eligir'a su duraci'on, 
+mientras que el modelo de Narmour elijir'a el tipo de intervalo que deber'a tocarse en funci'on del 'ultimo intervalo tocado, y por 'ultimo el modelo del contexto arm'onico
+elijir'a una nota dentro de las que forman el intervalo determinado por el modelo de Narmour de acuerdo a la tonalidad inferida.
+
+\begin{algoritmo}
+create_melody(rhythm_model, harmonic_context, contour_model, duration, available_notes)
+    notes := []
+    while last_note.end < duration
+        new_duration := rythm_model.next_duration()
+        new_interval_type := contour_model.next_interval_type()
+
+        candidate_notes := [n for n in available_notes if interval_type(last_note, n) = new_interval_type]
+        new_pitch := harmonic_context.pick_note(candidate_notes)
+
+        last_note= Note(last_note.start, new_duration, new_pitch)
+        notes.append(last_note) 
+
+    return notes
+\end{algoritmo}
 \subsection{Problemas}
 \comment{aca la idea es explicar problemas que tienen estos modelos en terminos musicales. Basicamente voy a hablar del rol que juega la repetici\'on en nuestra
 escucha musical y en la construccion de motivos. La idea es motivar alguna forma de generar repeticiones parciales, o elaboraciones motivicas. Esto motivaria la seccion que viene}

@@ -1,57 +1,114 @@
 
 \section{Background matem\'atico}
-\subsection{Combinaci\'ones de distribuci\'ones de probabilidad}
-Una operaci'on muy frecuentemente utilizada a lo largo del presente trabajo es la \texttt{combinaci'on convexa} entre distribuciones
-de probabilidad.
+\subsection{Sobre estad\'istica bayesiana}
+Una de las desiciones sobre el alcance de este trabajo es que los modelos construidos ser'an entrenados s'olo con un tema de por vez. 
+Esta decisi'on evita el problema de tener que combinar la informaci'on proporcionada por varias piezas musicales, sin embargo, el precio que debe pagarse 
+es que para muchos modelos de los que se expondr'an no alcanza solamente con entrenar con una pieza musical, puesto que ciertas estimaciones no ser'ian estad'isticamente 
+significativas. 
 
-Dadas $p$ y $q$, dos distribuci'ones de probabilidad sobre el conjunto $S$, y un n'umero $0 \leq \alpha \leq 1$, 
-se nota $p +_\alpha q$ a la combinaci'on convexa entre $p$ y $q$, y se define:
-$$(p +_\alpha q)(A) = \alpha \times p(A) + (1-\alpha) \times q(A)$$ 
+Una soluci'on a este problema es adoptar una postura bayesiana y tener una creencia previa sobre las caracter'isticas del fen'omeno a modelar, 
+y luego actualizar esta creencia previa con la evidencia observada. De esta forma, si el modelo esta basado en una teor'ia cognitiva, se puede utilizar
+como creencia previa alg'un estudio donde se haya puesto a prueba esta teor'ia. 
 
-En caso de referirse a $p+q$, se asume que $\alpha = 1/2$. 
-\newline \newline
-Observaci'ones:
-\begin{itemize}
- \item Se puede demostrar que el resultado de combinar dos distribuci'ones de probabilidad de esta forma es tambi'en una distribuci'on 
-de probabilidad.
+Otra raz'on para utilizar creencias previas es para estimar distribuci'ones de probabilidades suaves, en el sentido de que no asignen valor $0$ a un evento 
+por el s'olo hecho de no haberlo observado en la etapa de entrenamiento. Esta propiedad ser'a utilizada para el trabajo con contextos arm'onicos.
 
- \item Notar que esta definici'on puede extenderse para $n$ distribuci'ones de probabilidad. En ese caso se necesitar'an valores 
-$\alpha_1, \dots, \alpha_n$, tales que $\sum_i \alpha_i = 1$. En general, se utilizara $\alpha_i = 1/n$ salvo que se aclare lo contrario.
-\end{itemize}
+Escribiendo esto matem'aticamente, sup'ongase que se cuenta con un modelo parametrizado por un vector $\theta$. 
+La creencia previa sobre el fen'omeno a modelar, b'asicamente estar'ia restringiendo \emph{a priori} que tipo de par'ametros son mas probables que otros, 
+de esta forma, esta informaci'on se codifica como una distribuci'on de probabilidades sobre $\theta$, $P(\theta)$. 
 
+De esta forma, sup'ongase ahora que se cuenta con cierta evidencia de entrenamiento $x_1,\cdots,x_n$. Al entrenar el modelo, uno quisiera combinar la 
+creencia previa dada por $P(\theta)$ junto con la evidencia dada por $x_1,\cdots,x_n$ en una distribuci'on \emph{a posteriori} sobre los par'ametros.
+Utilizando la ley de Bayes y la ley de probabilidad total, es posible reescribir la distribuci'on a posteriori de $\theta$ en funci'on de su creencia previa y 
+la probabilidad de la observaci'on:
+
+\begin{align}
+P(\theta|x_1,\cdots,x_n) &= \frac{P(x_1,\cdots,x_n|\theta) P(\theta)}{P(x_1,\cdots,x_n)} \\
+                         &= \frac{P(x_1,\cdots,x_n|\theta) P(\theta)}{\int_\theta{P(x_1,\cdots,x_n|\theta)P(\theta)\mathrm{d}\theta}}
+\end{align}
+
+Utilizando ahora la creencia a posteriori sobre $\theta$, la probabilidad de una nueva observaci'on $x$ est'a dada por
+
+$$P(x|x_1,\cdots,x_n) = \int_\theta{P(x|\theta)P(\theta|x_1,\cdots,x_n)}$$
+
+Notar que el resultado de hacer esto elimina el par'ametro $\theta$ como valor, y se utilizan todos los valores posibles asociados a la creencia de que efectivamente
+sea ese el valor que parametriza a la distribuci'on que genera las obervaciones.
+
+
+Un principal problema al aplicar estas t'ecnicas es la resoluci'on de las integrales sobre el espacio de par'ametros, que suele ser multidimensional. 
+Sin embargo, hay casos en donde se conocen expresiones anal'iticas para la probabilidad a posteriori de los par'ametros, y en ese caso, se puede utilizar
+como p'arametro $E(\theta|x_1,\cdots,x_n)$, \alert{argumentar bien, montacarlo de la intergral converje a la esperanza}.
+
+Un caso conocido es cuando se modelan los datos como provenientes de una distribuci'on multinomial. En este caso, si se codifica la creencia previa
+sobre $\theta$ como una distribucion Dirichlet, se puede calcular de una forma muy facil la distribuci'on a posteriori de $\theta$ dado por la siguiente
+f'ormula:
+
+\alert{usar delta de dirac}
+
+\begin{align}
+    \theta \sim Dirichlet(\alpha_1,\cdots,\alpha_k) \Rightarrow \theta|x_1,\cdots,x_n \sim Dirichet(\alpha_1+n_1,\cdots,\alpha_k+n_k)
+\end{align}
+
+Donde los valores $x_i$ pueden tomar uno de $k$ valores posibles, y $n_j$ es la cantidad de veces que se observ'o el j-'esimo valor. 
+
+Utilizando esta f'ormula es posible calcular anal'iticamente la distribuci'on a posteriori de la observaci'on, y luego tomar la esperanza dada por
+
+$$E(\theta|x_1,\cdots,x_n)=\frac{\alpha_i + n_i}{\sum_{j=1}^{k}{\alpha_j+n_j}}$$
+
+%
+%\subsection{Combinaci\'ones de distribuci\'ones de probabilidad}
+%Una operaci'on muy frecuentemente utilizada a lo largo del presente trabajo es la \texttt{combinaci'on convexa} entre distribuciones
+%de probabilidad.
+%
+%Dadas $p$ y $q$, dos distribuci'ones de probabilidad sobre el conjunto $S$, y un n'umero $0 \leq \alpha \leq 1$, 
+%se nota $p +_\alpha q$ a la combinaci'on convexa entre $p$ y $q$, y se define:
+%$$(p +_\alpha q)(A) = \alpha \times p(A) + (1-\alpha) \times q(A)$$ 
+%
+%En caso de referirse a $p+q$, se asume que $\alpha = 1/2$. 
+%\newline \newline
+%Observaci'ones:
+%\begin{itemize}
+% \item Se puede demostrar que el resultado de combinar dos distribuci'ones de probabilidad de esta forma es tambi'en una distribuci'on 
+%de probabilidad.
+%
+% \item Notar que esta definici'on puede extenderse para $n$ distribuci'ones de probabilidad. En ese caso se necesitar'an valores 
+%$\alpha_1, \dots, \alpha_n$, tales que $\sum_i \alpha_i = 1$. En general, se utilizara $\alpha_i = 1/n$ salvo que se aclare lo contrario.
+%\end{itemize}
+%
 
 \subsection{Cadenas de Markov}
 Supongamos que se desea modelar la evoluci'on de un sistema con respecto al tiempo. Es de esperarse que 
 el estado en el que se encuentra el sistema en cierto momento de alguna forma tenga que ver con la historia por la que este transit'o
 previamente. 
 
-Las cadenas de Markov permiten modelar este tipo de dependencias haciendo una asunci'on: el estado en el que se encuentra el sistema
-en un momento dado \emph{s'olo} depende del estado anterior en el que este se encontraba. Esta asunci'on es conocida como la propiedad
-de falta de memoria.
+Las cadenas de Markov de orden $k$ permiten modelar este tipo de dependencias haciendo una asunci'on: la probabilidad de que el sistema vaya a un cierto estado
+dado la historia de estados por los que transit'o solo depende en un momento dado \emph{s'olo} depende de los 'ultimos $k$ estados anteriores en los que este transit'o. 
+Esta asunci'on es conocida como la propiedad de Markov. 
 
-Formalmente, una cadena de markov es una dupla $<S,P>$, donde $S$ es el conjunto de posibles estados del sistema, y $P$ la 
-distribuci'on condicional de ocurrencia, es decir, dados $s_1, s_2 \in S$, el valor de $P(s_2 | s_1)$ indica cual es la probabilidad
-de que el sistema pase estado $s_2$ dado que se encuentra actualmente en el estado $s_1$.  Volviendo a la propiedad de falta de memoria, 
-ahora es posible expresarla formalmente: $P(s_k | s_1, \cdots s_{k-1}) = P(s_k | s_{k-1})$.
+Formalmente, una cadena de Markov de orden $k$ es una tripla $<S,P>$, donde $S$ es el conjunto de posibles estados del sistema, y $P$ la 
+distribuci'on de transici'on, es decir, dados $s_1, \cdots, s_{k+1} \in S$, el valor de $P(s_{k+1} | s_1, \cdots, s_k)$ indica la probabilidad
+de que el sistema pase estado $s_{k+1}$ dado que a transitado por los estados $s_1, \cdots, s_k$. 
+Volviendo a la propiedad de falta de memoria, ahora es posible expresarla formalmente: $$P(s_{n+1}|s_1,\cdots,s_n) = P(s_{n+1} | s_{n-k}, \cdots, s_n)$$
 
-A modo ilustrativo, supongamos que se desea modelar el clima, restringiendo el clima a si llueve o no. De esta forma, el conjunto $S$ de estados
-ser'a $\{llueve, no\ llueve\}$. 
+A modo ilustrativo, sup'ongase que se desea modelar el clima con una cadena de Markov de orden 1, restringiendo el clima a si llueve o no. Siendo asi, el conjunto 
+$S$ de estados ser'a $\{llueve, no\ llueve\}$. 
 
-Luego de recolectar datos durante un mes, se estiman las siguientes probabilidades:
+Asumiendo que las probabilidades de transici'on son las dadas en la siguiente tabla, el sistema gr'aficamente se ver'ia como la figura \ref{fig:markov_clima}
 
 \begin{center}
+\label{tabla_markov}
 \begin{tabular}{l l l l}
 $P(lluvia | lluvia) $ & $=0.9$ & $P(lluvia | no\ llueve) $& $=0.1$\\
 $P(no\ lluvia | lluvia)  $ & $=0.3$ & $P(no\ lluvia | no\ llueve) $ & $=0.7$\\
 \end{tabular}
 \end{center}
 
-Gr'aficamente el sistema se ver'ia de la siguiente forma:
+\begin{imagen}
+    \file{images/weather_graph.png}
+    \labelname{fig:markov_clima}
+    \desc{Representaci'on gr'afica de la cadena de Markov}
+    \width{5cm}
+\end{imagen}
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[width=5cm]{images/weather_graph}
-\end{center}
-\end{figure}
 
 

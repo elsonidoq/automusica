@@ -1,16 +1,49 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage[spanish, activeacute]{babel}
 
-\addtolength{\topmargin}{-80pt}
-\addtolength{\textwidth}{170pt}
-\addtolength{\textheight}{145pt}
-\addtolength{\oddsidemargin}{-80pt}
+%\addtolength{\topmargin}{-80pt}
+\addtolength{\textwidth}{100pt}
+\addtolength{\oddsidemargin}{-50pt}
+%\addtolength{\textheight}{145pt}
 
 \usepackage{graphicx} % para incluir graficos
 \usepackage{amsmath} 
 \usepackage{amsthm} % para escribir teoremas lindos
 \usepackage{amsfonts} % para tener el simbolo de los numeros reales
 \usepackage{color}  % colores de las fuentes
+
+\usepackage{listings} % algoritmos
+\lstdefinelanguage{chanfle}{	    
+ 	 morecomment=[l]{//},
+ 	 morecomment=[s]{/*}{*/},
+   literate={:=}{{$\gets$}}1
+   					{<-}{{$\gets$}}1
+            {/not}{{$\neg$}}1
+            {/and}{{$\land$}}2
+            {/andThen}{{$\land_L$}}2
+            {/or}{{$\lor$}}2
+            {/orThen}{{$\lor_L$}}2
+            {/imp}{{$\Rightarrow$}}2
+            {/impThen}{{$\Rightarrow_L$}}2
+            {/conjVacio}{$\emptyset$}1
+            {/alpha}{$\alpha$}1
+            {/alfa}{$\alpha$}1
+            {->}{$\rightarrow$}2
+            {NULL}{\sc{null}}4,
+   keywords={if,then,else,while,fi,wend,true,false,var,case,of,esac,in,out,inout},
+}
+
+\lstnewenvironment{algoritmo}{}{}
+
+\lstset{
+	language=chanfle,
+	basicstyle=\small,
+	flexiblecolumns=false,
+	basewidth={0.5em,0.45em},
+	keywordstyle=\bfseries,
+	tabsize=4
+}
+
 
 \theoremstyle{definition} \newtheorem{axiom}{Axioma}
 
@@ -19,7 +52,8 @@
 % intervalo melodico
 \newcommand{\IM}[1]{\underline{#1}}
 \newcommand{\cita}{\textcolor{red}{cita}}
-\newcommand{\alert}[1]{\textcolor{red}{#1}}
+\newcommand{\alert}[1]{\footnote{\textcolor{red}{#1}}}
+%\newcommand{\alert}[1]{\textcolor{red}{#1}}
 \newcommand{\comment}[1]{\textcolor{blue}{#1}\newline}
 %\renewcommand{\comment}[1]{\ }
 \theoremstyle{definition} \newtheorem{definition}{Definici'on}
