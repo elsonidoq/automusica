@@ -45,6 +45,8 @@ class ChordHarmonicContext(Algorithm):
     def start_creation(self):
         self.chordlist= Chord.chordlist(self.context_score, 3)
         #self.chords= {}
+        if self.chordlist[0].start > 0:
+            self.chordlist.insert(0, Chord(0, self.chordlist[0].start, [Note(i) for i in xrange(12)]))
         self.chord_pos= []
 
     #def get_chord(self, chord_id):
@@ -64,6 +66,8 @@ class ChordHarmonicContext(Algorithm):
             import ipdb;ipdb.set_trace()
             raise Exception('Could not find a chord for now=%s' % input.now)
 
+        #if self.chordlist[i+1].end > 97280: import ipdb;ipdb.set_trace()
+        if input.now > 0 and chord.start != input.now: import ipdb;ipdb.set_trace()
         now_chord= chord                
         if i+1 == len(self.chordlist):
             #import ipdb;ipdb.set_trace()
