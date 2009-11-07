@@ -42,12 +42,14 @@ def main(argv):
     parser.add_option('-l', '--level', dest='level', default=3, type='int', help='if the partition algorithm is MGRID, especifies the level from which the score is going to be parted')
     parser.add_option('--n-measures', dest='n_measures', default=1, type='int', help='if the partition algorithm is MEASURE, especifies the number of measures to take as a unit')
     parser.add_option('--part-alg', dest='partition_algorithm', default='MEASURE', help='select the partition algorithm, only MEASURE and MGRID are available. Default MEASURE')
-    parser.add_option('--seed', dest='seed',help='random seed')
+    parser.add_option('--seed', dest='seed',help='random seed', type='int')
 
     parser.add_option('--output-dir', dest='output_dir', default='output-mids', help='the default output dir')
     parser.add_option('-O', '--override', dest='override', help='if the outputfile exists, overrides. Default False', default=False, action='store_true')
     parser.add_option('--pitch-offset', dest='offset', default=0, type='int')
-    parser.add_option('--disable-list-algorithms', dest='disable_list_algorithms', default=False, action='store_true')
+    parser.add_option('--disable-part-repetition', dest='enable_part_repetition', default=True, action='store_false')
+    parser.add_option('--simple-narmour-model', dest='simple_narmour_model', default=False, action='store_true')
+    parser.add_option('--global-notes-distr', dest='notes_distr_duration', default=True, action='store_false', help='uso por duracion o global? Default indexo por duracion')
     parser.add_option('-p', '--set-param', dest='params', action='append')
     parser.add_option('-s', '--save-info', dest= 'save_info', default=False, action='store_true')
 
@@ -138,10 +140,10 @@ def train3(options, args):
             versions= [fname[len(outfname)-4+1:-4] for fname in os.listdir(outpath) if fname.startswith(outfname[:-4])]
             versions= [s for s in versions if len(s) > 0]
             for i in reversed(xrange(len(versions))):
-                try:
-                    versions[i]= int(versions[i])
-                except:
+                if not versions[i].isdigit():
                     versions.pop(i)
+                else:
+                    versions[i]= int(versions[i])
             if len(versions) == 0:
                 versions= [0]
             outfname= '%s-%s.mid' % (outfname[:-4], max(versions)+1)
