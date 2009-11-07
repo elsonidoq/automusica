@@ -177,7 +177,7 @@ class NarmourHMM(HmmAlgorithm):
             try:
                 robs.next(available_states)
             except:
-                print "AS"
+                print "NO pude hacer robs.next"
                 try: robs.actual_state= choice(available_states)
                 except: import ipdb;ipdb.set_trace()
 
