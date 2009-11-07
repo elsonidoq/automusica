@@ -94,7 +94,7 @@ class Experiment(object):
             else:
                 k= '--%s' % k
             argv.append(k)
-            argv.append(str(v))
+            if not isinstance(v, bool): argv.append(str(v))
 
         argv+= self.args
         self.main(argv)
@@ -114,9 +114,18 @@ def main(argv):
         ipdb.set_trace= lambda :0
 
     for experiment_fname in args:
-        experiment= parse_experiment(experiment_fname)
-        print 'running %s' % experiment_fname
-        experiment.run()
+        try:
+            experiment= parse_experiment(experiment_fname)
+        except:
+            print "### could not parse experiment_fname", experiment_fname
+            continue
+        print '*' * 10 , 'running %s' % experiment_fname
+        try:
+            experiment.run()
+        except KeyboardInterrupt, e:
+            raise e
+        except Exception, e:
+            print "FAILED", experiment_fname, e.message, e.__class__.__name__
         #retries= 3
         #while retries > 0:            
         #    try:
