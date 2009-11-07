@@ -230,7 +230,9 @@ class ListMelody(ListAlgorithm):
             hmm.add_transition(states[-1], next, prob)
         
         self._check_sub_model(robs, robs2)
-        if start_pitch not in robs2.must_dict[phrase_length-1][states[1]]: import ipdb;ipdb.set_trace()
+        if start_pitch not in robs2.must_dict[phrase_length-1][states[1]]: 
+            import ipdb;ipdb.set_trace()
+            raise Exception('start_pitch no esta en must dict, no puedo empezar')
 
         pitches= [start_pitch]
         context_distr= dict((n.pitch, prob) for (n,prob) in input.notes_distr.iteritems())
@@ -238,10 +240,14 @@ class ListMelody(ListAlgorithm):
             # candidates lo inicializo en las que tengo que tocar antes del proximo estado
             candidates= robs2.must_dict[phrase_length-1-i][states[i+1]]
             candidates= candidates.intersection(path[i].related_notes(pitches[-1]))
-            if not candidates.issubset(xrange(input.min_pitch, input.max_pitch+1)): import ipdb;ipdb.set_trace()
+            if not candidates.issubset(xrange(input.min_pitch, input.max_pitch+1)): 
+                raise Exception('me fui del rango de notas')
+                import ipdb;ipdb.set_trace()
             #candidates= candidates.intersection(xrange(input.min_pitch, input.max_pitch+1))
 
-            if len(candidates) == 0: import ipdb;ipdb.set_trace()
+            if len(candidates) == 0: 
+                import ipdb;ipdb.set_trace()
+                raise Exception('no candidates!! no deberia ocurrir')
 
             candidates_distr= dict((p, context_distr[p]*1.0/(2**abs(p-pitches[-1])+1)) for p in candidates if context_distr.get(p) is not None)
             # XXX ver que hacer cuando el contexto no me deja tocar (paso el contexto a la definicion de Must?)
@@ -258,9 +264,13 @@ class ListMelody(ListAlgorithm):
 
         for i, (p1, p2) in enumerate(zip(pitches, pitches[1:])):
             node= path[i+1]
-            if p2 not in node.related_notes(p1): import ipdb;ipdb.set_trace()
+            if p2 not in node.related_notes(p1):
+                import ipdb;ipdb.set_trace()
+                raise Exception('solo mal construido')
 
-        if len(pitches) != phrase_length: import ipdb;ipdb.set_trace()
+        if len(pitches) != phrase_length: 
+            import ipdb;ipdb.set_trace()
+            raise Exception('menos notas de las que deberian')
         res= []
         for pitch in pitches:
             child_result= result.copy()
@@ -278,7 +288,9 @@ class ListMelody(ListAlgorithm):
 
                 d1= robs2_state_pitches-robs_state_pitches
                 d2= robs_state_pitches-robs2_state_pitches
-                if not (robs2_state_pitches <= robs_state_pitches): import ipdb;ipdb.set_trace()
+                if not (robs2_state_pitches <= robs_state_pitches): 
+                    import ipdb;ipdb.set_trace()
+                    raise Exception('el segundo modelo no es submodelo del primero')
 
 
     
