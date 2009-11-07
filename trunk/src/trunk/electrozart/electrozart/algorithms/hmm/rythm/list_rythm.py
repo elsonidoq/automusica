@@ -25,7 +25,9 @@ class ListRythm(ListAlgorithm):
 
     @needs('now_chord', 'now')
     def generate_list(self, input, result, prev_notes):
-        if not ( input.now == 0 or input.now_chord.start == input.now ) : import ipdb;ipdb.set_trace()
+        if not ( input.now == 0 or input.now_chord.start == input.now ) : 
+            import ipdb;ipdb.set_trace()
+            raise Exception('input.now no va de acuerdo con input.now_chord.start')
         # XXX ver commo hacerlo mas elegante
         new_state= input.now % self.rythm_alg.interval_size 
         if new_state not in self.rythm_alg.model.state_transition: 
@@ -54,8 +56,12 @@ class ListRythm(ListAlgorithm):
             res[0][1].duration= res[0][1].duration - (input.now - res[0][1].start)
             res[0][1].start= input.now
 
-        if res[0][1].start != input.now: import ipdb;ipdb.set_trace()
-        if res[-1][1].start + res[-1][1].duration != input.prox_chord.start: import ipdb;ipdb.set_trace()
+        if res[0][1].start != input.now: 
+            import ipdb;ipdb.set_trace()
+            raise Exception('el start de la frase no va con input.now')
+        if res[-1][1].start + res[-1][1].duration != input.prox_chord.start: 
+            raise Exception('el end de la frase no va con prox_chord.start')
+            import ipdb;ipdb.set_trace()
         res[0][0].rythm_phrase_len= len(res)
         return res
 
