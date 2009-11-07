@@ -44,8 +44,10 @@ class SupportNotesComposer(object):
             output_patch            = 33,
             patch                   = None,
             offset                  = 0,
-            disable_list_algorithms = False,
-            save_info               = False
+            enable_part_repetition  = True,
+            save_info               = False,
+            simple_narmour_model    = False,
+            notes_distr_duration    = True
 
         )
 
@@ -54,7 +56,6 @@ class SupportNotesComposer(object):
 
     def compose(self, score, **optional):
         params= self.params= bind_params(self.params, optional)
-        
         melody_instrument= None
         rythm_instrument= None
         for instrument in score.instruments:
@@ -69,39 +70,41 @@ class SupportNotesComposer(object):
         
         interval_size= measure_interval_size(score, params['n_measures']) 
         
-        #harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base2.yaml', score.divisions)
-        notes_distr= NotesDistr(score)
-        notes_distr= NotesDistrDuration(score)
+        if params['notes_distr_duration']: notes_distr= NotesDistrDuration(score)
+        else: notes_distr= NotesDistr(score)
         tonic_notes_alg= TonicHarmonicContext(notes_distr) 
 
         harmonic_context_alg= ChordHarmonicContext(score)
         harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
         rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel)
-        phrase_rythm_alg= rythm_alg
-        if not params['disable_list_algorithms']:
-            phrase_rythm_alg= ListRythm(rythm_alg)
-            phrase_rythm_alg= RythmCacheAlgorithm(ListRythm(rythm_alg), 'phrase_id')
+        #phrase_rythm_alg= rythm_alg
+        phrase_rythm_alg= ListRythm(rythm_alg)
+        if params['enable_part_repetition']:
+            phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id')
 
-        melody_alg= ContourAlgorithm()
-        phrase_melody_alg= melody_alg
-        phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id')
+        if params['simple_narmour_model']:
+            melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel)
+            phrase_melody_alg= melody_alg
+            if params['enable_part_repetition']:
+                phrase_melody_alg= ListMelody(melody_alg)
+                phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
+        else:                
+            melody_alg= ContourAlgorithm()
+            phrase_melody_alg= melody_alg
+            if params['enable_part_repetition']:
+                phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id')
 
-        #melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel)
-        #phrase_melody_alg= melody_alg
-        #if not params['disable_list_algorithms']:
-        #    phrase_melody_alg= ListMelody(melody_alg)
-        #    phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
 
         #rythm_score= score.copy()
         #rythm_score.notes_per_instrument.pop(piano)
         print "todos los intrsumentos"
         melody_alg.train(score)
         for instrument in score.instruments:
-            #if not instrument.is_drums:
-            #    melody_alg.obsSeqBuilder.builder.patch= instrument.patch
-            #    melody_alg.obsSeqBuilder.builder.channel= instrument.channel
-            #    melody_alg.train(score)
+            if not instrument.is_drums and params['simple_narmour_model']:
+                melody_alg.obsSeqBuilder.builder.patch= instrument.patch
+                melody_alg.obsSeqBuilder.builder.channel= instrument.channel
+                melody_alg.train(score)
             rythm_alg.obsSeqBuilder.builder.patch= instrument.patch
             rythm_alg.obsSeqBuilder.builder.channel= instrument.channel
             rythm_alg.train(score)
