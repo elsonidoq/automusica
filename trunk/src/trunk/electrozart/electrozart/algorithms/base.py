@@ -1,4 +1,5 @@
 from electrozart import PlayedNote, Silence
+from random import Random
 from functools import wraps
 from utils.params import Parametrizable
 
@@ -84,6 +85,7 @@ class Algorithm(Parametrizable):
     def __init__(self, *args, **kwargs):
         super(Algorithm, self).__init__(*args, **kwargs)
         self.ec= ExecutionContext()
+        self.ec.random= Random(kwargs.get('seed'))
         
     def start_creation(self): 
         self.ec= ExecutionContext()
@@ -156,9 +158,11 @@ class ListAlgorithm(Algorithm):
     def start_creation(self):
         super(ListAlgorithm, self).start_creation()
         self.ec.actual_list= []
+        self.ec.ncalls= 0
 
     def next(self, input, result, prev_notes):
         if len(self.ec.actual_list) == 0:
+            print 'generate list', input.now
             self.ec.actual_list= self.generate_list(input, result, prev_notes)
 
         actual_input, actual_result= self.ec.actual_list.pop(0)
@@ -205,6 +209,7 @@ class CacheAlgorithm(ListAlgorithm):
                 answer= self.generate_list_orig(input, result, prev_notes)
                 self.cache[cache_key]= answer
             else:
+                print "CACHE HIT, key:", cache_key
                 old_answer= self.cache[cache_key]
                 new_answer= []
                 for old_input, old_result in old_answer:
