@@ -30,7 +30,7 @@ class Chord(Figure):
         return "Chord(%s)" % map(lambda n:n.get_canonical_note(), self.notes)
     def __eq__(self, other): 
         if not isinstance(other, Chord): return False
-        return set(self.canon_notes) == set(other.canon_notes)
+        return set(self.canon_notes) == set(other.canon_notes) and self.duration==other.duration
 
     def __hash__(self): return hash(tuple(self.notes))
     
