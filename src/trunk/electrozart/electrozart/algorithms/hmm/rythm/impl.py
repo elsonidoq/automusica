@@ -37,7 +37,8 @@ class RythmHMM(HmmAlgorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(RythmHMM, cls).__new__(cls, *args, **kwargs)
         instance.params.update(dict(robs_alpha     = 0.5, 
-                                    enable_dp_robs = True))
+                                    enable_dp_robs = True,
+                                    global_robs    = False))
         return instance
         
         
@@ -77,16 +78,18 @@ class RythmHMM(HmmAlgorithm):
         self.ec.actual_state= 0
 
     def get_current_robs(self, robsid):
-        #robsid=0
-        robs= self.ec.robses.get(robsid)
-        if robs is None:
-            if self.params['enable_dp_robs']:
-                robs= DPRandomObservation(self.ec.hmm, self.params['robs_alpha'])
-                for i in xrange(1000): robs.next()
-            else:
-                #import ipdb;ipdb.set_trace()
-                robs= RandomObservation(self.ec.hmm)
-            self.ec.robses[robsid]= robs
+        if self.params['global_robs']:
+            robs= RandomObservation(self.ec.hmm)
+        else:
+            robs= self.ec.robses.get(robsid)
+            if robs is None:
+                if self.params['enable_dp_robs']:
+                    robs= DPRandomObservation(self.ec.hmm, self.params['robs_alpha'])
+                    for i in xrange(1000): robs.next()
+                else:
+                    #import ipdb;ipdb.set_trace()
+                    robs= RandomObservation(self.ec.hmm)
+                self.ec.robses[robsid]= robs
 
         robs.actual_state= self.ec.actual_state                
         return robs
