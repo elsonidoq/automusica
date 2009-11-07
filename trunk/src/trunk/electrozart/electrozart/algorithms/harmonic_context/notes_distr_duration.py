@@ -70,8 +70,12 @@ class NotesDistrDuration(NotesDistr):
         pitches_distr.sort()
         #pitches_distr= convex_combination(pitches_distr, self.score_profile, self.params['score_profile_combination_factor'])
         # asserts
-        if abs(sum(i[1] for i in pitches_distr) -1) > 0.0001:import ipdb;ipdb.set_trace()
-        if len(pitches_distr) == 0: import ipdb;ipdb.set_trace()            
+        if abs(sum(i[1] for i in pitches_distr) -1) > 0.0001:
+            import ipdb;ipdb.set_trace()
+            raise Exception('pitches_distr no suma 1')
+        if len(pitches_distr) == 0: 
+            import ipdb;ipdb.set_trace()            
+            raise Exception('Hay 0 pitches en pitches_distr')
 
         return pitches_distr
 
@@ -84,10 +88,15 @@ class NotesDistrDuration(NotesDistr):
         pitches_distr= dict(self.pitches_distr(duration, now_notes))
         return dict((Note(i), pitches_distr[Note(i%12)]/pitches_repetition[i%12]) for i in xrange(min_pitch, max_pitch+1))
 
-    @needs('now_chord', 'min_pitch', 'max_pitch')
-    @child_input('notes_distr')
+    @needs('now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
+    @child_input('notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr')
     def next(self, input, result, prev_notes):
         input.notes_distr= self.notes_distr(input.now_chord.notes, input.min_pitch, input.max_pitch, result.duration)
+        input.prox_notes_distr= self.notes_distr(input.prox_chord.notes, input.min_pitch, input.max_pitch, result.duration)
+
+        input.pitches_distr= self.pitches_distr(result.duration, input.now_chord.notes)
+        input.prox_pitches_distr= self.pitches_distr(result.duration, input.prox_chord.notes)
+        
         
 
 def calc_duration_profile(score, profile, prior_strongness):
