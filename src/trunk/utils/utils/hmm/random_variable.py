@@ -43,12 +43,13 @@ class RandomPicker(RandomVariable):
     Dado un monton de valores con su probabilidad asociada, crea una variable
     aleatoria para elegir uno al azar
     """
-    def __init__(self, name="", values={}):
+    def __init__(self, name="", values={}, random=None):
         """
         values se copia
         """
         RandomVariable.__init__(self, name)
-        self.values= deepcopy(values)
+        self.values= dict(values.items())
+        self.random= random
 
     def add_value(self, value, prob):
         self.values[value]= prob
@@ -59,7 +60,11 @@ class RandomPicker(RandomVariable):
             for k, v in self.values.iteritems():
                 self.values[k]= v/s
 
-        rnd= random()
+        if self.random is not None:
+            rnd= self.random.random()
+        else:
+            import ipdb;ipdb.set_trace()
+            rnd= random()
         orig= rnd
 
         if len(self.values) == 0: raise EmptyValuesException()
