@@ -4,7 +4,8 @@ from electrozart.algorithms import needs, produces
 from impl import RythmHMM
 
 class ListRythm(ListAlgorithm):
-    def __init__(self, rythm_alg):
+    def __init__(self, rythm_alg, *args, **kwargs):
+        super(ListRythm, self).__init__(*args, **kwargs)
         self.rythm_alg= rythm_alg
         self.params['rythm_alg(%s)' % rythm_alg.__class__.__name__]= rythm_alg.params
 

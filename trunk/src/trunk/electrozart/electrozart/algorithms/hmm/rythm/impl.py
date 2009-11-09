@@ -65,7 +65,7 @@ class RythmHMM(HmmAlgorithm):
             s= sum(initial_probability.itervalues())
             for k, v in initial_probability.iteritems():
                 initial_probability[k]= v/s
-        hmm= self.learner.get_trainned_model(initial_probability, lambda: RythmModel(interval_size=self.interval_size))
+        hmm= self.learner.get_trainned_model(initial_probability, lambda: RythmModel(interval_size=self.interval_size), random=self.random)
         hmm.make_walkable()
         self.model= hmm
         return hmm
@@ -79,16 +79,16 @@ class RythmHMM(HmmAlgorithm):
 
     def get_current_robs(self, robsid):
         if self.params['global_robs']:
-            robs= RandomObservation(self.ec.hmm)
+            robs= RandomObservation(self.ec.hmm, random=self.random)
         else:
             robs= self.ec.robses.get(robsid)
             if robs is None:
                 if self.params['enable_dp_robs']:
-                    robs= DPRandomObservation(self.ec.hmm, self.params['robs_alpha'])
+                    robs= DPRandomObservation(self.ec.hmm, self.params['robs_alpha'], random=self.random)
                     for i in xrange(1000): robs.next()
                 else:
                     #import ipdb;ipdb.set_trace()
-                    robs= RandomObservation(self.ec.hmm)
+                    robs= RandomObservation(self.ec.hmm, random=self.random)
                 self.ec.robses[robsid]= robs
 
         robs.actual_state= self.ec.actual_state                
