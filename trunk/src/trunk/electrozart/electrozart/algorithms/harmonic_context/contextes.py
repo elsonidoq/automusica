@@ -46,7 +46,8 @@ class ChordHarmonicContext(Algorithm):
         self.chordlist= Chord.chordlist(self.context_score, 3)
         #self.chords= {}
         if self.chordlist[0].start > 0:
-            self.chordlist.insert(0, Chord(0, self.chordlist[0].start, [Note(i) for i in xrange(12)]))
+            #self.chordlist.insert(0, Chord(0, self.chordlist[0].start, [Note(i) for i in xrange(12)]))
+            self.chordlist.insert(0, Chord(0, self.chordlist[0].start, self.chordlist[0].canon_notes))
         self.chord_pos= []
 
     #def get_chord(self, chord_id):
