@@ -101,6 +101,18 @@ class Experiment(object):
 
 from electrozart.algorithms.hmm.melody.phrase_melody import ImpossiblePhraseException
 from optparse import OptionParser 
+def get_experiment_runs(experiment_folder):
+    yamls= []
+    for child in os.listdir(experiment_folder):
+        child= os.path.join(experiment_folder, child)
+        if os.path.isdir(child) and child.endswith('_runs'):
+            for fname in os.listdir(child):
+                if fname.endswith('.yaml'):
+                    yamls.append(os.path.join(child, fname))
+
+    yamls.sort(key=os.path.basename)
+    return yamls
+
 def main(argv):
     parser= OptionParser('%prog experiment1 experiment2 ...')
     parser.add_option('--disable-pdb', dest='disable_pdb', action='store_true', default=False)
@@ -112,29 +124,30 @@ def main(argv):
     if options.disable_pdb:
         import ipdb
         ipdb.set_trace= lambda :0
-
-    for experiment_fname in args:
-        try:
-            experiment= parse_experiment(experiment_fname)
-        except:
-            print "### could not parse experiment_fname", experiment_fname
-            continue
-        print '*' * 10 , 'running %s' % experiment_fname
-        try:
-            experiment.run()
-        except KeyboardInterrupt, e:
-            raise e
-        except Exception, e:
-            print "FAILED", experiment_fname, e.message, e.__class__.__name__
-        #retries= 3
-        #while retries > 0:            
-        #    try:
-        #        experiment.run()
-        #        break
-        #    except ImpossiblePhraseException, e:
-        #        retries-=1
-        #    except Exception, e:
-        #        raise e
+    for experiment_folder in args:
+        experiment_runs= get_experiment_runs(experiment_folder)
+        for experiment_run in experiment_runs:
+            try:
+                experiment= parse_experiment(experiment_run)
+            except:
+                print "### could not parse experiment_run", experiment_run
+                continue
+            print '*' * 10 , 'running %s' % experiment_run
+            try:
+                experiment.run()
+            except KeyboardInterrupt, e:
+                raise e
+            except Exception, e:
+                print "FAILED", experiment_run, e.message, e.__class__.__name__
+            #retries= 3
+            #while retries > 0:            
+            #    try:
+            #        experiment.run()
+            #        break
+            #    except ImpossiblePhraseException, e:
+            #        retries-=1
+            #    except Exception, e:
+            #        raise e
 
 
 if __name__ == '__main__':
