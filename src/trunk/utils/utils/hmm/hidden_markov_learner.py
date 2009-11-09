@@ -79,11 +79,12 @@ class HiddenMarkovLearner(object):
             ntimes= var_obs[val]
             var_obs[val]= ntimes + 1
 
-    def get_trainned_model(self, initial_probability, hmm_class=None):
+    def get_trainned_model(self, initial_probability, hmm_class=None, random=None):
         """
         initial_probability es {state:prob}
         hmm_class es subclase de HiddenMarkovLearner  
         """
+        if random is None: import ipdb;ipdb.set_trace()
 
         if hmm_class is not None:
             res= hmm_class()
@@ -115,7 +116,7 @@ class HiddenMarkovLearner(object):
                 norm= lambda (v,t):(v,float(t)/total_observations)
                 observations= dict(map(norm, observations.iteritems()))
 
-                picker= RandomPicker(variable.name, observations)
+                picker= RandomPicker(name=variable.name, values=observations, random=random)
                 res.add_observator(state,picker)
 
         return res
