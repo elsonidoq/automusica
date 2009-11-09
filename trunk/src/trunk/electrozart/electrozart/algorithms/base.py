@@ -85,7 +85,7 @@ class Algorithm(Parametrizable):
     def __init__(self, *args, **kwargs):
         super(Algorithm, self).__init__(*args, **kwargs)
         self.ec= ExecutionContext()
-        self.ec.random= Random(kwargs.get('seed'))
+        self.random= Random(kwargs.get('seed'))
         
     def start_creation(self): 
         self.ec= ExecutionContext()
