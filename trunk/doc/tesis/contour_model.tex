@@ -77,29 +77,30 @@ grandes a aquellos que sean mayores o iguales que 7 semitonos, dejando al interv
  \item Cierre: se cumple cuando hay un cambio de direcci'on, un movimiento hacia un intervalo m'as peque~no, o ambas situaciones a la vez (\alert{reescribir})
 \end{enumerate}
 
-\subsection{El modelo}
-Como es de esperarse, no existe una 'unica forma de construir un modelo que refleje este comportamiento. A continuaci'on se proponen dos modelos. El primero 
-parte de una simplificaci'on a algunos principios de la teor'ia de Narmour. Estas simplificaciones permiten construir una cadena de Markov tradicional para el contorno 
+\subsection{Simplificaci\'ones a I-R}
+A continuaci'on se proponen dos modelos. Ambos hacen ciertas simplificaciones sobre la teor'ia de Narmour, aunque uno en mayor medida que el otro. Se 
+podr'ia decir que el primero es una versi'on Naive del seguno. El primero parte de una simplificaci'on a algunos principios de la teor'ia de Narmour. Estas simplificaciones permiten construir una cadena de Markov tradicional para el contorno 
 mel'odico. Se presenta este modelo como punto de comparaci'on con el segundo que, si bien sigue simplificando la teor'ia de Narmour, lo hace en menor medida. 
 
-\subsection{Simplificaci\'ones a I-R}
 Dada un pieza musical, en este caso es de inter'es construir un modelo y entrenarlo con el contorno mel'odico del tema en cuesti'on. De esta forma se puede proyectar
 las alturas de las notas del tema, y luego construir la sucesi'on de intervalos mel'odicos tomando la diferencia entre las sucesivas alturas. Por ahora as'umase que 
 en el tema de entrenamiento no hay notas sonando en simult'aneo, puesto que en ese caso, no es trivial construir una sucesi'on de intervalos mel'odicos que represente
 lo que esta ocurriendo. Se tratar'a con esa cuesti'on m'as adelante.
 
-La primera simplificaci'on a la teor'ia de Narmour, compartida por los dos modelos, es no analizar que intervalos las condiciones que hacen que un intervalo realizado
+La primera simplificaci'on a la teor'ia de Narmour, compartida por los dos modelos, es no analizar las condiciones que hacen que un intervalo realizado
 no sea implicativo, es decir, se asume que todos los intervalos son implicativos. Se considera que la desici'on de donde colocar intervalos de cierre es candidata 
 a estar ubicada dentro a otro nivel en la jerarqu'ia de modelos para construir lineas mel'odicas, puesto que en general los cierres estan asociados a la estructura
 del tema, de esta forma, para mantener limitado el alcance de esta tesis, se deja para trabajo a futuro trabajar con puntos de cierre.
 
-Por otro lado, teniendo en mente el objetivo de construir de una cadena de Markov y en particular elegir el espacio de estados, se realiz'o una modificaci'on al enunciado 
-del principio de diferencia interv'alica: En lugar de codificiar que intervalos peque~nos impliquen intervalos de tama~no \texttt{similar}, se codific'o que 
+Uno de los modelos es una cadena de Markov, y se realiz'o una modificaci'on al enunciado del principio de diferencia interv'alica para disminuir la cantidad
+de estados Markov. En lugar de codificiar que intervalos peque~nos impliquen intervalos de tama~no \texttt{similar}, se codific'o que 
 intervalos \texttt{peque~nos} implican intervalos \texttt{peque~nos}. Para los intervalos grandes se hizo lo mismo: intervalos \texttt{grandes} implican 
 intervalos \texttt{grandes}. Esta simplificaci'on hace que a la hora de generar melod'ias, no sea necesario conocer el tama~no del intervalo recien generado, y baste 
 con saber si 'este fue grande o peque~no.
 
+\alert{falta argumentar que uso solo dos principios, o tres}
 \subsection{La cadena de Narmour}
+\label{sec:markov_narmour}
 Con las simplificaciones propuestas a continuaci'on se detalla el modelo de Markov para la teor'ia de Implicaci'on-Realizaci'on.
 Dada una sucesi'on de alturas $a_1, \cdots, a_n$ se construye la sucesi'on de intervalos mel'odicos $m_1, \cdots, m_{n-1}$ donde $m_i = a_{i+1}-a_i$. 
 
@@ -109,6 +110,53 @@ Se define el predicado $T(m)$ que toma 3 valores: grande, peque~no o mediano uti
 De esta forma, los estados de la cadena de Markov estar'an dados por vectores $<T, D>$ para los distintos valores de estos predicados. Notar que esta representaci'on
 resulta en un modelo muy compacto con $6$ estados en total, lo cual permite entrenar con temas cortos.
 
-De esta forma, la sem'antica de realizar una caminata en este modelo impone restricciones sobre el tipo de intervalo a tocar, dado que se sabe el tipo de intervalo que se 
-toc'o previamente.
+La sem'antica de realizar una caminata en este modelo impone restricciones sobre el tipo de intervalo a tocar, dado que se sabe el tipo de intervalo que se 
+toc'o previamente, por lo tanto, para generar una linea mel'odica es necesario elegir una nota del conjunto de candidatas. Esta elecci'on se har'a utilizando el contexto
+arm'onico.
 
+En la figura \ref{fig:markov_narmour} se exhibe el modelo entrenado para un fragmento de un trio Mozart (\alert{conseguir los nombres posta de los temas}). 
+La etiqueta de los estados es una codificaci'on de los dos principios utilizados refiriendo al tama~no del intervalo: chico, mediano para el tritono y grande. Se 
+le agrega el signo ``-'' cuando el intervalo es descendente.
+
+
+\begin{imagen}
+    \file{images/narmour_mzt_trio.png}
+    \labelname{fig:markov_narmour}
+    \desc{Cadena de Markov del modelo de Narmour}
+    \width{12cm}
+\end{imagen}
+
+\subsection{Un modelo un poco mas general}
+Si se plantea el problema en t'erminos un poco m'as generales, lo que se est'a buscando es un modelo que permita estimar la probabilidad de una nota, 
+dadas las dos anteriores, es decir $P(n_3|n_1, n_2)$. Una forma de llevar a cabo esta estimaci'on es considerar una codificaci'on de los principios del modelo de IR.
+Esta codificaci'on corresponde a considerar una funci'on por cada principio que distinga seg'un el principio que corresponda. Se han realizado una gran cantidad
+de codificaciones en la literatura, a saber por el autor, por lo menos Paiement (\cita), Schellember(\cita), sin embargo, no se desea poner el foco en cual es 
+la codificaci'on m'as adecuada, sino en dar un marco, en donde dada una cierta codificaci'on, se puedan generar l'ineas mel'odicas con esa codificaci'on.
+
+De esta forma, as'umase un conjunto de caracter'isticas $F_1, \cdots, F_k$, que en principio codificar'ian los principos de Narmour(es decir, $k$ ser'ia igual a $5$), 
+sin embargo, no est'an limitadas a ello. Tomando estas caracter'isticas, se puede definir la probabilidad de una nota de la siguiente forma
+
+$$P(n_3 | n_1, n_2) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3))$$\alert{como le pongo numerito a esto?}
+
+Definido asi, este modelo ser'a por dem'as ralo, puesto que los vectores de caracter'isticas, si bien no son tantos, son los suficientes como para no ser observados
+por completo en una pieza musical. Una posibilidad para resolver este problema es utilizar una distribuci'on a priori que explique como se distribuyen en general
+los vectores de caracter'isticas. Esta distribuci'on a priori podr'ia o bien calcularse para un conjunto grande de piezas musicales, o bien utilizar los resultados 
+un experimento como los de Krumhansl(\cita paper Favio) o Schellemberg(\cita testing Narmour). \alert{Que hacemos con esto? lo hacemos o lo pateamos?} 
+Otra posibilidad es factorizar la distribuci'on conjunta, haciendo asunciones de independencia. Una asunci'on posible utilizada ampliamente en el campo 
+de procesamiento de lenguaje natural es asumir que todas las caracter'isticas son independientes entre s'i. Esta asunci'on es conocida como Naive Bayes, y
+si bien no es cierta en la mayor'ia de los problemas, se han obtenido resultados considerablemente buenos utilizandola, puesto que permite simplificar
+los modelos y los algoritmos de entrenamiento. En este caso, la expresi'on \red{de arriba} se reescribir'a como
+
+$$P(n_3 | n_1, n_2) = \prod_{i=1}^k P(F_i(n_1, n_2, n_3))$$
+
+Otra posibilidad es utilizar an'alisis de correlaci'on empirica entre las caracter'isticas. En Schellemberg (\cita testing narmour), se realizaron una serie
+de experimentos para poner a prueba el modelo de IR. Uno de los experimentos constaba en exponer a sujetos a una melod'ia que finalizaba por la mitad, y los sujetos
+ten'ian que decir cual ser'ia la continuaci'on que ellos esperar'ian. Luego, uno de los an'alisis que se realiz'o, fue la correlaci'on entre los principios del modelo
+aplicados a las respuestas de los sujetos, y se encontr'o que algunos de ellos estaban correlacionados. Utilizando este conocimiento se podr'ia efectuar
+una factorizaci'on que est'e en el medio entre la distribuci'on conjunta y la Naive.
+
+Una vez elegida la codificaci'on y la factorizaci'on de la distribuci'on a utilizar, se puede incorporar el contexto arm'onico como una caracter'istica m'as 
+obteniendo una distribuci'on de probabilidades para las continuaciones de una melod'ia y asumiendo independencia entre el contexto arm'onico y el contorno mel'odico
+se puede escribir la probabilidad de la siguiente forma:
+
+$$P(n_3 | n_1, n_2) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3)) P(n_3|\theta)$$
