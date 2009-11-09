@@ -1,4 +1,3 @@
-from random import choice, randint
 from math import log, floor
 from collections import defaultdict
 
@@ -24,8 +23,8 @@ class ImpossiblePhraseException(Exception): pass
 
 # XXX era RandomObservation
 class NarmourRandomObservation(RandomObservation):
-    def __init__(self, n0, nf, length, hmm, min_pitch, max_pitch, start=None):
-        super(NarmourRandomObservation, self).__init__(hmm)#, 5)
+    def __init__(self, n0, nf, length, hmm, min_pitch, max_pitch, start=None, *args, **kwargs):
+        super(NarmourRandomObservation, self).__init__(hmm, *args, **kwargs)#, 5)
 
         #for i in xrange(1000):
         #    super(NarmourRandomObservation, self).next()
@@ -63,7 +62,7 @@ class NarmourRandomObservation(RandomObservation):
         for state, prob in nexts.iteritems():
             nexts[state]= prob/s
         
-        next= RandomPicker(values=nexts).get_value()
+        next= RandomPicker(values=nexts, random=self.random).get_value()
         self.actual_state= next
 
         now_pitches= set()
@@ -133,13 +132,13 @@ class ListMelody(ListAlgorithm):
         chord_notes_in_range= [Note(p) for p in xrange(min_pitch, max_pitch+1) if p%12 in chord_pitches]
 
         if self.ec.last_support_note is None:
-            res= choice(chord_notes_in_range).pitch
+            res= self.random.choice(chord_notes_in_range).pitch
             #res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res_pitch])
         else:
             if self.params['support_note_strategy'] == 'closest':
                 # la mas cerca
                 res= min(chord_notes_in_range, key=lambda n:abs(n.pitch-self.ec.last_support_note)).pitch
-                res= choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res])
+                res= self.random.choice([p for p in xrange(min_pitch, max_pitch+1) if p%12 == res])
                 #print res
             elif self.params['support_note_strategy'] == 'random_w_cache':
                 ##RANDOM con cache
@@ -147,14 +146,14 @@ class ListMelody(ListAlgorithm):
                     res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
                 else:
                     notes= sorted(chord_notes_in_range, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
-                    exp_index= randint(1, 2**len(notes)-1)
+                    exp_index= self.random.randint(1, 2**len(notes)-1)
                     index= int(floor(log(exp_index, 2)))
                     res= notes[index].pitch
                 self.ec.support_note_cache[(chord, self.ec.last_support_note)]= res
             elif self.params['support_note_strategy'] == 'random_wo_cache':                    
                 # RANDOM sin cache
                 notes= sorted(chord_notes_in_range, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
-                r= randint(1, 2**len(notes)-1)
+                r= self.random.randint(1, 2**len(notes)-1)
                 res= notes[int(floor(log(r, 2)))].pitch
             else:
                 raise Exception('Wrong support_note_strategy value %s' % self.params['support_note_strategy'])
@@ -196,7 +195,8 @@ class ListMelody(ListAlgorithm):
                                        self.melody_alg.model, 
                                        min_pitch= input.min_pitch,
                                        max_pitch= input.max_pitch,
-                                       start=self.ec.last_state)
+                                       start=self.ec.last_state,
+                                       random=self.random)
 
         path= [robs.actual_state]
         #if self.ncalls == 15: import ipdb;ipdb.set_trace()
@@ -222,7 +222,8 @@ class ListMelody(ListAlgorithm):
                                         phrase_length, 
                                         hmm, 
                                         min_pitch=input.min_pitch,
-                                        max_pitch=input.max_pitch)
+                                        max_pitch=input.max_pitch,
+                                        random=self.random)
 
         for next, prob in self.melody_alg.model.nexts(path[-1]).iteritems():
             next= PathNarmourInterval(next, len(states))
@@ -256,7 +257,7 @@ class ListMelody(ListAlgorithm):
                 print "CONTEXTO NO ME DEJO"
                 candidates_distr= dict((p,1.0/(1+2**abs(p-pitches[-1]))) for p in candidates)
 
-            new_pitch= RandomPicker(values=candidates_distr).get_value(normalize=True)
+            new_pitch= RandomPicker(values=candidates_distr, random=self.random).get_value(normalize=True)
             #if not (new_pitch >= input.min_pitch and new_pitch <= input.max_pitch): import ipdb;ipdb.set_trace()
             pitches.append(new_pitch)
 
