@@ -1,6 +1,5 @@
 from itertools import groupby
 from collections import defaultdict
-from random import choice
 
 from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, ConstraintRandomObservation
 from utils.hmm.random_variable import RandomPicker, ConstantRandomVariable
@@ -109,7 +108,7 @@ class ConstraintDPRandomObservation(DPRandomObservation):
         for state, prob in nexts.iteritems():
             distr[state]= alpha/(alpha+n)*prob + n/(alpha+n)*state_counters[state]
 
-        rnd_picker= RandomPicker("",distr)
+        rnd_picker= RandomPicker(values=distr, random=self.random)
         self.actual_state= rnd_picker.get_value()
         state_counters[self.actual_state]+=1
 
@@ -135,7 +134,7 @@ class NarmourHMM(HmmAlgorithm):
 
     def create_model(self):
         initial_probability= dict( ((s,1.0/len(self.hidden_states)) for s in self.hidden_states) )
-        hmm= self.learner.get_trainned_model(initial_probability)
+        hmm= self.learner.get_trainned_model(initial_probability, random=self.random)
         #import ipdb;ipdb.set_trace()
 
         # XXX saco los intervalos ultragrandes
@@ -149,7 +148,7 @@ class NarmourHMM(HmmAlgorithm):
     def start_creation(self):
         self.ec= ExecutionContext()
         self.ec.hmm= self.create_model()
-        self.ec.robs= ConstraintRandomObservation(self.ec.hmm)
+        self.ec.robs= ConstraintRandomObservation(self.ec.hmm, random=self.random)
         self.ec.last_pitch= None
         self.ec.last_note= None
 
@@ -178,7 +177,7 @@ class NarmourHMM(HmmAlgorithm):
                 robs.next(available_states)
             except:
                 print "NO pude hacer robs.next"
-                try: robs.actual_state= choice(available_states)
+                try: robs.actual_state= self.random.choice(available_states)
                 except: import ipdb;ipdb.set_trace()
 
             available_intervals=[ni.interval for ni in available_states if ni == robs.actual_state]
@@ -203,7 +202,7 @@ class NarmourHMM(HmmAlgorithm):
             result.pitch= -1
             return
 
-        actual_note= RandomPicker(values=available_notes).get_value()
+        actual_note= RandomPicker(values=available_notes, random=self.random).get_value()
 
         self.ec.last_note= actual_note
         self.ec.last_pitch= actual_note.get_canonical_note()
