@@ -8,6 +8,7 @@ from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgo
 
 from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
 from electrozart.algorithms.hmm.melody.complete_narmour_model import ContourAlgorithm
+#from electrozart.algorithms.hmm.melody.complete_narmour_model_wo_must import ContourAlgorithm
 
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
 
@@ -70,30 +71,32 @@ class SupportNotesComposer(object):
         
         interval_size= measure_interval_size(score, params['n_measures']) 
         
-        if params['notes_distr_duration']: notes_distr= NotesDistrDuration(score)
-        else: notes_distr= NotesDistr(score)
+        notes_distr= NotesDistr(score)
+        #if params['notes_distr_duration']: notes_distr= NotesDistrDuration(score)
+        #else: notes_distr= NotesDistr(score)
         tonic_notes_alg= TonicHarmonicContext(notes_distr) 
 
         harmonic_context_alg= ChordHarmonicContext(score)
-        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
+        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, seed=params['seed'])
 
-        rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel)
+        rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel, seed=params['seed'])
         #phrase_rythm_alg= rythm_alg
-        phrase_rythm_alg= ListRythm(rythm_alg)
+        phrase_rythm_alg= ListRythm(rythm_alg, seed=params['seed'])
         if params['enable_part_repetition']:
-            phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id')
+            phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id', seed=params['seed'])
 
         if params['simple_narmour_model']:
-            melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel)
+            melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel, seed=params['seed'])
             phrase_melody_alg= melody_alg
             if params['enable_part_repetition']:
-                phrase_melody_alg= ListMelody(melody_alg)
-                phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id')
+                phrase_melody_alg= ListMelody(melody_alg, seed=params['seed'])
+                phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id', seed=params['seed'])
         else:                
-            melody_alg= ContourAlgorithm()
+            melody_alg= ContourAlgorithm(seed=params['seed'])
             phrase_melody_alg= melody_alg
+            #import ipdb;ipdb.set_trace()
             if params['enable_part_repetition']:
-                phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id')
+                phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id', seed=params['seed'])
 
 
         #rythm_score= score.copy()
