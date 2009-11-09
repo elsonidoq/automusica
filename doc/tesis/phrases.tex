@@ -1,0 +1,154 @@
+\section{Un modeo parcial para frases}
+Los modelos propuestos hasta el momento est'an focalizados en interacci'ones nota a nota. Sin embargo es bien sabido que la m'usica
+tiene una estructura jer'arquica. En esta secci'on se trabajar'a un poco con un elemento de 'indole jer'arquico: la frase. 
+
+Antes de intentar modelar una frase es importante tratar de entender de que se trata este objeto a modelar. El fraseo es una
+noci'on complicada de definir, y es por esto que no existe una 'unica definici'on. William Rothstein en su libro Phrase Rhythm 
+in Tonal Music, describe las dos mejores, seg'un su criterio, definiciones de frases. Comienza citando al compositor contemporaneo
+Roger Sessions: 
+
+\begin{quote} 
+[\ldots] What, for instance, is a so-called `musical phrase` if not the portion of music that must be performed, so to speak, 
+without letting go, or figuratively, in a single breath?. [\ldots] The phrase is a constant movement towards a goal - the cadence.
+\end{quote}
+
+Si bien esta definici'on lejos est'a de permitir construir un modelo generativo para frases, hay dos nociones que son interesantes. 
+La primer noci'on es la del respiro: Una frase no puede ser arbitrariamente larga, tampoco puede ser arbitrariamente corta. La 
+segunda, es que la frase tiene un \emph{goal}, y este \emph{goal} es la cadencia\alert{como defino cadencia?}. 
+
+Luego Rothstein contin'ua citando la definici'on de Peter Westergaard quien distingue dos conjuntos de alturas, y define
+a la frase como un movimiento entre estos dos conjuntos de forma tal que se cumplan las siguientes tres propiedades:
+\begin{enumerate}
+ \item Uno espera el segundo conjunto de alturas
+ \item Uno tiene alguna noci'on de cuando este segundo conjunto ocurrir'a
+ \item Una vez que el segundo conjunto de alturas ocurri'o, uno sabe que la frase lleg'o donde quer'ia ir
+\end{enumerate}
+
+
+Por 'ultimo, Ferd Lerdahl en su libro A Tonal Pitch Space describe a una frase como un camino por el espacio que define, en donde 
+los extremos son estables y en el medio no necesariamente es estable. \red{buscar la definicion}
+
+Una caracter'istica com'un de estas tres definiciones es la meta. En la primer definici'on, esta meta esta dada por la cadencia, 
+en la segunda, esta dada por el segundo conjunto de notas, y en la tercera esta dada por el final del camino, que es estable. 
+En lo que sigue se propone un modelo que para tratar de capturar parcialmente esta nocion de frase.
+
+\subsection{Las notas de apoyo}
+As'umase por un momento que se puede detectar cual es la progresi'on arm'onica de una pieza musical. Esto es necesario hacerlo de todas 
+formas para poder definir el contexto arm'onico como se defini'o en la secci'on \ref{sec:harmonic_context}. Siguiendo las definiciones
+de frase mel'odica vistas en la secci'on anterior, parece ser que la noci'on de meta es una noci'on importante, y que esta meta
+est'a relacionada con la armon'ia de la pieza en cuesti'on. 
+
+Tomando la definici'on de Westergaard, para poder hablar de frase, entonces es necesario primero saber cuales son los dos conjuntos de 
+alturas entre los cuales la frase va a desplazarse. La forma m'as sencilla es pensar estos dos conjuntos como dos acordes sucesivos
+y que la melod'ia que transcurre en un acorde en realidad est'a apuntanto hacia el acorde siguiente. Por supuesto
+esta es una simplificaci'on, puesto que de la misma forma que existe una jerarqu'ia a nivel notas, existe tambi'en una jerarqu'ia
+en la progresi'on arm'onica: Ciertos acordes cumplen un rol estructurante mientras que otros cumplen un rol decorativo. Tambi'en
+existen acordes que si bien no son iguales, en ciertos contextos se los puede utilizar como \emph{substitutos}. 
+
+Esta elecci'on de la frase como uni'on entre dos acordes sucesivos tampoco tiene encuenta de forma directa la restricci'on 
+impl'icita que impone la definici'on de Sessions, sin embargo es de esperarse que la duraci'on de los acordes de una pieza musical
+no sea excesivamente larga ni corta. 
+
+De esta forma, se propone como modelo, tomar, para cada acorde, una \emph{nota de apoyo}. Esta nota de apoyo ser'a la meta de 
+la frase. No es trivial llevar a la pr'actica un modelo de este tipo. En el caso de la cadena de Narmour es m'as claro. Sup'ongase
+que se entren'o un modelo como el de la figura \ref{fig:markov_narmour}, y se desea componer una frase de 4 notas. Sup'ongase
+adem'as que en este momento el proceso generativo se encuentra en el estado \texttt{<ch>}, se acaba de tocar la nota $C5$\alert{definir arriba notacion de NotaOctava} y la nota de apoyo es $D5$. Entonces se raliza una caminata al azar sobre esta cadena de Markov pasando 
+por los estados \texttt{<ch->}, \texttt{<ch->}, \texttt{<ch->}, \texttt{<ch->}. En este escenario, ser'ia imposible tocar la nota
+$D5$ respetando el modelo, puesto que $D5$ es dos semitonos mas aguda que $C5$ y segun el modelo de Markov, se acaban de tocar 4 
+intervalos chicos descendentes. 
+
+Este ejemplo motiva la construcci'on de un \emph{submodelo} que de una garant'ia: No importa cual es el camino que se elija dentro
+del \emph{submodelo}, debe ser posible tocar $D5$ al final del camino. A continuaci'on se muestra como construir este modelo para
+la cadena de Markov, y luego se generaliza para el modelo dado en la secci'on \ref{sec:distr_narmour}.
+
+
+\subsection{Construcci\'on del submodelo}
+A continuaci'on se definir'a formalmente el problema, y luego se dar'a un algoritmo para resolverlo.
+\subsubsection{Definici'on formal del problema}
+Se cuenta con un modelo que asigna probabilidades a notas seg'un la historia de las 'ultimas dos notas, $P(n_3 | n_1, n_2)$. Si bien se puede generalizar a $k$ notas,
+la construcci'on quedar'ia menos clara, y el hecho es que se utilizar'a con solo 2 notas. Sup'ongase adem'as que se encuentra en un contexto formado por las notas 
+$n_1, n_2$, y se desea generar una frase mel'odica de $d$ notas, de forma tal que se cumpla una cierta propiedad $M$ (middle) sobre la probabilidad de tocar las notas
+del medio de la frase, y cierta probabilidad $S$ (support) sobre la nota de apoyo de la siguiente frase.
+
+Como no todas las melod'ias de $d$ notas van a garantizar esto, se desea descartar todas las melod'ias que no lo garantizan y construir un nuevo modelo, en donde
+solo se puedan construir las melod'ias que cumplan con los predicados en cuesti'on. Por 'ultimo, se desea tambi'en que la probabilidad de estas lineas mel'odicas 
+que satisfacen los predicados, sea proporcional a la asignada por el modelo original. 
+
+La forma en la que se atacar'a este problema, es mediante una sucesi'on de conjuntos indexados por el contexto, la nota final y cuantas notas le queda
+a la frase y tendr'an la propiedad de que cualquier nota elegida de ellos garantizar'a la existencia de una continuaci'on de la longitud correspondiente 
+ y que \emph{lleve a buen puerto}. Utilizando esta propiedad, es posible implementar un algoritmo eficiente para elegir la frase dentro del submodelo. 
+
+Para poder utilizarlo sin cuidado habr'a que demostrar la correctitud de este argumento, demostrando que cualquier frase mel'odica del submodelo se puede construir
+utilizando esta serie de conjuntos. Por ultimo, la asignaci'on de probabilidades utilizar'a el modelo original, renormalizando en la sucesion de conjuntos. De esta 
+forma la probabilidad es proporcional al modelo original.
+
+Se define la funci'on $Poss$ que determina las notas posibles dado una cierta historia determinada por al menos dos notas.
+
+\begin{align}
+Poss(n_1, n_2, \cdots, n_k)= \left\{
+ \begin{array}{rl}
+  \phi & \text{si } \exists i < k-1 \text{ tal que } \neg M(n_i, n_{i+1}, n_{i+2}) \\
+   \{n_{k+1} / S(n_{k-1}, n_k, n_{k+1})\} & \text{si no}
+ \end{array} \right.
+\end{align}
+
+Intuitivamente, las notas del conjunto $Poss$ son aquellas que podr'ian funcionar como notas de apoyo, dado que se toc'o la frase $n_1, \cdots, n_k$. 
+Observar que la definici'on de $Poss$ es equivalente a 
+$$n_f \in Poss(n_1, \cdots, n_k) \Leftrightarrow S(n_{k-1}, n_k, n_f) \land \forall i\ M(n_i, n_{i+1}, n_{i+2})$$
+
+Se define entonces la funci'on $Must(n_1, n_2, n_f, d)$, que dado un contexto $n_1, n_2$ determina el conjunto de notas que habr'a que tocar, de forma tal
+que $d$ notas despu'es, la probabilidad de la nota $n_f$ cumpla con el predicado en cuesti'on inductivamente de la siguiente forma:
+\begin{align}
+Must(n_1, n_2, n_f, 1)=& \{n_3/ S(n_2, n_3, n_f) \land M(n_1, n_2, n_3)\}\\
+Must(n_1, n_2, n_f, d)=& \{n_3/ Must(n_2, n_3, n_f, d) \neq \phi \land M(n_1,n_2, n_3)\}
+\end{align}
+
+A continuaci'on se demuestra por inducci'on en $d$ que 
+$$n \in Must(n_1, n_2, n_f, d) \Leftrightarrow \exists n_4, \cdots, n_{d-1} \text{ tales que } n_f \in Poss(n_1, n_2, n, \cdots, n_{d-1})$$
+
+Cuando $d=1$
+\begin{align*}
+n \in Must(n_1, n_2, n_f, 1)   & \Leftrightarrow n \in \{n_3/ S(n_2, n_3, n_f) \land M(n_1, n_2, n_3)\} \\
+                               & \Leftrightarrow S(n_2, n, n_f) \land M(n_1, n_2, n)   \\
+                               & \Leftrightarrow n_f \in Poss(n_1, n_2, n)
+\end{align*}
+
+Suponiendo ahora que el predicado vale para $d$, 
+\begin{align}
+n \in Must(n_1, n_2, n_f, d+1)   & \Leftrightarrow n \in \{n_3/ Must(n_2, n_3, n_f, d) \neq \phi \land S(n_1,n_2, n_3)\} \\
+                                 & \Leftrightarrow Must(n_2, n, n_f, d) \neq \phi \land S(n_1,n_2, n) \\
+                                 & \Leftrightarrow \exists n_4 \text{ tal que } n_4 \in Must(n_2, n, n_f, d) \land S(n_1,n_2, n) \label{eq_must}
+\end{align}
+
+Utilizando la hip'otesis inductiva sabemos que 
+$$  n_4 \in Must(n_2, n, n_f, d) \Leftrightarrow \exists n_5, \cdots, n_{d-1} \text{ tales que } n_f \in Poss(n_2, n, n_4, n_5, \cdots, n_{d-1})$$
+
+Por lo tanto la equaci'on \ref{eq_must} es equivalente a
+$$ \exists n_4, \cdots, n_{d-1} \text{ tal que } n_f \in Poss(n_2, n, n_5, \cdots, n_{d-1}) \land Q(n_1,n_2, n) $$
+Lo 'unico que resta por demostrar es que 
+$$ n_f \in Poss(n_2, n, n_4, \cdots, n_{d-1}) \land Q(n_1,n_2, n) \Leftrightarrow n_f \in Poss(n_1, n_2, n, n_4, \cdots, n_d)$$
+lo cual es v'alido por la definici'on de $Poss$, demostrando lo que se quer'ia demostrar$\qed$
+
+
+
+ Con esta definici'on, se define el proceso generativo de 
+la siguiente forma:
+
+\subsubsection{Algoritmo}
+
+\begin{algoritmo}
+play_phrase(n1, n2, nf, d, prob_model)
+    answer := []
+    context := (n1, n2)
+    para i desde d hasta 1 hacer
+        n1, n2 := context
+        candidates := Must(context, nf, i)
+        n3 := pick(candidates, prob_model)
+        answer.append(n3)
+        context := (n2, n3) 
+
+\end{algoritmo}
+
+
+
+

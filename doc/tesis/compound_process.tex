@@ -1,9 +1,14 @@
 \section{El modelo compuesto}
 Utilizando los modelos definidos en las secciones \ref{sec:metric_model}, \ref{sec:harmonic_contexts} y \ref{sec:melodic_contour}, es posible definir
-un proceso generativo para componer lineas mel'odicas de forma relativamente sencilla. El algoritmo se definir'a en pseudoc'odigo para que quede en una representaci'on 
-compacta, sin embargo se deduce de los roles que se le asign'o a cada modelo: para cada nota a generar, el modelo de la r'itmica eligir'a su duraci'on, 
-mientras que el modelo de Narmour elijir'a el tipo de intervalo que deber'a tocarse en funci'on del 'ultimo intervalo tocado, y por 'ultimo el modelo del contexto arm'onico
-elijir'a una nota dentro de las que forman el intervalo determinado por el modelo de Narmour de acuerdo a la tonalidad inferida.
+un proceso generativo para componer lineas mel'odicas de forma relativamente sencilla. 
+Tener en cuenta que dependiendo de la elecci'on del modelo de contorno mel'odico, la cadena de Narmour o la distribuci'on de Narmour, el algoritmo se ver'a
+afectado. El primer modelo permite elegir un conjunto de notas candidatas, mientras que el segundo permite incorporar dentro de una distribuci'on de 
+probabilidades el modelo de contornos melodicos con el modelo del contexto arm'onico. 
+A continuaci'on se definir'a el algoritmo utilizando el modelo de Markov para elegir los intervalos mel'odicos, se exhibira el pseudoc'odigo 
+para que quede en una representaci'on compacta, sin embargo se deduce de los roles que se le asign'o a cada modelo: 
+para cada nota a generar, el modelo de la r'itmica eligir'a su duraci'on, mientras que el modelo de Narmour elijir'a el tipo de intervalo que deber'a 
+tocarse en funci'on del 'ultimo intervalo tocado, y por 'ultimo el modelo del contexto arm'onico elijir'a una nota dentro de las que forman 
+el intervalo determinado por el modelo de Narmour de acuerdo a la tonalidad inferida.
 
 \begin{algoritmo}
 create_melody(rhythm_model, harmonic_context, contour_model, duration, available_notes)
@@ -20,6 +25,15 @@ create_melody(rhythm_model, harmonic_context, contour_model, duration, available
 
     return notes
 \end{algoritmo}
-\subsection{Problemas}
-\comment{aca la idea es explicar problemas que tienen estos modelos en terminos musicales. Basicamente voy a hablar del rol que juega la repetici\'on en nuestra
-escucha musical y en la construccion de motivos. La idea es motivar alguna forma de generar repeticiones parciales, o elaboraciones motivicas. Esto motivaria la seccion que viene}
+
+Hay una diferencia entre los dos modelos de Narmour que es importante aclarar. Observar que el algoritmo elije primero un intervalo mel'odico, y luego
+elije una nota restringida a que cumpla con ese intervalo mel'odico. Es decir, si se definen variables aleatorias $d_j, i_j, n_j$ para la duraci'on, 
+el tipo de intervalo mel'odico con la codificaci'on definida en \ref{sec:markov_narmour}, y la altura j-'esimas, la probabilidad de tocar una cierta nota estar'a definida de la siguiente forma:
+
+$$P(d_j, n_j | d_{j-1}, i_{j-1}) = P(d_j|d_{j-1})P(i_j| i_{j-1})P(n_j | i_j, \theta)$$
+
+Es decir, se esta condicionando la elecci'on de la altura al tipo de intervalo mel'odico, cuando al utilizar el otro\alert{ponerle nombre} modelo,
+la variable $i$ desaparece y la expresi'on quedar'a:
+
+$$P(d_j, n_j | d_{j-1}, n_{j-1}, n_{j-2}) = P(d_j|d_{j-1})P(F_1(n_{j-2}, n_{j-1}, n_j), \cdots, F_k(n_{j-2}, n_{j-1}, n_j)) P(n_j | \theta)$$
+

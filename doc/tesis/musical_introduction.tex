@@ -3,7 +3,8 @@
 Esta secci'on cumple dos objetivos dentro de este trabajo; por un lado, sirve para el lector no familiarizado con teor'ia musical para establecer
 ciertos conceptos generales que son de gran importancia en el desarrollo de este trabajo. Por otro lado, permitir'a ademas acentar un glosario
 que se utilizar'a a lo largo de las diferentes secciones.
-Principalmente, la m'usica se divide en dos grandes componentes u ejes: la del \texttt{tiempo} y la de la \texttt{altura}. 
+
+Principalmente, la m'usica tonal se divide en dos grandes componentes u ejes: la del \texttt{tiempo} y la de la \texttt{altura}. 
 
 La dimensi'on temporal responde a \emph{cu'ando} ocurre un evento, mientras que la altura expresa caracter'isticas sobre \emph{qu'e}
 tipo de evento es.  Dejando fuera del an'alisis a los instrumentos de percusi'on, la altura es refiere a la percepci'on de un cierto sonido. 
@@ -20,10 +21,41 @@ Por 'ultimo, dado que a lo largo del presente trabajo se exhiben ejemplos, es ne
 explicar'a brevemente como ciertos conceptos introducidos se notan en el lenguaje musical.
 
 \subsection{Sobre la organizaci\'on temporal}
+\subsection{El tiempo es racional: el concepto de \emph{beat}}
 El primer concepto importante a tener en cuenta, es que el tiempo es \emph{discreto}. Esto no quiere decir que a la hora de la producci'on musical lo sea, sino que 
 en la abstracci'on musical, existe una unidad de referencia temporal, a la que se llama \emph{beat}. En torno a ella se organiza la estructura temporal, tocando
 siempre notas que duren una fracci'on del mismo. De esta forma, para poder reproducir una partitura es necesario saber la duraci'on de un \emph{beat} (denominado
 \emph{tempo}), luego el resto de las duraciones son una fracci'on de 'esta.
+
+
+En su libro, Lerdahl y Jackendoff(\cite{LerdahlJackendoff83}) hacen una distinci'on entre dos estructuras que ocurren en simultaneidad en la m'usica tonal:
+La estructura \emph{m'etrica} y la estructura del \emph{agrupamiento}\footnote{\emph{meter} y \emph{grouping} en ingl'es}. 
+Esta distinci'on en t'erminos generales coincide con clasificaciones de otros autores (\alert{citas muchas!}), se toma la version de Lerdahl y Jackendoff 
+por ser esta m'as computacional.
+La estructura del agrupamiento hace referencia a la organizaci'on de una pieza musical en unidades que pueden ser motivos, frases, secciones, etc. 
+Cada una de estas unidades, es denominada por los autores \emph{grupo}. Asimismo, el oyente infiere una estructura regular de beats. 
+Algunos beats son m'as fuertes que otros, determinando lo que los autores definen como la estructura m'etrica. 
+Para ponerlo en concreto pensar la estructura como la forma en la que un director de orquesta mueve su batuta. 
+
+Ambas estructuras tienen son jer'arquicas, en el sentido de que existen sub-estructuras a distintos niveles, y que las sub-estructuras de niveles superiores 
+incluyen por completo a las de nivel inferior\footnote{Para una definici'on mas formal de la jerarqu'ia referirse a \cite{LerdahlJackendoff83} pagina \alert{XXX}}. De esta forma, una secci'on
+de una pieza musical estar'a formada por una sucesi'on de frases. Estas frases s'olo pertenecer'an a esa secci'on, sin embargo, esto no quiere decir
+que no se pueda repetir una frase en dos secciones distitnas, puesto que cada una pertenecer'a a una sola secci'on. 
+Esto mismo ocurre con la estructura m'etrica; existen distintos niveles de beats dados por el tiempo que ocurre entre dos beats sucesivos. De esta forma, al 
+ocurrir estos en tiempos regulares, s'olo hace falta saber cual es la distancia entre cualquier par de beats consecutivos para referirse a ese nivel. 
+
+\red{este parrafo no est'a bien, lo dejo para acordarme de reescribirlo}
+
+La organizaci'on jer'arquica de la m'usica no es una teor'ia solo postulada por Lerdahl y Jackendoff; Cooper y Meyer\cite{CooperMeyer60} plantean una teor'ia similar en
+estos t'erminos, Kramer\cite{Kramer88} si bien no habla directamente de una jerarqu'ia, propone que tienen un rol 
+estructurante\alert{tengo que leer m'as, as'i se mejor de lo que hablan estos dos muchachos}. 
+
+Un nivel de especial inter'es, es el denominado \emph{tactus}, que b'asicamente es el marcado por el director de orquesta al mover su batuta. 
+El tactus tambi'en es la distancia entre los beats que el oyente marca cuando mueve el pie y est'a relacionado con el baile. 
+
+Es importante notar que esta estructura es ambigua, en el sentido de que que muchas veces no existe un 'unico an'alisis de una pieza musical 
+en una estructura m'etrica y de agrupamiento.
+
 
 Siendo que una nota no puede tener una duraci'on arbitraria, y esta relacionada con la duraci'on del beat, existen s'imbolos y nombres para diferentes duraci'ones. 
 En la figura \ref{fig:durations} se muestran las figuras correspondientes a notas y silencios de distintas duraciones. Se denomina plica, a la barra vertical que surje 
@@ -83,3 +115,13 @@ de clave.
 El primer elemento a explicar, es la llamada clave. Si bien 
 
 definir modulacion, cambio de tonalidad 
+
+
+Si bien la frecuencia del sonido es un continuo, en la mayoria de las culturas se selecciona una cantidad discreta de frecuencias para su uso. 
+En partirular, en la m'usica occidental hay 12 posibles categorias
+
+\comment{definir un intervalo}
+Un intervalo mel'odico refiere la diferencia en cantidad de semitonos entre dos notas. Por ejemplo, las notas Do y Re forman un intervalo de dos semitonos, y las notas 
+Do y Sol forman un intervalo de 7 semitonos (Do, Do\#, Re, Re\#, Mi, Fa, Fa\#, Sol). 
+
+A modo de notaci'on, cuando se refiera a un intervalo mel'odico se escribir'a \IM{N} siendo N la cantidad de semitonos que define al intervalo. 
