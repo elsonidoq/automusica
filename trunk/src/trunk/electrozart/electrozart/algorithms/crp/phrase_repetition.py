@@ -41,7 +41,7 @@ class PhraseRepetitions(Algorithm):
 
         #import ipdb;ipdb.set_trace()
         if phrase_moment not in self.ec.crps:
-            self.ec.crps[phrase_moment]= ChineseRestaurantProcess(self.params['alpha'])
+            self.ec.crps[phrase_moment]= ChineseRestaurantProcess(self.params['alpha'], random=self.random)
 
         crp= self.ec.crps[phrase_moment]
 
