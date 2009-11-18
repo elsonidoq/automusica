@@ -1,8 +1,8 @@
 \section{Modelando contextos arm\'onicos}
 \label{sec:harmonic_contexts}
 \subsection{Contextos}
-Una car'acteristica de la m'usica compartida con el habla es que un mismo ``s'imbolo'' es interpretado de distinta forma seg'un el contexto
-en donde este sea percibido. En el caso del habla, se refiere por ``s'imbolo'' a una palabra. Esta diferencia interpretativa es conocida 
+Una car'acteristica de la m'usica compartida con el habla es que un mismo s'imbolo es interpretado de distinta forma seg'un el contexto
+en donde este sea percibido. En el caso del habla, se refiere por s'imbolo a una palabra. Esta diferencia interpretativa es conocida 
 como polisemia, y refiere a la cualidad de una palabra de tener m'as de un significado. Por ejemplo, la palabra \emph{sierra}, refiere
 tanto a un instrumento que permite cortar madera, como a una parte de la cordillera. De esta forma, en la oraci'on 
 ``Lindo viaje por la sierra'' atribuye un significado a la palabra sierra, mientras que ``Compr'e una sierra nueva, puesto que la vieja 
@@ -14,9 +14,9 @@ una pieza musical; una nota por si sola no es ni estable ni inestable, lo es en 
 se le atribuye un grado de estabilidad en el contexto de una pieza, esta definici'on es por dem'as vaga. A continuaci'on se refinar'a
 este concepto.
 
-Carol Krumhansl (\cita) refiere a estas relaciones de estabilidad como jer'arquicas, en el sentido de que existen elementos normativos que son tomados 
+Carol Krumhansl \citep{Krumhansl90} refiere a estas relaciones de estabilidad como jer'arquicas, en el sentido de que existen elementos normativos que son tomados 
 como punto de referencia. Este fen'omeno no es exclusivo de la m'usica; los colores son frecuentemente descriptos respecto a ciertos colores 
-``focales'' como rojo, verde, azul, y amarillo. Los n'umeros son comparados con otros que tienen un status cognitivo especial: 9 es casi 10, 95 es casi 100. 
+focales como rojo, verde, azul, y amarillo. Los n'umeros son comparados con otros que tienen un status cognitivo especial: 9 es casi 10, 95 es casi 100. 
 De esta forma, se refiere a las relaciones entre las alturas como \texttt{la jerarqu'ia tonal}. Basada en estos principios, Krumhansl, 
 propone m'etodos emp'iricos para cuantificar esta jerarqu'ia.
 
@@ -29,11 +29,11 @@ propone m'etodos emp'iricos para cuantificar esta jerarqu'ia.
 %notas que suenen en simult'aneo\footnote{esa es la definici'on que esta en la pagina 9\ldots no habla de superposici'on de 3ras}, y por 
 %tonalidad a la t'onica y su escala, que es un patr'on de intervalos definidos en relaci'on a la t'onica. 
 
-Fred Lerdhal(\cita) en su libro A Tonal Pitch Space contin'ua en cierto grado con el trabajo de Krumhansl, y define un espacio en donde pretende 
+Fred Lerdahl \citep{Lerdahl2001} en su libro A Tonal Pitch Space contin'ua en cierto grado con el trabajo de Krumhansl, y define un espacio en donde pretende 
 modelar, entre otras cosas, el grado de estabilidad de una nota en un cierto contexto, definiendo contexto a partir de dos cosas: una tonalidad y un acorde. 
 El libro es mucho m'as general y abarcativo que lo reci'en mencionado, pero a los efectos de este trabajo, s'olo se tomar'a esa parte.
 
-En lo que sigue, se presenta con mayor detalle parte de los estudios de Krumhansl y Lerdhal, para luego dar un marco bayesiano sobre el cual montar las jerarqu'ias tonales.
+En lo que sigue, se presenta con mayor detalle parte de los estudios de Krumhansl y Lerdahl, para luego dar un marco bayesiano sobre el cual montar las jerarqu'ias tonales.
 
 \subsection{Pitch profiles}
 A continuaci'on se describir'a el m'etodo propuesto por Krumhansl para cuantificar la jerarqu'ia tonal, y su aplicaci'on para cuantificar el grado de estabilidad 
@@ -70,27 +70,40 @@ utilizar el pitch profile como distribuci'on de probabilidades para la elecci'on
 
 \subsection{El espacio diat\'onico}
 Hist'oricamente se han hecho una gran cantidad de intentos por encuadrar dentro de un modelo grafico/espacial las relaciones de estabilidad entre elementos de la m'usica
-tonal. Ejemplos son el c'irculo de quintas y de terceras \alert{poner dibujos}. Fred Lerdhal (\cita) propone un espacio para distintas entidades tonales como alturas, 
+tonal. Ejemplos son el c'irculo de quintas y de terceras \alert{poner dibujos}. Fred Lerdahl \citep{Lerdahl2001} propone un espacio para distintas entidades tonales como alturas, 
 acordes y tonalidades. En 'el, define una noci'on de distancia que pretende reflejar el parentezco entre las entidades en t'erminos de estabilidad, es decir, no solo 
 mide la estabilidad de una nota dentro de un contexto, sino que tambi'en mide la distancia entre dos acordes dentro de una tonalidad, y la distancia entre dos tonalidades. 
-Nuevamente, no es de inter'es medir esas distancias, sin embargo, se considera que el comportamiento que tiene el modelo de Lerdhal es deseable en un modelo estad'istico
+Nuevamente, no es de inter'es medir esas distancias, sin embargo, se considera que el comportamiento que tiene el modelo de Lerdahl es deseable en un modelo estad'istico
 que vaya a cuantificar la estabilidad de una nota.
 
-El autor trabaja con la noci'on de contexto como una mezcla entre la tonalidad que rige en el tema (o en esa parte, ver \ref{sec:musical_intro}), define para esto dos 
-espacios. El primero lo denomina como \emph{espacio b'asico}\alert{no existe una traducci'on linda?}. El espacio b'asico refleja las relaciones de estabilidad que les 
-son aplicadas a las notas en relacion a una tonalidad. 
+El autor trabaja con la noci'on de contexto como una mezcla entre la tonalidad que rige en el tema (o en esa parte, ver secci'on \ref{sec:musical_intro}) y el
+acorde que gobierna la estabilidad en ese momento. El primero lo denomina como \emph{espacio b'asico}\alert{no existe una traducci'on linda?}. 
+El espacio b'asico refleja las relaciones de estabilidad que les son aplicadas a las notas en relacion a una tonalidad. 
 
 En la figura \ref{fig:basic_space} se exhibe una representaci'on gr'afica del espacio tonal b'asico para la tonalidad de Do mayor. En el eje vertical, se encuentra
-representado el nivel de estabilidad: Una nota que esta en un nivel \texttt{a} ser'a mas estable que una nota que se encuentre en un nivel inferior. Como 
-podr'a verse, todas las notas se encuentran en el nivel \texttt{d}, de menor estabilidad, y a medida que se sube de nivel, solo un subconjunto de notas son las 
+representado el nivel de estabilidad: Una nota que esta en el nivel \texttt{a} ser'a m'as estable que una nota que se encuentre en un nivel inferior. Como 
+podr'a verse, todas las notas se encuentran en el nivel \texttt{e}, de menor estabilidad, y a medida que se sube de nivel, s'olo un subconjunto de notas son las 
 que persisten, sin embargo, notas de niveles superiores siembre tienen su lugar en los niveles inferiores.
 
-\begin{imagen}
-    \file{images/basic_space.png}
-    \labelname{fig:basic_space}
-    \desc{Espacio b\'asico para la tonalidad de C mayor}
-    \width{10cm}
-\end{imagen}
+\begin{center}
+\begin{tabular}{r c c c c c c c c c c c c c} 
+\label{fig:basic_space}
+a) & C &     &   &     &   &   &     &   &     &   &     &   & C\\
+b) & C &     &   &     &   &   &     & G &     &   &     &   & C\\
+c) & C &     &   &     & E &   &     & G &     &   &     &   & C\\
+d) & C &     & D &     & E & F &     & G &     & A &     & B & C\\
+e) & C & C\# & D & D\# & E & F & F\# & G & G\# & A & A\# & B & C\\
+\end{tabular}
+\newline
+\textbf{Figura \ref{fig:basic_space}:} Espacio desplazado para Re menor.
+\end{center}
+
+%\begin{imagen}
+%    \file{images/basic_space.png}
+%    \labelname{fig:basic_space}
+%    \desc{Espacio b\'asico para la tonalidad de C mayor}
+%    \width{10cm}
+%\end{imagen}
 
 De esta forma, dada una tonalidad y una nota, para saber el grado de estabilidad de esa nota basta con mirar el nivel m'as alto en el que aparece.
 Luego el autor define una regla para afectar a este espacio por un contexto dado por un acorde. Cuando se refiere a afectar este contexto por un acorde, pensar
@@ -108,20 +121,23 @@ A modo de ejemplo se exhibe el espacio desplazado para el acorde de Re menor (D,
 \label{fig:dm_space}
 a) &   &     & D &     &   &   &     &   &     & A &     &   &  \\
 b) &   &     & D &     &   & F &     &   &     & A &     &   &  \\
-c) & C &     & D &     & E & F &     & G &     & A &     & B & C\\
-d) & C & C\# & D & D\# & E & F & F\# & G & G\# & A & A\# & B & C\\
+c) &   &     & D &     &   & F &     &   &     & A &     &   &  \\
+d) & C &     & D &     & E & F &     & G &     & A &     & B & C\\
+e) & C & C\# & D & D\# & E & F & F\# & G & G\# & A & A\# & B & C\\
 \end{tabular}
 \newline
 \textbf{Figura \ref{fig:dm_space}:} Espacio desplazado para Re menor.
 \end{center}
 
+\subsection{Sobre deteccio\'on de acordes}
+???
 \subsection{El modelo}
 El objetivo de este modelo es poder cuantificar el grado de estabilidad de una nota dentro de un contexto, definiendo por contexto una tonalidad y un acorde. 
-Dada la teor'ia de Lerdhal, es deseable que este modelo exhiba un comportamiento de alguna forma similar a lo que el describe desde el lado de la teor'ia musical. 
+Dada la teor'ia de Lerdahl, es deseable que este modelo exhiba un comportamiento de alguna forma similar a lo que el describe desde el lado de la teor'ia musical. 
 
 Como se mencion'o en la secci'on anterior, no es de inter'es saber el nombre de la tonalidad de la pieza musical, es por esto que como estimaci'on de la 
 tonalidad se utilizar'a el pitch profile de la partitura estimado a partir de la proporci'on de tiempo que una nota suena en la pieza. Luego, bas'andose en 
-la teor'ia de Lerdhal, ante la presencia de un acorde este contexto se ve afectado haciendo que las notas del acorde se conviertan en las m'as probables.  
+la teor'ia de Lerdahl, ante la presencia de un acorde este contexto se ve afectado haciendo que las notas del acorde se conviertan en las m'as probables.  
 
 Esto se puede analizar construyendo un prior basado en el pitch profile, y actualizando ese prior con la observaci'on del acorde. 
 Formalmente, sea $\theta$ un vector de 12 dimensiones, donde $\theta_i$ corresponde a la probabilidad de tocar la nota $i$. Sean adem'as las notas $n_1, \cdots, n_k$ las notas 
@@ -137,7 +153,7 @@ $$\theta | n_1, \cdots, n_k \sim Dirichlet(\alpha p_1 + \sum_{i=1}^k \delta_{n_i
 En la figura \ref{fig:prior_profile} exhibe el pitch profile de un fragmento de bach kindlein\alert{como se llama posta?}, y luego en la figura \ref{fig:pitch_posteriors}
 la distribuci'on a posteriori dado que sono el acorde de La menor, que consta de las notas A, C y E para distintos valores de $\alpha$. 
 Se puede ver como si $\alpha$ toma valores grandes, el hecho
-de que se haya observado el acorde no influye en el posterior, puesto que el prior tiene mucha fuerza, sin embargo a medida que se baja el valor se pasa por una 
+de que se haya observado el acorde pr'acticamente no influye en el posterior, puesto que el prior tiene mucha fuerza, sin embargo a medida que se baja el valor se pasa por una 
 distribuci'on de alguna forma uniforme entre las notas del acorde de Sol mayor y de La menor, y luego las notas de La menor pasan a ser las m'as estables.
 
 \begin{imagen}
@@ -164,16 +180,17 @@ distribuci'on de alguna forma uniforme entre las notas del acorde de Sol mayor y
     %%	\vspace{1cm} & \\
 
         \end{tabular}
-        \label{fig:mat1}
         \caption{Distribuciones a posteriori de un contexto arm\'onico para distintos valores de $\alpha$}
+        \label{fig:pitch_posteriors}
     \end{center}      
 \end{figure}
 
-\subsection{Posibles agregados}
-indexar por duracion
-indexar por acento metrico | estructural
-%\subsection{Indexando distribuci\'ones por la duraci\'on de las notas}
-%\begin{itemize}
-%    \item cuento lo de las distribuciones por duracion
-%    \item mas dibujitos
-%\end{itemize}
+El modelo planteado en esta secci'on hace ciertas asunciones impl'icitas de las que se desea dar detalle. 
+Si bien el pitch profile que Krumhansl propone como mecanismo para caracterizar la tonalidad en la que se encuentra una pieza es suficiente para este prop'osito, 
+podr'ia no serlo para generar una melod'ia. Como primer variac'ion, en lugar de que la probabilidad de una nota sea la proporci'on de tiempo que esta son'o en el tiempo, 
+se podr'ia construir una familia de distribuci'ones indexadas por duraci'on. 'Esta ser'ia otra forma de reflejar el hecho de que notas largas tienden a ser estables.
+
+Otra caracter'istica que no es tenia en cuenta en este modelo es el acento m'etrico que recibe una cierta nota. Es sabido que en posiciones m'etricamente m'as fuertes
+existen restricci'ones sobre la estabilidad de las notas que se pueden tocar all'i. Nuevamente, una soluci'on podr'ia ser tener una familia de distribuci'ones indexadas
+por el acentro m'etrico. Esto mismo ocurre tambi'en con las notas que reciben un acento estructural, sin embargo en la secci'on \ref{sec:phrases} se dar'a una posible
+soluci'on a este problema. 

@@ -34,9 +34,13 @@ builders= dict(dot = dot_builder,
 images_src_dir= 'images_src'
 images_dst_dir= 'images'
 
+import sys
 if __name__ == '__main__':
-    fnames= os.walk(images_src_dir).next()[-1]
+    if len(sys.argv) > 1: fnames= sys.argv[1:]
+    else: fnames= os.walk(images_src_dir).next()[-1]
+
     for fname in fnames:
+        if '.' not in fname: continue
         extension= fname[fname.rindex('.')+1:]
         if extension not in builders:
             print 'WARNING: not building %s' % fname
