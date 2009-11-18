@@ -7,7 +7,7 @@ por si s'ola.
 En 1960, Leonard Meyer elabor'o una teor'ia acerca de la expectativa en la m'usica aplicando principios gest'alticos de la psicolog'ia. La 
 psicolog'ia de la Gestalt define principios que pretenden capturar la forma en que la mente configura los elementos que llegan a ella a trav'es 
 de la percepci'on o de la memoria. Por ejemplo, la ley de cierre establece que nuestra mente a~nade los elementos faltantes a para completar una 
-figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'irculo y un rectangulo, si bien en la imagen s'olo hay partes.
+figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'irculo y un rectangulo, si bien en la imagen s'olo hay partes de ellos.
 
 \begin{imagen}
     \file{images/Gestalt_ley_de_cierre.png}
@@ -16,12 +16,10 @@ figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'ircul
     \width{6cm}
 \end{imagen}
 
-Luego del trabajo de Meyer, Eugene Narmour en (\cita) cuantifica estas reglas en t'erminos de intervalos para construir una teor'ia de 
+Luego del trabajo de Meyer, Eugene Narmour en \citep{Narmour91} cuantifica estas reglas en t'erminos de la sucesi'on de intervalos para construir una teor'ia de 
 la expectativa de los contornos mel'odicos. 
 
 En lo que sigue, se explican con mayor detalle las teor'ias de Narmour, para luego detallar el modelo de las l'ineas mel'odicas.
-
-\footnote{definir pitch class y nota y equivalencia entre notas de diferente octava en las secciones de background} 
 
 \subsection{La teor\'ia de la Implicaci\'on-Realizaci'on}
 Como se mencion'o en la introducci'on de este cap'itulo, Eugene Narmour, basado en la teor'ia de la expectativa musical de Leonard Meyer, propuso una forma para cuantificar
@@ -41,30 +39,30 @@ Notar que esta transformaci'on no es biyectiva, puesto que la melod'ia Re, Mi, R
 \alert{este parrafo esta enterito sujeto a revision =D}
 
 El modelo de la Implicaci'on-Realizaci'on(I-R) toma de (\cita) que el sistema cognitivo se encuentra organizado jer'arquicamente. En esta jerarqu'ia, los sistemas 
-de percepci'on m'as simples, como la vista, se encuentran al fondo y los sistemas de percepci'on mas abstractos o complejos como la memoria o la 
+de percepci'on m'as simples, como la vista, se encuentran al fondo y los sistemas de percepci'on m'as abstractos o complejos como la memoria o la 
 resoluci'on de problemas se encuentran en el tope. De esta forma se distinguen dos tipos de procesos expectaci'on denominados procesos \emph{bottom-up} 
 y \emph{top-down}. Los procesos bottom-up son aquellos procesos cognitivos en donde se parte de una informaci'on ubicada en los niveles bajos de la jerarqu'ia y se la 
 elabora llev'andola a los niveles altos, mientras que los procesos top-down lo hacen en el orden inverso. 
 
 Narmour propone que los procesos que regulan la expectaci'on mel'odica son en mayor medida de tipo bottom-up, es decir, parten de informaci'on puramente sensorial. 
-Carol Krumhansl resume en (\cita) que seg'un este modelo, la cognici'on de melod'ias puede ser descripta como una sucesi'on de puntos 
+Carol Krumhansl resume en \citep{Krumhansl95} que seg'un este modelo, la cognici'on de melod'ias puede ser descripta como una sucesi'on de puntos 
 de \emph{cierre}, \emph{implicaci\'on} y \emph{realizaci\'on}. Cuando se alcanza un punto de cierre, las expectativas sobre la continuaci\'on 
 son d'ebiles mientras que cuando se alcanza un punto de implicaci'on, la expectativa sobre la continuaci'on es fuerte. Seg'un este modelo,
 existen seis condiciones que llevan a una sensaci'on de cierre:
 \begin{itemize}
  \item Silencio
- \item Una acento metro fuerte
+ \item Una acento m'etrico fuerte
  \item Una disonancia resolviendo a una consonancia
- \item Una nota corta seguido de una larga
+ \item Una nota corta seguida de una larga
  \item Un intervalo grande seguido de un intervalo m'as peque~no
  \item Un cambio en la direcci'on registral
 \end{itemize}
 
 Estas caracter'isticas no son exluyentes, y si ocurren varias en simultaneo, la sensaci'on de cierre es mayor. 
 Si no ocurre ninguna de esas condiciones, entonces se establece un punto de implicaci'on, y el 'ultimo itervalo mel'odico recibe el nombre
-de \emph{intervalo implicativo}, y el intervalo que sigue al implicativo, recibe el nombre de \emph{intervalo realizados}. 
+de \emph{intervalo implicativo}, y el intervalo que sigue al implicativo, recibe el nombre de \emph{intervalo realizado}. 
 Un intervalo realizado, puede promover o no una sensacion de cierre, y puede satisfacer o no la implicaci'on establecida por el intervalo 
-implicativo
+implicativo. De hecho, violaciones a las implicaci'ones producen efectos est'eticos y afectivos particulares \citep{Narmour91}.
  
 Teniendo entonces el contorno de una melod'ia, Narmour define ciertas caracter'isticas relacionadas con la psicolog'ia de la gestalt. A continuaci'on 
 se enumeran los cinco principios de esta teor'ia, refiri'endose por intervalos peque~nos, a intervalos de valor absoluto menor o igual a 5 semi tonos, y por intervalos
@@ -79,8 +77,9 @@ grandes a aquellos que sean mayores o iguales que 7 semitonos, dejando al interv
 
 \subsection{Simplificaci\'ones a I-R}
 A continuaci'on se proponen dos modelos. Ambos hacen ciertas simplificaciones sobre la teor'ia de Narmour, aunque uno en mayor medida que el otro. Se 
-podr'ia decir que el primero es una versi'on Naive del seguno. El primero parte de una simplificaci'on a algunos principios de la teor'ia de Narmour. Estas simplificaciones permiten construir una cadena de Markov tradicional para el contorno 
-mel'odico. Se presenta este modelo como punto de comparaci'on con el segundo que, si bien sigue simplificando la teor'ia de Narmour, lo hace en menor medida. 
+podr'ia decir que el primero es una versi'on Naive del seguno. El primero, se denominar'a \emph{la cadena de Narmour}, puesto que las simplificaci'ones utilizadas
+permiten construir una cadena de Markov. Estas simplificaciones permiten construir una cadena de Markov tradicional para el contorno. 
+Se presenta este modelo como punto de comparaci'on con el segundo que, si bien sigue simplificando la teor'ia de Narmour, lo hace en menor medida. 
 
 Dada un pieza musical, en este caso es de inter'es construir un modelo y entrenarlo con el contorno mel'odico del tema en cuesti'on. De esta forma se puede proyectar
 las alturas de las notas del tema, y luego construir la sucesi'on de intervalos mel'odicos tomando la diferencia entre las sucesivas alturas. Por ahora as'umase que 
@@ -114,7 +113,8 @@ La sem'antica de realizar una caminata en este modelo impone restricciones sobre
 toc'o previamente, por lo tanto, para generar una linea mel'odica es necesario elegir una nota del conjunto de candidatas. Esta elecci'on se har'a utilizando el contexto
 arm'onico.
 
-En la figura \ref{fig:markov_narmour} se exhibe el modelo entrenado para un fragmento de un trio Mozart (\alert{conseguir los nombres posta de los temas}). 
+En la figura \ref{fig:markov_narmour} se exhibe el modelo entrenado para un fragmento de Mozart, Piano Trio K. 542, I.
+
 La etiqueta de los estados es una codificaci'on de los dos principios utilizados refiriendo al tama~no del intervalo: chico, mediano para el tritono y grande. Se 
 le agrega el signo ``-'' cuando el intervalo es descendente.
 
@@ -126,11 +126,11 @@ le agrega el signo ``-'' cuando el intervalo es descendente.
     \width{12cm}
 \end{imagen}
 
-\subsection{Un modelo un poco mas general}
+\subsection{Un modelo un poco m'as general}
 Si se plantea el problema en t'erminos un poco m'as generales, lo que se est'a buscando es un modelo que permita estimar la probabilidad de una nota, 
 dadas las dos anteriores, es decir $P(n_3|n_1, n_2)$. Una forma de llevar a cabo esta estimaci'on es considerar una codificaci'on de los principios del modelo de IR.
-Esta codificaci'on corresponde a considerar una funci'on por cada principio que distinga seg'un el principio que corresponda. Se han realizado una gran cantidad
-de codificaciones en la literatura, a saber por el autor, por lo menos Paiement (\cita), Schellember(\cita), sin embargo, no se desea poner el foco en cual es 
+Esta codificaci'on corresponde a considerar una funci'on por cada principio que distinga seg'un el principio que corresponda. No existe una 'unica codificaci'on
+en la literatura de estos principios, a saber por el autor, por lo menos  \cite{PaieThesis}, \cite{Schellenberg97}, sin embargo, no se desea poner el foco en cual es 
 la codificaci'on m'as adecuada, sino en dar un marco, en donde dada una cierta codificaci'on, se puedan generar l'ineas mel'odicas con esa codificaci'on.
 
 De esta forma, as'umase un conjunto de caracter'isticas $F_1, \cdots, F_k$, que en principio codificar'ian los principos de Narmour(es decir, $k$ ser'ia igual a $5$), 
@@ -141,7 +141,7 @@ $$P(n_3 | n_1, n_2) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3))$$\alert{
 Definido asi, este modelo ser'a por dem'as ralo, puesto que los vectores de caracter'isticas, si bien no son tantos, son los suficientes como para no ser observados
 por completo en una pieza musical. Una posibilidad para resolver este problema es utilizar una distribuci'on a priori que explique como se distribuyen en general
 los vectores de caracter'isticas. Esta distribuci'on a priori podr'ia o bien calcularse para un conjunto grande de piezas musicales, o bien utilizar los resultados 
-un experimento como los de Krumhansl(\cita paper Favio) o Schellemberg(\cita testing Narmour). \alert{Que hacemos con esto? lo hacemos o lo pateamos?} 
+un experimento como los de \cite{Krumhansl95} o \cite{Schellenberg96}. \alert{Que hacemos con esto? lo hacemos o lo pateamos?} 
 Otra posibilidad es factorizar la distribuci'on conjunta, haciendo asunciones de independencia. Una asunci'on posible utilizada ampliamente en el campo 
 de procesamiento de lenguaje natural es asumir que todas las caracter'isticas son independientes entre s'i. Esta asunci'on es conocida como Naive Bayes, y
 si bien no es cierta en la mayor'ia de los problemas, se han obtenido resultados considerablemente buenos utilizandola, puesto que permite simplificar
@@ -149,7 +149,7 @@ los modelos y los algoritmos de entrenamiento. En este caso, la expresi'on \red{
 
 $$P(n_3 | n_1, n_2) = \prod_{i=1}^k P(F_i(n_1, n_2, n_3))$$
 
-Otra posibilidad es utilizar an'alisis de correlaci'on empirica entre las caracter'isticas. En Schellemberg (\cita testing narmour), se realizaron una serie
+Otra posibilidad es utilizar an'alisis de correlaci'on empirica entre las caracter'isticas. En \cite{Schellenberg96}, se realizaron una serie
 de experimentos para poner a prueba el modelo de IR. Uno de los experimentos constaba en exponer a sujetos a una melod'ia que finalizaba por la mitad, y los sujetos
 ten'ian que decir cual ser'ia la continuaci'on que ellos esperar'ian. Luego, uno de los an'alisis que se realiz'o, fue la correlaci'on entre los principios del modelo
 aplicados a las respuestas de los sujetos, y se encontr'o que algunos de ellos estaban correlacionados. Utilizando este conocimiento se podr'ia efectuar
@@ -160,3 +160,68 @@ obteniendo una distribuci'on de probabilidades para las continuaciones de una me
 se puede escribir la probabilidad de la siguiente forma:
 
 $$P(n_3 | n_1, n_2) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3)) P(n_3|\theta)$$
+
+\subsection{Codificaci\'ones existentes}
+En esta secci'on se har'a un resumen de las distintas codificaci'ones existentes para la teor'ia de la Implicaci'on-Realizaci'on. A
+continuaci'on se exhibe una grilla que es de utilidad para describir los principios de Narmour, y codificarlos. En esta grilla, las filas
+representan el tama~no del intervalo implicativo, mientras que las columnas representan el tama~no del intervalo realizado. En los casilleros se 
+escribe la codificaci'on para esa combinaci'on de intervalo implicativo-intervalo realzado. Con este tipo de representaci'on visual es facil mostrar diferentes codificaci'ones
+para los principios de Narmour.
+
+%
+%\begin{center}
+%\begin{tabular}{r | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c |} 
+%\label{fig:narmour_grid}
+%  &  12     &    11  &   10  &   9   &   8   &   7      &    6   &   5   &   4   &   3   &   2   &   1   &   0\\
+%\cline{2-26}
+%0 & & &  &  &  &  &  &  &  &  &  &  &  & 1 & 2 & 3 & 4& 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ 
+%\cline{2-26}
+%1 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%2 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%3 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%4 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%5 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%\cline{2-26}
+%6 \\
+%\cline{2-26}
+%\cline{2-26}
+%7 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%8 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%9 & & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%10& & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%11& & &  &  &  &  &  &  &  &  &  &  &  &   &   &   &  &   &   &   &   &   &    &    &    \\ 
+%\cline{2-26}
+%\end{tabular}
+%\newline
+%\textbf{Figura \ref{fig:narmour_grid}}
+%\end{center}
+
+
+
+
+\begin{imagen}
+    \file{images/narmour_coding1.png}
+    \labelname{fig:narmour_coding1}
+    \desc{Codificaci\'on de los principios de Narmour (Schellemberg)}
+    \width{10cm}
+\end{imagen}
+
+\begin{imagen}
+    \file{images/narmour_coding2.png}
+    \labelname{fig:narmour_coding1}
+    \desc{Codificaci\'on de los principios de Narmour (Schellemberg)}
+    \width{10cm}
+\end{imagen}
+\red{FALTA EL DEL PAPER DONDE HACE COMPONENTES PPALES}
+\subsection{Traducci\'on cuando hay notas en simultaneo}
+Es importante tener en cuenta que los principios definidos por la teor'ia de la Narmour s'olo aplican a contornos mel'odicos. Es por ello que si hay varias notas sonando en 
+simultaneo, no es posible aplicar a priori los principios que su teor'ia establece. 

@@ -17,10 +17,14 @@ create_melody(rhythm_model, harmonic_context, contour_model, duration, available
         new_duration := rythm_model.next_duration()
         new_interval_type := contour_model.next_interval_type()
 
-        candidate_notes := [n for n in available_notes if interval_type(last_note, n) = new_interval_type]
+        candidate_notes := []
+        for candidate_note in available_notes
+            if interval_type(last_note, n) = new_interval_type
+                candidate_notes.append(candidate_note)
+
         new_pitch := harmonic_context.pick_note(candidate_notes)
 
-        last_note= Note(last_note.start, new_duration, new_pitch)
+        last_note := Note(last_note.start, new_duration, new_pitch)
         notes.append(last_note) 
 
     return notes
@@ -37,3 +41,4 @@ la variable $i$ desaparece y la expresi'on quedar'a:
 
 $$P(d_j, n_j | d_{j-1}, n_{j-1}, n_{j-2}) = P(d_j|d_{j-1})P(F_1(n_{j-2}, n_{j-1}, n_j), \cdots, F_k(n_{j-2}, n_{j-1}, n_j)) P(n_j | \theta)$$
 
+\section{Sobre los silencios}

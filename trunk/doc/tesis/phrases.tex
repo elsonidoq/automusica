@@ -1,4 +1,5 @@
 \section{Un modeo parcial para frases}
+\label{sec:phrases}
 Los modelos propuestos hasta el momento est'an focalizados en interacci'ones nota a nota. Sin embargo es bien sabido que la m'usica
 tiene una estructura jer'arquica. En esta secci'on se trabajar'a un poco con un elemento de 'indole jer'arquico: la frase. 
 
@@ -25,16 +26,12 @@ a la frase como un movimiento entre estos dos conjuntos de forma tal que se cump
 \end{enumerate}
 
 
-Por 'ultimo, Ferd Lerdahl en su libro A Tonal Pitch Space describe a una frase como un camino por el espacio que define, en donde 
-los extremos son estables y en el medio no necesariamente es estable. \red{buscar la definicion}
-
-Una caracter'istica com'un de estas tres definiciones es la meta. En la primer definici'on, esta meta esta dada por la cadencia, 
-en la segunda, esta dada por el segundo conjunto de notas, y en la tercera esta dada por el final del camino, que es estable. 
-En lo que sigue se propone un modelo que para tratar de capturar parcialmente esta nocion de frase.
+Estas dos definiciones comparten la noci'on de meta; en la definici'on de Sessions, la meta es la cadencia y en la segunda
+por el segundo conjunto de notas.  En lo que sigue se propone un modelo que para tratar de capturar parcialmente esta nocion de frase.
 
 \subsection{Las notas de apoyo}
 As'umase por un momento que se puede detectar cual es la progresi'on arm'onica de una pieza musical. Esto es necesario hacerlo de todas 
-formas para poder definir el contexto arm'onico como se defini'o en la secci'on \ref{sec:harmonic_context}. Siguiendo las definiciones
+formas para poder definir el contexto arm'onico como se defini'o en la secci'on \ref{sec:harmonic_contexts}. Siguiendo las definiciones
 de frase mel'odica vistas en la secci'on anterior, parece ser que la noci'on de meta es una noci'on importante, y que esta meta
 est'a relacionada con la armon'ia de la pieza en cuesti'on. 
 
@@ -58,17 +55,17 @@ $D5$ respetando el modelo, puesto que $D5$ es dos semitonos mas aguda que $C5$ y
 intervalos chicos descendentes. 
 
 Este ejemplo motiva la construcci'on de un \emph{submodelo} que de una garant'ia: No importa cual es el camino que se elija dentro
-del \emph{submodelo}, debe ser posible tocar $D5$ al final del camino. A continuaci'on se muestra como construir este modelo para
-la cadena de Markov, y luego se generaliza para el modelo dado en la secci'on \ref{sec:distr_narmour}.
+del \emph{submodelo}, debe ser posible tocar $D5$ al final del camino. A continuaci'on se muestra como construir este modelo 
+para una distribuci'on gen'erica, y luego se muestra el caso particular para una la cadena de markov de Narmour.
 
 
 \subsection{Construcci\'on del submodelo}
 A continuaci'on se definir'a formalmente el problema, y luego se dar'a un algoritmo para resolverlo.
-\subsubsection{Definici'on formal del problema}
+
 Se cuenta con un modelo que asigna probabilidades a notas seg'un la historia de las 'ultimas dos notas, $P(n_3 | n_1, n_2)$. Si bien se puede generalizar a $k$ notas,
 la construcci'on quedar'ia menos clara, y el hecho es que se utilizar'a con solo 2 notas. Sup'ongase adem'as que se encuentra en un contexto formado por las notas 
 $n_1, n_2$, y se desea generar una frase mel'odica de $d$ notas, de forma tal que se cumpla una cierta propiedad $M$ (middle) sobre la probabilidad de tocar las notas
-del medio de la frase, y cierta probabilidad $S$ (support) sobre la nota de apoyo de la siguiente frase.
+del medio de la frase, y cierta propiedad $S$ (support) sobre la nota de apoyo de la siguiente frase.
 
 Como no todas las melod'ias de $d$ notas van a garantizar esto, se desea descartar todas las melod'ias que no lo garantizan y construir un nuevo modelo, en donde
 solo se puedan construir las melod'ias que cumplan con los predicados en cuesti'on. Por 'ultimo, se desea tambi'en que la probabilidad de estas lineas mel'odicas 
@@ -82,29 +79,39 @@ Para poder utilizarlo sin cuidado habr'a que demostrar la correctitud de este ar
 utilizando esta serie de conjuntos. Por ultimo, la asignaci'on de probabilidades utilizar'a el modelo original, renormalizando en la sucesion de conjuntos. De esta 
 forma la probabilidad es proporcional al modelo original.
 
-Se define la funci'on $Poss$ que determina las notas posibles dado una cierta historia determinada por al menos dos notas.
+Tomando $M$ y $S$ como restricciones sobre las l'ineas mel'odicas, s'olo ser'an v'alidas las lineas $n_1, \cdots, n_k, n_f$ que cumplan con
 
-\begin{align}
+$$  S(n_{k-1}, n_k, n_f) \land \forall i<k-2, M(n_i, n_{i+1}, n_{i+2})$$
+
+Se puede dar una definici'on equivalente definiendo la funci'on $Poss$, que determina las notas suceptibles a ser notas de apoyo dado una cierta historia determinada por al menos dos notas.
+
+\begin{definition}
+\label{def:poss}
+Sean $n_1, \cdots, n_k$ una sucesi'on de notas, $k>=2$, se define
+\begin{align*}
 Poss(n_1, n_2, \cdots, n_k)= \left\{
  \begin{array}{rl}
-  \phi & \text{si } \exists i < k-1 \text{ tal que } \neg M(n_i, n_{i+1}, n_{i+2}) \\
-   \{n_{k+1} / S(n_{k-1}, n_k, n_{k+1})\} & \text{si no}
+  \phi & \text{si } \neg valid(n_1, \cdots, n_k) \\ %\exists i < k-1 \text{ tal que } \neg M(n_i, n_{i+1}, n_{i+2}) \\
+   \{n_f / S(n_{k-1}, n_k, n_f)\} & \text{si no}
  \end{array} \right.
-\end{align}
+\end{align*}
 
-Intuitivamente, las notas del conjunto $Poss$ son aquellas que podr'ian funcionar como notas de apoyo, dado que se toc'o la frase $n_1, \cdots, n_k$. 
-Observar que la definici'on de $Poss$ es equivalente a 
-$$n_f \in Poss(n_1, \cdots, n_k) \Leftrightarrow S(n_{k-1}, n_k, n_f) \land \forall i\ M(n_i, n_{i+1}, n_{i+2})$$
+Donde $valid(n_1, \cdots, n_k) = \forall i, i\leq k-2 \Rightarrow M(n_i, n_{i+1}, n_{i+2})$
+\end{definition}
 
-Se define entonces la funci'on $Must(n_1, n_2, n_f, d)$, que dado un contexto $n_1, n_2$ determina el conjunto de notas que habr'a que tocar, de forma tal
-que $d$ notas despu'es, la probabilidad de la nota $n_f$ cumpla con el predicado en cuesti'on inductivamente de la siguiente forma:
-\begin{align}
+Se define inductivamente la funci'on $Must(n_1, n_2, n_f, d)$, que dado un contexto $n_1, n_2$ determina el conjunto de notas que habr'a que tocar, de forma tal
+que $d$ notas despu'es, la probabilidad de la nota $n_f$ cumpla con $S$ de la siguiente forma:
+\begin{definition}
+\label{def:must}
+\begin{align*}
 Must(n_1, n_2, n_f, 1)=& \{n_3/ S(n_2, n_3, n_f) \land M(n_1, n_2, n_3)\}\\
 Must(n_1, n_2, n_f, d)=& \{n_3/ Must(n_2, n_3, n_f, d) \neq \phi \land M(n_1,n_2, n_3)\}
-\end{align}
+\end{align*}
+\end{definition}
+
 
 A continuaci'on se demuestra por inducci'on en $d$ que 
-$$n \in Must(n_1, n_2, n_f, d) \Leftrightarrow \exists n_4, \cdots, n_{d-1} \text{ tales que } n_f \in Poss(n_1, n_2, n, \cdots, n_{d-1})$$
+$$n \in Must(n_1, n_2, n_f, d) \Leftrightarrow \exists n'_1, \cdots, n'_{d-1} \text{ tales que } n_f \in Poss(n_1, n_2, n, n'_1, \cdots, n'_{d-1})$$
 
 Cuando $d=1$
 \begin{align*}
@@ -115,26 +122,22 @@ n \in Must(n_1, n_2, n_f, 1)   & \Leftrightarrow n \in \{n_3/ S(n_2, n_3, n_f) \
 
 Suponiendo ahora que el predicado vale para $d$, 
 \begin{align}
-n \in Must(n_1, n_2, n_f, d+1)   & \Leftrightarrow n \in \{n_3/ Must(n_2, n_3, n_f, d) \neq \phi \land S(n_1,n_2, n_3)\} \\
-                                 & \Leftrightarrow Must(n_2, n, n_f, d) \neq \phi \land S(n_1,n_2, n) \\
-                                 & \Leftrightarrow \exists n_4 \text{ tal que } n_4 \in Must(n_2, n, n_f, d) \land S(n_1,n_2, n) \label{eq_must}
+n \in Must(n_1, n_2, n_f, d+1)   & \Leftrightarrow n \in \{n_3/ Must(n_2, n_3, n_f, d) \neq \phi \land M(n_1,n_2, n_3)\} \\
+                                 & \Leftrightarrow Must(n_2, n, n_f, d) \neq \phi \land M(n_1,n_2, n) \\
+                                 & \Leftrightarrow \exists n'_1 \text{ tal que } n'_1 \in Must(n_2, n, n_f, d) \land M(n_1,n_2, n) \label{eq_must}
 \end{align}
 
 Utilizando la hip'otesis inductiva sabemos que 
-$$  n_4 \in Must(n_2, n, n_f, d) \Leftrightarrow \exists n_5, \cdots, n_{d-1} \text{ tales que } n_f \in Poss(n_2, n, n_4, n_5, \cdots, n_{d-1})$$
+$$  n'_1 \in Must(n_2, n, n_f, d) \Leftrightarrow \exists n'_2, \cdots, n'_{d} \text{ tales que } n_f \in Poss(n_2, n, n'_1, n'_2, \cdots, n'_{d})$$
 
 Por lo tanto la equaci'on \ref{eq_must} es equivalente a
-$$ \exists n_4, \cdots, n_{d-1} \text{ tal que } n_f \in Poss(n_2, n, n_5, \cdots, n_{d-1}) \land Q(n_1,n_2, n) $$
+$$ \exists n'_1, n'_2, \cdots, n'_d \text{ tal que } n_f \in Poss(n_2, n, n'_1, \cdots, n'_d) \land M(n_1,n_2, n) $$
 Lo 'unico que resta por demostrar es que 
-$$ n_f \in Poss(n_2, n, n_4, \cdots, n_{d-1}) \land Q(n_1,n_2, n) \Leftrightarrow n_f \in Poss(n_1, n_2, n, n_4, \cdots, n_d)$$
+$$ n_f \in Poss(n_2, n, n'_1, n'_2, \cdots, n'_d) \land M(n_1,n_2, n) \Leftrightarrow n_f \in Poss(n_1, n_2, n, n'_1, n'_2, \cdots, n'_d)$$
 lo cual es v'alido por la definici'on de $Poss$, demostrando lo que se quer'ia demostrar$\qed$
 
 
-
- Con esta definici'on, se define el proceso generativo de 
-la siguiente forma:
-
-\subsubsection{Algoritmo}
+Con esta definici'on, se define el proceso generativo de la siguiente forma:
 
 \begin{algoritmo}
 play_phrase(n1, n2, nf, d, prob_model)
@@ -146,9 +149,96 @@ play_phrase(n1, n2, nf, d, prob_model)
         n3 := pick(candidates, prob_model)
         answer.append(n3)
         context := (n2, n3) 
-
 \end{algoritmo}
 
 
+
+
+
+\subsection{Sobre los predicados $S$ y $M$}
+La definici'on de los predicados $S$ y $M$ son de crucial importancia, puesto que de definirlos de forma incorracta resultar'a en un modelo vacio, 
+es decir dados $n_1$ y $n_2$, ocurrir'a que no exista continuaci'on que permita tocar una nota de apoyo al final. 
+Es por eso que se desean predicados que permitan definir restricciones, pero al mismo tiempo garantizen que siempre se puede tocar algo.
+
+Una primera aproximaci'on que se tom'o en su momento, es definir 
+$$S(n_1, n_2, n_3) = P(n_3 | n_1, n_2) \geq X\%$$
+
+El problema ahora es determinar
+el valor $X$. Como las probabilidades definidas por el modelo de Narmour estan formadas por un producto de cada uno de los principios, habria 
+que considerar esto para la elecci'on de $X$. Adem'as, la elecci'on de un umbral no deja margen para la expermientaci'on con frases
+mas o menos probables. 
+Por estas razones se descarto la idea de comparar la probabilidad dada por el contexto con una constante. 
+
+Una propiedad deseable de un esquema para predicados $S$ y $M$ es que existan dos casos particulares, 
+donde uno corresponda a la melod'ia m'as probable
+y otro corresponda a eliminar la restricci'on de estos predicados, y adem'as garantize siempre la existencia de una frase. 
+
+Un esquema que encaja dentro de este marco es un predicado compare la probabilidad $P(n_3 | n_1, n_2)$ con un 
+$X$ percentil, es decir, el valor que deja s'olo al $X\%$ de las notas m'as probables.  De esta forma, si el contexto tiene muchos valores probables, 
+el percentil se ajustar'a mas alto, y lo mismo para contextos menos probables.
+
+Hay que tener en cuenta que dado que las observaciones son todas discretas, ser'a frecuente el caso donde 
+se asigne exactamente la misma probabilidad a mas de un evento. En ese caso no se podr'a garantizar un $X\%$ puesto que ser'ia arbitrario
+elegir un evento por sobre otro si tienen la misma probabilidad, sin embargo, no se considera que esto sea un mayor problema. Adem'as, este predicado nunca dejara un conjunto vacio, y si se lo define con cuidado, se puede obtener
+el comportamiento de la melod'ia m'as probable, cambiando el predicado en el caso de $0\%$.
+
+\subsection{El submodelo de la cadena de Narmour}
+Hasta ahora se hizo particular foco sobre el segundo modelo de contornos mel'odicos, sin embargo, lo definido en esta secci'on aplica tambi'en
+a la cadena de Markov de Narmour. Es necesario redefinir los predicados Poss y Must, para que la historia est'e dada por un camino en la cadena de 
+Markov. 
+Haciendo esto, se puede considerar que cada estado de la cadena de Markov es en realidad un conjunto de pares ordenados, siendo por ejemplo
+el estado \texttt{<ch>} el conjunto $\left\{(n_1, n_2) / 0 < n_2 - n_1 < 6  \right\}$. 
+Notar que la cadena de Markov es de orden 1, por lo tanto los predicados tomar'an $2$ notas en lugar de $3$. Observar tambi'en que el modelo de Markov no 
+asigna probabilidades de forma directa a las notas, sino que, lo hace indirectamente a trav'es de la partici'on sobre las notas que inducen los estados
+adyacentes a un estado en particular, es decir, dado un estado y una nota, las continuaciones est'an distribuidas uniformemente. 
+Esto hace que no se pueda elegir una familia de predicados para $S$ y $M$. Teniendo en cuenta esas salvedades, la funci'on $Poss$ quedar'a definida
+de la siguiente forma:
+
+\begin{align}
+Poss(N_1, n_0)&= \{ n_f / (n_0, n_1) \in N_1 \} \nonumber \\
+Poss(N_1, \dots, N_d, n_0)&= \bigcup_{n_{d-1} \in Poss(N_1, \dots N_{d-1}, n_0)} \{ n_f / (n_{d-1}, n_f) \in N_d \} \nonumber
+\end{align}
+
+Es decir, la funci'on $Poss$, como en el caso anterior, determinar'a los candidatos a notas de apoyo, dado un cierto contexto dado por un
+camino en la cadena de Markov $N_1, \cdots, N_d$ y una nota inicial $n_0$. 
+Para que esta definici'on respete el modelo, se va a pedir adem'as que si dentro del camino $N_1, \cdots, N_d$ existen dos nodos $N_i, N_{i+1}$ 
+no adyacentes, la funci'on $Poss$ debe dar vacio. Formalmente:
+
+$$(\exists i, 1 \leq i \leq d \text{ tal que } N_i \rightarrow N_{i+1} \notin E(C)) \Rightarrow Poss(N_1, \dots, N_d, n_0) = \phi$$
+Donde $N \rightarrow M$ denota una arista entre los nodos $N$ y $M$, y $E(C)$ denota el conjunto de aristas de la cadena de Markov. 
+
+Por 'ultimo, la funci'on $Must$ determinar'a el conjunto de notas que garantizan la existencia de una frase de longitud $d$, 
+dado que se encuentra en el estado $N$ y se desea tocar al final la nota $n_f$. La funci'on puede definirse de la siguiente forma:
+\begin{align}
+Must'(N, n_f, 1)   &= \{n' / (n', n_f) \in N\}\nonumber \\
+Must'(N, n_f, d+1) &= \bigcup_{N' \in Adj(N)}\{n / \exists n' \in Must(N', n_f, d) \land (n, n') \in N \}\nonumber
+\end{align}
+
+
+Dadas estas definici'ones el proceso generativo sigue sin ser trivial. Puesto que de haber m'as de un camino posible en la cadena de Markov que permita
+tocar la nota $n_f$, y al $Must$ estar definido como una uni'on, no se sabr'a qu'e nota corresponde a que nodo. Por lo tanto primero habr'a que elegir
+un camino, en donde el conjunto $Must$ sea no vacio. Esto garantiza que existe una frase que respeta todas las condiciones m'as las del camino, y 
+luego habr'a que construir un nuevo grafo en donde haya $d$ nodos, y cada nodo represente nuevamente un conjunto de pares ordenados. El conjunto
+de pares ordenados del nodo i-'esimo correspondr'a al conjunto de pares ordenados del nodo i-'esimo en el camino. De esta forma, volviendo 
+a calcular el conjunto Must en este grafo se puede elegir libremente las notas del conjunto. En pseudoc'odigo el algoritmo se ver'a de la siguiente forma
+
+\begin{algoritmo}
+play_phrase(n0, N, nf, d)
+    path := [N]
+    actual_node := N
+    para remaining_steps desde d hasta 1 hacer
+        candidates := [N' for N' in Adj(actual_node) if Must(N', nf, remaining_steps) != /conjVacio]
+        actual_node= pick(candidates)
+        path.append(actual_node)
+
+    construir un grafo G con los nodos de path
+    calcular Must para G
+    answer := []
+    para i desde 1 hasta d hacer
+        N := path[i] 
+        candidates := Must(N, nf, d - i)
+        answer.append(pick(candidates)) 
+
+\end{algoritmo}
 
 

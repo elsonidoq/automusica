@@ -1,1 +1,23 @@
 \section{Experimentos}
+En esta secci'on se presentan una serie de experimentos que se realizaron con sujetos. Sin embargo, se considera
+importante dar un panorama sobre como fueron implementados en la practica los algoritmos descriptos en los capitulos
+anteriores, puesto que es fundamental ser capaz de controlar las variables para estar seguro que se esta poniendo
+a prueba lo que se cree que se esta poniendo a prueba. De esta forma en lo subsiguiente se har'a una peque~na 
+explicaci'on sobre la arquitectura utilizada, y como esta permite llevar a cabo experimentos confiables.
+
+\subsection{Agentes independientes}
+El primer concepto en el que se basa la arquitectura, es en el de \emph{agente independiente}. 
+Cada algoritmo recibe una entrada y produce una salida. Los algoritmos se afectan entre s'i a partir de las 
+interacciones dadas por la entrada/salida que producen, sin embargo, la implementaci'on interna de cada uno
+no debe afectar. 
+
+Es por esto que un efecto que es necesario aislar es la cantidad de consultas que hace cada algoritmo al
+generador de n'umeros aleatorios; dado que los numeros aleatorios en la computadora no son mas que una secuencia
+de numeros con propiedades estad'isticas que los hacen ver aleatorios, si un algoritmo consulta un n'umero m'as,
+eso querr'a decir que otro algoritmo no podr'a consultarlo. De esta forma, cada agente deber'a contar con su propio
+generador de n'umeros aleatorios.
+
+Siendo adem'as que se desea poder intercambiar implementaciones de algoritmos, y que todos consulten 
+
+Se hace incapi'e en esto 'ultimo puesto que distintas implementaciones de un algoritmo
+podr'ian consultar 

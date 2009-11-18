@@ -14,7 +14,7 @@ Otra raz'on para utilizar creencias previas es para estimar distribuci'ones de p
 por el s'olo hecho de no haberlo observado en la etapa de entrenamiento. Esta propiedad ser'a utilizada para el trabajo con contextos arm'onicos.
 
 Escribiendo esto matem'aticamente, sup'ongase que se cuenta con un modelo parametrizado por un vector $\theta$. 
-La creencia previa sobre el fen'omeno a modelar, b'asicamente estar'ia restringiendo \emph{a priori} que tipo de par'ametros son mas probables que otros, 
+La creencia previa sobre el fen'omeno a modelar, b'asicamente estar'ia restringiendo \emph{a priori} que tipo de par'ametros son m'as probables que otros, 
 de esta forma, esta informaci'on se codifica como una distribuci'on de probabilidades sobre $\theta$, $P(\theta)$. 
 
 De esta forma, sup'ongase ahora que se cuenta con cierta evidencia de entrenamiento $x_1,\cdots,x_n$. Al entrenar el modelo, uno quisiera combinar la 
@@ -43,13 +43,12 @@ Un caso conocido es cuando se modelan los datos como provenientes de una distrib
 sobre $\theta$ como una distribucion Dirichlet, se puede calcular de una forma muy facil la distribuci'on a posteriori de $\theta$ dado por la siguiente
 f'ormula:
 
-\alert{usar delta de dirac}
-
 \begin{align}
     \theta \sim Dirichlet(\alpha_1,\cdots,\alpha_k) \Rightarrow \theta|x_1,\cdots,x_n \sim Dirichet(\alpha_1+n_1,\cdots,\alpha_k+n_k)
 \end{align}
 
-Donde los valores $x_i$ pueden tomar uno de $k$ valores posibles, y $n_j$ es la cantidad de veces que se observ'o el j-'esimo valor. 
+Donde los valores $x_i$ pueden tomar uno de $k$ valores posibles, y $n_j=\sum_{i=1}^n\delta_{x_i, v_j}$, siendo $v_j$ el j-'esimo posible valor que puede tomar $x_i$, y
+$\delta_{a,b} = 1 \Leftrightarrow a = b$, si no, $\delta_{a, b} = 0$. 
 
 Utilizando esta f'ormula es posible calcular anal'iticamente la distribuci'on a posteriori de la observaci'on, y luego tomar la esperanza dada por
 
@@ -82,13 +81,13 @@ el estado en el que se encuentra el sistema en cierto momento de alguna forma te
 previamente. 
 
 Las cadenas de Markov de orden $k$ permiten modelar este tipo de dependencias haciendo una asunci'on: la probabilidad de que el sistema vaya a un cierto estado
-dado la historia de estados por los que transit'o solo depende en un momento dado \emph{s'olo} depende de los 'ultimos $k$ estados anteriores en los que este transit'o. 
+dado la historia de estados por los que transit'o \emph{s'olo} depende de los 'ultimos $k$ estados anteriores en los que este transit'o. 
 Esta asunci'on es conocida como la propiedad de Markov. 
 
-Formalmente, una cadena de Markov de orden $k$ es una tripla $<S,P>$, donde $S$ es el conjunto de posibles estados del sistema, y $P$ la 
+Formalmente, una cadena de Markov de orden $k$ es una dupla $<S,P>$, donde $S$ es el conjunto de posibles estados del sistema, y $P$ la 
 distribuci'on de transici'on, es decir, dados $s_1, \cdots, s_{k+1} \in S$, el valor de $P(s_{k+1} | s_1, \cdots, s_k)$ indica la probabilidad
 de que el sistema pase estado $s_{k+1}$ dado que a transitado por los estados $s_1, \cdots, s_k$. 
-Volviendo a la propiedad de falta de memoria, ahora es posible expresarla formalmente: $$P(s_{n+1}|s_1,\cdots,s_n) = P(s_{n+1} | s_{n-k}, \cdots, s_n)$$
+Volviendo a la propiedad de Markov, ahora es posible expresarla formalmente: $$P(s_{n+1}|s_1,\cdots,s_n) = P(s_{n+1} | s_{n-k}, \cdots, s_n)$$
 
 A modo ilustrativo, sup'ongase que se desea modelar el clima con una cadena de Markov de orden 1, restringiendo el clima a si llueve o no. Siendo asi, el conjunto 
 $S$ de estados ser'a $\{llueve, no\ llueve\}$. 

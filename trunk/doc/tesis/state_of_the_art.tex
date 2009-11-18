@@ -1,1 +1,45 @@
 \section{Estado del arte}
+A continuaci'on se har'a un breve resumen sobre los distintos enfoques y objetivos relacionados con el an'alisis musical mediante
+t'ecnicas computacionales. Las aplicaciones de este tipo de trabajos son bastante variadas, tales como herramientas para 
+composici'on musical asistida, acompa~namiento autom'atico, indexaci'on de m'usica, sistemas de recomendaci'on musical e 
+investigaci'on en psicolog'ia de la m'usica, donde se situa este trabajo.
+
+Seg'un cual sea el enfoque que se tome, podr'a variar la representaci'on musical utilizada entre la se~nal sonora cruda, y una partitura o midi.
+En este trabajo se asumir'a una representaci'on simb'olica de la m'usica para poder desarrollar en profundidad las teor'ias cognitivas de las 
+que luego se hablar'a. A continuaci'on se nombran algunos trabajos que se enmarcan de la misma forma en t'erminos de la representaci'on musical.
+
+\cite{PaieThesis} es el trabajo m'as cercano a 'este. En 'el se propone un modelo generativo para l'ineas mel'odicas, 
+patrones r'itmicos y armonizaci'ones, basado en algunos de los principios que se utilizar'an en este trabajo. 
+Sin embargo, no es el objetivo del autor poner a prueba teor'ias cognitivas de la m'usica; sino desarrollar un modelo generativo,
+y por lo tanto predictivo basado en una representaci'on simb'olica de la m'usica de forma tal que se pueda utilizar el conocimiento generado por estos
+modelos para mejorar la calidad de algoritmos que trabajan con se~nales sonoras. M'as all'a de que no se comparten los objetivos entre el trabajo de 
+Paiement y este, no es posible tampoco utilizar los modelos propuestos por 'el puesto hay teor'ias que no utiliza, como la de \citealp{Lerdahl2001} 
+y varios de ellos, como el de la r'itmica, no tienen una fundamentaci'on cognitiva clara.
+
+David Cope, en \cita trabaja con un software, que mediante reglas, sea capaz de reproducir el estilo de una pieza musical dada. Si bien 
+la construcci'on ha sido exitosa en algunos casos, generando composiciones que realmente respetan el estilo de la pieza original, gran
+parte de las reglas utilizadas no tienen sustento cognitivo.
+
+Otro software existente dise~nado para componer m'usica es el Melisma Music Generator
+\footnote{Disponible en http://www.link.cs.cmu.edu/melody-generator/} basado en \cite{Temperley2004}. 
+Este software se encuentra disponible para escuchar online sus composiciones, sin embargo, el mayor problema 
+que tiene es que no se puede entrenar directamente con su modelo con una partitura, y por m'as que se intentara realizar esto construyendo un software 
+que estime valores posibles para sus par'ametros, no habr'ia forma de determinarle una sucesi'on de contextos arm'onicos.
+
+\red{revisar bien si no estoy diciendo verdura}
+\cite{Shih-Chuan} propone un software que mediante la utilizaci'on de t'ecnicas de data minning componga m'usica. Nuevamente, estos modelos
+no son de intere'es para este trabajo puesto que pr'acticamente no tienen ning'un fundamento cognitivo, y siendo asi, no podr'a realizarse 
+ning'un tipo de validaci'on.
+%
+%En \cite{Simon_mysong:automatic} mediante el an'alisis de caracter'isticas de la se~nal sonora correspondientes a una melod'ia 
+%cantada, y mediante entrenar un Hidden Markov Model para la probabilidad de un acorde, dado que se observa una cierta nota cantada,
+%se construy'o un sistema capaz de armonizar una melod'ia. Un sistema comercial que realiza esto mismo es Band-in-a-box,
+%pero dado que no existen \red{revisar} publicaciones respecto a c'omo fue construido, no se puede hacer m'as que nombrarlo.
+%
+%Dentro de la rama de sistemas para indexar m'usica se situan trabajos como \cite{StructureAnalysis1}. En 
+%\cite{StructureAnalysis1} se propone un m'etodo para analizar la estructura de una pieza musical a partir de su se~nal sonora. Esto lo logran extrayendo vectores 12-dimencionales
+%de cada momento del tema, en donde cada componente del vector muestra la intencidad relativa de cada altura en ese momento, y a partir
+%de estos vectores y una noci'on de distancia construyen matrices de similitud que permiten detectar los acordes que aparecen
+%en el tema. Siguiendo con este 
+
+\section{Aportes de este trabajo}

@@ -16,6 +16,11 @@ def bibtex():
     process= subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     return 0
 
+def clean():
+    cmd= "./clean"
+    process= subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+    return 0
+
 def chained(*funcs):
     for f in funcs:
         print 'Executing %s' % f.__name__
