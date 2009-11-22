@@ -13,12 +13,13 @@ patrones r'itmicos y armonizaci'ones, basado en algunos de los principios que se
 Sin embargo, no es el objetivo del autor poner a prueba teor'ias cognitivas de la m'usica; sino desarrollar un modelo generativo,
 y por lo tanto predictivo basado en una representaci'on simb'olica de la m'usica de forma tal que se pueda utilizar el conocimiento generado por estos
 modelos para mejorar la calidad de algoritmos que trabajan con se~nales sonoras. M'as all'a de que no se comparten los objetivos entre el trabajo de 
-Paiement y este, no es posible tampoco utilizar los modelos propuestos por 'el puesto hay teor'ias que no utiliza, como la de \citealp{Lerdahl2001} 
+Paiement y este, no es posible tampoco utilizar los modelos propuestos por 'el puesto hay teor'ias que no utiliza, como la de \cite{Lerdahl2001} 
 y varios de ellos, como el de la r'itmica, no tienen una fundamentaci'on cognitiva clara.
 
-David Cope, en \cita trabaja con un software, que mediante reglas, sea capaz de reproducir el estilo de una pieza musical dada. Si bien 
-la construcci'on ha sido exitosa en algunos casos, generando composiciones que realmente respetan el estilo de la pieza original, gran
-parte de las reglas utilizadas no tienen sustento cognitivo.
+\cite{Shih-Chuan} propone un software que mediante la utilizaci'on de t'ecnicas de data minning componga m'usica. Nuevamente, estos modelos
+no son de inter'es para este trabajo puesto que pr'acticamente no tienen ning'un fundamento cognitivo, y siendo asi, no podr'a realizarse 
+ning'un tipo de validaci'on.
+
 
 Otro software existente dise~nado para componer m'usica es el Melisma Music Generator
 \footnote{Disponible en http://www.link.cs.cmu.edu/melody-generator/} basado en \cite{Temperley2004}. 
@@ -26,10 +27,22 @@ Este software se encuentra disponible para escuchar online sus composiciones, si
 que tiene es que no se puede entrenar directamente con su modelo con una partitura, y por m'as que se intentara realizar esto construyendo un software 
 que estime valores posibles para sus par'ametros, no habr'ia forma de determinarle una sucesi'on de contextos arm'onicos.
 
-\red{revisar bien si no estoy diciendo verdura}
-\cite{Shih-Chuan} propone un software que mediante la utilizaci'on de t'ecnicas de data minning componga m'usica. Nuevamente, estos modelos
-no son de intere'es para este trabajo puesto que pr'acticamente no tienen ning'un fundamento cognitivo, y siendo asi, no podr'a realizarse 
-ning'un tipo de validaci'on.
+
+David Cope, en trabaja con un software, que mediante reglas, sea capaz de reproducir el estilo de una pieza musical dada. Si bien 
+la construcci'on ha sido exitosa en algunos casos, generando composiciones que realmente respetan el estilo de la pieza original, gran
+parte de las reglas utilizadas no tienen sustento cognitivo.
+
+
+\cite{Cambouropoulos98} propone una teor'ia general para el an'alisis musical. Durante el desarrollo de esta tesis no se tuvo conocimiento de la existencia del trabajo de Cambouropoulos.
+Luego de leer parcialmente su trabajo, se encontr'o que si bien sus objetivos son distintos a los que se proponen aqu'i, no dista tanto: 
+\begin{quote}
+[\ldots]Musical theories allow the formulation of hypotheses and models which can be implemented
+as computer programs and then evaluated, and, conversely, results from the application of the
+computer programs may force the re-examination and adjustment of the initial theories. [\ldots]
+\end{quote} 
+Si bien el objetivo de su trabajo es construir una teor'ia descriptiva, es posible que el an'alisis que su teor'ia provee hubiera permitido llegar a modelos m'as precisos 
+en algunas tareas. 
+
 %
 %En \cite{Simon_mysong:automatic} mediante el an'alisis de caracter'isticas de la se~nal sonora correspondientes a una melod'ia 
 %cantada, y mediante entrenar un Hidden Markov Model para la probabilidad de un acorde, dado que se observa una cierta nota cantada,
@@ -43,3 +56,29 @@ ning'un tipo de validaci'on.
 %en el tema. Siguiendo con este 
 
 \section{Aportes de este trabajo}
+Se considera como aporte principal de este trabajo la metodolog'ia de validaci'on propuesta: 
+
+``Contando con modelos generativos aislados para distintos atributos musicales, es posible analizar el impacto que tiene un cierto atributo en la cognici\'on musical
+evaluando una serie de composiciones donde en algunas se ve afectando el funcionamiento del modelo correspondiente.''
+
+
+Dado que este objetivo no ha sido planteado con anterioridad, es de esperarse que no se hayan construido modelos de estas caracter'isticas. Si bien existen excepciones, 
+como el modelo para el contorno mel'odico planteado en \cite{PaieThesis}, esto no ocurre con la mayor'ia de los modelos de la literatura. 
+
+Para poder alcanzar este objetivo, fue necesario construir modelos generativos para los distintos atributos que caracterizan a una melod'ia, de forma tal que
+su comportamiento est'e respaldado por alguna teor'ia cognitiva musical. 
+
+
+Es por esto que se contribuye en este trabajo con los siguientes modelos:
+\begin{itemize}
+ \item Modelo para la r\'itmica: Basado en 3 propiedades que cumple la percepci'on del acento m'etrico, fue posible construir un modelo sencillo para la r'itmica
+ que cumpla con la propiedad de la r'itmica generada por este modelo har'a que un oyente infiera el mismo acento m'etrico con el que el modelo fue entrenado.
+ \item Modelo para los contornos mel'odicos: Basado en la teor'ia de Implicaci'on-Realizaci'on de \cite{Narmour91}, se propone un modelo simple que permite cuantificar el grado 
+ de implicaci'on que genera un intervalo mel'odico sobre el siguiente.
+ \item Modelo para contextos arm'onicos: Basado en los trabajos de \cite{Krumhansl90} y \cite{Lerdahl2001} se propone un modelo basado en un framework bayesiando
+ para cuantificar la estabilidad de una nota en funci'on de la tonalidad estimada del tema y el acorde que gobierna la sonoridad del momento.
+ \item Modelo para frases mel'odicas: Utilizando los modelos anteriores, y basado en algunas definici'ones de en qu'e consiste una frase musical, se construye un modelo
+ que respete los anteriores y que adem'as cumpla ciertas propiedades que respectan a una frase musical.
+ \item Modelos para generar motivos: Se propone utilizar el modelo de los Restaurantes Chinos para generar repetici'on de partes, 
+ de forma tal que la cantidad de repeticiones de una parte no sea excesiva ni nula.
+\end{itemize}

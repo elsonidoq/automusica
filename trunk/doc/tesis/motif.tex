@@ -1,35 +1,142 @@
 \section{Generando motivos}
-A modo de resumen, hasta el momento se cuenta con modelos capaces de cuantificar la estabilidad de una nota en un cierto contexto, de generar una r'itmica que
+Hasta el momento se exhibieron modelos capaces de cuantificar la estabilidad de una nota en un cierto contexto, de generar una r'itmica que
 respete el acento m'etrico del tema original. Utilizando estos modelos y a partir de algunas definiciones de qu'e es una frase musical, se mostr'o c'omo es posible
-generar frases mel'odicas que tengan un objetivo. 
+generar frases mel'odicas que tengan un objetivo. Estos modelos contribuyen a la generaci'on de una l'inea mel'odica coherente. Con estos modelos es posible
+generar una idea musical, sin embargo, gran parte de la coherencia musical radica en la repetici'on de ideas. Es por esto que se requiere trabajar con motivos. 
 
-\mycomment{la idea aca es explicar lo dificil que es modelar las elaboraciones motivicas, y que nadie logr'o hacerlo exitosamente, mucho menos yo =). Si bien mi modelo
-no va a capturar exactamente lo que es una elaboraci'on mot'ivica, pretende tener ciertas propiedades similares}
+Un motivo es una idea de alguna forma recurrente, que se destaca en un fragmento musical. Esta idea puede estar dada por una repetici'on parcial de una c'elula 
+r'itmica o un contorno mel'odico, sin embargo no se limita solamente a ello. Cuando una idea de estas caracter'isticas ocurre, sela refiere en t'erminos
+de elaboraci'ones mot'ivicas, y lo que las caracteriza es que al escuchar una elaboraci'on mot'ivica se evoca la idea original.
 
-\subsection{Restaurantes chinos}
-El modelo de los restaurantes chinos (\emph{Chinese restaurants} \cita) es un modelo originado en la rama de estad\'istica bayesiana no param'etrica.
-Este modelo y otros similares, como el Buffet Indio (\emph{Indian Buffet} \cita), han ganado mucha popularidad debido a que el proceso que generan
-tiene una distribuci'on que permite estimar facilmente cual es la distribuci'on \texttt{a-posteriori} del proceso a partir de una distribuci'on 
-\texttt{a-priori} (o creencia previa) y de un conjunto de observaciones.
+\cite{Deliege87} propone una teor'ia a la que ella denomina ``teor'ia de la extracci'on de pistas'' en donde postula la existencia de un mecanismo de 
+extracci'on de pistas 
+que es creado a partir de la escucha atenta. Estas pistas ser'ian utilizadas como etiquetas para la retenci'on de grupos (utilizando la definici'on de 
+\cite{LerdahlJackendoff83}). En \cite{Deliege90} relaciona el grado el
+de repetitividad de una pieza con el nivel de atenci'on que esta le demanda al oyente. A nivel extremo, cuando una pieza musical contiene demasiadas estructuras 
+repetitivas s'olo un m'inimo de atenci'on es requerido, derivando progresivamente a una escucha completamente pasiva. Sin embargo cuando hay demasiadas 
+pistas debido a una r'apida acumulacion de informaci'on o a la escacez de estructuras peri'odicas, el nivel de atenci'on demandado es tan grande que 
+termina por hacer desistir al oyente de prestar atenci'on a la pieza musical.
 
-Dado que el uso que se le dar'a a este modelo es puramente generativo, no se har'a incapi'e en los mecanimos necesarios para realizar inferencia\footnote{El lector interesado en profundizar en este tema refierase a \cita.}.
-Concretamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Escribir algo gracioso respecto al nombre}. 
-En cada mesa, a su vez, pueden sentarse una cantidad no acotada de clientes. Inicialmente todas las mesas se encuentran vac'ias, 
-y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elejir una mesa de las ya ocupadas. 
-Esto lo hace con la siguiente distribuci'on:
-\begin{align}
-P(\text{sentarse en mesa vacia}) =&\; n/(N + n)\\
-P(\text{sentare en mesa } i) =&\; N(i)/(N + n)
-\end{align}
+Las composiciones generadas por los modelos propuestos hasta el momento recaen mayormente en el segundo grupo, puesto que la probabilidad de que se escuche
+una repetici'on es pr'acticamente nula. De esta forma, el objetivo de esta secci'on es exhibir como se puede sesgar los modelos ya vistos para que 
+la probabilidad de una repeticion parcial sea mayor. 
 
-Siendo $N$ es la cantidad total de clientes en el restaurant, $N(i)$ es la cantidad de clientes en la mesa $i$, y $n$ es un 
-parametro que determina la \emph{concentraci'on} de clientes en cada mesa; se puede demostrar si $m$ es la cantidad de mesas ocupadas, entonces
-$E(m|N) \in O(n\times log(N))$ 
 
-\subsection{Las mesas son las partes}
-\mycomment{Aca explico como por contexto armonico tengo muchos pedacitos de temas, y usando un restoran chino por contexto armonico puedo simular una cierta elaboraci'on motivica, que
-no siempre anda bien (tengo que encontrar efectivamente casos en dodne no anda bien, pero recuerdo que los habia encontrado}
 
-\subsection{Trabajo a futuro: modelos derivados}
-\mycomment{aca me gustaria contar bastantes ideas que tengo sobre como a partir de un modelo de markov y un camino no simple (que pasa mas de una vez por algun nodo) en ese modelo,
-construir un nuevo modelo donde ese camino sea lo mas probable, pero se permitan ``variaciones''}
+\subsection{Repetici\'on exacta de partes}
+\label{sec:crp_model}
+Una primera aproximaci'on para generar motivos es bajo ciertas circunstancias repetir exactamente algo que ya se toc'o. Es de esperarse que no pueda repetirse
+una parte ya tocada en cualquier lugar del tema, puesto que se desea respetar el contexto arm'onico y las notas de apoyo elegidas. De esta forma, debe
+de tomarse como definci'on de contexto, una que por lo menos respete tanto el acorde como la duraci'on del mismo, puesto que de repetirse una frase, esta 
+debe cubrir exactamente el tiempo que abarca el acorde. Otra posibilidad es afectar el contexto utilizando el acorde predecesor a modo de contexto, con el objeto
+de modelar la funci'on arm'onica que este estar'ia cumpliendo. Inclusive se podr'ia tambi'en agregar el acorde siguiente. Sin embargo, es peligroso agregar
+esta contextualizaci'on sin un mecanismo previo de abstracci'on para los acordes, puesto que existen mucho acordes ligeramente distintos entre si que en t'erminos
+musicales funcionan como el mismo acorde.
+
+Asumiendo una noci'on de contexto razonable, se podr'ia pensar a una pieza musical como una sucesi'on de contextos. Siendo asi, lo que determinar'ia el proceso generativo para 
+la repetici'on exacta de partes es, ante la repetici'on de un contexto, si se repetir'a lo que ya se toc'o en ese contexto, o se har'a
+algo nuevo. 
+
+Una posible forma de modelar este proceso generativo es contanto con un Restaurant Chino para cada contexto. Dado un cierto Restaurant, en cada mesa se encuentra
+escrita una posible frase para el contexto que le corresponde, y el hecho de que se observe en una pieza musical repetidas veces un contexto equivaldr'ia a que lleguen nuevas
+personas al Restaurant. Cada persona elegir'a una mesa, y se utilizar'a la partitura que se encuentra en ella para tocar en ese contexto. Si la mesa es una mesa 
+nueva esto equivaldr'a a que se componga una nueva frase para este contexto, aunque se puede pensar como si la partitura siempre hubiera estado en la mesa, s'olo 
+no fue observada hasta el momento.  
+
+Por ejemplo, sup'ongase que se cuenta con una pieza cuya sucesi'on de contextos es \texttt{A B B A A B C}. Dado que el conjunto de posibles contextos es
+\texttt{A, B} o \texttt{C}, habr'a tres Restaurantes en el sistema. El hecho de que el tema comienze con la parte \texttt{A} indica que llega una persona al 
+Restaurant asociado a esta parte. De esta forma, en la figura \ref{fig:crp_example} se exhibe una posible disposici'on de clientes en los tres Restaurantes 
+una vez que el tema ha finalizado:
+
+\begin{imagen}
+    \file{images/crp_example.png}
+    \labelname{fig:crp_example}
+    \desc{Posible configuraci'on final de los Restaurantes Chinos correspondientes a los contextos \texttt{A, B} y \texttt{C}}
+    \width{10cm}
+\end{imagen}
+
+
+Esto indica que para la parte \texttt{A} se han tocado 3 frases distintas, sin embargo, para la parte \texttt{B} se han tocado dos frases distintas. 
+Notar que para la parte \texttt{C} la 'unica alternativa es la que se exhibe en la figura.
+
+Formalmente, dada una sucesi'on de contextos $c_1, \cdots, c_n$, donde se espera que haya $k<n$ contextos distintos, se cuenta con $k$ Restaurantes Chinos indexados por contexto,
+es decir, $R_{c_i}$ es el Restaurant correspondiente al contexto $c_i$. 
+
+Recordar la propiedad de clustering establecida en la ecuaci'on \ref{eq:crp_clustering}, esta propiedad 
+establece que, dado el par'ametro de concentraci'on $\alpha$, la esperanza de la cantidad de mesas ocupadas luego del arrivo de $N$ clientes es proporcional a $\alpha\times log(N)$.
+De esta forma, el par'ametro $\alpha$ de alguna forma regular'ia el grado de variaci'on al que se refiere \cite{Deliege90}. 
+
+A modo de ejemplo, sup'ongase un valor de $\alpha=100$ y una sola persona
+en el restaurant. La probabilidad de que alguien se siente en una mesa nueva ser'ia 100 veces mayor a que repita la mesa donde esta el primer cliente. Sin embargo, si $\alpha=0.5$, 
+la probabilidad de que el segundo cliente elija la mesa donde esta el primero, es el doble a que elija una nueva mesa.
+
+Existe una salvedad t'ecnica que es importante aclarar. Hay que entender a este como un mecanismo que aumenta considerablemente la probabilidad de que se repita una parte ya tocada,
+sin embargo, el hecho de que se elijan dos mesas distintas no implica que se vayan a tocar dos partes distintas, puesto que la generaci'on de la parte correspondiente
+a cada mesa es independiente. Adem'as, el hecho de que la duraci'on del contexto sea finita, que el modelo para la r'itmica sea b'asicamente una expresi'on regular y 
+las notas posibles para tocar por el instrumento sean tambi'en finitas (en general no mucho m'as que dos octavas) hace que las posibles frases para un cierto contexto
+sean finitas. Dicho esto, si se repitiera demasiadas veces una parte, eventualmente la cantidad de mesas elegidas superar'ia a la cantidad de partes disponibles
+para tocar en ese contexto y se empezar'ian a repetir partes por una cuesti'on de finitud. 
+
+Este problema hay que tenerlo presente en la elecci'on de los predicados $S$ y $M$ de la secci'on \ref{sec:must_predicates}, puesto que en t'erminos pr'acticos esto 'unicamente
+ocurrir'ia si estos predicados son demasiado restrictivos, en cuyo caso el efecto de los Restaurantes Chinos ser'ia por dem'as marginal.
+
+
+\subsection{Repetici\'on aproximada de partes}
+Otra aproximaci'on posible (y m'as adecuada a lo que efectivamente pasa en la realidad) es, en lugar de repetir exactamente una frase, repetir una frase que de alguna forma se parezca. 
+A saber por el autor, no existe una definici'on operativa sobre qu'e es un motivo musical. Sin embargo se sabe que las elaboraci'ones mot'ivicas se relacionan 
+con patrones sobre las caracter'isticas ya modeladas en las secci'ones anteriores. Siendo as'i, una alternativa es, dada una frase $F$ tocada anteriormente y un modelo $M$ que la gener'o, 
+construir un nuevo modelo $M'$ que genere elaboraci'ones motivicas de esta. Se proponen dos propiedades que el modelo de elaboraciones mot'ivicas deber'ia cumplir:
+
+\begin{itemize}
+ \item Repetici'on: La probabilidad de la frase $F$ seg'un $M'$ debe ser ``considerablemente'' alta. 
+ \item Elaboraci'on: Si en el proceso de generar una frase $F'$ seg'un $M'$ eventualmente se toca algo que no pertenece a $F$, entonces la probabilidad de que la frase $F'$ se reacople a $F$ es alta.
+\end{itemize}
+
+La propiedad de \emph{repetici'on} se podr'ia modelar dentro de un marco bayesiano tomando el modelo original como un prior y la frase que actualize a un posterior. 
+Eligiendo adecuadamente el factor de peso que tiene el prior sobre la observaci'on de la frase, el comportamiento de que lo m'as probabe sea repetir la frase se cumple, 
+sin embargo, la propiedad de \emph{elaboraci'on} no estar'ia modelada.
+
+T'omese por ejemplo el modelo de markov de la r'itmica de la figura \ref{fig:rythm_mzt}. Sup'ongase que se realiz'o la siguiente caminata sobre el modelo:
+
+$$0, 2, 2+\frac{1}{2}, 0$$
+
+Mediante un posterior aplicado correctamente, podr'ia sesgarse a que si se est'a comenzando la frase, entonces la probabilidad de ir a $2$ es mucho m'as alta que la probabilidad de resto
+de las transiciones, sin embargo est'a totalmente subespecificado que es lo que ocurrir'ia en el caso que se elijiera ir a $1$ o a $\frac{1}{4}$. 
+
+Es por esto que se propone como trabajo a futuro investigar en una metodolog'ia para la construcci'on de modelos para elaboraci'ones mot'ivicas.
+
+\begin{imagen}
+    \file{images/rythm-mzt.png}
+    \labelname{fig:rythm_mzt}
+    \desc{Modelo entrenado a partir de un fragmento de Mozart, Piano Trio K.}
+    \width{5cm}
+\end{imagen}
+
+\section{El modelo completo}
+En esta secci'on se har'a un breve resumen sobre como todos los modelos planteados hasta el momento interactuan entre s'i para generar finalmente una melod'ia.
+En la figura \ref{fig:arquitectura} se exhibe un diagrama. En este, hay dos tipos de nodos. Los nodos circulares representan datos que se leen o que se escriben, y los nodos
+circulares representan modelos. A continuaci'on se enumeran las responsabilidades de cada modelo:
+
+
+\begin{imagen}
+    \file{images/arq.png}
+    \labelname{fig:arquitectura}
+    \desc{Descripci'on gr'afica de la arquitectura utilizada}
+    \width{9cm}
+    \position{!h}
+\end{imagen}
+
+\begin{itemize}
+ \item Pitch Profile: Construye el pitch profile definido en la secci'on \ref{sec:pitch_profile}.
+ \item Chord Detection: Aplica la heur'istica de detecci'on de acordes.
+ \item Contour Patterns: Calcula el modelo definido en la secci'on \ref{sec:contour_model}.
+ \item Notes Distribution: A partir del Pitch Profile y del acorde actual construye la distribuci'on de notas que aplica al contexto actual seg'un se defini'o en la secci'on \ref{sec:harmonic_context_model}.
+ \item Phrase Repetition: Utilizando el Restaurant Chino correspondiente al acorde actual, se elije un identificador para la parte actual como 
+ se defini'o en la secci'on \ref{sec:crp_model}.
+ \item Phrase Rhythm: Utilizando la duraci'on determinada por el acorde actual y el identificador determinado por la etapa de Phrase Repetition se 
+ genera una frase r'itmica como se defini'o en la secci'on \ref{sec:rythm_model}.
+ \item Pitch Phrase: Utilizando la r'itmica generada por la etapa de Phrase Rhythm, se llenan los \emph{slots} que esta determina, utilizando
+ como contexto arm'onico el determinado por Notes Distribution y utilizando como restricci'ones para el contorno mel'odico las determinadas por
+ Contour Patterns utilizando el algoritmo definido en la secci'on \ref{sec:phrase_model}.
+\end{itemize}
+
