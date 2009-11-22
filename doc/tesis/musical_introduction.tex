@@ -18,7 +18,7 @@ En lo subsiguiente se introducir'an ciertos conceptos de la teor'ia musical, pue
 para abordar los fundamentos cognitivos y los modelos propuestos. 
 
 Por 'ultimo, dado que a lo largo del presente trabajo se exhiben ejemplos, es necesario que el lector sepa comprender una partitura sencilla, de forma que se se 
-explicar'a brevemente como ciertos conceptos introducidos se notan en el lenguaje musical.
+explicar'a brevemente c'omo ciertos conceptos introducidos se notan en el lenguaje musical.
 
 \subsection{Sobre la organizaci\'on temporal}
 El primer concepto importante a tener en cuenta, es que el tiempo es \emph{discreto}. Esto no quiere decir que a la hora de la producci'on musical lo sea, sino que 
@@ -27,22 +27,20 @@ siempre notas que duren una fracci'on del mismo. De esta forma, para poder repro
 \emph{tempo}), luego el resto de las duraciones son una fracci'on de 'esta.
 
 
-En su libro, \citet*{LerdahlJackendoff83} hacen una distinci'on entre dos estructuras que ocurren en simultaneidad en la m'usica tonal:
+En \citet*{LerdahlJackendoff83} se hace una distinci'on entre dos estructuras que ocurren en simultaneidad en la m'usica tonal:
 La estructura \emph{m'etrica} y la estructura del \emph{agrupamiento}\footnote{\emph{meter} y \emph{grouping} en ingl'es}. 
-Esta distinci'on en t'erminos generales coincide con clasificaciones de otros autores (\alert{citas muchas!}), se toma la version de Lerdahl y Jackendoff 
-por ser esta m'as computacional.
 La estructura del agrupamiento hace referencia a la organizaci'on de una pieza musical en unidades que pueden ser motivos, frases, secciones, etc. 
 Cada una de estas unidades, es denominada por los autores como \emph{grupo}. Asimismo, el oyente infiere una estructura regular de beats. 
 Algunos beats reciben una acentuaci'on mayor que otros, determinando lo que los autores definen como la estructura m'etrica. Dentro de esta estructura
 existen distintos niveles, cada uno determinado por el tiempo transcurrido entre dos beats consecutivos. 
-Un nivel posible es el llamado \emph{tactus} que corresponde de alguna forma al \emph{beat principal del tema}\footnote{Cognition of basic musical structures, p'agina 52}.
 Se referir'a por contexto m'etrico de una pieza a la estructura m'etrica que se infiere a partir de esta.
 
 Ambas estructuras son jer'arquicas, en el sentido de que existen sub-estructuras a distintos niveles, y que las sub-estructuras de niveles superiores 
 incluyen por completo a las de nivel inferior
-\footnote{Para una definici'on m'as formal de la jerarqu'ia referirse a \cite[p. XXX]{LerdahlJackendoff83}}. De esta forma, una secci'on
+\footnote{Para una definici'on m'as formal de la jerarqu'ia referirse a \citet[cap. ~2]{LerdahlJackendoff83}}. De esta forma, una secci'on
 de una pieza musical estar'a formada por una sucesi'on de frases. Estas frases s'olo pertenecer'an a esa secci'on, sin embargo, esto no quiere decir
-que no se pueda repetir una frase en dos secciones distitnas, puesto que cada una pertenecer'a a una sola secci'on. 
+que no se pueda repetir una frase en dos secciones distitnas, puesto que cada una pertenecer'a a una sola secci'on. Obs'ervese que con esta definici'on
+niveles altos en la jerarqu'ia corresponen a secci'ones m'as largas en el tema.
 
 %\red{este parrafo no est'a bien, lo dejo para acordarme de reescribirlo}
 %
@@ -59,15 +57,17 @@ en una estructura m'etrica y de agrupamiento.
 
 Retomando con la duraci'on de las notas, dado que cada nota no puede tener una duraci'on arbitraria, y que esta duraci'on est'a relacionada con el tempo
 a trav'es de una fracci'on, existen s'imbolos y nombres para diferentes duraci'ones. 
-En la figura \ref{fig:durations} se muestran las figuras correspondientes a notas y silencios de distintas duraciones. Se denomina plica, a la barra vertical que surje 
+En la figura \ref{fig:durations} se muestran las figuras correspondientes a notas y silencios de distintas duraciones. De las figuras exhibidas, la relaci'on de duraci'ones
+es siempre del doble con respecto a otra: La redonda dura el doble que una blanca, la blanca dura el doble que una negra, etc. 
+Se denomina plica, a la barra vertical que surje 
 de la cabeza de las notas, con excepcion de la redonda. Es importante aclarar que cuando dos notas de duracion inferior o igual a una corchea se tocan juntas, 
 se unen las plicas, m'as adelante se dar'a un ejemplo.
 
 \begin{imagen}
-    \file{images/figures.png}
+    \file{images/note_values.jpg}
     \labelname{fig:durations}
     \desc{Figuras de ejemplo}
-    \width{12cm}
+    \width{10cm}
 \end{imagen}
 
 Las partituras luego se organizan en una serie de unidades, cada una denominada \emph{comp'as}. Todos los compases tienen la misma duraci'on, y esta se especifica
@@ -96,7 +96,7 @@ De esta forma, una \emph{negra con puntillo}, dura una negra y media.
 
 Para fijar conceptos, se exhibe una partitura de ejemplo en la figura \ref{fig:example_measure}. 
 La duraci'on del primer s'imbolo es $\frac{3}{4}=\frac{1}{2}\times\frac{3}{2}$,
-la duraci'on del segundo s'imbolo es $\frac{1}{4}$, puesto que tiene dos plicas, y eso indica que es una semicorchea. Luego sigue un silencio de negra,
+la duraci'on del segundo s'imbolo es $\frac{1}{4}$, puesto que tiene dos plicas, y eso indica que es una semicorchea. Luego sigue un silencio de negra
 y una negra ligada a una semi corchea, es decir, su duracion sera $1 + \frac{1}{4}$, luego sigue una semi corchea y un silencio de corchea, completando
 con la duraci'on total de 4 negras. La letra $c$ al principio del comp'as es una abreviaci'on para decir $\frac{4}{4}$.
 
@@ -115,42 +115,43 @@ Existen dos formas alternativas de denominar a las notas, la usual que utiliza l
 asigna letras a cada nota resultando en C, D, F, E, G, A y B respectivamente. Se utilizar'an ambas formas para referirse a las notas de forma
 intercambiable. 
 
-Continuando con las escalas, las escalas mayores y menores de la m'usica occidental, llamadas escalas diat'onicas, 
+Las escalas mayores y menores de la m'usica occidental, llamadas escalas diat'onicas, 
 son un subconjunto de siete alturas de la escala crom'atica.
-La escala crom'atica es aquella que divide, sobre una escala logar'itmica, en 12 partes iguales a las frecuencias cuya raz'on es 2. Por ejemplo, 
-la frecuencia de la nota $A$ es $440Hz$. En la tabla \ref{tab:cromatica} se exhibe las frecuencias de las notas de la escala crom'atica 
-comenzando desde $A$.
+La escala crom'atica es aquella que divide, sobre una escala logar'itmica, en 12 partes iguales a las frecuencias.
+En la tabla \ref{tab:cromatica} se exhibe las frecuencias de las notas de la escala crom'atica 
+comenzando desde $A$. Notar que la frecuencia de un $A$ es $440Hz$, y la frecuencia del otro $A$ es el doble.
 
-\begin{table}[h]
+\begin{figure}
 \begin{center}
-\begin{tabular}[c]{|l|c|}
-\hline
-\textbf{Nota} & \textbf{Frecuencia en $Hz$} \\
-\hline 
-A		&	440.00 \\
-A\#		&	466.16 \\
-B		&	493.88 \\
-C		&	523.25 \\
-C\#		&	554.37 \\
-D		&	587.33 \\
-D\#		&	622.25 \\
-E		&	659.26 \\
-F		&	698.46 \\
-F\#		&	739.99 \\
-G		&	783.99 \\
-G\#		&	830.61 \\
-A		&	880.00 \\ 
-\hline
-\end{tabular}
-\label{tab:cromatica} 
+    \begin{tabular}[c]{|l|c|}
+    \hline
+    \textbf{Nota} & \textbf{Frecuencia en $Hz$} \\
+    \hline 
+    A		&	440.00 \\
+    A\#		&	466.16 \\
+    B		&	493.88 \\
+    C		&	523.25 \\
+    C\#		&	554.37 \\
+    D		&	587.33 \\
+    D\#		&	622.25 \\
+    E		&	659.26 \\
+    F		&	698.46 \\
+    F\#		&	739.99 \\
+    G		&	783.99 \\
+    G\#		&	830.61 \\
+    A		&	880.00 \\ 
+    \hline
+    \end{tabular}
+ \caption{Frecuencias en Hertz de una octava comenzando de La 440Hz.}
+ \label{tab:cromatica}
 \end{center}
-\end{table}
+\end{figure}
 
 
 Utilizando la escala crom'atica se puede definir la noci'on de \emph{semitono} y de \emph{intervalo mel'odico}. Un semitono es la distancia
 entre dos notas consecutivas dentro de la escala crom'atica. Por ejemplo $E$ y $F$ est'an a un semitono de distancia. Un intervalo mel'odico, 
-es la distancia entre dos notas medida en semitonos .Dentro de la teor'ia musical, a estos intervalos se les pone un nombre que permite \red{>qu'e permite?}. 
-Como a lo largo de este trabajo no se utilizaran los nombres de los intervalos mel'odicos, se los nombrar'a como la cantidad de semitonos que separa
+es la distancia entre dos notas medida en semitonos. Dentro de la teor'ia musical, a estos intervalos se les pone un nombre que permite recordarlos 
+facilmente, sin embargo a lo largo de este trabajo no se utilizar'an estos nombres y se los nombrar'a como la cantidad de semitonos que separa
 a las notas que lo conforman. Por ejemplo, las notas $A$ y $B$ est'an a 2 semitonos de distancia, por lo que el intervalo mel'odico
 se notar'a como \IM{2}. 
 
@@ -168,10 +169,10 @@ Si se observa el intervalo que forma cada nota respecto de la anterior, el patr'
 \IM{2} \IM{2} \IM{1} \IM{2} \IM{2} \IM{2} \IM{1}
 \end{center}
 
-Si se rota este patr'on un lugar hacia la izquierda, se obtiene el patr'on que forman las escalas menores:
+Si se rota este patr'on dos lugares hacia la derecha, se obtiene el patr'on que forman las escalas menores:
 
 \begin{center}
-\IM{2} \IM{1} \IM{2} \IM{2} \IM{2} \IM{1} \IM{2} 
+\IM{2} \IM{1} \IM{2} \IM{2} \IM{1} \IM{2} \IM{2} 
 \end{center}
 
 De esta forma, la escala mayor de C estar'a formada por las notas C, D, E, F, G, A, B, mientras que la escala menor de C estar'a formada
@@ -180,20 +181,46 @@ de escribirlo es C, D, Eb, F, G, Ab, Bb, ya que cada nota debe aparecer solo una
 de lo que se desea transmitir}
 
 
+\red{Favio, no me retes si chamuye mucho, para escribir sobre los silencios tenia que explicar que es un acorde de subdominante y dominante y tuve
+que dar un poco de armonia. Esto lo escribi a ultimo momento, y la verdad es que es terreno semi patinoso para mi, asi que te voy a pedir que le 
+prestes especial atencion =)}
 Por 'ultimo, la entidad restante a hacer mensi'on es el \emph{acorde}. Un acorde est'a formado por tres o m'as notas. Cada acorde abarca una regi'on
-en el tema, y dentro de la regi'on de dominancia ser'a el foco arm'onico.
+en el tema, y dentro de esta regi'on ser'a el foco arm'onico. Los acordes pueden ser de dos tipos: diat'onicos o no. 
+Los acordes diat'onicos se forman a partir de elegir una fundamental un subconjunto de notas de la escala ordenadas en saltos de 
+aproximadamente 3 o 4 semitonos. 
+Esto no quiere decir que que siempre los acordes se conformen por saltos de 3 o 4 semitonos, sino que estos saltos son tomados como punto de referencia
+de la misma forma que la t'onica es tomada como punto de referencia en la tonalidad.
+De esta forma, dentro de la escala de Do mayor el acorde diat'onico para la fundamental de Sol ser'a Sol mayor. 
+
+La armon'ia postula que la m'usica es una sucesi'on de tensiones y resoluciones, y en este marco, la funci'on que cumple un acorde, es generar una cierta
+tensi'on 'o resoluci'on dentro de la tonalidad. Dado que lo importante en una escala es el patr'on de intervalos que se forman entre sus notas, y 
+no cual es la t'onica, en general en el estudio de la armon'ia se abstrae esto y se nombra a los acordes en relaci'on al intervalo que forma su
+fundamental con la t'onica. De esta forma, el acorde de Sol mayor en la tonalidad de Do pasa a llamarse acorde de quinta, puesto que la nota Sol
+es la quinta nota de la escala de Do. Cuando se utiliza notaci'on escrita, se utilizan n'umeros romanos, por lo tanto el acorde reci'en mensionado
+se llamar'a V. 
+
+La tensi'on que generan los acordes est'a altamente relacionada con los intervalos que estos tienen dentro (los grupos de notas tomados de a pares).
+Todo gira en torno al intervalo del tritono, que como su nombre indica tiene 3 tonos, es decir 6 semitonos de longitud. Este intervalo genera una 
+tensi'on que se resuelve en una tercera mayor. Dentro de una escala mayor o menor, hay un 'unico tritono. Por ejemplo, en la escala de Do mayor, 
+las 'unicas dos notas de esta escala que forman este intervalo son B y F y estas \emph{resuelven} en la tercera mayor formada por
+C, E. De esta forma, un acorde que tenga las notas B y F generar'a una fuerte tensi'on hacia un acorde que tenga las notas C y E. Si un acorde
+tiene alguna de las dos notas del tritono generar'a una tensi'on parcial. De esta forma, los acordes se clasifican en tres tipos: de t'onica,
+de subdominante y de dominante. Los acordes de dominante, son aquellos que tienen el tritono dentro de sus notas, los de subdominante, son los 
+que tienen al menos una nota del tritono, y los de t'onica, no solo no tienen ninguna nota del tritono, sino que deben tener la t'onica
+de la escala.
+
 
 Tornando el foco a la lectura musical, existen dos elementos que permiten notar de significado las l'ineas y espacios del pentagrama: la clave
 y la armadura de clave. La clave asigna una nota a un rengl'on en particular, y la armadura permite especificar en que escala se tocar'a. 
 Dado que a lo largo de este trabajo solo se dar'an ejemplos sobre la tonalidad mayor, se obviar'a la explicaci'on de que es la armadura de clave. 
 La clave utilizada para todos los ejemplos de esta tesis ser'a la clave de sol que determina que la segunda l'inea, contando de abajo hacia
 arriba, ser'a la nota G. El espacio entre esta l'inea y la siguiente, ser'a la nota A, y as'i sucesivamente. Si se deseara especificar
-la nota A\#, basta con anteponer el s'imbolo \# a la cabeza de la nota. En la figura \label{fig:escala_mayor} se exibe la escala de C mayor.
+la nota A\#, basta con anteponer el s'imbolo \# a la cabeza de la nota. En la figura \ref{fig:escala_mayor} se exibe la escala de C mayor.
 
 
 \begin{imagen}
     \file{images/major_scale.png}
     \labelname{fig:escala_mayor}
-    \desc{Escala mayor de C}
+    \desc{Escala mayor de Do}
     \width{12cm}
 \end{imagen}

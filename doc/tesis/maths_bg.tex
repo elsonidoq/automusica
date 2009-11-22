@@ -22,10 +22,10 @@ creencia previa dada por $P(\theta)$ junto con la evidencia dada por $x_1,\cdots
 Utilizando la ley de Bayes y la ley de probabilidad total, es posible reescribir la distribuci'on a posteriori de $\theta$ en funci'on de su creencia previa y 
 la probabilidad de la observaci'on:
 
-\begin{align}
+\begin{align*}
 P(\theta|x_1,\cdots,x_n) &= \frac{P(x_1,\cdots,x_n|\theta) P(\theta)}{P(x_1,\cdots,x_n)} \\
                          &= \frac{P(x_1,\cdots,x_n|\theta) P(\theta)}{\int_\theta{P(x_1,\cdots,x_n|\theta)P(\theta)\mathrm{d}\theta}}
-\end{align}
+\end{align*}
 
 Utilizando ahora la creencia a posteriori sobre $\theta$, la probabilidad de una nueva observaci'on $x$ est'a dada por
 
@@ -37,15 +37,13 @@ sea ese el valor que parametriza a la distribuci'on que genera las obervaciones.
 
 Un principal problema al aplicar estas t'ecnicas es la resoluci'on de las integrales sobre el espacio de par'ametros, que suele ser multidimensional. 
 Sin embargo, hay casos en donde se conocen expresiones anal'iticas para la probabilidad a posteriori de los par'ametros, y en ese caso, se puede utilizar
-como p'arametro $E(\theta|x_1,\cdots,x_n)$, \alert{argumentar bien, montacarlo de la intergral converje a la esperanza}.
+como p'arametro $E(\theta|x_1,\cdots,x_n)$ \alert{argumentar bien, montacarlo de la intergral converje a la esperanza}%\footnote{El lector interesado en la justificaci'on referirse a ??? %}.
 
 Un caso conocido es cuando se modelan los datos como provenientes de una distribuci'on multinomial. En este caso, si se codifica la creencia previa
 sobre $\theta$ como una distribucion Dirichlet, se puede calcular de una forma muy facil la distribuci'on a posteriori de $\theta$ dado por la siguiente
 f'ormula:
 
-\begin{align}
-    \theta \sim Dirichlet(\alpha_1,\cdots,\alpha_k) \Rightarrow \theta|x_1,\cdots,x_n \sim Dirichet(\alpha_1+n_1,\cdots,\alpha_k+n_k)
-\end{align}
+$$ \theta \sim Dirichlet(\alpha_1,\cdots,\alpha_k) \Rightarrow \theta|x_1,\cdots,x_n \sim Dirichet(\alpha_1+n_1,\cdots,\alpha_k+n_k)$$
 
 Donde los valores $x_i$ pueden tomar uno de $k$ valores posibles, y $n_j=\sum_{i=1}^n\delta_{x_i, v_j}$, siendo $v_j$ el j-'esimo posible valor que puede tomar $x_i$, y
 $\delta_{a,b} = 1 \Leftrightarrow a = b$, si no, $\delta_{a, b} = 0$. 
@@ -76,7 +74,7 @@ $$E(\theta|x_1,\cdots,x_n)=\frac{\alpha_i + n_i}{\sum_{j=1}^{k}{\alpha_j+n_j}}$$
 %
 
 \subsection{Cadenas de Markov}
-Supongamos que se desea modelar la evoluci'on de un sistema con respecto al tiempo. Es de esperarse que 
+Sup'ongase que se desea modelar la evoluci'on de un sistema con respecto al tiempo. Es de esperarse que 
 el estado en el que se encuentra el sistema en cierto momento de alguna forma tenga que ver con la historia por la que este transit'o
 previamente. 
 
@@ -109,5 +107,35 @@ $P(no\ lluvia | lluvia)  $ & $=0.3$ & $P(no\ lluvia | no\ llueve) $ & $=0.7$\\
     \width{5cm}
 \end{imagen}
 
+Esta introducci'on es por dem'as corta e incompleta, sin embargo en esta tesis s'olo se utilizar'an las cadenas de Markov para luego realizar una caminata al azar sobre ellas. 
+Si se desea profundizar en el tema, leer \cite{Rabiner90}.
 
 
+\subsection{Restaurantes chinos}
+El modelo de los restaurantes chinos (\emph{Chinese restaurants}) es un modelo originado en la rama de estad\'istica bayesiana.
+Este modelo y otros similares, como el Buffet Indio (\emph{Indian Buffet}), han ganado mucha popularidad en aplicaci'ones como clustering no param'etrico 
+y estimaci'on de distribuci'ones de probabilidades en espacios de muchas dimensiones.
+
+Dado que el uso que se le dar'a a este modelo es puramente generativo, no se har'a incapi'e en los mecanimos necesarios para realizar inferencia\footnote{El lector interesado en profundizar en este tema refierase a \cite{Teh2007}.}.
+Concretamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Parece ser que los restaurantes chinos de San Fansisco aparentan ser infinitos, y esto dio origen al nombre.}. 
+En cada mesa, a su vez, pueden sentarse una cantidad no acotada de clientes. Inicialmente todas las mesas se encuentran vac'ias, 
+y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elejir una mesa de las ya ocupadas. 
+Esto lo hace con la siguiente distribuci'on:
+\begin{align}
+\label{eq:crp_evolution}
+P(\text{sentarse en mesa vacia}) =&\; \alpha/(N + \alpha)\\
+P(\text{sentare en mesa } i) =&\; N(i)/(N + \alpha)
+\end{align}
+
+Siendo $N$ es la cantidad total de clientes en el restaurant, $N(i)$ es la cantidad de clientes en la mesa $i$, y $\alpha$ es un 
+par'ametro que determina la \emph{concentraci'on} de clientes en cada mesa. Una propiedad que se utilizar'a m'as adelante es la llamada \emph{clustering property} de los Restaurantes Chinos.
+Esta propiedad establece que si $m$ es la cantidad de mesas ocupadas, entonces
+
+\begin{align}
+\label{eq:crp_clustering}
+E(m|N) \in O(\alpha\times log(N))
+\end{align}
+
+Este fen'omeno es conocido tambi'en como la propiedad de ``el rico se vuelve m'as rico''\footnote{\emph{The rich-gets-richer phenomenon} en ingl'es}. Este fen'omeno es el descripto por
+las ecuaci'ones \ref{eq:crp_evolution}, puesto que la probabilidad de que alguien se siente en una mesa ocupada depende de la cantidad de gente ya sentada, entonces, el hecho
+de que alguien se siente en una mesa aumenta la probabilidad de que en el futuro alguien elija esa mesa.

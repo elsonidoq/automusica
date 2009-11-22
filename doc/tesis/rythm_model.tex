@@ -10,7 +10,7 @@ Es por esto que un patr'on temporal as'i descripto es interpretado de forma dist
 
 Siguiendo la teor\'ia de Lerdahl y Jackendoff el acento m'etrico es una construcci'on que si bien es jer'arquica, lo niveles altos no son percibidos, puesto
 que en esos niveles entran en juego los acentos estructurales y los acentos fenom'enicos. De esta forma se habla de la \emph{localidad} de los acentos m'etricos: 
-s'olo se perciben a niveles bajos en la jerarqu'ia\footnote{meter en la intro la nocion de nivel alto $\leftrightarrow$ timespan largo}. 
+s'olo se perciben a niveles bajos en la jerarqu'ia. 
 
 La estructura m'etrica permite organizar los distintos puntos en el tiempo en clases de 
 equivalencia de forma tal que dos puntos distintos en el tiempo que pertenezcan a la misma clase de equivalencia ser'an percibidos de forma similar\cite{Benjamin84}. 
@@ -37,7 +37,7 @@ de funci'on de clases de equivalencia $c$ de la siguiente forma:
 Dada una nota $n$, se define su clase de equivalencia $c$ como $$c(n) = onset(n)\mod p$$
 \end{definition}
 
-Esta definici'on pretende capturar cierta esencia de la noci'on de clase de equivalencia entre acentos m'etricos definida por Benjamin \citep{Benjamin84}. Observar que asumendo 
+Esta definici'on pretende capturar cierta esencia de la noci'on de clase de equivalencia entre acentos m'etricos definida por \cite{Benjamin84}. Observar que asumendo 
 una elecci'on de $p$ adecuada, todos los posibles acentos m'etricos son representados, sin embargo, distintos valores de la funci'on $c$ podr'ian recibir el mismo acento m'etrico 
 
 P'ongase como ejemplo el de la partitura de Figura \ref{fig:simple_measure}. La sucesi'on de onsets que ocurren en ella son 
@@ -79,7 +79,7 @@ La figura \ref{fig:reggae_rhythm}  muestra una partitura sencilla con dos c'elul
 \begin{imagen}
     \file{images/reggae.png}
     \labelname{fig:reggae_rhythm}
-    \desc{Una celula r\'itmica de ejemplo}
+    \desc{Dos compases para entrenar el modelo}
 \end{imagen}
 
 Suponiendo que el valor elegido para el per'iodo $p$ es el de $4$ negras, entonces, la partitura quedar'ia segmentada en sus dos compases. 
@@ -95,7 +95,7 @@ Por lo tanto, cocientando los onsets m'odulo el per'iodo y estimando las transic
     \desc{El modelo generado a partir de la r'itmica de la Figura \ref{fig:reggae_rhythm_markov}}
 \end{imagen}
 
-No se han dibujado las probabilidades en las transiciones puesto que no tienen sentido en este ejemplo por ser muy chico. Sin embargo, a modo de ejemplo, en este caso
+No se han dibujado las probabilidades en las transiciones puesto que no tienen sentido en este ejemplo por ser muy chico. Sin embargo, para ilustrar la cuenta:
 $$p(\frac{1}{3}|0) = \frac{n(0, \frac{1}{3})}{n(0)} = \frac{1}{2}$$
 
 \subsection{El proceso generativo}
@@ -107,10 +107,10 @@ forma:
   \item Sea \emph{offset} la suma de los onsets generados hasta el momento. 
   \item Elejir el estado $f$ seg'un la matriz de transiciones
   \begin{enumerate}
-    \item Si $f > e$, entonces generar el onset \emph{offset} $+ f-e$
-    \item Si $f \leq e$, entonces generar el onset \emph{offset} $+ f + p - e$
-    \item Sea $onset$ el onset reci'en generado
+    \item Si $f > e$, entonces sea $onset=$ \emph{offset} $+ f-e$
+    \item Si $f \leq e$, entonces sea $onset=$ \emph{offset} $+ f + p - e$
   \end{enumerate}
+  \item Generar un onset con el valor de $onset$
   \item Actualizar \emph{offset} $= onset$
 \end{enumerate}
 
@@ -139,7 +139,7 @@ pasa desapercibido del resto de los acentos. Se entiende que este valor es subje
 
 Dado que la entrada al algoritmo, es de hecho, una partitura, una primera aproximaci'on para inferir el valor $p$, es utilizar la informaci'on del comp'as. 
 Esta aproximaci'on tiene la ventaja de que no es necesario realizar ning'un c'omputo, sin embargo, el comp'as escrito en la partitura no necesariamente refleja la jerarqu'ia
-m'etrica inferida por un oyente al escuchar esa partitura puesto que el comp'as en la partitura escrita tambi'en cumple un rol organizativo que facilite la lectura. \mycomment{Favio, te parece contar lo que en su momento hablamos sobre el tango y los compases alargados? (dos de 3/4 que se unen)?}
+m'etrica inferida por un oyente al escuchar esa partitura puesto que el comp'as en la partitura escrita tambi'en cumple un rol organizativo que facilite la lectura. 
 
 Una segunda aproximaci'on consistir'ia en dise~nar un algoritmo que infiera la jerarqu'ia de acentos m'etricos de la partitura. Esto se ha realizado con anterioridad por
 \cite{Temperley2001}. Dentro de este software se encuentran implementadas distintas reglas de preferencia definidas por Lerdahl y Jackendoff y 
@@ -176,9 +176,12 @@ Dada una nota $n$, se define su secuencia de entrenamiento como un par ordenado 
 \end{definition}
 
 De esta forma, asumiendo $p=4$, la traducci'on ahora ser'a:
+
+\begin{figure}
 \begin{center}
-\begin{tabular}{c c} 
-\label{fig:multi_rythm_translation}
+\begin{tabular}{c | c} 
+onset & offset \\
+\hline
 0 & 1 \\
 1 & 0 \\
 2 & 3 \\
@@ -186,8 +189,10 @@ De esta forma, asumiendo $p=4$, la traducci'on ahora ser'a:
 3 & 0 \\
 3 & 0 \\
 \end{tabular}
-\newline
-\textbf{Figura \ref{fig:multi_rythm_translation}}: Traducci'on correcta de la partitura de la figura \ref{fig:multi_rythm}
+\caption{ Traducci'on correcta de la partitura de la figura \ref{fig:multi_rythm}}
+\label{fig:multi_rythm_translation}
 
 \end{center}
+\end{figure}
 
+Observar que de graficar la cadena de Markov, esta quedar'ia disconexa en este caso. Esto ocurre porque el ejemplo es muy chico, en piezas musicales mayores esto deja de ocurrir.

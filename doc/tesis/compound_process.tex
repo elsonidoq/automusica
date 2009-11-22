@@ -4,25 +4,22 @@ un proceso generativo para componer lineas mel'odicas de forma relativamente sen
 Tener en cuenta que dependiendo de la elecci'on del modelo de contorno mel'odico, la cadena de Narmour o la distribuci'on de Narmour, el algoritmo se ver'a
 afectado. El primer modelo permite elegir un conjunto de notas candidatas, mientras que el segundo permite incorporar dentro de una distribuci'on de 
 probabilidades el modelo de contornos melodicos con el modelo del contexto arm'onico. 
-A continuaci'on se definir'a el algoritmo utilizando el modelo de Markov para elegir los intervalos mel'odicos, se exhibira el pseudoc'odigo 
-para que quede en una representaci'on compacta, sin embargo se deduce de los roles que se le asign'o a cada modelo: 
-para cada nota a generar, el modelo de la r'itmica eligir'a su duraci'on, mientras que el modelo de Narmour elijir'a el tipo de intervalo que deber'a 
-tocarse en funci'on del 'ultimo intervalo tocado, y por 'ultimo el modelo del contexto arm'onico elijir'a una nota dentro de las que forman 
-el intervalo determinado por el modelo de Narmour de acuerdo a la tonalidad inferida.
+A continuaci'on se definir'a el algoritmo exhibiendo el pseudoc'odigo para que quede en una representaci'on compacta, 
+sin embargo se deduce de los roles que se le asign'o a cada modelo: 
+para cada nota a generar, el modelo de la r'itmica eligir'a su duraci'on, mientras que el modelo de Narmour en conjunto con el de contexto arm'onico 
+elijir'an su altura tocarse en funci'on del 'ultimo intervalo tocado.
 
 \begin{algoritmo}
-create_melody(rhythm_model, harmonic_context, contour_model, duration, available_notes)
+create_melody(rhythm_model, harmonic_context, contour_model, total_duration, available_notes)
     notes := []
-    while last_note.end < duration
+    while last_note.end < total_duration
         new_duration := rythm_model.next_duration()
-        new_interval_type := contour_model.next_interval_type()
 
-        candidate_notes := []
-        for candidate_note in available_notes
-            if interval_type(last_note, n) = new_interval_type
-                candidate_notes.append(candidate_note)
-
-        new_pitch := harmonic_context.pick_note(candidate_notes)
+        pitch_distribution= {}
+        for note in available_notes
+            prob := harmonic_context.get_prob(note)*contour_model.get_prob(note)
+            pitch_distribution[note] := prob 
+        new_pitch := pick(pitch_distribution)
 
         last_note := Note(last_note.start, new_duration, new_pitch)
         notes.append(last_note) 
@@ -30,15 +27,11 @@ create_melody(rhythm_model, harmonic_context, contour_model, duration, available
     return notes
 \end{algoritmo}
 
-Hay una diferencia entre los dos modelos de Narmour que es importante aclarar. Observar que el algoritmo elije primero un intervalo mel'odico, y luego
-elije una nota restringida a que cumpla con ese intervalo mel'odico. Es decir, si se definen variables aleatorias $d_j, i_j, n_j$ para la duraci'on, 
-el tipo de intervalo mel'odico con la codificaci'on definida en \ref{sec:markov_narmour}, y la altura j-'esimas, la probabilidad de tocar una cierta nota estar'a definida de la siguiente forma:
+Notar que el diccionario pitch\_distribution no necesariamente suma 1, sin embargo no es necesario que sume uno, puesto que lo que se desea es elejir un elemento con
+probabildad proporcional al valor que este le atribuye, que es lo que hace la funci'on \emph{pick}.
 
-$$P(d_j, n_j | d_{j-1}, i_{j-1}) = P(d_j|d_{j-1})P(i_j| i_{j-1})P(n_j | i_j, \theta)$$
-
-Es decir, se esta condicionando la elecci'on de la altura al tipo de intervalo mel'odico, cuando al utilizar el otro\alert{ponerle nombre} modelo,
-la variable $i$ desaparece y la expresi'on quedar'a:
+De esta forma se puede expresar en t'erminos probabil'isticos la elecci'on total de cada nota. Sean $d_j$ la sucesi'on de duraci'ones y $n_j$ 
+la sucesi'on de notas, y $\theta$ el vector de par'ametros del contexto arm'onico, entonces la probabilidad de una nota estar'a dada por:
 
 $$P(d_j, n_j | d_{j-1}, n_{j-1}, n_{j-2}) = P(d_j|d_{j-1})P(F_1(n_{j-2}, n_{j-1}, n_j), \cdots, F_k(n_{j-2}, n_{j-1}, n_j)) P(n_j | \theta)$$
 
-\section{Sobre los silencios}
