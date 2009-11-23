@@ -1,0 +1,25 @@
+digraph G {
+    "Score"[shape="box"];
+    "Onset Generation"[shape="box"];
+    "Pitch Generation"[shape="box"];
+    "Score"             -> "Chord Detection";
+    "Score"             -> "Pitch Profile";
+    "Score"             -> "Contour Patterns";
+
+    "Chord Detection"   -> "Notes Distribution";
+    "Chord Detection" -> "Phrase Repetition";
+    "Pitch Profile"     -> "Notes Distribution";
+
+    "Chord Detection" -> "Phrase Rhythm";
+    "Phrase Rhythm" -> "Onset Generation";
+
+    "Phrase Rhythm"      -> "Pitch Phrase"; 
+    "Notes Distribution" -> "Pitch Phrase"; 
+
+
+    "Phrase Repetition"     -> "Phrase Rhythm";
+    "Phrase Repetition"     -> "Pitch Phrase";
+    "Pitch Phrase"          -> "Pitch Generation"
+    "Contour Patterns"      -> "Pitch Phrase";
+
+}
