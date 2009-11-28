@@ -1,8 +1,8 @@
 <html>
 <head>
-<script type="text/javascript" src="/javascripts/prototype.js"></script>
-<script type="text/javascript" src="/javascripts/DP_Debug.js"></script>
-<script type="text/javascript" src="/javascripts/Sound.js"></script>
+<script type="text/javascript" src="javascripts/prototype.js"></script>
+<script type="text/javascript" src="javascripts/DP_Debug.js"></script>
+<script type="text/javascript" src="javascripts/Sound.js"></script>
 <title>API Test Page</title>
 </head>
 <body>
@@ -24,7 +24,8 @@
 <tr>
     <td>    
 <a href="#" onclick="sound = new Sound()">new sound</a> <br />
-<a href="#" onclick="sound.loadSound('http://localhost:8000/vals_corto1.mp3', true)">loadSound</a> <br />
+<a href="#" onclick="sound.loadSound('mp3/vals_corto1.mp3', true)">loadSound</a> <br />
+<!--<a href="#" onclick="sound.loadSound('http://lafhis.dc.uba.ar/~pzivic/new_narmour_model/coral_bach_solito.mp3', true)">loadSound</a> <br />-->
 <a href="#" onclick="sound.start()">start</a> <br />
 <a href="#" onclick="sound.stop()">stop</a> <br />
 <a href="#" onclick="Object.dpDump(sound.getId3());">getId3</a> <br />
