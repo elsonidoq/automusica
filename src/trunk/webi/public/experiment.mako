@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <title> Experimentando con la percepci&oacute;n musical </title>
-	<script type="text/javascript" src="js/jquery.js"></script>
-	<script type="text/javascript" src="js/ui.core.min.js"></script>
-    <script type="text/javascript" src="js/jquery.jplayer.js"></script>
+	<script type="text/javascript" src="/js/jquery.js"></script>
+	<script type="text/javascript" src="/js/ui.core.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.jplayer.js"></script>
     
 
 	<style type="text/css">
-		#loader {display:none; padding-left:20px; background:url(images/bigCircleBall.gif) no-repeat center;}
+		#loader {display:none; padding-left:20px; background:url(/images/bigCircleBall.gif) no-repeat center;}
 		.play_button_enabled {}
 		.play_button_disabled {display:none;}
 	</style>
@@ -21,6 +21,7 @@
 /*            ready: function () {
                 play('http://lafhis.dc.uba.ar/~pzivic/new_narmour_model/coral_bach_solito.mp3');
             }*/
+            swfPath:'/js/'
         })
         .onProgressChange( function(lp,ppr,ppa,pt,tt) {
             if (player.is_muted && lp < 100) {
@@ -46,9 +47,9 @@
 
 
 	<!-- Star Rating widget stuff here... -->
-	<script type="text/javascript" src="js/ui.stars.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/ui.stars.css"/>
-	<link rel="stylesheet" type="text/css" href="css/crystal-stars.css"/>
+	<script type="text/javascript" src="/js/ui.stars.js"></script>
+	<link rel="stylesheet" type="text/css" href="/css/ui.stars.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/crystal-stars.css"/>
     
 	<script type="text/javascript">
 		$(function(){
@@ -61,7 +62,7 @@
 	</script>
 
     <!-- CSS -->
-	<link rel="stylesheet" type="text/css" href="css/demos.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/demos.css"/>
     <style>
         *, html {
             padding:0;
@@ -76,13 +77,14 @@
 </head>
 <body style="margin:0 auto;" onload="javascript:resize();">
     <div id="jplayer"></div>
+    <input type="hidden" id="visitor_id" value="${visitor_id}"/>
     <div id="content">
         <div id="player" style="position:absolute;top:35%;width:100%">
             <div id="wrapper" style="text-align:center;position:relative;"> 
                 <a href="#" class="play_button_enabled" onclick="javascript:player.next()">
-                <img border="0" src="images/play_blue.png"/>
+                <img border="0" src="/images/play_blue.png"/>
                 </a>
-                <img border="0" class="play_button_disabled" src="images/play_gris.png" />
+                <img border="0" class="play_button_disabled" src="/images/play_gris.png" />
 <!--                <span class="track-title" style="font-size:64px;">Nombre de la cancion</span> -->
             </div> 
 
@@ -152,11 +154,8 @@
             $("#stars").stars("selectID", -1); //para remover la seleccion
         }
         
-        var playlist = ['mp3/vals_corto1.mp3',
-                        'mp3/vals_corto2.mp3'];
-/*        var playlist = ['http://www.archive.org/download/Behind/SyncFilmicoBehind.mp3', 'http://lafhis.dc.uba.ar/~pzivic/new_narmour_model/coral_bach_solito.mp3',
-                        'mp3/vals_corto1.mp3'];*/
-            player = new Player(playlist);
+        var playlist = ${playlist};
+        var player = new Player(playlist);
             
         var onRate = function(ui, type, value) {
             //console.log(data);
@@ -166,13 +165,20 @@
             }
             setTimeout(next, 1000);*/
             //console.log(player._current_idx);
-            if (player._current_idx + 1 < player.playlist.length) {
-                $("#stars-container").slideUp();
-                $(".play_button_enabled").show();
-                $(".play_button_disabled").hide();
-            } else {
-                document.location= "gracias.html";
-            }
+            var d= {visitor_id:$("#visitor_id").val(), value: value};
+            console.log(d);
+            console.log(d.visitor);
+            console.log(d.value);
+            $.post('/experiment/rated', d , function(data) {
+
+                if (player._current_idx + 1 < player.playlist.length) {
+                    $("#stars-container").slideUp();
+                    $(".play_button_enabled").show();
+                    $(".play_button_disabled").hide();
+                } else {
+                    document.location= "gracias.html";
+                }
+            });
         }
         
         var resize = function() {
