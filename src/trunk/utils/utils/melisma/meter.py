@@ -29,7 +29,7 @@ default_meter_params= dict(\
 def meter(notes, **params):
     assert all(k in default_meter_params for k in params)
 
-    notes=['Note %s %s %s' %(n.start, n.start+n.duration,n.pitch) for n in notes if not n.is_silence][:250]
+    notes=['Note %s %s %s' %(n.start, n.start+n.duration,n.pitch) for n in notes if not n.is_silence]
     stdin= '\n'.join(notes)
 
     executable= path.join(bins_path, 'meter')
