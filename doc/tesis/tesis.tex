@@ -98,6 +98,7 @@
 
 
 \theoremstyle{definition} \newtheorem{axiom}{Axioma}
+\theoremstyle{theorem} \newtheorem{teorema}{Teorema}
 
 \begin{document}
 \bibliographystyle{plainnat}
@@ -174,15 +175,18 @@
 \input{introduction}
 \input{state_of_the_art}
 \chapter{Background}
+\label{cap:background}
 \input{musical_introduction}
 \input{maths_bg}
 \chapter{Modelos nota a nota}
+\label{cap:notenote}
 \input{note_note_models_intro}
 \input{rythm_model}
 \input{harmonic_context}
 \input{contour_model}
 \input{compound_process}
 \chapter{Modelos jer\'arquicos}
+\label{cap:jerar}
 \label{cap:modelos_jerarquicos}
 \input{phrases}
 \input{motif}
@@ -192,17 +196,17 @@
 \input{results}
 \input{further_work}
 
-\appendix
-\noappendicestocpagenum
-\addappheadtotoc
-
-% Adjustments headers
-\pagestyle{fancy}
-\fancyhead[LO]{\leftmark}
-\fancyhead[RE]{\emph{Ap\'endice \thechapter}}
-\renewcommand{\headrulewidth}{0.5pt}
-
-\input{programming}
+%\appendix
+%\noappendicestocpagenum
+%\addappheadtotoc
+%
+%% Adjustments headers
+%\pagestyle{fancy}
+%\fancyhead[LO]{\leftmark}
+%\fancyhead[RE]{\emph{Ap\'endice \thechapter}}
+%\renewcommand{\headrulewidth}{0.5pt}
+%
+%\input{programming}
 
 %\bibliographystyle{apalike}
 \bibliography{tesis}

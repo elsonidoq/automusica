@@ -1,8 +1,8 @@
-
 \section{Background matem\'atico}
+\label{sec:math_bg}
 \subsection{Sobre estad\'istica bayesiana}
-Una de las desiciones sobre el alcance de este trabajo es que los modelos construidos ser'an entrenados s'olo con un tema de por vez. 
-Esta decisi'on evita el problema de tener que combinar la informaci'on proporcionada por varias piezas musicales, sin embargo, el precio que debe pagarse 
+Una de las decisiones sobre el alcance de este trabajo es que los modelos construidos ser'an entrenados s'olo con un tema por vez. 
+Esta decisi'on evita el problema de tener que combinar la informaci'on proporcionada por varias piezas musicales. Sin embargo, el precio que debe pagarse 
 es que para muchos modelos de los que se expondr'an no alcanza solamente con entrenar con una pieza musical, puesto que ciertas estimaciones no ser'ian estad'isticamente 
 significativas. 
 
@@ -11,13 +11,13 @@ y luego actualizar esta creencia previa con la evidencia observada. De esta form
 como creencia previa alg'un estudio donde se haya puesto a prueba esta teor'ia. 
 
 Otra raz'on para utilizar creencias previas es para estimar distribuci'ones de probabilidades suaves, en el sentido de que no asignen valor $0$ a un evento 
-por el s'olo hecho de no haberlo observado en la etapa de entrenamiento. Esta propiedad ser'a utilizada para el trabajo con contextos arm'onicos.
+por el s'olo hecho de no haberlo observado en la etapa de entrenamiento. 
 
-Escribiendo esto matem'aticamente, sup'ongase que se cuenta con un modelo parametrizado por un vector $\theta$. 
-La creencia previa sobre el fen'omeno a modelar, b'asicamente estar'ia restringiendo \emph{a priori} que tipo de par'ametros son m'as probables que otros, 
-de esta forma, esta informaci'on se codifica como una distribuci'on de probabilidades sobre $\theta$, $P(\theta)$. 
+Escribiendo esto matem'aticamente, sup'ongase que se cuenta con un mo\-delo parametrizado por un vector $\theta$. 
+La creencia previa sobre el fen'omeno a modelar, b'asicamente estar'ia restringiendo \emph{a priori} qu'e par'ametros son m'as probables que otros. 
+Esta informaci'on se codifica como una distribuci'on de probabilidades sobre $\theta$, $P(\theta)$. 
 
-De esta forma, sup'ongase ahora que se cuenta con cierta evidencia de entrenamiento $x_1,\cdots,x_n$. Al entrenar el modelo, uno quisiera combinar la 
+Sup'ongase ahora que se cuenta con cierta evidencia de entrenamiento $x_1,\cdots,x_n$. Al entrenar el modelo, uno quisiera combinar la 
 creencia previa dada por $P(\theta)$ junto con la evidencia dada por $x_1,\cdots,x_n$ en una distribuci'on \emph{a posteriori} sobre los par'ametros.
 Utilizando la ley de Bayes y la ley de probabilidad total, es posible reescribir la distribuci'on a posteriori de $\theta$ en funci'on de su creencia previa y 
 la probabilidad de la observaci'on:
@@ -31,7 +31,7 @@ Utilizando ahora la creencia a posteriori sobre $\theta$, la probabilidad de una
 
 $$P(x|x_1,\cdots,x_n) = \int_\theta{P(x|\theta)P(\theta|x_1,\cdots,x_n)}$$
 
-Notar que el resultado de hacer esto elimina el par'ametro $\theta$ como valor, y se utilizan todos los valores posibles asociados a la creencia de que efectivamente
+N'otese que el resultado de hacer esto elimina el par'ametro $\theta$ como valor, y se utilizan todos los valores posibles asociados a la creencia de que efectivamente
 sea ese el valor que parametriza a la distribuci'on que genera las obervaciones.
 
 
@@ -39,18 +39,26 @@ Un principal problema al aplicar estas t'ecnicas es la resoluci'on de las integr
 Sin embargo, hay casos en donde se conocen expresiones anal'iticas para la probabilidad a posteriori de los par'ametros, y en ese caso, se puede utilizar
 como p'arametro $E(\theta|x_1,\cdots,x_n)$ \alert{argumentar bien, montacarlo de la intergral converje a la esperanza}%\footnote{El lector interesado en la justificaci'on referirse a ??? %}.
 
-Un caso conocido es cuando se modelan los datos como provenientes de una distribuci'on multinomial. En este caso, si se codifica la creencia previa
+La mayor'ia de los modelos propuestos en este trabajo deben elejir un elemento dentro de un conjunto finito de elementos. Esto
+se puede modelar como tomar un sample de una variable multinomial. En este caso, si se codifica la creencia previa
 sobre $\theta$ como una distribucion Dirichlet, se puede calcular de una forma muy facil la distribuci'on a posteriori de $\theta$ dado por la siguiente
 f'ormula:
 
 $$ \theta \sim Dirichlet(\alpha_1,\cdots,\alpha_k) \Rightarrow \theta|x_1,\cdots,x_n \sim Dirichet(\alpha_1+n_1,\cdots,\alpha_k+n_k)$$
 
-Donde los valores $x_i$ pueden tomar uno de $k$ valores posibles, y $n_j=\sum_{i=1}^n\delta_{x_i, v_j}$, siendo $v_j$ el j-'esimo posible valor que puede tomar $x_i$, y
-$\delta_{a,b} = 1 \Leftrightarrow a = b$, si no, $\delta_{a, b} = 0$. 
+Donde los valores $x_i$ pueden tomar uno de $k$ valores posibles, y $n_j=\sum_{i=1}^n\delta_{x_i, v_j}$, siendo $v_j$ el j-'esimo posible valor 
+que puede tomar $x_i$, y $\delta_{a,b} = 1 \Leftrightarrow a = b$, si no, $\delta_{a, b} = 0$. 
 
 Utilizando esta f'ormula es posible calcular anal'iticamente la distribuci'on a posteriori de la observaci'on, y luego tomar la esperanza dada por
 
 $$E(\theta|x_1,\cdots,x_n)=\frac{\alpha_i + n_i}{\sum_{j=1}^{k}{\alpha_j+n_j}}$$
+
+N'otese que cuanto m'as grande es $\alpha_j$, mayor cantidad de observaciones ser'an necesarias para contradecir la creencia previa. 
+Una forma natural de tomar en cuenta este comportamiento es descomponer los valores de $\alpha_i$ en un producto entre la distribuci'on a priori que explica el fen'omeno 
+y un factor de peso, es decir 
+$\alpha_i=p_i\times\alpha$, donde $p_i$ es la probabilidad a priori de observar el valor $v_i$, y $\alpha$ el factor de peso sobre esa creencia. En
+el caso que no se cuente con informaci'on previa sobre el fen'omeno y solamente se quiera suavizar la estimaci'on, se puede considerar una creencia
+previa uniforme.
 
 %
 %\subsection{Combinaci\'ones de distribuci\'ones de probabilidad}
@@ -82,12 +90,13 @@ Las cadenas de Markov de orden $k$ permiten modelar este tipo de dependencias ha
 dado la historia de estados por los que transit'o \emph{s'olo} depende de los 'ultimos $k$ estados anteriores en los que este transit'o. 
 Esta asunci'on es conocida como la propiedad de Markov. 
 
-Formalmente, una cadena de Markov de orden $k$ es una dupla $<S,P>$, donde $S$ es el conjunto de posibles estados del sistema, y $P$ la 
-distribuci'on de transici'on, es decir, dados $s_1, \cdots, s_{k+1} \in S$, el valor de $P(s_{k+1} | s_1, \cdots, s_k)$ indica la probabilidad
-de que el sistema pase estado $s_{k+1}$ dado que a transitado por los estados $s_1, \cdots, s_k$. 
-Volviendo a la propiedad de Markov, ahora es posible expresarla formalmente: $$P(s_{n+1}|s_1,\cdots,s_n) = P(s_{n+1} | s_{n-k}, \cdots, s_n)$$
+Formalmente, una cadena de Markov de orden $k$ es una tripla $<S,\pi, P>$, donde $S$ es el conjunto de posibles estados del sistema, $\pi$ la distribuci'on
+inicial para los estados y $P$ la 
+distribuci'on de transici'on, es decir, dados $s_1, \cdots, s_{t+1} \in S$, el valor de $P(s_{t+1} | s_1, \cdots, s_t)$ indica la probabilidad
+de que el sistema pase estado $s_{t+1}$ dado que a transitado por los estados $s_1, \cdots, s_t$. 
+Volviendo a la propiedad de Markov, ahora es posible expresarla formalmente: $$P(s_{t+1}|s_1,\cdots,s_t) = P(s_{t+1} | s_{t-k}, \cdots, s_t)$$
 
-A modo ilustrativo, sup'ongase que se desea modelar el clima con una cadena de Markov de orden 1, restringiendo el clima a si llueve o no. Siendo asi, el conjunto 
+A modo ilustrativo, sup'ongase que se desea modelar el clima con una cadena de Markov de orden 1, restringiendo el clima a si llueve o no. Siendo as'i, el conjunto 
 $S$ de estados ser'a $\{llueve, no\ llueve\}$. 
 
 Asumiendo que las probabilidades de transici'on son las dadas en la siguiente tabla, el sistema gr'aficamente se ver'ia como la figura \ref{fig:markov_clima}
@@ -107,19 +116,25 @@ $P(no\ lluvia | lluvia)  $ & $=0.3$ & $P(no\ lluvia | no\ llueve) $ & $=0.7$\\
     \width{5cm}
 \end{imagen}
 
-Esta introducci'on es por dem'as corta e incompleta, sin embargo en esta tesis s'olo se utilizar'an las cadenas de Markov para luego realizar una caminata al azar sobre ellas. 
-Si se desea profundizar en el tema, leer \cite{Rabiner90}.
+Una caminata al azar es una sucesi'on $s_1, \cdots, s_t$ de estados, donde $s_1$ es elegido de acuerdo a $\pi$, 
+y el resto de los estados de la sucesi'on cada uno elegidos seg'un la matriz de transici'on. De esta forma, en el ejemplo de la figura \ref{fig:markov_clima} y asumiendo 
+que $\pi$ asigna probabilidad uniforme a los dos estados, la caminata al azar formada por los estados $lluvia, no\ lluvia, no\ lluvia$ tendr'a probabilidad $0.5\times0.3\times0.7$. 
+
+Se entiende que esta introducci'on es incompleta, sin embargo en esta tesis s'olo se utilizar'an las cadenas de Markov para luego realizar 
+caminatas al azar sobre ellas. El lector interesado en profundizar en cadenas de markov puede ver \cite{Rabiner90}.
 
 
 \subsection{Restaurantes chinos}
-El modelo de los restaurantes chinos (\emph{Chinese restaurants}) es un modelo originado en la rama de estad\'istica bayesiana.
-Este modelo y otros similares, como el Buffet Indio (\emph{Indian Buffet}), han ganado mucha popularidad en aplicaci'ones como clustering no param'etrico 
-y estimaci'on de distribuci'ones de probabilidades en espacios de muchas dimensiones.
+El proceso de los restaurantes chinos (\emph{Chinese restaurant process, CRP}) es un modelo originado en la rama de estad\'istica bayesiana no param'etrica.
+Este modelo y otros similares, como el Buffet Indio (\emph{Indian Buffet}), han ganado mucha popularidad en aplicaci'ones como clustering donde no se quiere
+pre-especificar el n'umero de clusters, y estimaci'on de distribuci'ones de probabilidades en espacios de muchas dimensiones.
 
-Dado que el uso que se le dar'a a este modelo es puramente generativo, no se har'a incapi'e en los mecanimos necesarios para realizar inferencia\footnote{El lector interesado en profundizar en este tema refierase a \cite{Teh2007}.}.
-Concretamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Parece ser que los restaurantes chinos de San Fansisco aparentan ser infinitos, y esto dio origen al nombre.}. 
+Los restaurantes chinos son un caso particular de los Dirichlet Process en donde se tiene un proceso generativo sencillo de implementar.
+Dado que el uso que se le dar'a a este modelo es puramente generativo, no se har'a incapi'e en los mecanimos necesarios para realizar inferencia
+\footnote{El lector interesado en profundizar en este tema refierase a \cite{Teh2007} para un tutorial sobre Dirichlet Process y \cite{neal2000markov} sobre m'etodos Monte Carlo para realizar inferencia.}.
+Metaf'oricamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Parece ser que los restaurantes chinos de San Fansisco aparentan ser infinitos, y esto dio origen al nombre.}. 
 En cada mesa, a su vez, pueden sentarse una cantidad no acotada de clientes. Inicialmente todas las mesas se encuentran vac'ias, 
-y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elejir una mesa de las ya ocupadas. 
+y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elegir una mesa de las ya ocupadas. 
 Esto lo hace con la siguiente distribuci'on:
 \begin{align}
 \label{eq:crp_evolution}
@@ -138,4 +153,4 @@ E(m|N) \in O(\alpha\times log(N))
 
 Este fen'omeno es conocido tambi'en como la propiedad de ``el rico se vuelve m'as rico''\footnote{\emph{The rich-gets-richer phenomenon} en ingl'es}. Este fen'omeno es el descripto por
 las ecuaci'ones \ref{eq:crp_evolution}, puesto que la probabilidad de que alguien se siente en una mesa ocupada depende de la cantidad de gente ya sentada, entonces, el hecho
-de que alguien se siente en una mesa aumenta la probabilidad de que en el futuro alguien elija esa mesa.
+de que alguien se siente en una mesa aumenta la probabilidad de que en el futuro alguien elija esa mesa nuevamente.
