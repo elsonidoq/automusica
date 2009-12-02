@@ -1,4 +1,3 @@
-from random import uniform, random
 from random_variable import *
 import pygraphviz 
 import igraph 
@@ -112,11 +111,12 @@ class HiddenMarkovModel(object):
             pi= new_pi                    
         return pi            
 
-    def get_initial_state(self):
+    def get_initial_state(self, random=None):
         """
         devuelve un estado de acuerdo con self.initial_probability
         """
-        r= RandomPicker("", self.initial_probability)
+        if random is None: import ipdb;ipdb.set_trace() 
+        r= RandomPicker(values= self.initial_probability, random=random)
         res= r.get_value()
         return res
 
@@ -390,9 +390,11 @@ class RandomObservation(object):
     """
     es un iterador infinito del hmm
     """
-    def __init__(self, hmm):
+    def __init__(self, hmm, random=None, *args, **kwargs):
         self.hmm= hmm
-        self.actual_state= hmm.get_initial_state()
+        if random is None: import ipdb;ipdb.set_trace()
+        self.actual_state= hmm.get_initial_state(random=random)
+        self.random= random
 
     def _get_state_distr(self, state):
         return self.hmm.nexts(state)
@@ -401,7 +403,7 @@ class RandomObservation(object):
         """ devuelve la proxima observacion en forma de 
         diccionario de random variable en valor """
         nexts= self._get_state_distr(self.actual_state)
-        rnd_picker= RandomPicker("",nexts)
+        rnd_picker= RandomPicker(values=nexts, random=self.random)
         self.actual_state= rnd_picker.get_value()
 
         return self.actual_obs()
@@ -444,7 +446,7 @@ class ConstraintRandomObservation(RandomObservation):
         s= sum(nexts.itervalues())
         for k, v in nexts.iteritems():
             nexts[k]= v/s
-        rnd_picker= RandomPicker("",nexts)
+        rnd_picker= RandomPicker(values=nexts, random=self.random)
         self.actual_state= rnd_picker.get_value()
 
         res= {}
@@ -455,9 +457,14 @@ class ConstraintRandomObservation(RandomObservation):
 
     
 class MemoizationObservation(RandomObservation):
-    def __init__(self, hmm):
-        super(MemoizationObservation, self).__init__(hmm)
+    def __init__(self, hmm, *args, **kwargs):
+        super(MemoizationObservation, self).__init__(hmm, *args, **kwargs)
         self.states_counters= defaultdict(lambda: defaultdict(lambda :0)) 
+        self.step=kwargs.get('step',1)
+
+        for state1, nexts in hmm.state_transition.iteritems():
+            for state2 in nexts:
+                self.states_counters[state1][state2]=1
     
     def _get_state_distr(self, actual_state): 
         raise NotImplementedError
@@ -465,10 +472,10 @@ class MemoizationObservation(RandomObservation):
     def next(self):
         distr= self._get_state_distr(self.actual_state)
             
-        rnd_picker= RandomPicker("",distr)
+        rnd_picker= RandomPicker(values=distr, random=self.random)
         state_counters= self.states_counters[self.actual_state]
         self.actual_state= rnd_picker.get_value()
-        state_counters[self.actual_state]+=1
+        state_counters[self.actual_state]+=self.step#2
         
         res= {}
         for random_variable in self.hmm.observators(self.actual_state):
@@ -477,7 +484,8 @@ class MemoizationObservation(RandomObservation):
         return res
 
     def get_model(self):
-        res= HiddenMarkovModel()
+        res= type(self.hmm)(interval_size=2048)
+        #res= HiddenMarkovModel()
         for state in self.hmm.state_transition:
             distr= self._get_state_distr(state)
             res.state_transition[state]= distr
@@ -486,49 +494,9 @@ class MemoizationObservation(RandomObservation):
         res.initial_probability= self.hmm.initial_probability.copy()
         return res
 
-class RiverRandomObservation(RandomObservation):
-    def __init__(self, hmm, path, alpha=0.5):
-        super(RiverRandomObservation, self).__init__(hmm)
-        g, state2int= hmm.to_igraph()
-        int2state= dict((v,k) for (k,v) in self.state2int.iteritems())
-
-        int_shortest_paths= g.shortest_paths()
-        state_shortest_paths= defaultdict(dict)
-        for state1_id, distances in enumerate(int_shortest_paths):
-            state1= int2state[state1_id]
-            for state2_id, distance in enumerate(distances):
-                state2= int2state[state2_id]
-                if distance < 0:
-                    # desconectados
-                    distance= None
-                state_shortest_paths[state1][state2]= distance
-
-        self.distances= state_shortest_paths                
-        self.path_pos= 0
-        self.path= path
-        self.alpha= alpha
-    
-    def next(self):
-        original_distr= self.hmm.nexts(self.actual_state)
-        new_distr= {}
-        distances= dict((state, self.distances[state][self.path[self.path_pos+1]]) for state in original_distr)
-        s= sum(distances.itervalues())
-        for state, prob in original_distr.iteritems():
-            new_distr[state]= self.alpha*original_distr[state] + (1-self.alpha)*float(distances[state])/s
-        
-        rnd_picker= RandomPicker("",distr)
-        self.actual_state= rnd_picker.get_value()
-
-        res= {}
-        for random_variable in self.hmm.observators(self.actual_state):
-            res[random_variable]= random_variable.get_value()
-        
-        self.path_pos+=1
-        return res
-
 class FullyRepeatableObservation(MemoizationObservation):
-    def __init__(self, hmm):
-        super(FullyRepeatableObservation, self).__init__(hmm)
+    def __init__(self, hmm, *args, **kwargs):
+        super(FullyRepeatableObservation, self).__init__(hmm, *args, **kwargs)
         self.cache_state= self.actual_state
 
     def already_passed(self):
@@ -546,8 +514,8 @@ class FullyRepeatableObservation(MemoizationObservation):
         self.actual_state= self.cache_state
 
 class DPRandomObservation(MemoizationObservation):
-    def __init__(self, hmm, alpha):
-        super(DPRandomObservation, self).__init__(hmm)
+    def __init__(self, hmm, alpha, *args, **kwargs):
+        super(DPRandomObservation, self).__init__(hmm, *args, **kwargs)
         self.alpha= float(alpha)
 
     def _get_state_distr(self, actual_state):
@@ -570,8 +538,8 @@ class SizedRandomObservation(RandomObservation):
     """
     es como una RandomObservation pero finita
     """
-    def __init__(self, hmm, size):
-        RandomObservation.__init__(self, hmm)
+    def __init__(self, hmm, size, *args, **kwargs):
+        super(SizedRandomObservation, self).__init__(hmm, *args, **kwargs)
         self.size= size
         self.actual_pos= 0
     
