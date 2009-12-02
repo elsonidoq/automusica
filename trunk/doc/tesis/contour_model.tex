@@ -16,15 +16,17 @@ figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'ircul
     \width{6cm}
 \end{imagen}
 
-Luego del trabajo de Meyer, \citep{Narmour91} cuantifica estas reglas en t'erminos de la sucesi'on de intervalos para construir una teor'ia de 
+Luego del trabajo de Meyer, \cite{Narmour91} cuantifica estas reglas en t'erminos de la sucesi'on de intervalos para construir una teor'ia de 
 la expectativa de los contornos mel'odicos. 
 
 En lo que sigue, se explican con mayor detalle las teor'ias de Narmour, para luego detallar el modelo de las l'ineas mel'odicas.
 
 \subsection{La teor\'ia de la Implicaci\'on-Realizaci'on}
-Como se mencion'o en la introducci'on de este cap'itulo, Eugene Narmour, basado en la teor'ia de la expectativa musical de Leonard Meyer, propuso una forma para cuantificar
+Como se mension'o en la introducci'on de este cap'itulo, Eugene Narmour, basado en la teor'ia de la expectativa musical de Leonard Meyer, propuso una forma para cuantificar
 el grado de expectativa sobre el \emph{contorno melod'ico}. El contorno mel'odico est'a conformado de la sucesi'on de intervalos que ocurren en una melod'ia. Por ejemplo, 
 en la figura \ref{fig:simple_melody} se exhibe una melod'ia en donde se tocan las notas Do, Re, Do, Fa\#. 
+El contorno mel'odico de la figura \ref{fig:simple_melody} ser'a entonces \IM{2}, \IM{-2}, \IM{6}.
+N'otese que esta transformaci'on no es biyectiva, puesto que la melod'ia Re, Mi, Re, Sol\# tiene el mismo contorno.
 
 \begin{imagen}
     \file{images/melody.png}
@@ -33,12 +35,10 @@ en la figura \ref{fig:simple_melody} se exhibe una melod'ia en donde se tocan la
     \width{11cm}
 \end{imagen}
 
-El contorno mel'odico de la figura \ref{fig:simple_melody} ser'a entonces \IM{2}, \IM{-2}, \IM{6}.
-Notar que esta transformaci'on no es biyectiva, puesto que la melod'ia Re, Mi, Re, Sol\# tiene el mismo contorno.
 
-El modelo de la Implicaci'on-Realizaci'on(IR) toma de la psicolog'ia cognitiva que el sistema cognitivo se encuentra organizado jer'arquicamente. En esta jerarqu'ia, los sistemas 
-de percepci'on m'as simples, como la vista, se encuentran al fondo y los sistemas de percepci'on m'as abstractos o complejos como la memoria o la 
-resoluci'on de problemas se encuentran en el tope. De esta forma se distinguen dos tipos de procesos expectaci'on denominados procesos \emph{bottom-up} 
+El modelo de la Implicaci'on-Realizaci'on(IR) asume un sistema cognitivo organizado jer'arquicamente. En esta jerarqu'ia, los sistemas 
+de percepci'on m'as simples, como la vista, se encuentran al fondo y los sistemas de percepci'on m'as abstractos o complejos como la memoria
+se encuentran en el tope. De esta forma se distinguen dos tipos de procesos expectaci'on denominados procesos \emph{bottom-up} 
 y \emph{top-down}. Los procesos bottom-up son aquellos procesos cognitivos en donde se parte de una informaci'on ubicada en los niveles bajos de la jerarqu'ia y se la 
 elabora llev'andola a los niveles altos, mientras que los procesos top-down lo hacen en el orden inverso. 
 
@@ -48,7 +48,7 @@ de \emph{cierre}, \emph{implicaci\'on} y \emph{realizaci\'on}. Cuando se alcanza
 son d'ebiles mientras que cuando se alcanza un punto de implicaci'on, la expectativa sobre la continuaci'on es fuerte. Seg'un este modelo,
 existen seis condiciones que llevan a una sensaci'on de cierre:
 \begin{itemize}
- \item Silencio
+ \item Un silencio
  \item Una acento m'etrico fuerte
  \item Una disonancia resolviendo a una consonancia
  \item Una nota corta seguida de una larga
@@ -65,9 +65,9 @@ implicativo. De hecho, violaciones a las implicaci'ones producen efectos est'eti
 Teniendo entonces el contorno de una melod'ia, Narmour define ciertas caracter'isticas relacionadas con la psicolog'ia de la gestalt. A continuaci'on 
 se enumeran los cinco principios de esta teor'ia, refiri'endose por intervalos peque~nos, a intervalos de valor absoluto menor o igual a 5 semi tonos, y por intervalos
 grandes a aquellos que sean mayores o iguales que 7 semitonos, dejando al intervalo de 6 semitonos fuera de la clasificaci'on puesto que dependiendo del contexto
-este se comporta como si fuera un intervalo peque~no o como si fuera grande.
+se comporta como si fuera un intervalo peque~no o como si fuera grande.
 \begin{enumerate}
- \item Direcci'on registral: intervalos peque~nos implican continuaci'ones en la misma direcci'on mel'odica, mientras que intervalos grandes implican un cambio de direcci'on
+ \item Direcci'on registral: intervalos peque~nos implican continuaci'ones en la misma direcci'on mel'odica, mientras que intervalos grandes implican un cambio de direcci'on.
  \item Diferencia interv'alica: intervalos peque~nos implican otros de tama~no similar mientras que intervalos grandes implican intervalos m'as peque~nos. 
  \item Retorno registral: se cumple cuando la segunda nota del intervalo realizado es id'entica o similar a la primera del intervalo implicativo.
  \item Proximidad: el tama~no del intervalo relizado sera peque~no.
@@ -79,15 +79,15 @@ este se comporta como si fuera un intervalo peque~no o como si fuera grande.
 Dada un pieza musical, en este caso es de inter'es construir un modelo y entrenarlo con el contorno mel'odico del tema en cuesti'on. De esta forma se puede proyectar
 las alturas de las notas del tema, y luego construir la sucesi'on de intervalos mel'odicos tomando la diferencia entre las sucesivas alturas. 
 
-Es importante tener en cuenta que los principios definidos por la teor'ia de la Narmour s'olo aplican a contornos mel'odicos. 
-Es por ello que de haber varias notas sonando en simult'aneo no ser'a posible aplicar a los principios que su teor'ia establece. 
+Es importante tener en cuenta que los principios definidos por la teor'ia de Narmour s'olo aplican a contornos mel'odicos. 
+Es por ello que de haber varias notas sonando en simult'aneo no ser'a posible aplicar los principios que su teor'ia establece. 
 Para solucionar este problema, se tomar'a la \emph{primera voz}, que corresponde a tomar la nota m'as aguda, cada vez que haya varias en simult'aneo\footnote{Seg\'un
 la teor'ia de la m'usica, esto no es del todo correcto, pero a los efectos de este trabajo es suficiente}. 
-Siendo asi, puede asumirse que en el tema de entrenamiento no hay notas sonando en simult'aneo. 
+Siendo as'i, puede asumirse que en el tema de entrenamiento no hay notas sonando en simult'aneo. 
 
-Antes de continuar con los detalles del modelo es importante mencionar una simplificaci'on que se hizo a la teor'ia de IR.
+Antes de continuar con los detalles del modelo es importante mensionar una simplificaci'on que se hizo a la teor'ia de IR.
 Esta simplificaci'on consiste en no analizar las condiciones que hacen que un intervalo realizado
-cree un punto de cierre, es decir, se asume que todos los intervalos son implicativos. Se considera que la desici'on de donde colocar intervalos de cierre es candidata 
+cree un punto de cierre, es decir, se asume que todos los intervalos son implicativos. Se considera que la decisi'on de donde colocar intervalos de cierre es candidata 
 a estar ubicada dentro a otro nivel en la jerarqu'ia de modelos para construir l'ineas mel'odicas, puesto que en general los cierres estan asociados a la estructura
 del tema, de esta forma, para mantener limitado el alcance de esta tesis, se deja para trabajo a futuro trabajar con puntos de cierre.
 
@@ -106,8 +106,8 @@ sin embargo, no est'an limitadas a ello. Tomando estas caracter'isticas, se pued
 P(n_3 | n_1, n_2) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3)|n_1, n_2)
 \end{align}
 
-Definido asi, este modelo ser'a por dem'as ralo, puesto que los vectores de caracter'isticas, si bien no son tantos, son los suficientes como para no ser observados
-por completo en una pieza musical. Una posibilidad para resolver este problema es utilizar una distribuci'on a priori que explique como se distribuyen en general
+Definido as'i, este modelo ser'a por dem'as ralo, puesto que los vectores de caracter'isticas, si bien no son tantos, son los suficientes como para no ser observados
+por completo en una pieza musical. Un modelo de este tipo es el propuesto por \cite{PaieThesis} para contornos mel'odicos. Una posibilidad para resolver este problema es utilizar una distribuci'on a priori que explique como se distribuyen en general
 los vectores de caracter'isticas. Esta distribuci'on a priori podr'ia o bien calcularse para un conjunto grande de piezas musicales, o bien utilizar los resultados 
 un experimento como los de \cite{Krumhansl95} o \cite{Schellenberg96}. 
 Otra posibilidad es factorizar la distribuci'on conjunta, haciendo asunciones de independencia. Una asunci'on posible utilizada ampliamente en el campo 
@@ -132,7 +132,7 @@ se puede escribir la probabilidad de la siguiente forma:
 $$P(n_3 | n_1, n_2) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3)|n_1, n_2) P(n_3|\theta)$$
 
 \subsection{Codificaci\'ones existentes}
-Como ya se mencion'o con anterioridad, existe m'as de una codificaci'on en la literatura para los principios de Narmour. 
+Como ya se mension'o con anterioridad, existe m'as de una codificaci'on en la literatura para los principios de Narmour. 
 En esta secci'on se har'a mensi'on de algunas puesto que en el cap'itulo \ref{cap:experiments} se realizar'a una comparaci'on
 entre las composiciones que son generadas a partir de utilizar una u otra codificaci'on. Se se omitir'a la propuesta por \cite{PaieThesis}
 puesto que se considera que no difiere lo suficiente de la propuesta por \cite{Schellenberg97} y las diferencias radican en intentar disminuir
@@ -151,11 +151,14 @@ En la figura \ref{fig:grilla_narmour} se exhibe un ejemplo de la tabla vac'ia.
     \width{14cm}
 \end{imagen}
 
-De esta forma, para codificar un cierto principio basta con asignar valores a distintas posici'ones en esta grilla. Observar que la primer fila 
+De esta forma, para codificar un cierto principio basta con asignar valores a distintas posici'ones en esta grilla. Obs'ervese que la primer fila 
 no abarca todo el ancho, puesto que si el intervalo implicativo es de longitud 0, el concepto de ``misma direcci'on'' o ``diferente direcci'on'' dejan
 de tener sentido.
 
 En la figura \ref{fig:narmour_coding1} se exhibe la codificaci'on original propuesta por Schellemberg para poder poner los principios a prueba.
+A modo ilustrativo, seg'un esa codificiaci'on, el principio de direcci'on registral valdr'a 1 en dos casos: si el intervalo implicativo tiene de 0 a 5 semitonos y el 
+realizado tiene de 1 a 12 semitonos en la misma direcci'on, o bien si el intervalo implicativo tiene de 7 a 11 semitonos y el realizado tiene de 0 a 12 semitonos 
+en la direcci'on opuesta.
 
 
 \begin{imagen}
@@ -166,7 +169,7 @@ En la figura \ref{fig:narmour_coding1} se exhibe la codificaci'on original propu
 \end{imagen}
 
 
-En \cite{Schellenberg96}, el autor not'o que existe redundancia en la codificaci'on propuesta por \cite{Narmour91}, y con el objeto de explicar los datos
+En \cite{Schellenberg96}, el autor not'o que existe redundancia en los principios propuestos por \cite{Narmour91}, y con el objeto de explicar los datos
 generados por sus experimentos, redujo el modelo a un modelo de tres principios. Este modelo se presenta en la figura \ref{fig:narmour_revisited}.
 La raz'on por la que se redujo de 5 principios a 3 es porque los principios de proximidad, diferencia interv'alica y cierre estaban altamente 
 correlacionados. De esta forma se dej'o solamente uno, proximidad, con mayor detalle. Los principios de direcci'on registral y retorno registral
@@ -184,7 +187,7 @@ fueron recodificados a partir de los resultados de \cite{CuddyLunney95}.
 Luego, bas'andose en los datos y resultados de los experimentos de \cite{Schellenberg96} y \citet{CuddyLunney95}, Schellemberg aplica el m'etodo de 
 las componentes principales al modelo definido en su trabajo anterior llegando a un modelo con s'olo dos principios cuya codificaci'on
 se presenta en la figura \ref{fig:narmour_simplified}. 
-Observar que el principio denominado como \emph{pitch-reversal} es una combinaci'on de los principios direcci'on registral y retorno registral. 
+Obs'ervese que el principio denominado como \emph{pitch-reversal} es una combinaci'on de los principios direcci'on registral y retorno registral del modelo revisado. 
 
 \begin{imagen}
     \file{images/narmour_simplified.png}

@@ -18,8 +18,7 @@ pistas debido a una r'apida acumulacion de informaci'on o a la escacez de estruc
 termina por hacer desistir al oyente de prestar atenci'on a la pieza musical.
 
 Las composiciones generadas por los modelos propuestos hasta el momento recaen mayormente en el segundo grupo, puesto que la probabilidad de que se escuche
-una repetici'on es pr'acticamente nula. De esta forma, el objetivo de esta secci'on es exhibir como se puede sesgar los modelos ya vistos para que 
-la probabilidad de una repeticion parcial sea mayor. 
+una repetici'on es pr'acticamente nula. De esta forma, el objetivo de esta secci'on es exhibir como se puede aumentar la probabilidad de una repetici'on.
 
 
 
@@ -27,17 +26,17 @@ la probabilidad de una repeticion parcial sea mayor.
 \label{sec:crp_model}
 Una primera aproximaci'on para generar motivos es bajo ciertas circunstancias repetir exactamente algo que ya se toc'o. Es de esperarse que no pueda repetirse
 una parte ya tocada en cualquier lugar del tema, puesto que se desea respetar el contexto arm'onico y las notas de apoyo elegidas. De esta forma, debe
-de tomarse como definci'on de contexto, una que por lo menos respete tanto el acorde como la duraci'on del mismo, puesto que de repetirse una frase, esta 
-debe cubrir exactamente el tiempo que abarca el acorde. Otra posibilidad es afectar el contexto utilizando el acorde predecesor a modo de contexto, con el objeto
-de modelar la funci'on arm'onica que este estar'ia cumpliendo. Inclusive se podr'ia tambi'en agregar el acorde siguiente. Sin embargo, es peligroso agregar
-esta contextualizaci'on sin un mecanismo previo de abstracci'on para los acordes, puesto que existen mucho acordes ligeramente distintos entre si que en t'erminos
+de tomarse como definci'on de contexto para una frase, una que por lo menos respete tanto el acorde como la duraci'on del mismo, puesto que de repetirse una frase, esta 
+debe cubrir exactamente el tiempo que abarca el acorde. Otra posibilidad es utilizar el acorde predecesor con el objeto
+de modelar la funci'on arm'onica que este estar'ia cumpliendo el acorde actual. Inclusive se podr'ia tambi'en agregar el acorde siguiente. Sin embargo, es peligroso modelizar
+la funci'on arm'onica de esta forma sin un mecanismo previo de abstracci'on para los acordes, puesto que existen mucho acordes ligeramente distintos entre si que en t'erminos
 musicales funcionan como el mismo acorde.
 
 Asumiendo una noci'on de contexto razonable, se podr'ia pensar a una pieza musical como una sucesi'on de contextos. Siendo asi, lo que determinar'ia el proceso generativo para 
 la repetici'on exacta de partes es, ante la repetici'on de un contexto, si se repetir'a lo que ya se toc'o en ese contexto, o se har'a
 algo nuevo. 
 
-Una posible forma de modelar este proceso generativo es contanto con un Restaurant Chino para cada contexto. Dado un cierto Restaurant, en cada mesa se encuentra
+Una posible forma de modelar este proceso generativo es utilizando un Restaurant Chino para cada contexto. Dado un cierto Restaurant, en cada mesa se encuentra
 escrita una posible frase para el contexto que le corresponde, y el hecho de que se observe en una pieza musical repetidas veces un contexto equivaldr'ia a que lleguen nuevas
 personas al Restaurant. Cada persona elegir'a una mesa, y se utilizar'a la partitura que se encuentra en ella para tocar en ese contexto. Si la mesa es una mesa 
 nueva esto equivaldr'a a que se componga una nueva frase para este contexto, aunque se puede pensar como si la partitura siempre hubiera estado en la mesa, s'olo 
@@ -57,7 +56,7 @@ una vez que el tema ha finalizado:
 
 
 Esto indica que para la parte \texttt{A} se han tocado 3 frases distintas, sin embargo, para la parte \texttt{B} se han tocado dos frases distintas. 
-Notar que para la parte \texttt{C} la 'unica alternativa es la que se exhibe en la figura.
+N'otese que para la parte \texttt{C} la 'unica alternativa es la que se exhibe en la figura.
 
 Formalmente, dada una sucesi'on de contextos $c_1, \cdots, c_n$, donde se espera que haya $k<n$ contextos distintos, se cuenta con $k$ Restaurantes Chinos indexados por contexto,
 es decir, $R_{c_i}$ es el Restaurant correspondiente al contexto $c_i$. 
@@ -112,31 +111,31 @@ Es por esto que se propone como trabajo a futuro investigar en una metodolog'ia 
     \width{5cm}
 \end{imagen}
 
-\section{El modelo completo}
-En esta secci'on se har'a un breve resumen sobre como todos los modelos planteados hasta el momento interactuan entre s'i para generar finalmente una melod'ia.
-En la figura \ref{fig:arquitectura} se exhibe un diagrama. En este, hay dos tipos de nodos. Los nodos circulares representan datos que se leen o que se escriben, y los nodos
-circulares representan modelos. A continuaci'on se enumeran las responsabilidades de cada modelo:
-
-
-\begin{imagen}
-    \file{images/arq.png}
-    \labelname{fig:arquitectura}
-    \desc{Descripci'on gr'afica de la arquitectura utilizada}
-    \width{9cm}
-    \position{!h}
-\end{imagen}
-
-\begin{itemize}
- \item Pitch Profile: Construye el pitch profile definido en la secci'on \ref{sec:pitch_profile}.
- \item Chord Detection: Aplica la heur'istica de detecci'on de acordes.
- \item Contour Patterns: Calcula el modelo definido en la secci'on \ref{sec:contour_model}.
- \item Notes Distribution: A partir del Pitch Profile y del acorde actual construye la distribuci'on de notas que aplica al contexto actual seg'un se defini'o en la secci'on \ref{sec:harmonic_context_model}.
- \item Phrase Repetition: Utilizando el Restaurant Chino correspondiente al acorde actual, se elije un identificador para la parte actual como 
- se defini'o en la secci'on \ref{sec:crp_model}.
- \item Phrase Rhythm: Utilizando la duraci'on determinada por el acorde actual y el identificador determinado por la etapa de Phrase Repetition se 
- genera una frase r'itmica como se defini'o en la secci'on \ref{sec:rythm_model}.
- \item Pitch Phrase: Utilizando la r'itmica generada por la etapa de Phrase Rhythm, se llenan los \emph{slots} que esta determina, utilizando
- como contexto arm'onico el determinado por Notes Distribution y utilizando como restricci'ones para el contorno mel'odico las determinadas por
- Contour Patterns utilizando el algoritmo definido en la secci'on \ref{sec:phrase_model}.
-\end{itemize}
-
+%\section{El modelo completo}
+%En esta secci'on se har'a un breve resumen sobre como todos los modelos planteados hasta el momento interactuan entre s'i para generar finalmente una melod'ia.
+%En la figura \ref{fig:arquitectura} se exhibe un diagrama. En este, hay dos tipos de nodos. Los nodos circulares representan datos que se leen o que se escriben, y los nodos
+%circulares representan modelos. A continuaci'on se enumeran las responsabilidades de cada modelo:
+%
+%
+%\begin{imagen}
+%    \file{images/arq.png}
+%    \labelname{fig:arquitectura}
+%    \desc{Descripci'on gr'afica de la arquitectura utilizada}
+%    \width{10.5cm}
+%    \position{!h}
+%\end{imagen}
+%
+%\begin{itemize}
+% \item Pitch Profile: Construye el pitch profile definido en la secci'on \ref{sec:pitch_profile}.
+% \item Chord Detection: Aplica la heur'istica de detecci'on de acordes.
+% \item Contour Patterns: Calcula el modelo definido en la secci'on \ref{sec:contour_model}.
+% \item Notes Distribution: A partir del Pitch Profile y del acorde actual construye la distribuci'on de notas que aplica al contexto actual seg'un se defini'o en la secci'on \ref{sec:harmonic_context_model}.
+% \item Phrase Repetition: Utilizando el Restaurant Chino correspondiente al acorde actual, se elije un identificador para la parte actual como 
+% se defini'o en la secci'on \ref{sec:crp_model}.
+% \item Phrase Rhythm: Utilizando la duraci'on determinada por el acorde actual y el identificador determinado por la etapa de Phrase Repetition se 
+% genera una frase r'itmica como se defini'o en la secci'on \ref{sec:rythm_model}.
+% \item Pitch Phrase: Utilizando la r'itmica generada por la etapa de Phrase Rhythm, se llenan los \emph{slots} que esta determina, utilizando
+% como contexto arm'onico el determinado por Notes Distribution y utilizando como restricci'ones para el contorno mel'odico las determinadas por
+% Contour Patterns utilizando el algoritmo definido en la secci'on \ref{sec:phrase_model}.
+%\end{itemize}
+%
