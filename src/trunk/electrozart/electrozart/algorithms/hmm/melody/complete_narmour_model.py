@@ -27,6 +27,9 @@ class ContourAlgorithm(ListAlgorithm):
     def pick_support_note(self, chord, available_pitches):
         chord_pitches= [n.pitch%12 for n in chord.notes]
         chord_notes_in_range= [Note(p) for p in available_pitches if p%12 in chord_pitches]
+        if len(chord_notes_in_range) == 0: 
+            import ipdb;ipdb.set_trace()
+            raise Exception('no hay notas del acorde en rango')
 
         if self.ec.last_support_note is None:
             res= self.random.choice(chord_notes_in_range).pitch
@@ -56,7 +59,9 @@ class ContourAlgorithm(ListAlgorithm):
                 raise Exception('Wrong support_note_strategy value %s' % self.params['support_note_strategy'])
                     
 
-        assert res in available_pitches
+        if res not in available_pitches:
+            import ipdb;ipdb.set_trace()
+            raise Exception('support note out of available_pitches')
         return res
 
     def train(self, score):
@@ -91,15 +96,22 @@ class ContourAlgorithm(ListAlgorithm):
 
         start_pitch= self.ec.last_support_note
         end_pitch= self.pick_support_note(input.prox_chord, set(range(input.min_pitch, input.max_pitch+1)))
+        if input.rythm_phrase_len == 1:
+            child_result= result.copy()
+            child_input= input.copy()
+            child_result.pitch= end_pitch
+            res.append((child_input, child_result))
+            self.ec.last_support_note= end_pitch
+
         #for k, v in sorted(input.prox_pitches_distr, key=lambda x:x[1]):
         #    print k, v
         #print Note(end_pitch)
 
-        remaining_notes= input.rythm_phrase_len - (self.ec.last_support_note is not None)
+        remaining_notes= input.rythm_phrase_len - (self.ec.last_support_note is None)
         must= build_must_dict(now_prob_model, prox_prob_model, end_pitch, 
                               input.min_pitch, input.max_pitch, 
                               self.params['support_note_percent'], self.params['middle_note_percent'], 
-                              remaining_notes)
+                              input.rythm_phrase_len)
 
 
         if len(prev_notes) < 2 and (input.rythm_phrase_len > 1 or self.ec.last_support_note is None):
@@ -200,7 +212,6 @@ def do_plot(p, fname):
 
 plotit= True
 def build_median_must_dict(now_prob_model, prox_prob_model, nf, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
-    must= defaultdict(lambda : defaultdict(list)) 
     def apply_percent(i, p):
         for context in must[i]:
             l= must[i][context]
@@ -212,12 +223,15 @@ def build_median_must_dict(now_prob_model, prox_prob_model, nf, min_pitch, max_p
             val= l[size-1][1]
             must[i][context]= dict(i for i in l if i[1] >= val)
 
+    must= {1:{}}
     all_contextes= set()
     for n1 in xrange(min_pitch, max_pitch+1):
         for n2 in xrange(min_pitch, max_pitch+1):
+            must[1][(n1, n2)]= []
             for n3 in xrange(min_pitch, max_pitch+1):
-                must[1][(n1, n2)].append((n3, prox_prob_model.get_prob(n2, n3, nf)))
-                all_contextes.add(((n1,n2,n3),now_prob_model.get_prob(n1, n2, n3)))
+                n3prob= prox_prob_model.get_prob(n2, n3, nf)
+                must[1][(n1, n2)].append((n3, n3prob))
+                all_contextes.add(((n1,n2,n3), n3prob))
 
     # filtro los contextos inmediatos anteriores a la support note
     all_contextes= sorted(all_contextes, key=lambda x:x[1], reverse=True)
@@ -225,21 +239,29 @@ def build_median_must_dict(now_prob_model, prox_prob_model, nf, min_pitch, max_p
     if size==0: size=1
     val= all_contextes[size-1][1]
     all_contextes= set(context for context, p in all_contextes if p >= val)
+    to_remove= []
     for (n1, n2), nexts in must[1].iteritems():
         new_nexts= []
         for n3, prob in nexts:
             if (n1, n2, n3) in all_contextes:
                 new_nexts.append((n3, prob))
-        must[1][(n1,n2)]= new_nexts
+        if len(new_nexts) == 0:
+            to_remove.append((n1, n2))
+        else:
+            must[1][(n1,n2)]= new_nexts
 
+    for context in to_remove: must[1].pop(context)
     apply_percent(1, support_note_prob)            
 
     global plotit
     for i in xrange(2, length+1):
+        must[i]= {}
         for n1 in xrange(min_pitch, max_pitch+1):
             for n2, n3 in must[i-1]:
                 n3prob= now_prob_model.get_prob(n1, n2, n3)
-                must[i][(n1, n2)].append((n3, n3prob))
+                l= must[i].get((n1, n2), [])
+                l.append((n3, n3prob))
+                must[i][(n1, n2)]= l
 
         if plotit:
             plotit=False
@@ -251,25 +273,43 @@ def build_median_must_dict(now_prob_model, prox_prob_model, nf, min_pitch, max_p
 
     return must
 
-def build_percent_must_dict(now_prob_model, prox_prob_model, nf, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
-    import ipdb;ipdb.set_trace()
-    must= defaultdict(lambda : defaultdict(set)) 
-    for n1 in xrange(min_pitch, max_pitch+1):
-        for n2 in xrange(min_pitch, max_pitch+1):
-            for n3 in xrange(min_pitch, max_pitch+1):
-                if prox_prob_model.get_prob(n2, n3, nf) >= support_note_prob:
-                    must[1][(n1, n2)].add(n3)
 
-    m= None
-    for i in xrange(2, length+1):
-        for n1 in xrange(min_pitch, max_pitch+1):
-            for n2, n3 in must[i-1]:
-                n3prob= now_prob_model.get_prob(n1, n2, n3)
-                m= max(m, n3prob)
-                if n3prob >= middle_note_prob:
-                    must[i][(n1, n2)].add(n3)
+def possible_support_notes(now_prob_model, prox_prob_model, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
+    res= {}
+    for n1 in xrange(min_pitch, max_pitch + 1):
+        for n2 in xrange(min_pitch, max_pitch + 1):
+            res[(n1, n2)]= _possible_support_notes(now_prob_model, prox_prob_model, n1, n2, min_pitch, max_pitch, support_note_prob, middle_note_prob, length)
+    return res            
 
-    return must
+    
+
+def _possible_support_notes(now_prob_model, prox_prob_model, n1, n2, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
+    contexts= [(n1,n2)]
+    for i in xrange(length):
+        new_contexts= []
+        for n1, n2 in contexts:
+            continuations= []
+            for n3 in xrange(min_pitch, max_pitch+1): 
+                if i < length -1:
+                    n3prob= now_prob_model.get_prob(n1, n2, n3)
+                else:
+                    n3prob= prox_prob_model.get_prob(n1, n2, n3)
+
+                continuations.append((n3, n3prob))
+
+            continuations.sort(key=lambda x:x[1], reverse=True)
+
+            if i < length -1: size= int(middle_note_prob*len(continuations))
+            else: size= int(support_note_prob*len(continuations))
+
+            if size==0: size=1
+            val= continuations[size-1][-1]
+            new_contexts.extend((n2, n3) for (n3, n3prob) in continuations if n3prob >= val)
+
+        contexts= list(set(new_contexts))
+
+    return set(n3 for n2, n3 in contexts)
+
 build_must_dict= build_median_must_dict    
 
 class ProbModel(object):
