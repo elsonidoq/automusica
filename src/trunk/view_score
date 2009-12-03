@@ -1,5 +1,5 @@
 cp $1 tmp.mid
-midi2abc tmp.mid > tmp.abc
+midi2abc -splitvoices tmp.mid > tmp.abc
 abc2ly tmp.abc
 lilypond tmp.ly
 lilypond tmp.ly
