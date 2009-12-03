@@ -1,1 +1,3 @@
-{'experiment1':['/mp3/vals_corto1.mp3', '/mp3/vals_corto2.mp3','/mp3/coral_bach_solito.mp3']}
+{'e1':[ '/mp3/vals_corto1.mp3', '/mp3/vals_corto2.mp3'],
+ 'e2':[ '/mp3/vals_corto1.mp3', '/mp3/bach_jesu_solito.mp3'],
+ 'e3':['http://lafhis.dc.uba.ar/~pzivic/new_narmour_model/chacarerasa-1.mp3']}

@@ -19,11 +19,37 @@ def get_visitor_id():
     return new_id
 
 
+class FinishedExperiment(object):
+    @cherrypy.expose
+    def index(self):
+        template_fname= os.path.join(here, 'public/gracias.mako') 
+        with open(template_fname) as f:
+            template= f.read()
+        return Template(template).render()
 
 class Root(object):
     @cherrypy.expose
     def index(self):
         return "hole!"
+
+
+def get_experiment_description(id):
+    return "Hola!!"
+
+class ExperimentDescription(object):
+    @cherrypy.expose
+    def index(self, id):
+        return "A"
+        template_fname= os.path.join(here, 'public/description.mako') 
+        text= get_experiment_description(id)
+        with open(template_fname) as f:
+            template= f.read()
+        
+        d= dict(playlist=text,
+                test_sound='mp3/vals_corto2.mp3')
+        return Template(template).render(**d)
+
+
 
 class Experiment(object):
     @cherrypy.expose
@@ -54,5 +80,7 @@ if __name__ == '__main__':
     conf_fname= os.path.join(current_dir, 'cherrypy.ini')
     root= Root()
     root.experiment= Experiment()
+    root.experiment_description= ExperimentDescription()
+    root.finished_experiment= FinishedExperiment()
     cherrypy.quickstart(root, '/', config=conf_fname)
 

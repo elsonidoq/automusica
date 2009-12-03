@@ -8,7 +8,7 @@
     
 
 	<style type="text/css">
-		#loader {display:none; padding-left:20px; background:url(/images/bigCircleBall.gif) no-repeat center;}
+		#loader-wrapper {padding-left:21px;}
 		.play_button_enabled {}
 		.play_button_disabled {display:none;}
 	</style>
@@ -18,28 +18,35 @@
     <script type="text/javascript">
     $(document).ready(function(){
        var jplayer= $("#jplayer").jPlayer({
-/*            ready: function () {
-                play('http://lafhis.dc.uba.ar/~pzivic/new_narmour_model/coral_bach_solito.mp3');
-            }*/
-            swfPath:'/js/'
+            ready: function () {
+
+
+
+            }
+            ,swfPath:'/js/'
         })
         .onProgressChange( function(lp,ppr,ppa,pt,tt) {
             if (player.is_muted && lp < 100) {
-                console.log("cacheando");
-                jplayer.pause();
+                lp= parseInt(lp);
+                if (lp % 5 == 0) 
+                    $("#loader .bar").animate({"width":lp+"%"});
             } else if(player.is_muted && lp >= 100) {
-                console.log("cache termino");
+                $("#loader .bar").animate({"width":"100%"});
+                //console.log("cache termino");
                 player.onCacheFinished();
                 player.is_muted= false;
                 jplayer.volume(100);
                 jplayer.playHead(0);
-            }
+            } else {
+                $("#loader .bar").fadeOut();
+            } 
                 
         }).onSoundComplete( function() {
-            console.log('sound completed');
+            //console.log('sound completed');
             player.onSoundComplete();
             
         });
+
 
 
     });
@@ -82,18 +89,20 @@
         <div id="player" style="position:absolute;top:35%;width:100%">
             <div id="wrapper" style="text-align:center;position:relative;"> 
                 <a href="#" class="play_button_enabled" onclick="javascript:player.next()">
-                <img border="0" src="/images/play_blue.png"/>
+                <img id="play-image" border="0" src="/images/play_blue.png"/>
                 </a>
                 <img border="0" class="play_button_disabled" src="/images/play_gris.png" />
 <!--                <span class="track-title" style="font-size:64px;">Nombre de la cancion</span> -->
             </div> 
 
-            <div id="progress" style="height:4px;background:#CCC;">
-                <div class="bar" style="width:0px;height:100%;background:#666;">
+            <div id="loader-wrapper" style="height:4px;background:#CCC;">
+                <div id="loader" style ="height:100%;">
+                    <div class="bar" style="width:0%;height:100%;background:#666;">
+                    </div>
                 </div>
             </div>
             
-            <div id="loader"><div style="text-align:center;padding-top: 55px;"></div></div>
+<!--            <div id="loader"><div style="text-align:center;padding-top: 55px;"></div></div> -->
             <div id="stars-container" style="width:100%;text-align:center;margin-top:10px;display:none;position:absolute;">
 <!--                <span>Como estuvo? &nbsp;&nbsp;</span> -->
                 <form id="stars" style="position:relative;width:200px;">
@@ -103,8 +112,10 @@
 			<input type="radio" name="rate" value="3" title="Average" id="rate3" /> <br />
 			<input type="radio" name="rate" value="4" title="Good" id="rate4" /> <br />
 			<input type="radio" name="rate" value="5" title="Excellent" id="rate5" /> <br />
+            <!--
 			<input type="radio" name="rate" value="6" title="Excellent" id="rate6" /> <br />
 			<input type="radio" name="rate" value="7" title="Excellent" id="rate7" /> <br />
+            -->
 
                 </div>
             </div>
@@ -122,7 +133,6 @@
         
         Player.prototype.play = function(track) {
             //console.log('curr_idx', this._current_idx);
-            $("#loader").fadeIn();
             $(".play_button_disabled").show();
             $(".play_button_enabled").hide();
             this.current_track = track;
@@ -132,12 +142,13 @@
         }
         
         Player.prototype.onCacheFinished = function() {
-            $("#loader").fadeOut();
         }
 
         Player.prototype._do_play= function(track) {
-            console.log(track);
+            //console.log(track);
             var jplayer= $("#jplayer");
+            $("#loader .bar").css({"width":0});
+            $("#loader .bar").show();
             this.is_muted= true;
             jplayer.setFile(track);
             jplayer.play();
@@ -166,9 +177,9 @@
             setTimeout(next, 1000);*/
             //console.log(player._current_idx);
             var d= {visitor_id:$("#visitor_id").val(), value: value};
-            console.log(d);
-            console.log(d.visitor);
-            console.log(d.value);
+            //console.log(d);
+            //console.log(d.visitor);
+            //console.log(d.value);
             $.post('/experiment/rated', d , function(data) {
 
                 if (player._current_idx + 1 < player.playlist.length) {
@@ -176,7 +187,7 @@
                     $(".play_button_enabled").show();
                     $(".play_button_disabled").hide();
                 } else {
-                    document.location= "gracias.html";
+                    document.location= "/finished_experiment";
                 }
             });
         }
@@ -185,7 +196,9 @@
             var ww = $(window).width();
             $("#content").css('height', $(window).height());
             $("#content").css('height', $(window).height());
-            $("#stars").css('left', ww/2 - 100);
+            $("#stars").css('left', ww/2 - 28*5/2 + 2);
+            $("#loader").css({'padding-left': ww/2 - $("#play-image").width()/2 ,
+                                       'width'       : $("#play-image").width()-40});
             player.width = ww;
         }
         
