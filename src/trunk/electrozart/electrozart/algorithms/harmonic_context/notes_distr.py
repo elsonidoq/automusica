@@ -1,8 +1,12 @@
+import pylab
+import os
+from matplotlib import ticker
+
 from collections import defaultdict
 
 from utils.random import convex_combination
 from utils.params import bind_params
-from electrozart import Note
+from electrozart import Note, Chord
 
 from electrozart.algorithms.applier import Algorithm
 from electrozart.algorithms import ExecutionContext, needs, child_input
@@ -11,7 +15,7 @@ from electrozart.algorithms import ExecutionContext, needs, child_input
 class NotesDistr(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
-        instance.params.update(dict(global_profile_prior_weight = 1, #0.5, 
+        instance.params.update(dict(global_profile_prior_weight = 4,#0.5,#1, #0.5, 
                                     proportional_to_duration    = True,
                                     profile_smooth_factor       = 0.1))
         return instance
@@ -61,6 +65,34 @@ class NotesDistr(Algorithm):
         return pitches_distr
 
         
+    def save_info(self, folder, score): 
+        def format_pitch(x, pos=None):
+            if int(x) != x: import ipdb;ipdb.set_trace()
+            return Note(int(x)).get_pitch_name()[:-1]
+
+        def do_plot(p, fname):
+            y= [i[1] for i in sorted(p, key=lambda x:x[0])]
+            x= [i[0].pitch for i in sorted(p, key=lambda x:x[0])]
+            e= pylab.plot(x, y, label='score profile', color='black')[0]
+            ax= e.axes.xaxis
+            ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
+            ax.set_major_locator(ticker.MultipleLocator())
+            pylab.savefig(os.path.join(folder, fname))
+            pylab.close()
+
+        do_plot(self.score_profile, 'prior-profile.png')
+        from random import shuffle
+        chords= list(set(Chord.chordlist(score)))
+        shuffle(chords)
+        chords= chords[:4]
+        def chord_name(c):
+            return '-'.join(n.get_pitch_name() for n in c.notes)
+        for chord in chords:
+            do_plot(self.pitches_distr(chord.notes), 'posterior-%s.png' % chord_name(chord))
+        
+
+
+
     def notes_distr(self, now_notes, min_pitch, max_pitch):
         pitches_repetition= defaultdict(int)
         for i in xrange(min_pitch, max_pitch+1):
@@ -72,6 +104,7 @@ class NotesDistr(Algorithm):
     @needs('now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     @child_input('notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr')
     def next(self, input, result, prev_notes):
+        #import ipdb;ipdb.set_trace()
         input.notes_distr= self.notes_distr(input.now_chord.notes, input.min_pitch, input.max_pitch)
         input.prox_notes_distr= self.notes_distr(input.prox_chord.notes, input.min_pitch, input.max_pitch)
 
