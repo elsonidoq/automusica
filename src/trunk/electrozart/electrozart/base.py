@@ -32,7 +32,7 @@ class Chord(Figure):
         if not isinstance(other, Chord): return False
         return set(self.canon_notes) == set(other.canon_notes) and self.duration==other.duration
 
-    def __hash__(self): return hash(tuple(self.notes))
+    def __hash__(self): return hash((tuple(self.notes), self.duration))
     
     @classmethod
     def chordlist(cls, score, min_notes_per_chord=3):
@@ -45,6 +45,7 @@ class Chord(Figure):
             #print len(ns)
             if len(chord_notes) >= min_notes_per_chord: 
                 chord= cls(start, None, list(chord_notes))
+                chord.orig_notes= ns
                 if len(res) > 0: 
                     if set(n.get_canonical_note() for n in res[-1].notes) == chord_notes: continue
                     res[-1].duration= start - res[-1].start
