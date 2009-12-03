@@ -78,10 +78,17 @@ class ChordHarmonicContext(Algorithm):
 
         else:
             prox_chord= self.chordlist[i+1]
+
+        if i > 0:
+            prev_chord= self.chordlist[i-1]
+        else:
+            prev_chord= None
+
         #chord= self.get_chord(input.chord_id)
         self.chord_pos.append((input.now, chord))
         #input.now_notes= chord.notes 
 
+        input.prev_chord= prev_chord
         input.now_chord= now_chord
         input.prox_chord= prox_chord
             
