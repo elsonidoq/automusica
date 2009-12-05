@@ -32,21 +32,18 @@ class Root(object):
     def index(self):
         return "hole!"
 
-
 def get_experiment_description(id):
     return "Hola!!"
 
 class ExperimentDescription(object):
     @cherrypy.expose
     def index(self, id):
-        return "A"
         template_fname= os.path.join(here, 'public/description.mako') 
         text= get_experiment_description(id)
         with open(template_fname) as f:
             template= f.read()
         
-        d= dict(playlist=text,
-                test_sound='mp3/vals_corto2.mp3')
+        d= dict(test_sound='/mp3/vals_corto2.mp3')
         return Template(template).render(**d)
 
 

@@ -37,7 +37,6 @@
                 player.is_muted= false;
                 jplayer.volume(100);
                 jplayer.playHead(0);
-            } else {
                 $("#loader .bar").fadeOut();
             } 
                 
