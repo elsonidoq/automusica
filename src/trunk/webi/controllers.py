@@ -1,10 +1,17 @@
 from __future__ import with_statement
 from uuid import uuid4 as uuid
 from mako.template import Template
+from mako.lookup import TemplateLookup
 import os
 import cherrypy
 
+
+from helpers import get_experiment_description, get_homepage_description, get_player_description
+
+
 here= os.path.dirname(os.path.abspath(__file__))
+lookup= TemplateLookup(os.path.join(here, 'public'), disable_unicode=True, input_encoding='utf-8')
+
 with open(os.path.join(here, 'experiments.json')) as f:
     experiments= eval(f.read())
 
@@ -22,44 +29,39 @@ def get_visitor_id():
 class FinishedExperiment(object):
     @cherrypy.expose
     def index(self):
-        template_fname= os.path.join(here, 'public/gracias.mako') 
-        with open(template_fname) as f:
-            template= f.read()
-        return Template(template).render()
-
-class Root(object):
-    @cherrypy.expose
-    def index(self):
-        return "hole!"
-
-def get_experiment_description(id):
-    return "Hola!!"
+        template= lookup.get_template('gracias.mako')
+        return template.render()
 
 class ExperimentDescription(object):
     @cherrypy.expose
     def index(self, id):
-        template_fname= os.path.join(here, 'public/description.mako') 
+        template= lookup.get_template('description.mako')
         text= get_experiment_description(id)
-        with open(template_fname) as f:
-            template= f.read()
         
         d= dict(test_sound='/mp3/vals_corto2.mp3')
-        return Template(template).render(**d)
+        return template.render(**d)
 
+class Home(object):
+    @cherrypy.expose
+    def index(self):
+        template= lookup.get_template('home.mako')
+        d={'songs'              : [{'name':'tema 1', 'orig':'tema1.mp3', 'solo':'tema1.mp3'}, 
+                                   {'name':'tema 2', 'orig':'tema1.mp3', 'solo':'tema1.mp3'}],
+           'songs_base_url'     : '/mp3/',
+           'description'        : get_homepage_description(),
+           'player_description' : get_player_description()}  
 
+        return template.render(**d)
 
 class Experiment(object):
     @cherrypy.expose
     def index(self, id):
-        template_fname= os.path.join(here, 'public/experiment.mako') 
+        template= lookup.get_template('experiment.mako')
         visitor_id= get_visitor_id()
 
-        with open(template_fname) as f:
-            template= f.read()
-        
         d= dict(playlist=experiments[id],
                 visitor_id=visitor_id)
-        return Template(template).render(**d)
+        return template.render(**d)
 
     @cherrypy.expose
     def rated(self, visitor_id, value):
@@ -75,7 +77,7 @@ if __name__ == '__main__':
                             'log.screen': True })
 
     conf_fname= os.path.join(current_dir, 'cherrypy.ini')
-    root= Root()
+    root= Home()
     root.experiment= Experiment()
     root.experiment_description= ExperimentDescription()
     root.finished_experiment= FinishedExperiment()

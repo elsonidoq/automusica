@@ -1,0 +1,42 @@
+
+.song {
+    padding-left:10px;
+}
+*, html {
+    padding:0;
+    margin:0;
+}
+
+#title-container {
+    text-align:center;
+}
+
+#description-container {
+    width:50%; 
+    float:left;
+}
+
+#player-container {
+    width:50%;  
+    float:left;
+}
+
+#player-description {
+    margin-left:25%;
+    text-align:justify;
+    width:50%;
+}
+#description {
+    margin-left:25%;
+    text-align:justify;
+    width:50%;
+}
+
+#title {
+    font-family: Trebuchet, "Trebuchet", serif;
+    font-size:30;
+}
+body {
+    font-family: Georgia,Times,"Times New Roman",serif;
+    color: #666;
+}
