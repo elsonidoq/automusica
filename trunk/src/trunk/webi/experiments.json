@@ -1,3 +1,25 @@
 {'e1':[ '/mp3/vals_corto1.mp3', '/mp3/vals_corto2.mp3'],
  'e2':[ '/mp3/vals_corto1.mp3', '/mp3/bach_jesu_solito.mp3'],
- 'e3':['http://lafhis.dc.uba.ar/~pzivic/new_narmour_model/chacarerasa-1.mp3']}
+ 'e3':['http://lafhis.dc.uba.ar/~pzivic/new_narmour_model/chacarerasa-1.mp3'],
+ 'percentiles':[
+                '/mp3/must_percents_results/d_schub.d973-wolp.mp3',
+                '/mp3/must_percents_results/b_schub.d974-wolp.mp3',
+                '/mp3/must_percents_results/c_schub.d974-wolp.mp3',
+                '/mp3/must_percents_results/c_beet.wo14.2-wolp.mp3',
+                '/mp3/must_percents_results/a_schub.d974-wolp.mp3',
+                '/mp3/must_percents_results/b_beet.wo14.2-wolp.mp3',
+                '/mp3/must_percents_results/c_beet.wo14.8-wolp.mp3',
+                '/mp3/must_percents_results/b_beet.wo13-wolp.mp3',
+                '/mp3/must_percents_results/a_schub.d973-wolp.mp3',
+                '/mp3/must_percents_results/d_beet.wo13-wolp.mp3',
+                '/mp3/must_percents_results/d_schub.d974-wolp.mp3',
+                '/mp3/must_percents_results/a_beet.wo14.8-wolp.mp3',
+                '/mp3/must_percents_results/a_beet.wo13-wolp.mp3',
+                '/mp3/must_percents_results/c_beet.wo13-wolp.mp3',
+                '/mp3/must_percents_results/b_schub.d973-wolp.mp3',
+                '/mp3/must_percents_results/d_beet.wo14.2-wolp.mp3',
+                '/mp3/must_percents_results/a_beet.wo14.2-wolp.mp3',
+                '/mp3/must_percents_results/c_schub.d973-wolp.mp3',
+                '/mp3/must_percents_results/d_beet.wo14.8-wolp.mp3',
+                '/mp3/must_percents_results/b_beet.wo14.8-wolp.mp3']
+}

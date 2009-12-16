@@ -73,6 +73,7 @@
         *, html {
             padding:0;
             margin:0;
+            background:#b8c2f0;
         }
         
         body {
@@ -82,20 +83,26 @@
     </style>
 </head>
 <body style="margin:0 auto;" onload="javascript:resize();">
+        <div id="description" style="width:50%;height:auto;border-style:solid;border-width:1px;margin-left:25%;margin-right:25%;z-index:1;position:absolute">
+        <div id="description_container" style="text-align:justify;font-size:15px;position:relative;height:auto;margin-left:10px;margin-top:10px;margin-bottom:20px;">
+        ${experiment_description}
+        </div>
+        <div id="comenzar" style="text-align:right;margin-right:10px;margin-top:20px;vertical-align:text-top;position:relative">
+            <a href="#" onclick="javascript:start_experiment();">comenzar</a>
+        </div>
+        </div>
     <div id="jplayer"></div>
     <input type="hidden" id="visitor_id" value="${visitor_id}"/>
-    <div id="content">
+    <div id="content" style="position:relative;z-index:0;">
         <div id="player" style="position:absolute;top:35%;width:100%">
             <div id="wrapper" style="text-align:center;position:relative;"> 
-                <a href="#" class="play_button_enabled" onclick="javascript:player.next()">
-                <img id="play-image" border="0" src="/images/play_blue.png"/>
-                </a>
+                <img class="play_button_enabled" onclick="javascript:player.next();" style="cursor:pointer;" id="play-image" border="0" src="/images/play_red.png"/>
                 <img border="0" class="play_button_disabled" src="/images/play_gris.png" />
 <!--                <span class="track-title" style="font-size:64px;">Nombre de la cancion</span> -->
             </div> 
 
             <div id="loader-wrapper" style="height:4px;background:#CCC;">
-                <div id="loader" style ="height:100%;">
+                <div id="loader" style ="height:100%; background:#CCC;">
                     <div class="bar" style="width:0%;height:100%;background:#666;">
                     </div>
                 </div>
@@ -122,6 +129,20 @@
     </div>
     <script type="text/javascript">
         
+        var enable_play= function() {
+            $(".play_button_enabled").show();
+            $(".play_button_disabled").hide();
+        }
+
+        var disable_play= function() {
+            $(".play_button_disabled").show();
+            $(".play_button_enabled").hide();
+        }
+
+        var start_experiment = function() {
+            $("#description").slideUp();
+            enable_play();
+        }
         var Player = function Player(playlist) {
             this._current_idx = -1;
             this._playing_interval = null;
@@ -132,8 +153,7 @@
         
         Player.prototype.play = function(track) {
             //console.log('curr_idx', this._current_idx);
-            $(".play_button_disabled").show();
-            $(".play_button_enabled").hide();
+            disable_play();
             this.current_track = track;
             
             this._do_play(track);
@@ -147,7 +167,7 @@
             //console.log(track);
             var jplayer= $("#jplayer");
             $("#loader .bar").css({"width":0});
-            $("#loader .bar").show();
+            $("#loader").show();
             this.is_muted= true;
             jplayer.setFile(track);
             jplayer.play();
@@ -183,8 +203,7 @@
 
                 if (player._current_idx + 1 < player.playlist.length) {
                     $("#stars-container").slideUp();
-                    $(".play_button_enabled").show();
-                    $(".play_button_disabled").hide();
+                    enable_play();
                 } else {
                     document.location= "/finished_experiment";
                 }
@@ -196,12 +215,15 @@
             $("#content").css('height', $(window).height());
             $("#content").css('height', $(window).height());
             $("#stars").css('left', ww/2 - 28*5/2 + 2);
-            $("#loader").css({'padding-left': ww/2 - $("#play-image").width()/2 ,
+            $("#loader").css({'margin-left': ww/2 - $("#play-image").width()/2 ,
                                        'width'       : $("#play-image").width()-40});
+/*            description_frame_heigh=$("#description").height();
+            $("#description_container").css('height',description_frame_heigh-40);*/
             player.width = ww;
         }
         
         $(window).resize(resize);
+        disable_play();
     </script>
 </body>
 </html>

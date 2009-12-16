@@ -17,6 +17,7 @@ def get_player_description():
     return get_page_resource('home', 'player-description')
 
 def get_experiment_description(id):
+    return get_page_resource('experiment', 'description_%s.html' % id)
     return "Hola!!"
 
 def get_page_resource(page, resource):
