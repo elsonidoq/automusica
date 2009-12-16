@@ -1,4 +1,5 @@
 from __future__ import with_statement
+import random
 from uuid import uuid4 as uuid
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -42,6 +43,7 @@ class ExperimentDescription(object):
         return template.render(**d)
 
 class Home(object):
+    @cherrypy.tools.encode(encoding='utf8')
     @cherrypy.expose
     def index(self):
         template= lookup.get_template('home.mako')
@@ -54,13 +56,20 @@ class Home(object):
         return template.render(**d)
 
 class Experiment(object):
+    @cherrypy.tools.encode(encoding='utf8')
     @cherrypy.expose
     def index(self, id):
         template= lookup.get_template('experiment.mako')
         visitor_id= get_visitor_id()
+        experiment_description= get_experiment_description(id)
 
-        d= dict(playlist=experiments[id],
-                visitor_id=visitor_id)
+        playlist= experiments[id][:]
+        random.seed(visitor_id)
+        random.shuffle(playlist)
+
+        d= dict(playlist=playlist,
+                visitor_id=visitor_id,
+                experiment_description=experiment_description)
         return template.render(**d)
 
     @cherrypy.expose

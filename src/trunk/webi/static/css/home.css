@@ -1,35 +1,74 @@
 
-.song {
-    padding-left:10px;
-}
 *, html {
     padding:0;
     margin:0;
+    background:#b8c2f0;
 }
 
 #title-container {
     text-align:center;
+    font-size:40px;
+}
+#space-between-title-and-rest{
+    height:35px;
 }
 
+.song {
+    padding-left:100px;
+
+}
+.song_link{
+    text-align:left;
+    padding-left:35%;
+}
+.song_compositions{
+    display:none;
+}
+.play_img {
+    margin-right:5px;
+    margin-left:5px;
+    cursor:pointer;
+}
+
+.stop_img {
+    display:none;
+    margin-right:5px;
+    margin-left:-15px;
+}
 #description-container {
     width:50%; 
     float:left;
+    clear:both;
 }
-
 #player-container {
     width:50%;  
     float:left;
 }
 
+#space-after-player-description{
+    height:20px;
+}
+    
+#playlist{
+    text-align:left;
+    width:150px;
+    padding-left:50%;
+
+}
+.song {
+    padding-left:10px;
+}
+
+
 #player-description {
-    margin-left:25%;
+    margin-left:5%;
+    margin-right:20%;
     text-align:justify;
-    width:50%;
 }
 #description {
-    margin-left:25%;
+    margin-left:20%;
+    margin-right:5%;
     text-align:justify;
-    width:50%;
 }
 
 #title {
