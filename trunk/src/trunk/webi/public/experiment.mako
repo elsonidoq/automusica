@@ -7,13 +7,6 @@
     <script type="text/javascript" src="/js/jquery.jplayer.js"></script>
     
 
-	<style type="text/css">
-		#loader-wrapper {padding-left:21px;}
-		.play_button_enabled {}
-		.play_button_disabled {display:none;}
-	</style>
-
-
     <!-- jPlayer -->
     <script type="text/javascript">
     $(document).ready(function(){
@@ -29,20 +22,23 @@
             if (player.is_muted && lp < 100) {
                 lp= parseInt(lp);
                 if (lp % 5 == 0) 
-                    $("#loader .bar").animate({"width":lp+"%"});
+                    $("#loade_bar").animate({"width":lp+"%"});
             } else if(player.is_muted && lp >= 100) {
-                $("#loader .bar").animate({"width":"100%"});
+                $("#loader_bar").animate({"width":"100%"});
                 //console.log("cache termino");
-                player.onCacheFinished();
                 player.is_muted= false;
                 jplayer.volume(100);
                 jplayer.playHead(0);
-                $("#loader .bar").fadeOut();
+                $("#loader-text").slideUp();
+                $("#loader_bar").fadeOut();
             } 
                 
         }).onSoundComplete( function() {
             //console.log('sound completed');
-            player.onSoundComplete();
+            if (!is_test_sound)
+                player.onSoundComplete();
+            else
+                is_test_sound= false;
             
         });
 
@@ -56,6 +52,7 @@
 	<script type="text/javascript" src="/js/ui.stars.js"></script>
 	<link rel="stylesheet" type="text/css" href="/css/ui.stars.css"/>
 	<link rel="stylesheet" type="text/css" href="/css/crystal-stars.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/experiment.css"/>
     
 	<script type="text/javascript">
 		$(function(){
@@ -69,77 +66,65 @@
 
     <!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="/css/demos.css"/>
-    <style>
-        *, html {
-            padding:0;
-            margin:0;
-            background:#b8c2f0;
-        }
-        
-        body {
-            font-family: Georgia,Times,"Times New Roman",serif;
-            color: #666;
-        }
-    </style>
 </head>
 <body style="margin:0 auto;" onload="javascript:resize();">
-        <div id="description" style="width:50%;height:auto;border-style:solid;border-width:1px;margin-left:25%;margin-right:25%;z-index:1;position:absolute">
-        <div id="description_container" style="text-align:justify;font-size:15px;position:relative;height:auto;margin-left:10px;margin-top:10px;margin-bottom:20px;">
-        ${experiment_description}
+        <div id="description">
+        <div id="description_container" >
+            ${experiment_description}
         </div>
-        <div id="comenzar" style="text-align:right;margin-right:10px;margin-top:20px;vertical-align:text-top;position:relative">
+        <div id="comenzar">
             <a href="#" onclick="javascript:start_experiment();">comenzar</a>
         </div>
         </div>
     <div id="jplayer"></div>
     <input type="hidden" id="visitor_id" value="${visitor_id}"/>
-    <div id="content" style="position:relative;z-index:0;">
-        <div id="player" style="position:absolute;top:35%;width:100%">
-            <div id="wrapper" style="text-align:center;position:relative;"> 
-                <img class="play_button_enabled" onclick="javascript:player.next();" style="cursor:pointer;" id="play-image" border="0" src="/images/play_red.png"/>
+    <div id="content">
+        <div id="player">
+            <div id="wrapper"> 
+                <img id="play_button_enabled" onclick="javascript:player.next();" border="0" src="/images/play_blue.png"/>
                 <img border="0" class="play_button_disabled" src="/images/play_gris.png" />
-<!--                <span class="track-title" style="font-size:64px;">Nombre de la cancion</span> -->
             </div> 
 
-            <div id="loader-wrapper" style="height:4px;background:#CCC;">
-                <div id="loader" style ="height:100%; background:#CCC;">
-                    <div class="bar" style="width:0%;height:100%;background:#666;">
+            <div id="loader-wrapper">
+                <div id="loader">
+                    <div id="loader_bar">
                     </div>
                 </div>
             </div>
-            
-<!--            <div id="loader"><div style="text-align:center;padding-top: 55px;"></div></div> -->
-            <div id="stars-container" style="width:100%;text-align:center;margin-top:10px;display:none;position:absolute;">
-<!--                <span>Como estuvo? &nbsp;&nbsp;</span> -->
-                <form id="stars" style="position:relative;width:200px;">
-                <!--<form id="stars" action="rate" method="GET" style="position:relative;width:200px;">-->
-			<input type="radio" name="rate" value="1" title="Poor" id="rate1" /> <br />
-			<input type="radio" name="rate" value="2" title="Fair" id="rate2" /> <br />
-			<input type="radio" name="rate" value="3" title="Average" id="rate3" /> <br />
-			<input type="radio" name="rate" value="4" title="Good" id="rate4" /> <br />
-			<input type="radio" name="rate" value="5" title="Excellent" id="rate5" /> <br />
-            <!--
-			<input type="radio" name="rate" value="6" title="Excellent" id="rate6" /> <br />
-			<input type="radio" name="rate" value="7" title="Excellent" id="rate7" /> <br />
-            -->
 
-                </div>
+            <div id="loader-text">
+            Cargando
+            </div>
+            
+            <div id="stars-container">
+                <form id="stars">
+                    <input type="radio" name="rate" value="1" title="Poor" id="rate1" /> <br />
+                    <input type="radio" name="rate" value="2" title="Fair" id="rate2" /> <br />
+                    <input type="radio" name="rate" value="3" title="Average" id="rate3" /> <br />
+                    <input type="radio" name="rate" value="4" title="Good" id="rate4" /> <br />
+                    <input type="radio" name="rate" value="5" title="Excellent" id="rate5" /> <br />
+                </form>                    
             </div>
         </div>
     </div>
     <script type="text/javascript">
         
         var enable_play= function() {
-            $(".play_button_enabled").show();
+            $("#play_button_enabled").show();
             $(".play_button_disabled").hide();
         }
 
         var disable_play= function() {
             $(".play_button_disabled").show();
-            $(".play_button_enabled").hide();
+            $("#play_button_enabled").hide();
         }
 
         var start_experiment = function() {
+            if (is_test_sound) {
+                var jplayer= $("#jplayer");
+                jplayer.stop();
+                is_test_sound= false;
+            }
             $("#description").slideUp();
             enable_play();
         }
@@ -152,7 +137,6 @@
         }
         
         Player.prototype.play = function(track) {
-            //console.log('curr_idx', this._current_idx);
             disable_play();
             this.current_track = track;
             
@@ -160,14 +144,11 @@
             
         }
         
-        Player.prototype.onCacheFinished = function() {
-        }
-
         Player.prototype._do_play= function(track) {
-            //console.log(track);
             var jplayer= $("#jplayer");
-            $("#loader .bar").css({"width":0});
+            $("#loader_bar").css({"width":0});
             $("#loader").show();
+            $("#loader-text").slideDown();
             this.is_muted= true;
             jplayer.setFile(track);
             jplayer.play();
@@ -186,6 +167,7 @@
         
         var playlist = ${playlist};
         var player = new Player(playlist);
+        var is_test_sound = false;
             
         var onRate = function(ui, type, value) {
             //console.log(data);
@@ -210,13 +192,21 @@
             });
         }
         
+        var sound_test = function() {
+            var track= "${test_sound}";
+            var jplayer= $("#jplayer");
+            is_test_sound= true;
+            jplayer.setFile(track);
+            jplayer.play();
+        }
+
         var resize = function() {
             var ww = $(window).width();
             $("#content").css('height', $(window).height());
             $("#content").css('height', $(window).height());
             $("#stars").css('left', ww/2 - 28*5/2 + 2);
-            $("#loader").css({'margin-left': ww/2 - $("#play-image").width()/2 ,
-                                       'width'       : $("#play-image").width()-40});
+            $("#loader").css({'margin-left': ww/2 - $("#play_button_enabled").width()/2 ,
+                                       'width'       : $("#play_button_enabled").width()-40});
 /*            description_frame_heigh=$("#description").height();
             $("#description_container").css('height',description_frame_heigh-40);*/
             player.width = ww;

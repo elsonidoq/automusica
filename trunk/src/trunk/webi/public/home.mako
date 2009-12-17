@@ -18,15 +18,15 @@
             ,swfPath:'/js/'
         })
         .onProgressChange( function(lp,ppr,ppa,pt,tt) {
-/*            if (player.is_muted && lp < 100) {
-
-            } else if(player.is_muted && lp >= 100) {
-
-            } */
+            if (ppr>0) {
+                $(playing_element + "_loader").fadeOut();
+            }
+            if (ppr >= 100) {
+                $(playing_element + "_play").show();
+                $(playing_element + "_stop").hide();
+                playing_element=null;
+            }
                 
-        }).onSoundComplete( function() {
-            player.onSoundComplete();
-            
         });
 
 
@@ -40,7 +40,8 @@
     
     <div  > 
         <div id="title-container" >
-            <span id="title">La compositora</span>
+            <div id="title">La compositora</div>
+            <div id="copete">Análisis musical y composición automática</div>
             <div id="space-between-title-and-rest"></div>
         </div>
         <div id="description-container" >
@@ -54,7 +55,7 @@
                 <div id="playlist">
                     <%def name="print_song(song_desc, color1, color2)">
                         <% 
-                           element_class=song_desc['name'].replace(' ', '_') 
+                           element_class=song_desc['name'].replace(' ', '_').replace('(','').replace(')','').replace('!','').replace(',','') 
                            link_color="755"
                         %>
                         <div class="song" >
@@ -65,12 +66,12 @@
 
                             <div class="song_compositions" id="${element_class}_compositions" >
 
-                                <div class="song_link" id="${element_class}_orig" style="background:#${color2}"> 
+                                <div class="song_link_div" id="${element_class}_orig" style="background:#${color2}"> 
                                     <img class="play_img" id="${element_class}_orig_play" 
                                         src="/images/play_chico.png" 
                                         style="background:#${color2}"
                                         onclick="javascript:play_sound('${song_desc['orig']}', '#${element_class}_orig');"/> 
-
+                                    
                                     <img class="stop_img" id="${element_class}_orig_stop" 
                                         src="/images/stop_chico.png" 
                                         style="background:#${color2}"
@@ -79,9 +80,11 @@
                                     <span style="color:#${link_color};background:#${color2};text-decoration:none;" href="#"> 
                                         original
                                     </span> 
+                                    
+                                    <img class="gif_loader" id="${element_class}_orig_loader" src="/images/loader.gif" /> 
                                 </div>
 
-                                <div class="song_link" id="${element_class}_solo" style="background:#${color1}"> 
+                                <div class="song_link_div" id="${element_class}_solo" style="background:#${color1}"> 
 
                                     <img class="play_img" id="${element_class}_solo_play" 
                                         src="/images/play_chico.png" 
@@ -93,9 +96,11 @@
                                         style="background:#${color1}"
                                         onclick="javascript:stop_song('#${element_class}_solo');"/> 
                                     
-                                    <span style="color:#${link_color};background:#${color1};text-decoration:none;" href="#"> 
+                                    <span style="vertical-align:top;color:#${link_color};background:#${color1};text-decoration:none;" href="#"> 
                                         con solo
                                     </span> 
+                                    <img class="gif_loader" id="${element_class}_solo_loader" src="/images/loader.gif" /> 
+
                                 </div>
                             </div>
                         </div>
@@ -104,8 +109,9 @@
                     <% i=1 %>
                     % for song_desc in songs:
                         <%
-                           color1 = ["b8c2f0", "d5daf0"][i]
-                           color2 = ["b8c2f0", "d5daf0"][(i+1)%2]
+                           colors= ["dce0ee", "cbd1f0"]
+                           color1 = colors[i]
+                           color2 = colors[(i+1)%2]
                            print_song(song_desc, color1, color2)
                            i=(i+1)%2
                         %>
@@ -113,13 +119,13 @@
                 </div>
             </div>
 
+        <div style="width:100%;height:40px"></div>
 
         </div>
         
     
     </div>
-    <div style=" height:100px"> 
-        <div style="text-align:center">
+        <div style="text-align:center;height:100px">
             <a href="experiment?id=percentiles">Quiero hacer un experimento</a>
         </div>
     
@@ -136,6 +142,7 @@
 
         var stop_song= function(element_name) {
             playing_element= null;
+            $(element_name + "_loader").fadeOut();
             $(element_name + "_play").show();
             $(element_name + "_stop").hide();
             jplayer= $("#jplayer");
@@ -149,6 +156,7 @@
             playing_element= element_name;
             $(element_name + "_stop").show();
             $(element_name + "_play").hide();
+            $(element_name + "_loader").fadeIn();
 
             base_url= "${songs_base_url}";
             url= base_url + name
@@ -167,8 +175,8 @@
                 new_height+= desc_height;
             }
 
-            $("#player-container").css('height', new_height);
-            $("#description-container").css('height', new_height);
+    /*        $("#player-container").css('height', new_height);
+            $("#description-container").css('height', new_height);*/
 
             $("#playlist").css('padding-left', parseInt($("#player-description").width() - $("#playlist").width())/2);
 
