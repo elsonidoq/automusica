@@ -47,9 +47,11 @@ class Home(object):
     @cherrypy.expose
     def index(self):
         template= lookup.get_template('home.mako')
-        d={'songs'              : [{'name':'tema 1', 'orig':'tema1.mp3', 'solo':'tema1.mp3'}, 
-                                   {'name':'tema 2', 'orig':'tema1.mp3', 'solo':'tema1.mp3'}],
-           'songs_base_url'     : '/mp3/',
+        d={'songs'              : [{'name':'Tragodie (Schumann)', 'orig':'schum.tragodie.mp3', 'solo':'schum.tragodie-wolp.mp3'}, 
+                                   {'name':'Eine Kleine Nachtmusik (Mozart)', 'orig':'mzt.ekn.II.mp3', 'solo':'mzt.ekn.II-wolp.mp3'},
+                                   {'name':'Oh You Beautiful! (Campbell)', 'orig':'campbell.barb.mp3', 'solo':'campbell.barb-wolp.mp3'},
+                                   {'name':'Jesu, der du meine Seele (Bach)', 'orig':'bach.jesu.mp3', 'solo':'bach.jesu-wolp.mp3'}],
+           'songs_base_url'     : '/mp3/sample_mids/',
            'description'        : get_homepage_description(),
            'player_description' : get_player_description()}  
 
@@ -69,7 +71,8 @@ class Experiment(object):
 
         d= dict(playlist=playlist,
                 visitor_id=visitor_id,
-                experiment_description=experiment_description)
+                experiment_description=experiment_description,
+                test_sound='/mp3/vals_corto1.mp3')
         return template.render(**d)
 
     @cherrypy.expose
