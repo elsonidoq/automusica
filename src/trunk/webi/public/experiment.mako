@@ -105,7 +105,7 @@
 
             <div id="loader-text">
             </div>
-            <div id="playing_img" style="text-align:center" > <img src="/images/sound.png" /> </div>
+            <div id="playing_img" style="text-align:center" > <img src="/images/sound_blue.png" /> </div>
             
         </div>
     </div>
