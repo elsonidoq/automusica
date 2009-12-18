@@ -5,6 +5,7 @@
     <title> Experimentando con la percepci&oacute;n musical </title>
 	<script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/jquery.jplayer.js"></script>
+    <link rel="shortcut icon" href="/images/favicon.ico" >
     
 	<link rel="stylesheet" type="text/css" href="/css/home.css"/>
     <script type="text/javascript">
