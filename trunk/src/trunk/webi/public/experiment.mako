@@ -93,11 +93,6 @@
                     </div>
                 </div>
             </div>
-
-            <div id="loader-text">
-            </div>
-            <div id="playing_img" style="text-align:center" > <img src="/images/sound.png" /> </div>
-            
             <div id="stars-container">
                 <form id="stars">
                     <input type="radio" name="rate" value="1" title="Poor" id="rate1" /> <br />
@@ -107,6 +102,11 @@
                     <input type="radio" name="rate" value="5" title="Excellent" id="rate5" /> <br />
                 </form>                    
             </div>
+
+            <div id="loader-text">
+            </div>
+            <div id="playing_img" style="text-align:center" > <img src="/images/sound.png" /> </div>
+            
         </div>
     </div>
     <script type="text/javascript">
