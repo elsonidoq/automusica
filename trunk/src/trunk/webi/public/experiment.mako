@@ -169,7 +169,7 @@
         Player.prototype.onSoundComplete = function() {
             $("#playing_img").fadeOut(500);
             $("#stars").stars("selectID", -1); //para remover la seleccion
-            setTimeout("$('#stars-container').slideDown();", 800);
+            setTimeout("$('#stars-container').slideDown(500);", 800);
         }
         
         var onRate = function(ui, type, value) {
