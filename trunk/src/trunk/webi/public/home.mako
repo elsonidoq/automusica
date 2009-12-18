@@ -119,14 +119,21 @@
                 </div>
             </div>
 
-        <div style="width:100%;height:40px"></div>
+        <div style="width:100%;height:80px"></div>
 
         </div>
         
     
     </div>
-        <div style="text-align:center;height:100px">
-            <a href="experiment?id=percentiles">Quiero hacer un experimento</a>
+        <div style="text-align:center;">
+<!--            <div>
+                <a style="text-decoration:none;color:#666">
+                    <img href="experiment?id=percentiles" style="border:none;" src="/images/right.png"/>
+                </a>
+             </div> -->
+             <a href="experiment?id=percentiles" style="font-size:25px;color:#447;">
+                Quiero hacer un experimento
+             </a>
         </div>
     
     </div>
