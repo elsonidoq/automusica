@@ -15,7 +15,7 @@
 
 
             }
-            ,swfPath:'/js/'
+            ,swfPath:'/js'
         })
         .onProgressChange( function(lp,ppr,ppa,pt,tt) {
             if (ppr>0) {

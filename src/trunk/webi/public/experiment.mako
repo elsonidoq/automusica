@@ -16,7 +16,7 @@
 
 
             }
-            ,swfPath:'/js/'
+            ,swfPath:'/js'
         })
         .onProgressChange( function(lp,ppr,ppa,pt,tt) {
             if (player.is_muted && lp < 100) {
