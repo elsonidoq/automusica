@@ -1,10 +1,10 @@
 La Compositora es un programa que analiza una partitura utilizando técnicas basadas en aprendizaje automático y psicologia de la música. 
 El objetivo de este programa no es la composición automática en sí misma, sino la herramienta de análisis que provee para las teorías cognitivas en las que fue basada.<br><br>
 
-<div style="text-align:center;">¿Herramienta de análisis?</div><br>
+<div style="text-align:center;"><strong>¿Herramienta de análisis?</strong></div><br>
 
 Asi es, si me das una mano y me decís que te parecen ciertas composiciones del programa me vas a estar ayudando a terminar esta etapa del proyecto. <br><br>
 Al final de cada experimento hay una explicación sobre el significado de lo que hiciste y en qué me va a ayudar; no puedo mostrartelo antes porque lo arruinaría.<br><br>
 
-<div style="text-align:right">Dale, ¿te animás?</div>
+<div style="text-align:right;"><a style="text-decoration:none;color:#666" href="experiment?id=percentiles"><strong>Dale, ¿te animás?</strong></a></div>
 
