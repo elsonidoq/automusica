@@ -20,9 +20,10 @@
         })
         .onProgressChange( function(lp,ppr,ppa,pt,tt) {
             if (player.is_muted && lp < 100) {
-                lp= parseInt(lp);
-                if (lp % 5 == 0) 
-                    $("#loade_bar").animate({"width":lp+"%"});
+                var lp= parseInt(lp);
+                if (lp % 5 == 0)  {
+                    $("#loader_bar").animate({"width":lp+"%"});
+                }
             } else if(player.is_muted && lp >= 100) {
                 $("#loader_bar").animate({"width":"100%"});
                 //console.log("cache termino");
@@ -31,6 +32,7 @@
                 jplayer.playHead(0);
                 $("#loader-text").slideUp();
                 $("#loader_bar").fadeOut();
+                setTimeout("$('#playing_img').fadeIn();", 1000);
             } 
                 
         }).onSoundComplete( function() {
@@ -82,7 +84,7 @@
         <div id="player">
             <div id="wrapper"> 
                 <img id="play_button_enabled" onclick="javascript:player.next();" border="0" src="/images/play_blue.png"/>
-                <img border="0" class="play_button_disabled" src="/images/play_gris.png" />
+                <img border="0" id="play_button_disabled" src="/images/play_gris.png" />
             </div> 
 
             <div id="loader-wrapper">
@@ -93,8 +95,8 @@
             </div>
 
             <div id="loader-text">
-            Cargando
             </div>
+            <div id="playing_img" style="text-align:center" > <img src="/images/sound.png" /> </div>
             
             <div id="stars-container">
                 <form id="stars">
@@ -111,11 +113,11 @@
         
         var enable_play= function() {
             $("#play_button_enabled").show();
-            $(".play_button_disabled").hide();
+            $("#play_button_disabled").hide();
         }
 
         var disable_play= function() {
-            $(".play_button_disabled").show();
+            $("#play_button_disabled").show();
             $("#play_button_enabled").hide();
         }
 
@@ -130,7 +132,6 @@
         }
         var Player = function Player(playlist) {
             this._current_idx = -1;
-            this._playing_interval = null;
             this.playlist = playlist;
             this.width = $(window).width();
             this.current_track = null;
@@ -147,8 +148,13 @@
         Player.prototype._do_play= function(track) {
             var jplayer= $("#jplayer");
             $("#loader_bar").css({"width":0});
+            $("#loader_bar").show();
             $("#loader").show();
-            $("#loader-text").slideDown();
+
+            var loader_text= $("#loader-text")
+            loader_text.text('Cargando');
+            loader_text.slideDown();
+
             this.is_muted= true;
             jplayer.setFile(track);
             jplayer.play();
@@ -161,26 +167,13 @@
         }
         
         Player.prototype.onSoundComplete = function() {
+            $("#playing_img").slideUp();
             $("#stars-container").slideDown();
             $("#stars").stars("selectID", -1); //para remover la seleccion
         }
         
-        var playlist = ${playlist};
-        var player = new Player(playlist);
-        var is_test_sound = false;
-            
         var onRate = function(ui, type, value) {
-            //console.log(data);
-            //todo: sacar valor
-            /*var next = function() {
-                player.next();
-            }
-            setTimeout(next, 1000);*/
-            //console.log(player._current_idx);
-            var d= {visitor_id:$("#visitor_id").val(), value: value};
-            //console.log(d);
-            //console.log(d.visitor);
-            //console.log(d.value);
+            var d= {experiment_id:experiment_id, visitor_id:$("#visitor_id").val(), track:player.playlist[player._current_idx], value: value};
             $.post('/experiment/rated', d , function(data) {
 
                 if (player._current_idx + 1 < player.playlist.length) {
@@ -200,6 +193,17 @@
             jplayer.play();
         }
 
+        var parse_qs = function () {
+            var equalities= document.location.search.substring(1).split("&");
+            var res= {};
+            for (var i in equalities) {
+                eq= equalities[i];
+                l= eq.split("=");
+                res[l[0]]= l[1];
+            }
+            return res;
+        }
+
         var resize = function() {
             var ww = $(window).width();
             $("#content").css('height', $(window).height());
@@ -212,8 +216,28 @@
             player.width = ww;
         }
         
+        var playlist = ${playlist};
+        var player = new Player(playlist);
+        var is_test_sound = false;
+        var experiment_id= parse_qs()['id'];
+            
         $(window).resize(resize);
-        disable_play();
+        if(${resume_experiment}) {
+            if(playlist.length == 0) {
+                document.location= "/finished_experiment";
+            } else {
+                enable_play();
+                var loader_text= $("#loader-text")
+                loader_text.text('Resumiendo experimento');
+                loader_text.slideDown();
+                setTimeout("loader_text.slideUp();",1000);
+            }
+        } else {
+            $("#description").show();
+            disable_play();
+        }
+
+
     </script>
 </body>
 </html>

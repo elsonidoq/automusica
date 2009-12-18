@@ -77,11 +77,11 @@
                                         style="background:#${color2}"
                                         onclick="javascript:stop_song('#${element_class}_orig');"/> 
                                     
-                                    <span style="color:#${link_color};background:#${color2};text-decoration:none;" href="#"> 
+                                    <span style="vertical-align:top;color:#${link_color};background:#${color2};text-decoration:none;" href="#"> 
                                         original
                                     </span> 
                                     
-                                    <img class="gif_loader" id="${element_class}_orig_loader" src="/images/loader.gif" /> 
+                                    <img class="gif_loader" style="background:#${color2};" id="${element_class}_orig_loader" src="/images/loader.gif" /> 
                                 </div>
 
                                 <div class="song_link_div" id="${element_class}_solo" style="background:#${color1}"> 
@@ -99,7 +99,7 @@
                                     <span style="vertical-align:top;color:#${link_color};background:#${color1};text-decoration:none;" href="#"> 
                                         con solo
                                     </span> 
-                                    <img class="gif_loader" id="${element_class}_solo_loader" src="/images/loader.gif" /> 
+                                    <img class="gif_loader" style="background:#${color1};" id="${element_class}_solo_loader" src="/images/loader.gif" /> 
 
                                 </div>
                             </div>
