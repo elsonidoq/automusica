@@ -21,7 +21,7 @@
         .onProgressChange( function(lp,ppr,ppa,pt,tt) {
             if (player.is_muted && lp < 100) {
                 var lp= parseInt(lp);
-                if (lp % 5 == 0)  {
+                if (lp % 10 == 0)  {
                     $("#loader_bar").animate({"width":lp+"%"});
                 }
             } else if(player.is_muted && lp >= 100) {
