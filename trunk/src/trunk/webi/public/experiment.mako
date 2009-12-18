@@ -30,8 +30,8 @@
                 player.is_muted= false;
                 jplayer.volume(100);
                 jplayer.playHead(0);
-                $("#loader-text").slideUp();
-                $("#loader_bar").fadeOut();
+                $("#loader-text").slideUp(500);
+                $("#loader_bar").fadeOut(500);
                 setTimeout("$('#playing_img').fadeIn();", 1000);
             } 
                 
@@ -167,9 +167,9 @@
         }
         
         Player.prototype.onSoundComplete = function() {
-            $("#playing_img").slideUp();
-            $("#stars-container").slideDown();
+            $("#playing_img").fadeOut(500);
             $("#stars").stars("selectID", -1); //para remover la seleccion
+            setTimeout("$('#stars-container').slideDown();", 800);
         }
         
         var onRate = function(ui, type, value) {
