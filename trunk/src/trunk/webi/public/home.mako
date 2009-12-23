@@ -41,7 +41,7 @@
     <div  > 
         <div id="title-container" >
             <div id="title">La compositora</div>
-            <div id="copete">Análisis musical y composición automática</div>
+            <div id="copete">An&aacute;lisis musical y composici&oacute;n autom&aacute;tica</div>
             <div id="space-between-title-and-rest"></div>
         </div>
         <div id="description-container" >
