@@ -52,7 +52,7 @@ class FinishedExperiment(object):
         return template.render()
 
 class Home(object):
-    @cherrypy.tools.encode(encoding='utf8')
+    #@cherrypy.tools.encode(encoding='utf8')
     @cherrypy.expose
     def index(self):
         template= lookup.get_template('home.mako')
@@ -67,7 +67,7 @@ class Home(object):
         return template.render(**d)
 
 class Experiment(object):
-    @cherrypy.tools.encode(encoding='utf8')
+    #@cherrypy.tools.encode(encoding='utf8')
     @cherrypy.expose
     def index(self, id):
         if id not in cherrypy.session: cherrypy.session[id]= {}
