@@ -20,6 +20,7 @@ body {
     width:50%;
     height:auto;
     border-style:solid;
+    border-top:none;
     border-width:1px;
     margin-left:25%;
     margin-right:25%;
