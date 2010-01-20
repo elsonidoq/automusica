@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
     <title> Experimentando con la percepci&oacute;n musical </title>
-	<script type="text/javascript" src="/js/jquery.js"></script>
-	<script type="text/javascript" src="/js/ui.core.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.jplayer.js"></script>
+    <script src="/js/raphael.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/spinner.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/jquery.js" type="text/javascript"></script>
+	<script src="/js/ui.core.min.js" type="text/javascript"></script>
+    <script src="/js/jquery.jplayer.js" type="text/javascript"></script>
     
 
     <!-- jPlayer -->
     <script type="text/javascript">
+    var spinner= null;
     $(document).ready(function(){
        var jplayer= $("#jplayer").jPlayer({
             ready: function () {
@@ -30,7 +33,11 @@
                 player.is_muted= false;
                 jplayer.volume(100);
                 jplayer.playHead(0);
-                $("#loader-text").slideUp(500);
+                
+                var loader_text= $("#loader-text");
+                if (loader_text.is(":visible")) {
+                    loader_text.slideUp(500);
+                }
                 $("#loader_bar").fadeOut(500);
                 setTimeout("$('#playing_img').fadeIn();", 1000);
             } 
@@ -46,6 +53,8 @@
 
 
 
+        spinner= new Spinner("experiment_progress", 30, 70, playlist.length, 5, "#fff");
+        
     });
     </script>
 
@@ -81,6 +90,9 @@
     <div id="jplayer"></div>
     <input type="hidden" id="visitor_id" value="${visitor_id}"/>
     <div id="content">
+        <div style="align:right;width:100%">
+            <div id="experiment_progress" > </div>
+        </div>
         <div id="player">
             <div id="wrapper"> 
                 <img id="play_button_enabled" onclick="javascript:player.next();" border="0" src="/images/play_blue.png"/>
@@ -114,11 +126,32 @@
         var enable_play= function() {
             $("#play_button_enabled").show();
             $("#play_button_disabled").hide();
+            show_status('Click para escuchar');
         }
 
         var disable_play= function() {
             $("#play_button_disabled").show();
             $("#play_button_enabled").hide();
+            hide_status();
+        }
+        
+        var show_status= function(text) {
+            var loader_text= $("#loader-text")
+            if (loader_text.is(":visible")) {
+                loader_text.fadeOut(100);
+                setTimeout("$('#loader-text').text('"+text+"');", 100);
+                $('#loader-text').fadeIn(100);//", 200);
+            } else {
+                loader_text.text(text);
+                loader_text.slideDown();
+            }
+        }
+
+        var hide_status= function() {
+            var loader_text= $("#loader-text")
+            if (loader_text.is(":visible")) {
+                loader_text.slideUp();
+            }
         }
 
         var start_experiment = function() {
@@ -127,8 +160,8 @@
                 jplayer.stop();
                 is_test_sound= false;
             }
-            $("#description").slideUp();
-            enable_play();
+            $("#description").slideUp(500);
+            setTimeout("enable_play();", 800);
         }
         var Player = function Player(playlist) {
             this._current_idx = -1;
@@ -141,19 +174,12 @@
             disable_play();
             this.current_track = track;
             
-            this._do_play(track);
-            
-        }
-        
-        Player.prototype._do_play= function(track) {
             var jplayer= $("#jplayer");
             $("#loader_bar").css({"width":0});
             $("#loader_bar").show();
             $("#loader").show();
 
-            var loader_text= $("#loader-text")
-            loader_text.text('Cargando');
-            loader_text.slideDown();
+            show_status('Cargando');
 
             this.is_muted= true;
             jplayer.setFile(track);
@@ -177,6 +203,7 @@
             $.post('/experiment/rated', d , function(data) {
 
                 if (player._current_idx + 1 < player.playlist.length) {
+                    spinner.next()
                     $("#stars-container").slideUp();
                     enable_play();
                 } else {
@@ -227,10 +254,8 @@
                 document.location= "/finished_experiment";
             } else {
                 enable_play();
-                var loader_text= $("#loader-text")
-                loader_text.text('Resumiendo experimento');
-                loader_text.slideDown();
-                setTimeout("loader_text.slideUp();",1000);
+                show_status('Resumiendo experimento');
+                setTimeout("hide_status();",1000);
             }
         } else {
             $("#description").show();

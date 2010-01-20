@@ -80,14 +80,14 @@ class Experiment(object):
             experiment_session['visitor_id']= visitor_id
             save_visitor_data(visitor_id)
 
-        experiment_description= get_experiment_description(id)
-        resume_experiment= 'false'
-
         playlist= experiments[id][:]
         random.seed(visitor_id)
         random.shuffle(playlist)
 
-        if 'last_rated_track' in experiment_session:
+        experiment_description= get_experiment_description(id)
+        resume_experiment= 'false'
+
+        if 'last_rated_track' in experiment_session and False:
             last_rated_track= experiment_session['last_rated_track']
             i= playlist.index(last_rated_track)
             playlist= playlist[i+1:]

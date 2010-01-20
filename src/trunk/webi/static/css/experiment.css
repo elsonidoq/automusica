@@ -38,6 +38,16 @@ body {
     margin-bottom:20px;
 }
 
+#experiment_progress {
+    float:right;
+    background:#000;
+    height:100px;
+    width:100px;
+    margin-right:70px;
+    margin-top:20px;
+}
+
+
 #comenzar {
     text-align:right;
     margin-right:10px;
