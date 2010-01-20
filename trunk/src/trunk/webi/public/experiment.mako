@@ -34,10 +34,10 @@
                 jplayer.volume(100);
                 jplayer.playHead(0);
                 
-                var loader_text= $("#loader-text");
-                if (loader_text.is(":visible")) {
-                    loader_text.slideUp(500);
-                }
+            //    var loader_text= $("#loader-text");
+            //    if (loader_text.is(":visible")) {
+            //        loader_text.slideUp(500);
+            //    }
                 $("#loader_bar").fadeOut(500, function() {
                     $('#playing_img').fadeIn();
                 });
