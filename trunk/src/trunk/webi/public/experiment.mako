@@ -34,10 +34,7 @@
                 jplayer.volume(100);
                 jplayer.playHead(0);
                 
-            //    var loader_text= $("#loader-text");
-            //    if (loader_text.is(":visible")) {
-            //        loader_text.slideUp(500);
-            //    }
+                hide_status();
                 $("#loader_bar").fadeOut(500, function() {
                     $('#playing_img').fadeIn();
                 });
@@ -136,23 +133,36 @@
             hide_status();
         }
         
+        var hiding_status= false;
+        var showing_status= false;
         var show_status= function(text) {
+            showing_status= true;
             var loader_text= $("#loader-text")
             if (loader_text.is(":visible")) {
-                //loader_text.fadeOut(100);
-                loader_text.text(text);
-                //$('#loader-text').fadeIn(100);//", 200);
+                console.log('show_status (visible)');
+                loader_text.fadeOut(100, function() {
+                    loader_text.text(text);
+                    loader_text.fadeIn(100)
+                });
             } else {
+                console.log('show_status (invisible)');
                 loader_text.text(text);
                 loader_text.slideDown();
             }
+            showing_status= false;
         }
 
         var hide_status= function() {
+            
+            hiding_status= true;
             var loader_text= $("#loader-text");
             if (loader_text.is(":visible")) {
+                console.log('hide_status (visible)');
                 loader_text.slideUp();
+            } else {
+                console.log('hide_status (invisible)');
             }
+            hiding_status= false;
         }
 
         var start_experiment = function() {
