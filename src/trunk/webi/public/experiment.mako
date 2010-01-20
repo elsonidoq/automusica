@@ -38,8 +38,9 @@
                 if (loader_text.is(":visible")) {
                     loader_text.slideUp(500);
                 }
-                $("#loader_bar").fadeOut(500);
-                setTimeout("$('#playing_img').fadeIn();", 1000);
+                $("#loader_bar").fadeOut(500, function() {
+                    $('#playing_img').fadeIn();
+                });
             } 
                 
         }).onSoundComplete( function() {
@@ -138,9 +139,9 @@
         var show_status= function(text) {
             var loader_text= $("#loader-text")
             if (loader_text.is(":visible")) {
-                loader_text.fadeOut(100);
-                setTimeout("$('#loader-text').text('"+text+"');", 100);
-                $('#loader-text').fadeIn(100);//", 200);
+                //loader_text.fadeOut(100);
+                loader_text.text(text);
+                //$('#loader-text').fadeIn(100);//", 200);
             } else {
                 loader_text.text(text);
                 loader_text.slideDown();
@@ -148,7 +149,7 @@
         }
 
         var hide_status= function() {
-            var loader_text= $("#loader-text")
+            var loader_text= $("#loader-text");
             if (loader_text.is(":visible")) {
                 loader_text.slideUp();
             }
@@ -160,8 +161,7 @@
                 jplayer.stop();
                 is_test_sound= false;
             }
-            $("#description").slideUp(500);
-            setTimeout("enable_play();", 800);
+            $("#description").slideUp(500, enable_play);
         }
         var Player = function Player(playlist) {
             this._current_idx = -1;
@@ -193,9 +193,10 @@
         }
         
         Player.prototype.onSoundComplete = function() {
-            $("#playing_img").fadeOut(500);
+            $("#playing_img").fadeOut(500, function() {
+                $('#stars-container').slideDown(500);
+            });
             $("#stars").stars("selectID", -1); //para remover la seleccion
-            setTimeout("$('#stars-container').slideDown(500);", 800);
         }
         
         var onRate = function(ui, type, value) {
@@ -204,8 +205,7 @@
 
                 if (player._current_idx + 1 < player.playlist.length) {
                     spinner.next()
-                    $("#stars-container").slideUp();
-                    enable_play();
+                    $("#stars-container").slideUp(callback=enable_play);
                 } else {
                     document.location= "/finished_experiment";
                 }
