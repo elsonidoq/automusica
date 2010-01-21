@@ -169,6 +169,10 @@
         
         Player.prototype.next = function() {
             //TODO: validar limite
+            if (click_to_start_to) {
+                clearTimeout(click_to_start_to);
+                click_to_start_to= null;
+            }
             this.play(this.playlist[++this._current_idx]);
         }
         
@@ -226,6 +230,7 @@
             player.width = ww;
         }
         
+        var click_to_start_to= null;
         var playlist = ${playlist};
         var nplayed = ${nplayed};
         var player = new Player(playlist);
@@ -244,8 +249,7 @@
                 enable_play();
                 status.show_status('Resumiendo experimento');
                 $("#experiment_progress").fadeIn(500);
-                setTimeout("status.show_status('Click para escuchar');",1000);
-                console.log(nplayed);
+                click_to_start_to= setTimeout("if($('#loader-text').is(':visible')) {status.show_status('Click para escuchar');}",1000);
                 for (var i=1; i<=nplayed; i++){
                     spinner.next();
                 }
