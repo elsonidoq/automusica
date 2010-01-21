@@ -12,19 +12,11 @@ Status.prototype.show_status= function(text) {
         return;
     }
     this.doing_something= true;
-    if (this.elem.is(":visible")) {
-        var the_elem= this.elem;
-        var the_this= this;
-        this.elem.fadeOut(100, function() {
-            the_elem.text(text);
-            the_elem.fadeIn(100);
-            the_this.set_doing();
-        });
-    } else {
-        this.elem.text(text);
-        var the_this= this;
-        this.elem.slideDown(callback=function() {the_this.set_doing()});
-    }
+    this.elem.text(text);
+    var the_this= this;
+    console.log("Sliding");
+    this.elem.slideDown(500,callback=function() {the_this.set_doing()});
+    console.log("Ya Slide");
 }
 
 Status.prototype.hide_status= function() {
