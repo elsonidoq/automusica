@@ -5,6 +5,7 @@ var Status= function(elem) {
     this.can_clear_queue= true;
 }
 Status.prototype.show_status= function(text) {
+    console.log('show_status ' + text);
     //console.log('show_status ' + this.doing_something);
     if (this.doing_something) {
         this.queue.push(text);
@@ -27,6 +28,7 @@ Status.prototype.show_status= function(text) {
 }
 
 Status.prototype.hide_status= function() {
+    console.log('hide_status ');
     //console.log('hide_status ' + this.doing_something);
     if (this.doing_something) {
         this.queue.push(null);
@@ -41,10 +43,10 @@ Status.prototype.hide_status= function() {
 Status.prototype.set_doing= function() {
     this.doing_something= (this.queue.length > 0);
     if (this.queue.length > 0) {
-        var msg= this.queue.pop();
-        //console.log('Processing ' + msg);
-        if (msg) {
-            this.show_status(msg);
+        var text= this.queue.pop();
+        console.log('Queue ' + text);
+        if (text) {
+            this.show_status(text);
         } else {
             this.hide_status();
         }
