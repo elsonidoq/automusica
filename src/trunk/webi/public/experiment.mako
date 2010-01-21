@@ -131,7 +131,6 @@
         var disable_play= function() {
             $("#play_button_disabled").show();
             $("#play_button_enabled").hide();
-            status.hide_status();
         }
         
 

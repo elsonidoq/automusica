@@ -10,10 +10,17 @@ Status.prototype.show_status= function(text, on_queue) {
         return;
     }
     this.doing_something= true;
-    this.elem.text(text);
-
     var the_this= this;
-    this.elem.slideDown(500,callback=function() {the_this.set_doing()});
+    if (this.elem.is(':visible')) {
+        this.elem.fadeOut(250,callback=function() {
+            the_this.elem.text(text);
+            the_this.elem.fadeIn(250);
+            the_this.set_doing()});
+    } else {
+        this.elem.text(text);
+        this.elem.slideDown(500,callback=function() {the_this.set_doing()});
+    }
+
 }
 
 Status.prototype.hide_status= function(on_queue) {
@@ -24,7 +31,7 @@ Status.prototype.hide_status= function(on_queue) {
     this.doing_something= true;
 
     the_this= this;
-    this.elem.slideUp(callback=function() {the_this.set_doing()});
+    this.elem.slideUp(500, callback=function() {the_this.set_doing()});
 }
 
 
