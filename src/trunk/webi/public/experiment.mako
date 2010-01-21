@@ -52,8 +52,6 @@
 
 
 
-        spinner= new Spinner("experiment_progress", 10, 40, playlist.length, 2, "#fff", "#abb1f0");
-        
     });
     </script>
 
@@ -125,7 +123,6 @@
         var enable_play= function() {
             $("#play_button_enabled").show();
             $("#play_button_disabled").hide();
-            status.show_status('Click para escuchar');
         }
 
         var disable_play= function() {
@@ -140,7 +137,10 @@
                 jplayer.stop();
                 is_test_sound= false;
             }
-            $("#description").slideUp(500, enable_play);
+            $("#description").slideUp(500, function() {
+                enable_play();
+                status.show_status('Click para escuchar');
+            });
             $("#experiment_progress").fadeIn(500);
         }
         var Player = function Player(playlist) {
@@ -180,14 +180,17 @@
         }
         
         var onRate = function(ui, type, value) {
-            var d= {experiment_id:experiment_id, visitor_id:$("#visitor_id").val(), track:player.playlist[player._current_idx], value: value};
+            var d= {experiment_id:experiment_id, visitor_id:$("#visitor_id").val(), track:player.playlist[player._current_idx-1], value: value};
             $.post('/experiment/rated', d , function(data) {
 
-                if (player._current_idx + 1 < player.playlist.length) {
-                    spinner.next()
-                    $("#stars-container").slideUp(callback=enable_play);
+                spinner.next()
+                if (player._current_idx < player.playlist.length) {
+                    $("#stars-container").slideUp(callback=function() {
+                        enable_play();
+                        status.show_status('Click para escuchar');
+                    });
                 } else {
-                    document.location= "/finished_experiment";
+                    setTimeout("document.location= '/finished_experiment';", 500);
                 }
             });
         }
@@ -224,10 +227,14 @@
         }
         
         var playlist = ${playlist};
+        var nplayed = ${nplayed};
         var player = new Player(playlist);
+        player._current_idx= nplayed;
         var status= new Status($("#loader-text"), 10, 40, playlist.length, 2, "#fff", "#abb1f0");
         var is_test_sound = false;
         var experiment_id= parse_qs()['id'];
+
+        var spinner= new Spinner("experiment_progress", 10, 40, playlist.length, 2, "#fff", "#abb1f0");
             
         $(window).resize(resize);
         if(${resume_experiment}) {
@@ -236,7 +243,13 @@
             } else {
                 enable_play();
                 status.show_status('Resumiendo experimento');
-                setTimeout("status.hide_status();",1000);
+                $("#experiment_progress").fadeIn(500);
+                setTimeout("status.show_status('Click para escuchar');",1000);
+                console.log(nplayed);
+                for (var i=1; i<=nplayed; i++){
+                    spinner.next();
+                }
+                        
             }
         } else {
             $("#description").show();
