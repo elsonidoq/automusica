@@ -41,10 +41,10 @@ body {
 
 #experiment_progress {
     float:right;
-    background:#000;
+    display:none;
     height:100px;
     width:100px;
-    margin-right:70px;
+    margin-right:15px;
     margin-top:20px;
 }
 

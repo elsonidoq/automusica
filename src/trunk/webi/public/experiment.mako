@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title> Experimentando con la percepci&oacute;n musical </title>
+    <script src="/js/status.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/raphael.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/spinner.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/jquery.js" type="text/javascript"></script>
@@ -34,7 +35,7 @@
                 jplayer.volume(100);
                 jplayer.playHead(0);
                 
-                hide_status();
+                status.hide_status();
                 $("#loader_bar").fadeOut(500, function() {
                     $('#playing_img').fadeIn();
                 });
@@ -51,7 +52,7 @@
 
 
 
-        spinner= new Spinner("experiment_progress", 30, 70, playlist.length, 5, "#fff");
+        spinner= new Spinner("experiment_progress", 10, 40, playlist.length, 2, "#fff", "#abb1f0");
         
     });
     </script>
@@ -124,46 +125,15 @@
         var enable_play= function() {
             $("#play_button_enabled").show();
             $("#play_button_disabled").hide();
-            show_status('Click para escuchar');
+            status.show_status('Click para escuchar');
         }
 
         var disable_play= function() {
             $("#play_button_disabled").show();
             $("#play_button_enabled").hide();
-            hide_status();
+            status.hide_status();
         }
         
-        var hiding_status= false;
-        var showing_status= false;
-        var show_status= function(text) {
-            showing_status= true;
-            var loader_text= $("#loader-text")
-            if (loader_text.is(":visible")) {
-                console.log('show_status (visible)');
-                loader_text.fadeOut(100, function() {
-                    loader_text.text(text);
-                    loader_text.fadeIn(100)
-                });
-            } else {
-                console.log('show_status (invisible)');
-                loader_text.text(text);
-                loader_text.slideDown();
-            }
-            showing_status= false;
-        }
-
-        var hide_status= function() {
-            
-            hiding_status= true;
-            var loader_text= $("#loader-text");
-            if (loader_text.is(":visible")) {
-                console.log('hide_status (visible)');
-                loader_text.slideUp();
-            } else {
-                console.log('hide_status (invisible)');
-            }
-            hiding_status= false;
-        }
 
         var start_experiment = function() {
             if (is_test_sound) {
@@ -172,6 +142,7 @@
                 is_test_sound= false;
             }
             $("#description").slideUp(500, enable_play);
+            $("#experiment_progress").fadeIn(500);
         }
         var Player = function Player(playlist) {
             this._current_idx = -1;
@@ -189,7 +160,7 @@
             $("#loader_bar").show();
             $("#loader").show();
 
-            show_status('Cargando');
+            status.show_status('Cargando');
 
             this.is_muted= true;
             jplayer.setFile(track);
@@ -255,6 +226,7 @@
         
         var playlist = ${playlist};
         var player = new Player(playlist);
+        var status= new Status($("#loader-text"), 10, 40, playlist.length, 2, "#fff", "#abb1f0");
         var is_test_sound = false;
         var experiment_id= parse_qs()['id'];
             
@@ -264,8 +236,8 @@
                 document.location= "/finished_experiment";
             } else {
                 enable_play();
-                show_status('Resumiendo experimento');
-                setTimeout("hide_status();",1000);
+                status.show_status('Resumiendo experimento');
+                setTimeout("status.hide_status();",1000);
             }
         } else {
             $("#description").show();
