@@ -25,10 +25,10 @@ body {
     margin-right:25%;
     z-index:1;
     position:absolute;
+    background:#d5daf0;
 }
 
 #description_container {
-    background:#d5daf0;
     text-align:justify;
     font-size:15px;
     position:relative;
