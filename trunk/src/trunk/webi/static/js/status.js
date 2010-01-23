@@ -18,7 +18,7 @@ Status.prototype.show_status= function(text, on_queue) {
             the_this.set_doing()});
     } else {
         this.elem.text(text);
-        this.elem.slideDown(500,callback=function() {the_this.set_doing()});
+        this.elem.fadeIn(500,callback=function() {the_this.set_doing()});
     }
 
 }
@@ -31,7 +31,7 @@ Status.prototype.hide_status= function(on_queue) {
     this.doing_something= true;
 
     the_this= this;
-    this.elem.slideUp(500, callback=function() {the_this.set_doing()});
+    this.elem.fadeOut(500, callback=function() {the_this.set_doing()});
 }
 
 

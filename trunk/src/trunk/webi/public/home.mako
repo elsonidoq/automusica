@@ -152,7 +152,7 @@
             $(element_name + "_loader").fadeOut();
             $(element_name + "_play").show();
             $(element_name + "_stop").hide();
-            jplayer= $("#jplayer");
+            var jplayer= $("#jplayer");
             jplayer.stop();
         }
 
@@ -165,9 +165,9 @@
             $(element_name + "_play").hide();
             $(element_name + "_loader").fadeIn();
 
-            base_url= "${songs_base_url}";
-            url= base_url + name
-            jplayer= $("#jplayer");
+            var base_url= "${songs_base_url}";
+            var url= base_url + name;
+            var jplayer= $("#jplayer");
             jplayer.setFile(url);
             jplayer.play();
         }
