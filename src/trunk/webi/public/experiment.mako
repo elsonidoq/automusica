@@ -2,16 +2,28 @@
 <html lang="en">
 <head>
     <title> Experimentando con la percepci&oacute;n musical </title>
+
+    <!-- jPlayer -->
+    <script type="text/javascript">
+    var playlist = ${playlist};
+    var nplayed = ${nplayed};
+    if(${resume_experiment}) {
+        if(nplayed >= playlist.length) {
+            document.location= "/finished_experiment";
+        }
+    }
+    </script>
+
     <script src="/js/status.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/raphael.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/spinner.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/jquery.js" type="text/javascript"></script>
 	<script src="/js/ui.core.min.js" type="text/javascript"></script>
     <script src="/js/jquery.jplayer.js" type="text/javascript"></script>
-    
+    <script src="/js/player.js" type="text/javascript"></script>
 
-    <!-- jPlayer -->
     <script type="text/javascript">
+    
     var spinner= null;
     $(document).ready(function(){
        var jplayer= $("#jplayer").jPlayer({
@@ -81,7 +93,7 @@
             ${experiment_description}
         </div>
         <div id="comenzar">
-            <a href="#" onclick="javascript:start_experiment();">comenzar</a>
+            <a id="a_comenzar" href="#" onclick="javascript:start_experiment();">comenzar</a>
         </div>
         </div>
     <div id="jplayer"></div>
@@ -143,61 +155,7 @@
             });
             $("#experiment_progress").fadeIn(500);
         }
-        var Player = function Player(playlist) {
-            this._current_idx = -1;
-            this.playlist = playlist;
-            this.width = $(window).width();
-            this.current_track = null;
-        }
         
-        Player.prototype.play = function(track) {
-            disable_play();
-            this.current_track = track;
-            
-            var jplayer= $("#jplayer");
-            $("#loader_bar").css({"width":0});
-            $("#loader_bar").show();
-            $("#loader").show();
-
-            status.show_status('Cargando');
-
-            this.is_muted= true;
-            jplayer.setFile(track);
-            jplayer.play();
-            jplayer.volume(0);
-        }
-        
-        Player.prototype.next = function() {
-            //TODO: validar limite
-            if (click_to_start_to) {
-                clearTimeout(click_to_start_to);
-                click_to_start_to= null;
-            }
-            this.play(this.playlist[++this._current_idx]);
-        }
-        
-        Player.prototype.onSoundComplete = function() {
-            $("#playing_img").fadeOut(500, function() {
-                $('#stars-container').slideDown(500);
-            });
-            $("#stars").stars("selectID", -1); //para remover la seleccion
-        }
-        
-        var onRate = function(ui, type, value) {
-            var d= {experiment_id:experiment_id, visitor_id:$("#visitor_id").val(), track:player.playlist[player._current_idx-1], value: value};
-            $.post('/experiment/rated', d , function(data) {
-
-                spinner.next()
-                if (player._current_idx < player.playlist.length) {
-                    $("#stars-container").slideUp(callback=function() {
-                        enable_play();
-                        status.show_status('Click para escuchar');
-                    });
-                } else {
-                    setTimeout("document.location= '/finished_experiment';", 500);
-                }
-            });
-        }
         
         var sound_test = function() {
             var track= "${test_sound}";
@@ -231,8 +189,6 @@
         }
         
         var click_to_start_to= null;
-        var playlist = ${playlist};
-        var nplayed = ${nplayed};
         var player = new Player(playlist);
         player._current_idx= nplayed;
         var status= new Status($("#loader-text"), 10, 40, playlist.length, 2, "#fff", "#abb1f0");
@@ -241,9 +197,8 @@
 
         var spinner= new Spinner("experiment_progress", 10, 40, playlist.length, 2, "#fff", "#abb1f0");
             
-        $(window).resize(resize);
         if(${resume_experiment}) {
-            if(playlist.length == 0) {
+            if(nplayed >= playlist.length) {
                 document.location= "/finished_experiment";
             } else {
                 enable_play();
@@ -261,6 +216,7 @@
         }
 
 
+        $(window).resize(resize);
     </script>
 </body>
 </html>
