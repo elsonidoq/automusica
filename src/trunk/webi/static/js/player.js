@@ -6,7 +6,7 @@ var Player = function Player(playlist) {
 }
 
 Player.prototype.play = function(track) {
-    console.log(track);
+    //console.log(track);
     disable_play();
     this.current_track = track;
     
