@@ -75,6 +75,26 @@
 	<link rel="stylesheet" type="text/css" href="/css/experiment.css"/>
     
 	<script type="text/javascript">
+        var onRate = function(ui, type, value) {
+            var d= {experiment_id:experiment_id, 
+                    visitor_id:$("#visitor_id").val(), 
+                    track:player.last_played(), 
+                    value: value};
+
+            $.post('/experiment/rated', d , function(data) {
+
+                spinner.next()
+                if (player.has_next()) {
+                    $("#stars-container").slideUp(callback=function() {
+                        enable_play();
+                        status.show_status('Click para escuchar');
+                    });
+                } else {
+                    setTimeout("document.location= '/finished_experiment';", 500);
+                }
+            });
+        }
+
 		$(function(){
 			$("#stars").children().not(":radio").hide();
 			$("#stars").stars({
@@ -104,7 +124,7 @@
         </div>
         <div id="player">
             <div id="wrapper"> 
-                <img id="play_button_enabled" onclick="javascript:player.next();" border="0" src="/images/play_blue.png"/>
+                <img id="play_button_enabled" onclick="javascript:next_song();" border="0" src="/images/play_blue.png"/>
                 <img border="0" id="play_button_disabled" src="/images/play_gris.png" />
             </div> 
 
@@ -132,6 +152,15 @@
     </div>
     <script type="text/javascript">
         
+        var next_song= function() {
+            var d= {experiment_id:experiment_id, 
+                    visitor_id:$("#visitor_id").val(), 
+                    track:player.playlist[player._current_idx]};
+            
+            player.next();
+            $.post('/experiment/played', d ); 
+        }
+
         var enable_play= function() {
             $("#play_button_enabled").show();
             $("#play_button_disabled").hide();
@@ -188,9 +217,10 @@
             player.width = ww;
         }
         
-        var click_to_start_to= null;
         var player = new Player(playlist);
         player._current_idx= nplayed;
+
+        var click_to_start_to= null;
         var status= new Status($("#loader-text"), 10, 40, playlist.length, 2, "#fff", "#abb1f0");
         var is_test_sound = false;
         var experiment_id= parse_qs()['id'];
@@ -198,7 +228,7 @@
         var spinner= new Spinner("experiment_progress", 10, 40, playlist.length, 2, "#fff", "#abb1f0");
             
         if(${resume_experiment}) {
-            if(nplayed >= playlist.length) {
+            if(!player.has_next()) {
                 document.location= "/finished_experiment";
             } else {
                 enable_play();

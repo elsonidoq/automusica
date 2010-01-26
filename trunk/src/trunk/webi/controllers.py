@@ -18,6 +18,10 @@ lookup= TemplateLookup(os.path.join(here, 'public'), disable_unicode=True, input
 with open(os.path.join(here, 'experiments.json')) as f:
     experiments= eval(f.read())
 
+def save_played(experiment_id, visitor_id, track):
+    with open(os.path.join(results_dir, "play_" + visitor_id), 'a') as f:
+        f.write('%s\n' % '\t'.join(map(str, [experiment_id, track, datetime.utcnow().isoformat()])))
+
 def save_result(experiment_id, visitor_id, track, value):
     with open(os.path.join(results_dir, visitor_id), 'a') as f:
         f.write('%s\n' % '\t'.join(map(str, [experiment_id, track, value, datetime.utcnow().isoformat()])))
@@ -86,6 +90,7 @@ class Experiment(object):
         playlist= experiments[id][:]
         random.seed(visitor_id)
         random.shuffle(playlist)
+        #playlist.sort(key=lambda x:x.split('/')[-1][1:])
         nplayed= 0
 
         experiment_description= get_experiment_description(id)
@@ -97,11 +102,11 @@ class Experiment(object):
             nplayed= i+1
             resume_experiment= 'true'
 
-        print "*"*10
-        print "playlist", playlist
-        print "nplayed", nplayed
-        print "last_rated_track", experiment_session.get('last_rated_track')
-        print "*"*10
+        #print "*"*10
+        #print "playlist", playlist
+        #print "nplayed", nplayed
+        #print "last_rated_track", experiment_session.get('last_rated_track')
+        #print "*"*10
 
         d= dict(playlist=playlist,
                 visitor_id=visitor_id,
@@ -111,6 +116,10 @@ class Experiment(object):
                 nplayed= nplayed)
         template= lookup.get_template('experiment.mako')
         return template.render(**d)
+
+    @cherrypy.expose
+    def played(self, experiment_id, visitor_id, track):
+        save_played(experiment_id, visitor_id, track)
 
     @cherrypy.expose
     def rated(self, experiment_id, visitor_id, track, value):

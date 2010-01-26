@@ -6,6 +6,7 @@ var Player = function Player(playlist) {
 }
 
 Player.prototype.play = function(track) {
+    console.log(track);
     disable_play();
     this.current_track = track;
     
@@ -28,7 +29,12 @@ Player.prototype.next = function() {
         clearTimeout(click_to_start_to);
         click_to_start_to= null;
     }
-    this.play(this.playlist[++this._current_idx]);
+    this.play(this.playlist[this._current_idx]);
+    this._current_idx++;
+}
+
+Player.prototype.has_next= function() {
+    return this._current_idx < this.playlist.length;
 }
 
 Player.prototype.onSoundComplete = function() {
@@ -38,19 +44,8 @@ Player.prototype.onSoundComplete = function() {
     $("#stars").stars("selectID", -1); //para remover la seleccion
 }
 
-var onRate = function(ui, type, value) {
-    var d= {experiment_id:experiment_id, visitor_id:$("#visitor_id").val(), track:player.playlist[player._current_idx-1], value: value};
-    $.post('/experiment/rated', d , function(data) {
-
-        spinner.next()
-        if (player._current_idx < player.playlist.length) {
-            $("#stars-container").slideUp(callback=function() {
-                enable_play();
-                status.show_status('Click para escuchar');
-            });
-        } else {
-            setTimeout("document.location= '/finished_experiment';", 500);
-        }
-    });
+Player.prototype.last_played = function() {
+    return this.playlist[this._current_idx-1];
 }
+        
 
