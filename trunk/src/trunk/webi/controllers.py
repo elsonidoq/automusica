@@ -26,6 +26,11 @@ def save_result(experiment_id, visitor_id, track, value):
     with open(os.path.join(results_dir, visitor_id), 'a') as f:
         f.write('%s\n' % '\t'.join(map(str, [experiment_id, track, value, datetime.utcnow().isoformat()])))
 
+def save_answer(visitor_id, age, gender, observations, music_study, music_study_years):
+    with open(os.path.join(results_dir, "ans_" + visitor_id), 'a') as f:
+        f.write('%s\n' % '\t'.join(map(str, [age, gender, observations, music_study, music_study_years, datetime.utcnow().isoformat()])))
+    
+
 def get_visitor_id():
     prev_visitors= set(os.listdir(results_dir))
 
@@ -50,6 +55,19 @@ def get_visitor_data(visitor_id):
             return eval(f.read())
 
 
+class Questions(object):
+    @cherrypy.expose
+    def index(self, visitor_id):
+        template= lookup.get_template('questions.mako')
+        return template.render(visitor_id=visitor_id)
+
+    @cherrypy.expose
+    def answer(self, visitor_id, age, gender, observations, music_study=None, music_study_years=None):
+        #print "age=",age, "gender=",gender, "music_study", music_study, "music_study_years=",music_study_years, "observations=",observations
+        save_answer(visitor_id, age, gender, observations, music_study, music_study_years)
+        return lookup.get_template('gracias.mako').render()
+            
+    
 class FinishedExperiment(object):
     @cherrypy.expose
     def index(self):
@@ -87,9 +105,16 @@ class Experiment(object):
             experiment_session['visitor_id']= visitor_id
             save_visitor_data(visitor_id)
 
+        training_melodies= [ '/mp3/must_percents_results/a_beet.wo13-solo.mp3',
+                             '/mp3/must_percents_results/b_beet.wo14.2-solo.mp3',
+                             '/mp3/must_percents_results/c_beet.wo14.8-solo.mp3',
+                             '/mp3/must_percents_results/d_schub.d973-solo.mp3']
+
+
         playlist= experiments[id][:]
         random.seed(visitor_id)
         random.shuffle(playlist)
+        playlist= training_melodies + playlist
         #playlist.sort(key=lambda x:x.split('/')[-1][1:])
         nplayed= 0
 
@@ -102,6 +127,7 @@ class Experiment(object):
             nplayed= i+1
             resume_experiment= 'true'
 
+        nplayed=len(playlist)-1
         #print "*"*10
         #print "playlist", playlist
         #print "nplayed", nplayed
@@ -113,7 +139,8 @@ class Experiment(object):
                 experiment_description=experiment_description,
                 test_sound='/mp3/vals_corto1.mp3',
                 resume_experiment=resume_experiment,
-                nplayed= nplayed)
+                nplayed= nplayed,
+                ntraining= len(training_melodies))
         template= lookup.get_template('experiment.mako')
         return template.render(**d)
 
@@ -140,6 +167,7 @@ if __name__ == '__main__':
     conf_fname= os.path.join(current_dir, 'cherrypy.ini')
     root= Home()
     root.experiment= Experiment()
+    root.questions= Questions()
     root.finished_experiment= FinishedExperiment()
     cherrypy.quickstart(root, '/', config=conf_fname)
 

@@ -84,13 +84,17 @@
             $.post('/experiment/rated', d , function(data) {
 
                 spinner.next()
+                if (spinner.actual_sector == spinner.ntraining) {
+                    experiment_progress_text.show_status('Experimentando');
+                }
+
                 if (player.has_next()) {
                     $("#stars-container").slideUp(callback=function() {
                         enable_play();
                         status.show_status('Click para escuchar');
                     });
                 } else {
-                    setTimeout("document.location= '/finished_experiment';", 500);
+                    setTimeout("document.location= '/questions?visitor_id=${visitor_id}';", 500);
                 }
             });
         }
@@ -120,7 +124,9 @@
     <input type="hidden" id="visitor_id" value="${visitor_id}"/>
     <div id="content">
         <div style="align:right;width:100%">
-            <div id="experiment_progress" > </div>
+            <div style="text-align:center;" id="experiment_progress" > 
+                <div style="display:none;" id="experiment_progress_text"></div>
+            </div>
         </div>
         <div id="player">
             <div id="wrapper"> 
@@ -183,6 +189,7 @@
                 status.show_status('Click para escuchar');
             });
             $("#experiment_progress").fadeIn(500);
+            experiment_progress_text.show_status('Practicando');
         }
         
         
@@ -221,11 +228,14 @@
         player._current_idx= nplayed;
 
         var click_to_start_to= null;
-        var status= new Status($("#loader-text"), 10, 40, playlist.length, 2, "#fff", "#abb1f0");
+        var status= new Status($("#loader-text"));
+        var experiment_progress_text= new Status($("#experiment_progress_text"));
         var is_test_sound = false;
         var experiment_id= parse_qs()['id'];
 
-        var spinner= new Spinner("experiment_progress", 10, 40, playlist.length, 2, "#fff", "#abb1f0");
+        var spinner= new Spinner("experiment_progress", 10, 40, playlist.length, 2, "#fff", "#abb1f0", 
+                                    ${ntraining}, "#fff", "#cfabf0");
+        spinner._ntraining= ${ntraining};
             
         if(${resume_experiment}) {
             if(!player.has_next()) {
@@ -234,9 +244,15 @@
                 enable_play();
                 status.show_status('Resumiendo experimento');
                 $("#experiment_progress").fadeIn(500);
+
                 click_to_start_to= setTimeout("if($('#loader-text').is(':visible')) {status.show_status('Click para escuchar');}",1000);
                 for (var i=1; i<=nplayed; i++){
                     spinner.next();
+                }
+                if(spinner.in_training()) {
+                    experiment_progress_text.show_status('Practicando');
+                } else {
+                    experiment_progress_text.show_status('Experimentando');
                 }
                         
             }

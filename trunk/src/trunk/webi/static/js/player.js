@@ -1,5 +1,6 @@
 var Player = function Player(playlist) {
     this._current_idx = -1;
+    this._ntraining = 0;
     this.playlist = playlist;
     this.width = $(window).width();
     this.current_track = null;
@@ -47,5 +48,3 @@ Player.prototype.onSoundComplete = function() {
 Player.prototype.last_played = function() {
     return this.playlist[this._current_idx-1];
 }
-        
-
