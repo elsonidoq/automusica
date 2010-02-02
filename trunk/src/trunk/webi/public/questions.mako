@@ -46,7 +46,7 @@ form#questions label.error { display: none;
     <div style="position:absolute" id="description">
     <span style="font-size:17px">Por &uacute;ltimo voy a necesitar que me respondas unas preguntitas, &#161;&#161;Gracias de nuevo!!<br><br></span>
     </div>
-    <form id="questions" style="width:500px;position:absolute" action="answer" method="POST" >
+    <form id="questions" style="width:700px;position:absolute" action="answer" method="POST" >
         <input type="hidden" name="visitor_id" id="visitor_id" value="${visitor_id}"/>
         <fieldset >        
         <div style="margin-right:20px;margin-left:20px;margin-top:20px">
@@ -82,8 +82,11 @@ form#questions label.error { display: none;
              <br><br>
 
              <label>
+             Este experimento todav&iacute;a est&aacute; en <strong>fase piloto</strong>. <br>
+             Si ten&eacute;s alg&uacute;n <strong>comentario acerca del experimento en s&iacute;</strong>, me va a ser de gran ayuda.<br><br>
              &#191;Qu&eacute; te pareci&oacute; el experimento?  &#191;Te sentiste c&oacute;modo? <br>
-             &#191;Entendiste la consigna?  Escrib&iacute; lo que te parezca<br>
+             &#191;Entendiste la consigna? &#191;Usaste alg&uacute;n criterio en particular para calificar a los temas?<br><br>
+             Escrib&iacute; lo que te parezca<br>
              <textarea name="observations" id="observations" style="width:100%" rows="5"></textarea>
              </label>
              <br>
