@@ -119,7 +119,7 @@ class Experiment(object):
             training_melodies.insert(0, training_melodies[-1])
             training_melodies.pop()
         playlist= training_melodies + playlist
-        #playlist.sort(key=lambda x:x.split('/')[-1][1:])
+        #playlist.sort()#(key=lambda x:x.split('/')[-1][1:])
         nplayed= 0
 
         experiment_description= get_experiment_description(id)
@@ -129,6 +129,7 @@ class Experiment(object):
             last_rated_track= experiment_session['last_rated_track']
             i= playlist.index(last_rated_track)
             nplayed= i+1
+            nplayed= experiment_session['nplayed']
             resume_experiment= 'true'
 
         #print "*"*10
@@ -155,6 +156,7 @@ class Experiment(object):
     def rated(self, experiment_id, visitor_id, track, value):
         if experiment_id not in cherrypy.session: cherrypy.session[experiment_id]= {}
         cherrypy.session[experiment_id]['last_rated_track'] = track
+        cherrypy.session[experiment_id]['nplayed'] = cherrypy.session[experiment_id].get('nplayed',0)+1
         save_result(experiment_id, visitor_id, track, value)
         
         
