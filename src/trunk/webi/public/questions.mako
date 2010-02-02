@@ -88,7 +88,7 @@ form#questions label.error { display: none;
              </label>
              <br>
 
-            <div style="text-align:center">
+            <div style="text-align:right">
                 <input type="submit" id="mysubmit" value="Enviar"></input>
             </div>
         </div>
