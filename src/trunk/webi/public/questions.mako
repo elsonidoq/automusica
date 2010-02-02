@@ -46,7 +46,7 @@ form#questions label.error { display: none;
     <div style="position:absolute" id="description">
     <span style="font-size:17px">Por &uacute;ltimo voy a necesitar que me respondas unas preguntitas, &#161;&#161;Gracias de nuevo!!<br><br></span>
     </div>
-    <form id="questions" style="width:700px;position:absolute" action="answer" method="POST" >
+    <form id="questions" style="width:650px;position:absolute" action="answer" method="POST" >
         <input type="hidden" name="visitor_id" id="visitor_id" value="${visitor_id}"/>
         <fieldset >        
         <div style="margin-right:20px;margin-left:20px;margin-top:20px">
