@@ -114,6 +114,10 @@ class Experiment(object):
         playlist= experiments[id][:]
         random.seed(visitor_id)
         random.shuffle(playlist)
+        if training_melodies[-1] == playlist[0]:
+            training_melodies.insert(0, training_melodies[-1])
+            training_melodies.pop()
+
         playlist= training_melodies + playlist
         #playlist.sort(key=lambda x:x.split('/')[-1][1:])
         nplayed= 0
