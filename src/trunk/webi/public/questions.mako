@@ -69,14 +69,13 @@ form#questions label.error { display: none;
 			<br><label for="gender" class="error">Seleccion&aacute; tu sexo</label>
             <br><br>
 
-            <label>
                 <input type="checkbox" id="music_study" name="music_study"/>
                 &#191;Estudiaste m&uacute;sica?
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="music_study_years_label">&#191;Cu&aacute;ntos a&ntilde;os?</span>
                 <input style="width:100px;" class="required" type="text" 
                         name="music_study_years" id="music_study_years" /> 
 
-             </label>
+             <br>
              <label for="music_study_years" class="error">
                 Por favor, ingres&aacute; hace cu&aacute;nto que estudi&aacute;s m&uacute;sica
              </label>
