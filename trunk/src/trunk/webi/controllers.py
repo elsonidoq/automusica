@@ -127,7 +127,6 @@ class Experiment(object):
             nplayed= i+1
             resume_experiment= 'true'
 
-        nplayed=len(playlist)-1
         #print "*"*10
         #print "playlist", playlist
         #print "nplayed", nplayed
