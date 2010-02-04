@@ -45,7 +45,20 @@
             <div id="space-between-title-and-rest"></div>
         </div>
         <div id="description-container" >
-            <div id="description">${description}</div>
+            <div id="description">${description}
+            
+                <div id="start_experiment" style="text-align:center;margin-top:80px">
+        <!--            <div>
+                        <a style="text-decoration:none;color:#666">
+                            <img href="experiment?id=percentiles" style="border:none;" src="/images/right.png"/>
+                        </a>
+                     </div> -->
+                     <a href="experiment?id=percentiles" style="font-size:20px;color:#a47;">
+                        Hac&eacute; click para empezar el experimento
+                     </a>
+                </div>
+            </div>
+                
         </div>
         <div id="player-container" >
             <div id="player-description"> 
@@ -125,16 +138,6 @@
         
     
     </div>
-        <div style="text-align:center;">
-<!--            <div>
-                <a style="text-decoration:none;color:#666">
-                    <img href="experiment?id=percentiles" style="border:none;" src="/images/right.png"/>
-                </a>
-             </div> -->
-             <a href="experiment?id=percentiles" style="font-size:25px;color:#447;">
-                Quiero hacer un experimento
-             </a>
-        </div>
     
     </div>
 
@@ -178,14 +181,21 @@
             var new_height= 80;
             if (player_height > desc_height) {
                 new_height+= player_height;
+                new_height= player_height;
             } else {
                 new_height+= desc_height;
+                new_height= desc_height;
             }
 
-    /*        $("#player-container").css('height', new_height);
-            $("#description-container").css('height', new_height);*/
+            $("#player-container").css('height', new_height + 'px');
+            $("#description-container").css('height', new_height + 'px');
+            var start_experiment_div= $("#start_experiment");
+//            start_experiment_div.css('margin-top', new_height - start_experiment_div.height() - $("#description").height() + "px");
 
             $("#playlist").css('padding-left', parseInt($("#player-description").width() - $("#playlist").width())/2);
+
+//            console.log($(window).height());
+ //           console.log($(window).width());
 
 
         }
