@@ -6,7 +6,7 @@ from crp import ChineseRestaurantProcess
 class PhraseRepetitions(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(PhraseRepetitions, cls).__new__(cls, *args, **kwargs)
-        instance.params.update(dict(alpha= 0.5))
+        instance.params.update(dict(alpha= 0.01))
         return instance
 
     def __init__(self, harmonic_context_alg, *args, **kwargs):
