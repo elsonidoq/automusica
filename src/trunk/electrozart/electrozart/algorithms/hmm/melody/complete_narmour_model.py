@@ -8,6 +8,8 @@ from utils.hmm.random_variable import RandomPicker
 
 from electrozart.algorithms import ListAlgorithm, needs
 from electrozart import Note 
+from prob_model import ProbModel
+from feature_builder import get_features, get_interval_features, all_features_values
 
 class TimeMeasurer(object):
     def __init__(self):
@@ -159,7 +161,7 @@ class ContourAlgorithm(ListAlgorithm):
                                                          input.rythm_phrase_len, # la proxima nota de apoyo, esta una nota despues
                                                          context= context, now_chord= input.now_chord, prox_chord=input.prox_chord)
             support_note_percent= self.params['alternate_support_note_percent']
-            t.measure('possible_support_notes(alternate_support_note_percent)')
+            t.measure('ERROR possible_support_notes(alternate_support_note_percent)')
             end_pitch= self.pick_support_note(input.prox_chord, end_pitch_candidates) 
         #for k, v in sorted(input.prox_pitches_distr, key=lambda x:x[1]):
         #    print k, v
@@ -372,120 +374,6 @@ def _possible_support_notes(now_prob_model, prox_prob_model, n1, n2, min_pitch, 
 
 build_must_dict= build_median_must_dict    
 
-class ProbModel(object):
-    def __init__(self, narmour_features_prob, notes_distr, use_harmony=True):
-        self.narmour_features_prob= narmour_features_prob
-        self.notes_distr= notes_distr
-        self.use_harmony= use_harmony
-
-    def get_features_prob(self, features, feature_name=None):
-        res= 1.0
-        if feature_name is not None:
-            return self.narmour_features_prob[feature_name][features[feature_name]]
-        else:
-            for k, v in features.iteritems():
-                #if v not in self.narmour_features_prob[k]: import ipdb;ipdb.set_trace()
-                res*= self.narmour_features_prob[k][v]
-        return res            
-
-    def get_interval_prob(self, i1_length, i2_length, feature_name=None):
-        features= get_interval_features(i1_length, i2_length)
-
-        return self.get_features_prob(features, feature_name)
-
-    def get_prob(self, n1, n2, n3, use_harmony=None, feature_name=None):
-        if use_harmony is None: use_harmony= self.use_harmony 
-        features= get_features(n1, n2, n3)
-
-        res= self.get_features_prob(features, feature_name)
-        if use_harmony: 
-            if isinstance(n3, int): n3= Note(n3)
-            res*= self.notes_distr[n3]
-        return res            
-
-
-
-def sign(n):
-    if n is None: return None
-    if n>=0: return 1
-    else: return -1 
-
-def get_pitch(n):
-    if isinstance(n, int): return n
-    else: return n.pitch
-
-def get_features(n1, n2, n3):
-    i1_length= get_pitch(n2) - get_pitch(n1)
-    i2_length= get_pitch(n3) - get_pitch(n2)
-    return get_interval_features(i1_length, i2_length)
-
-def get_interval_features(i1_length, i2_length):
-    features= {}
-    if abs(i1_length)>6: 
-        if sign(i1_length) == sign(i2_length): 
-            features['rd']= 0
-        else:
-            features['rd']= 1
-    else: # <=6
-        features['rd']= 2
-
-    if abs(i1_length) < 6:
-        if sign(i1_length) != sign(i2_length) and abs(abs(i1_length) - abs(i2_length)) < 3:
-            features['id']= 1
-        elif sign(i1_length) == sign(i2_length) and abs(abs(i1_length) - abs(i2_length)) < 4:
-            features['id']= 1
-        else:
-            features['id']= 0 #0 #2
-    elif abs(i1_length) > 6 and abs(i1_length) >= abs(i2_length):
-        features['id']= 1
-    else:
-        features['id']= 0
-
-
-    if sign(i1_length) != sign(i2_length) and abs(i1_length) - abs(i2_length) > 2:
-        features['cl']= 2
-    elif sign(i1_length) != sign(i2_length) and abs(i1_length) - abs(i2_length) < 3:
-        features['cl']= 1
-    elif sign(i1_length) == sign(i2_length) and abs(i1_length) - abs(i2_length) > 3:
-        features['cl']= 1
-    else:
-        features['cl']= 0
-
-
-    if abs(i2_length) < 3:                            features['pr']= 0
-    elif 3 <= abs(i2_length) <= 5:                    features['pr']= 1
-    #else: features['pr']= 2
-    elif abs(i2_length) >=6 and abs(i2_length) < 12:  features['pr']= 2
-    elif abs(i2_length) >= 12:                        features['pr']= 3
-
-    if abs(i1_length + i2_length) <= 2:
-        features['rr']= 1
-    else:
-        features['rr']= 0
-    #features['rr']= min(abs(i1_length+i2_length), 3)
-
-    #features['id pr cl']= features['id'], features['pr'], features['cl']
-    #features.pop('id')
-    #features.pop('pr')
-    #features.pop('cl')
-
-    return features
-
-
-def all_features_values():
-    res={}
-
-    #for id_val in (0, 1):
-    #    for cl_val in (0, 1, 2):
-    #        for pr_val in (0, 1, 2):
-    #            res['id pr cl'].append((id_val, pr_val, cl_val))
-    
-    res['id']= range(2)
-    res['cl']= range(3)
-    res['pr']= range(4)
-    res['rd']= range(3)
-    res['rr']= range(2)
-    return res
 
 
 def build_max_must_dict(now_prob_model, nf, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
