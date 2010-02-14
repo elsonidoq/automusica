@@ -1,10 +1,13 @@
 from itertools import chain, imap
+from itertools import groupby
 from bisect import bisect
 
 from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
 
-from electrozart.algorithms.hmm import HmmAlgorithm
-from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, FirstVoiceObsSeq, MidiPatchObsSeq, MidiObsSeqOrder2
+from electrozart.algorithms import Algorithm
+from utils.hmm.hidden_markov_learner import HiddenMarkovLearner 
+#from electrozart.algorithms.hmm import HmmAlgorithm
+from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, FirstVoiceObsSeq, MidiPatchObsSeq, InstrumentObsSeq 
 from electrozart import Score, PlayedNote, Silence, Instrument
 from electrozart.algorithms import ExecutionContext, needs, produces, child_input
 
@@ -24,16 +27,26 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
         self.builder= builder
         self.builder.note_as_hidden_state= True
 
+    #XXX
     def get_observations(self, score):
         prev_res= self.builder(score)
         res= []
         for i, (note, vars) in enumerate(prev_res):
             res.append([(note.start%self.interval_size, vars), (note.end % self.interval_size, vars)])
-
+        
+        notes= score.get_notes()
+        notes.sort(key=lambda n:(n.start, -n.duration))
+        for k, ns in groupby(notes, lambda x:x.start):
+            ns= list(ns)
+            ends= [n.end for n in ns]
+            max_end= max(ends)
+            ends= [end for end in ends if end < max_end]
+            for end in ends:
+                res.append([(k%self.interval_size, {}), (end%self.interval_size, {})])
         return res
         
 
-class RythmHMM(HmmAlgorithm):
+class RythmHMM(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(RythmHMM, cls).__new__(cls, *args, **kwargs)
         instance.params.update(dict(robs_alpha     = 0.5, 
@@ -42,19 +55,20 @@ class RythmHMM(HmmAlgorithm):
         return instance
         
         
-    def __init__(self, interval_size, *args, **optional):
-        super(RythmHMM, self).__init__(*args, **optional)
-        #self.obsSeqBuilder= MidiObsSeqOrder2(ModuloObsSeq(FirstVoiceObsSeq(), interval_size))
-        self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
-        #self.obsSeqBuilder= ModuloObsSeq(FirstVoiceObsSeq(), interval_size)
+    def __init__(self, interval_size, *args, **kwargs):
+        #self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
+        super(RythmHMM, self).__init__(*args, **kwargs)
         self.params['interval_size']= interval_size
         self.interval_size= interval_size
+        self.learner= HiddenMarkovLearner()
+        self.hidden_states= set()
         
     def train(self, score):
-        obs_seqs= self.obsSeqBuilder.get_observations(score)
-        for obs_seq in obs_seqs:
-            self.hidden_states.update(imap(lambda x:x[0], obs_seq))
-            self.learner.train(obs_seq)
+        for instrument in score.instruments:
+            obs_seqs= ModuloObsSeq(InstrumentObsSeq(instrument), self.interval_size).get_observations(score)
+            for obs_seq in obs_seqs:
+                self.hidden_states.update(imap(lambda x:x[0], obs_seq))
+                self.learner.train(obs_seq)
 
     def create_model(self):
         a_state= iter(self.hidden_states).next()
