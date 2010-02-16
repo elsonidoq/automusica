@@ -1,0 +1,3 @@
+args: [/home/prakuso/tesis/src/trunk/input-mids/favio/schub.d974.mid]
+include: [/home/prakuso/tesis/src/trunk/experiments/must_percents/d.yaml]
+options: {output-dir: /home/prakuso/tesis/src/trunk/experiments/must_percents/d_runs/mids}

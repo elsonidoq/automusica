@@ -1,0 +1,1470 @@
+Index: webi/resources/experiment/description_percentiles.html
+===================================================================
+--- webi/resources/experiment/description_percentiles.html	(revision 281)
++++ webi/resources/experiment/description_percentiles.html	(working copy)
+@@ -1,19 +1,17 @@
+ Antes que nada, ¡bienvenido y gracias por tu tiempo!<br><br>
+ Hay algunas que necesito contarte sobre como tenés que proceder en el experimento para que después los resultados me sirvan.<br><br>
+-El experimento consiste en que escuches <strong>20 melodías</strong>; aproximadamente vas a estar <strong>15 minutos</strong> haciéndolo. <br><br>
++El experimento consiste en que escuches <strong>20 melodías</strong> y las califiques de 1 a 5.
++Vas a estasr aproximadamente <strong>15 minutos</strong> haciéndolo. <br><br>
+ El experimento es <strong>anónimo</strong>.<br> <br>
+ Necesito que lo hagas <strong>de corrido</strong> y con <strong>poco ruido ambiente</strong> asi podés esuchar bien los temas. <br><br>
+ 
+ Trata de que tus <strong>respuestas</strong> sean <strong>espontáneas</strong>: No te quedes mucho tiempo pensando en si te gustó o no, calificalo de una.<br><br>
+ Si ves que no vas a poder porque estás en un ambiente ruidoso o no tenés mucho tiempo todo bien, ¡lo importante es la onda! y si te acordás en otro momento y ves que podés ¡pegate una vuelta!<br><br>
+ 
+-Como es importante que se escuche bien, vamos a hacer una prueba de sonido.
+-Hacé click en los auriculares para hacer la prueba de sonido 
+-<img style="cursor:pointer" src="/images/headphone.png" href="#" onclick="javascript:sound_test()"/>. 
+-<div style="text-align:center"><br><strong>No empieces</strong> el experimento <strong>si no escuchaste</strong> bien el vals.<br><br></div>
++Es importante que <strong>ajustes</strong> bien tu <strong>volumen</strong>.<br> Hacé click en los auriculares para hacer una <strong>prueba de sonido</strong> &nbsp;
++<img style="cursor:pointer" src="/images/headphone.png" href="#" onclick="javascript:sound_test()"/> 
++<br><br>
+ 
+-El experimento consiste en que califiques de 1 a 5 una serie de piezas musicales.<br><br>
+-
+ <div style="text-align:center;font-size:20px;">¡¡Gracias!!</div>
+ 
+ 
+Index: train3.py
+===================================================================
+--- train3.py	(revision 213)
++++ train3.py	(working copy)
+@@ -19,6 +19,7 @@
+ 
+ from optparse import OptionParser
+ from electrozart.algorithms.hmm.melody.narmour_hmm import NarmourInterval
++from electrozart import Instrument
+ 
+ def get_node_name(score, ticks):
+     if isinstance(ticks, NarmourInterval):
+@@ -52,11 +53,17 @@
+     parser.add_option('--global-notes-distr', dest='notes_distr_duration', default=True, action='store_false', help='uso por duracion o global? Default indexo por duracion')
+     parser.add_option('-p', '--set-param', dest='params', action='append')
+     parser.add_option('-s', '--save-info', dest= 'save_info', default=False, action='store_true')
++    parser.add_option('-S', '--only-save-info', dest= 'only_save_info', default=False, action='store_true')
++    parser.add_option('--folksong-narmour', dest= 'folksong_narmour', default=False, action='store_true')
++    parser.add_option('--load-narmour', dest= 'load_narmour_pickle')
++    parser.add_option('--save-narmour', dest= 'save_narmour_pickle')
+ 
+ 
++
+     options, args= parser.parse_args(argv[1:])
+     if len(args) < 1: parser.error('not enaught args')
+ 
++
+     if options.params:
+         params= {}
+         for line in options.params:
+@@ -116,12 +123,7 @@
+ 
+ def train3(options, args):
+     print "using seed", options.seed
+-    random.seed(options.seed)
+ 
+-    partition_algorithm= options.partition_algorithm
+-    rythm_patch= options.rythm_patch
+-    melody_patch= options.melody_patch
+-    level= options.level
+     infname= args[0]
+     if len(args) >= 2:
+         outfname= args[1]
+@@ -151,7 +153,15 @@
+         outfname= path.join(outpath, outfname)
+ 
+ 
++    # fnames
++    info_folder= outfname.replace('.mid', '-info')
++    params_file= outfname[:-3] + 'log'
++    diff_file= outfname[:-3] + 'diff'
++    svn_file= outfname[:-3] + 'svn'
++    solo_fname= outfname.replace('.mid', '-solo.mid')
++    wolp_fname= outfname.replace('.mid', '-wolp.mid')
+     outfname= outfname.lower()
++
+     parser= MidiScoreParser()
+     score= parser.parse(infname)
+     #score= quantize(score)
+@@ -159,6 +169,17 @@
+     composer= NarmourMarkov()
+     composer= YamlComposer()
+     composer= SupportNotesComposer()
++    if options.only_save_info:
++        composer.build_models(score, **options.__dict__)
++        print "\n\nSAVING INFO\n\n"
++        if os.path.exists(info_folder):
++            import shutil
++            shutil.rmtree(info_folder)
++        os.makedirs(info_folder)
++        composer.applier.save_info(info_folder, score)
++        print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder)
++        return
++
+     composed_score, instrument= composer.compose(score, **options.__dict__)
+     # XXX
+     composer.original_score= score
+@@ -168,49 +189,65 @@
+     writer= MidiScoreWriter()
+     writer.dump(composed_score, outfname)
+ 
+-    composed_score.notes_per_instrument= {instrument: composed_score.get_notes(instrument=instrument)}
+-    solo_fname= outfname.replace('.mid', '-solo.mid')
++    solo_notes= composed_score.get_notes(instrument=instrument)
++    piano= Instrument(patch=None)
++    composed_score.notes_per_instrument= {piano: solo_notes}
+     writer.dump(composed_score, solo_fname)
+ 
++    lp_notes= set(score.get_first_voice())
++    notes_wolp= []
++    composed_score.notes_per_instrument= {instrument: solo_notes}
++    for i in score.instruments:
++        if i == instrument: continue
++        composed_score.notes_per_instrument[i]= [n for n in score.get_notes(instrument=i) if n not in lp_notes]
++
++    writer.dump(composed_score, wolp_fname)
++
+     # draw things
+     if options.save_info:
+-        info_folder= outfname.replace('.mid', '-info')
+         os.makedirs(info_folder)
++
+         composer.applier.save_info(info_folder, score)
+     
+-    # save state
+     params= composer.params
+     params['options']= options.__dict__
+     params['args']= args
++        
++    print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder)
++    save_state(composer, params_file, diff_file, svn_file)
++
++    print 'done!'
++
++    return composer
++
++def save_state(composer, params_file, diff_file, svn_file):
+     from pprint import pprint
+-    params_file= outfname[:-3] + 'log'
+-    print "params file", params_file
+     with open(params_file, 'w') as f:
+         pprint(composer.params, f)
+ 
+-    diff_file= outfname[:-3] + 'diff'
+-    print "diff file", diff_file
+     import subprocess
+     with open(diff_file, 'w') as f:
+         p= subprocess.Popen('svn diff .'.split(), stdout=subprocess.PIPE)
+         f.write(p.stdout.read())
+ 
+-    svn_version= outfname[:-3] + 'svn'
+-    print "svn info file", svn_version
+-    with open(svn_version, 'w') as f:
++    with open(svn_file, 'w') as f:
+         p= subprocess.Popen('svn info'.split(), stdout=subprocess.PIPE)
+         f.write(p.stdout.read())
++
++def print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder):
++    print "info folder", info_folder
++    print "params file", params_file
++    print "diff file", diff_file
++    print "svn info file", svn_file
+         
+     from utils.console import get_terminal_size
+     width, height= get_terminal_size()
+     print "*"*width
+     print "midi file ", outfname
+     print "solo file ", solo_fname
++    print "wolp file ", wolp_fname
+     print "*"*width
+-    print 'done!'
+ 
+-    return composer
+-
+ if __name__ == '__main__':
+     import sys
+     composer= main(sys.argv)
+Index: midistuff/midistuff/midi_messages.py
+===================================================================
+--- midistuff/midistuff/midi_messages.py	(revision 131)
++++ midistuff/midistuff/midi_messages.py	(working copy)
+@@ -14,7 +14,8 @@
+           mof :: MidiOutStream
+         """
+         method= getattr(mof, self.method_name)
+-        method(*self.msg_args)
++        try: method(*self.msg_args)
++        except Exception, e: print "WARNING: ", e.message
+ 
+     def __repr__(self):
+         return 'MidiMessage(%s, %s, %s)' % (repr(self.msg_args), repr(self.method_name), self.time)
+Index: electrozart/electrozart/base.py
+===================================================================
+--- electrozart/electrozart/base.py	(revision 247)
++++ electrozart/electrozart/base.py	(working copy)
+@@ -24,7 +24,7 @@
+         self.canon_notes= [n.get_canonical_note() for n in notes]
+         
+     def get_canonical(self):
+-        return Chord(self.start, self.duration, list(set(n.get_canonical_note() for n in self.notes)), volume=self.volume)
++        return Chord(self.start, self.duration, self.canon_notes, volume=self.volume)
+ 
+     def __repr__(self):
+         return "Chord(%s)" % map(lambda n:n.get_canonical_note(), self.notes)
+@@ -35,32 +35,103 @@
+     def __hash__(self): return hash((tuple(self.notes), self.duration))
+     
+     @classmethod
+-    def chordlist(cls, score, min_notes_per_chord=3):
++    def chordlist(cls, score, pitch_profile, enable_prints=True):
++        res= cls._chordlist(score, pitch_profile, enable_prints=enable_prints)
++        if len(res) < 10:
++            res= cls._chordlist(score, pitch_profile, allow_two=True, enable_prints=enable_prints)
++        return res            
++
++    @classmethod
++    def _chordlist(cls, score, pitch_profile, allow_two=False, enable_prints=True):
+         all_notes= score.get_notes(skip_silences=True)
+         res= []
+         last_start= None
++        top_pitches= [n for n,p in sorted(pitch_profile.iteritems(), key=lambda x:x[1], reverse=True)][:7]
+         for start, ns in groupby(all_notes, key=lambda n:n.start):
+             ns= list(ns)
+             chord_notes= set(n.get_canonical_note() for n in ns)
+             #print len(ns)
+-            if len(chord_notes) >= min_notes_per_chord: 
++            if len(chord_notes) >= 3 or (len(chord_notes) == 2 and allow_two): 
+                 chord= cls(start, None, list(chord_notes))
+-                chord.orig_notes= ns
++                best, best_score= chord.score_mdl()
++
++                if len(chord_notes) > 3 and best_score <= 1:
++                    if enable_prints: print "IGNORING CHORD:", best, "(%s)" % best_score
++                    continue
++
++                chord_extended= False
++
++                if len(chord_notes) == 2 or best_score <= 1: 
++                    for n in top_pitches:
++                        if n in chord_notes: continue
++                        chord.notes= list(chord_notes)[:]
++                        chord.notes.append(n)
++                        extended_chord, extended_chord_score= chord.score_mdl(pitch_profile)
++                        if extended_chord_score >= len(chord.notes)-1 and all(n in top_pitches for n in extended_chord[:3]):
++                            best= extended_chord
++                            chord_extended= True
++                            if enable_prints: print "EXTENDING %s with %s to %s" % (chord_notes, n, best)
++                            break
++                    else:                        
++                        if enable_prints: print "IGNORING CHORD:", best, "(%s)" % best_score
++                        continue
++
++                chord= cls(start, None, best[:3])
++                chord.extended= chord_extended
++                chord._orig_notes= ns
+                 if len(res) > 0: 
+-                    if set(n.get_canonical_note() for n in res[-1].notes) == chord_notes: continue
++                    if best == res[-1].notes: continue
++                    if set(best).issuperset(n.get_canonical_note() for n in res[-1].notes): 
++                        if enable_prints: print "JOINING", best, "with", res[-1]
++                        continue
++                    if set(best).issubset(n.get_canonical_note() for n in res[-1].notes): 
++                        if enable_prints: print "JOINING", best, "with", res[-1]
++                        continue
+                     res[-1].duration= start - res[-1].start
+                 res.append(chord)
+ 
+         if len(res) > 0: 
+             res[-1].duration= all_notes[-1].end - res[-1].start 
++
++        
+         return res
++    
++    def score_mdl(self, pitch_profile=None):
++        max= arg_max= None
++        for n in self.notes: 
++            n_best, n_best_score= score_mdl(n, self.notes, [n], 0)
++            tonic_relation= ((n_best[1].pitch - n.pitch) % 12 in (3, 4))
++            if n_best_score > max or (n_best_score == max and tonic_relation==1):
++                max= n_best_score
++                arg_max= n_best
+ 
++        return arg_max, max
++
++
+     def to_notelist(self):
+         notes= []
+         for note in self.notes:
+             notes.append(PlayedNote(note.pitch, chord.start, chord.duration, self.volume or 100))
+ 
++def score_mdl(tonic, notes, best, best_score):
++    if len(notes) == len(best):
++        return best, best_score
++    else:
++        max= arg_max= None
++        for i, n in enumerate(notes):
++            if n in best: continue
++            
++            tonic_relation= ((n.pitch - tonic.pitch) % 12 in (3, 4))
++            n_best, n_best_score= score_mdl(n, notes, best + [n], best_score + tonic_relation)
++            if n_best_score > max or (n_best_score == max and tonic_relation==1):
++                max= n_best_score
++                arg_max= n_best
++
++        return arg_max, max
++
++
+     
++    
+ class Silence(Figure):
+     """
+     el silencio es una figura que no suena
+@@ -92,7 +163,9 @@
+     def __cmp__(self, other): return cmp(self.pitch, other.pitch)            
+     def __hash__(self): return hash(self.pitch)
+     def get_canonical_note(self): return Note(self.pitch%12)
+-    def get_pitch_name(self): return self._pitches[self.pitch%12] + str(self.pitch/12)
++    def get_pitch_name(self, disable_octave=False): 
++        if disable_octave: return self._pitches[self.pitch%12]
++        else: return self._pitches[self.pitch%12] + str(self.pitch/12)
+     
+ 
+ class PitchClass(object):
+@@ -140,6 +213,10 @@
+         Note.__init__(self, pitch) 
+         self.volume= volume
+     
++    def __eq__(self, other):
++        return id(self) == id(other)
++    def __hash__(self):
++        return hash(id(self))
+     @property
+     def is_silence(self): return False
+     def copy(self): return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
+@@ -149,8 +226,8 @@
+ 
+ class Instrument(object):
+     id_seq= 0
+-    def __init__(self, is_drums=False):
+-        self._patch= None
++    def __init__(self, is_drums=False, patch=None):
++        self._patch= patch
+         self.is_drums= is_drums
+         self.messages= []
+         self.channel= None
+@@ -235,10 +312,14 @@
+ 
+ 
+     def get_first_voice(self, skip_silences=False, relative_to=None):
+-        allnotes= list(chain(*self.notes_per_instrument.values()))
+-        allnotes.sort(key=lambda x:x.start)
++        all_notes= []
++        for instr in self.instruments:
++            if instr.is_drums: continue
++            all_notes.extend(self.get_notes(instrument=instr))
++
++        all_notes.sort(key=lambda x:x.start)
+         res= []
+-        for start, ns in groupby(allnotes, key=lambda x:x.start):
++        for start, ns in groupby(all_notes, key=lambda x:x.start):
+             n= max(ns, key=lambda x:-1 if x.is_silence else x.pitch)
+             res.append(n)
+ 
+Index: electrozart/electrozart/algorithms/hmm/rythm/impl.py
+===================================================================
+--- electrozart/electrozart/algorithms/hmm/rythm/impl.py	(revision 225)
++++ electrozart/electrozart/algorithms/hmm/rythm/impl.py	(working copy)
+@@ -1,10 +1,13 @@
+ from itertools import chain, imap
++from itertools import groupby
+ from bisect import bisect
+ 
+ from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
+ 
+-from electrozart.algorithms.hmm import HmmAlgorithm
+-from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, FirstVoiceObsSeq, MidiPatchObsSeq, MidiObsSeqOrder2
++from electrozart.algorithms import Algorithm
++from utils.hmm.hidden_markov_learner import HiddenMarkovLearner 
++#from electrozart.algorithms.hmm import HmmAlgorithm
++from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, FirstVoiceObsSeq, MidiPatchObsSeq, InstrumentObsSeq 
+ from electrozart import Score, PlayedNote, Silence, Instrument
+ from electrozart.algorithms import ExecutionContext, needs, produces, child_input
+ 
+@@ -29,11 +32,20 @@
+         res= []
+         for i, (note, vars) in enumerate(prev_res):
+             res.append([(note.start%self.interval_size, vars), (note.end % self.interval_size, vars)])
+-
++        
++        notes= score.get_notes()
++        notes.sort(key=lambda n:(n.start, -n.duration))
++        for k, ns in groupby(notes, lambda x:x.start):
++            ns= list(ns)
++            ends= [n.end for n in ns]
++            max_end= max(ends)
++            ends= [end for end in ends if end < max_end]
++            for end in ends:
++                res.append([(k%self.interval_size, {}), (end%self.interval_size, {})])
+         return res
+         
+ 
+-class RythmHMM(HmmAlgorithm):
++class RythmHMM(Algorithm):
+     def __new__(cls, *args, **kwargs):
+         instance= super(RythmHMM, cls).__new__(cls, *args, **kwargs)
+         instance.params.update(dict(robs_alpha     = 0.5, 
+@@ -42,19 +54,20 @@
+         return instance
+         
+         
+-    def __init__(self, interval_size, *args, **optional):
+-        super(RythmHMM, self).__init__(*args, **optional)
+-        #self.obsSeqBuilder= MidiObsSeqOrder2(ModuloObsSeq(FirstVoiceObsSeq(), interval_size))
+-        self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
+-        #self.obsSeqBuilder= ModuloObsSeq(FirstVoiceObsSeq(), interval_size)
++    def __init__(self, interval_size, *args, **kwargs):
++        #self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
++        super(RythmHMM, self).__init__(*args, **kwargs)
+         self.params['interval_size']= interval_size
+         self.interval_size= interval_size
++        self.learner= HiddenMarkovLearner()
++        self.hidden_states= set()
+         
+     def train(self, score):
+-        obs_seqs= self.obsSeqBuilder.get_observations(score)
+-        for obs_seq in obs_seqs:
+-            self.hidden_states.update(imap(lambda x:x[0], obs_seq))
+-            self.learner.train(obs_seq)
++        for instrument in score.instruments:
++            obs_seqs= ModuloObsSeq(InstrumentObsSeq(instrument), self.interval_size).get_observations(score)
++            for obs_seq in obs_seqs:
++                self.hidden_states.update(imap(lambda x:x[0], obs_seq))
++                self.learner.train(obs_seq)
+ 
+     def create_model(self):
+         a_state= iter(self.hidden_states).next()
+Index: electrozart/electrozart/algorithms/hmm/melody/complete_narmour_model.py
+===================================================================
+--- electrozart/electrozart/algorithms/hmm/melody/complete_narmour_model.py	(revision 248)
++++ electrozart/electrozart/algorithms/hmm/melody/complete_narmour_model.py	(working copy)
+@@ -1,4 +1,7 @@
++from __future__ import with_statement
+ from collections import defaultdict
++import cPickle as pickle
++from time import time
+ from math import floor, log
+ 
+ from utils.hmm.random_variable import RandomPicker
+@@ -6,13 +9,22 @@
+ from electrozart.algorithms import ListAlgorithm, needs
+ from electrozart import Note 
+ 
++class TimeMeasurer(object):
++    def __init__(self):
++        self.t0= time()
++
++    def measure(self, msg):
++        print "%.02f %s" % (time()- self.t0 , msg)
++        self.t0= time()
++
++
+ class ContourAlgorithm(ListAlgorithm):
+     def __new__(cls, *args, **kwargs):
+         instance= super(ContourAlgorithm, cls).__new__(cls, *args, **kwargs)
+         instance.params.update(dict(support_note_strategy   = 'random_w_cache',
+-                                    support_note_percent    = 0,#.3,# 0.3,#0,#0.5,
+-                                    middle_note_percent     = 0.1
+-                                     ))
++                                    support_note_percent    = 0,#.1,#.3,# 0.3,#0,#0.5,
++                                    alternate_support_note_percent    = 0.1,#.1,#.3,# 0.3,#0,#0.5,
++                                    middle_note_percent     = 1))#0.5))
+         return instance
+ 
+     def __init__(self, *args, **kwargs):
+@@ -24,11 +36,37 @@
+                 self.narmour_features_cnt[feature_name][val]=0.5
+ 
+ 
++    def dump(self, stream):
++        pickle.dump(self.narmour_features_cnt, stream, 2)
++
++    @classmethod
++    def load(cls, stream, *args, **kwargs):
++        res= cls(*args, **kwargs)
++        res.narmour_features_cnt= pickle.load(stream)
++        return res
++
++    def save_info(self, folder, score): 
++        feature_names= all_features_values().keys() 
++        feature_names.append(None)
++        # XXX
++        prob_model= ProbModel(self.ec.narmour_features_prob, self.notes_distr, use_harmony=False) 
++        from plot import plot_narmour_feature
++        for feature_name in feature_names:
++            plot_narmour_feature(prob_model, 50, 50+12+6, feature_name, folder)
++        
++        reference_pitch= max(self.notes_distr.iteritems(), key=lambda x:x[1])[0].pitch
++        plot_narmour_feature(prob_model, 50, 50+12+6, None, folder, reference_note=Note(reference_pitch))
++        plot_narmour_feature(prob_model, 50, 50+12+6, None, folder, reference_note=Note((reference_pitch+7)%12))
++        from pprint import pprint
++        with open(os.path.join(folder, 'narmour.txt'), 'w') as f:
++            pprint(self.ec.narmour_features_prob, f)
++
++
+     def pick_support_note(self, chord, available_pitches):
+         chord_pitches= [n.pitch%12 for n in chord.notes]
+         chord_notes_in_range= [Note(p) for p in available_pitches if p%12 in chord_pitches]
+         if len(chord_notes_in_range) == 0: 
+-            import ipdb;ipdb.set_trace()
++            #import ipdb;ipdb.set_trace()
+             raise Exception('no hay notas del acorde en rango')
+ 
+         if self.ec.last_support_note is None:
+@@ -42,7 +80,7 @@
+                 #print res
+             elif self.params['support_note_strategy'] == 'random_w_cache':
+                 ##RANDOM con cache
+-                if (chord, self.ec.last_support_note) in self.ec.support_note_cache:
++                if (chord, self.ec.last_support_note) in self.ec.support_note_cache and self.ec.support_note_cache[(chord, self.ec.last_support_note)] in available_pitches:
+                     res= self.ec.support_note_cache[(chord, self.ec.last_support_note)]
+                 else:
+                     notes= sorted(chord_notes_in_range, key=lambda n:abs(n.pitch-self.ec.last_support_note), reverse=True)
+@@ -65,15 +103,13 @@
+         return res
+ 
+     def train(self, score):
+-        for instr in score.instruments:
+-            if instr.is_drums: continue
+-            notes= score.get_notes(instrument=instr)
++        notes= score.get_first_voice()
+ 
+-            for n1, n2, n3 in zip(notes, notes[1:], notes[2:]):
+-                if n1.is_silence or n2.is_silence or n3.is_silence: continue
+-                features= get_features(n1, n2, n3)                
+-                for feature_name, value in features.iteritems():
+-                    self.narmour_features_cnt[feature_name][value]+=1
++        for n1, n2, n3 in zip(notes, notes[1:], notes[2:]):
++            if n1.is_silence or n2.is_silence or n3.is_silence: continue
++            features= get_features(n1, n2, n3)                
++            for feature_name, value in features.iteritems():
++                self.narmour_features_cnt[feature_name][value]+=1
+ 
+     def start_creation(self):
+         super(ContourAlgorithm, self).start_creation()
+@@ -88,64 +124,85 @@
+         self.ec.last_state= None
+         self.ec.last_support_note= None
+         self.ec.support_note_cache= {}
++        self.ec.ncs=0
+ 
+     @needs('rythm_phrase_len', 'notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
+     def generate_list(self, input, result, prev_notes):
+-        now_prob_model= ProbModel(self.ec.narmour_features_prob, input.notes_distr)
+-        prox_prob_model= ProbModel(self.ec.narmour_features_prob, input.prox_notes_distr)
++        self.ec.input= input
++        now_prob_model= ProbModel(self.ec.narmour_features_prob, input.notes_distr, use_harmony=True)
++        prox_prob_model= ProbModel(self.ec.narmour_features_prob, input.prox_notes_distr, use_harmony=True)
+ 
+-        start_pitch= self.ec.last_support_note
+-        end_pitch= self.pick_support_note(input.prox_chord, set(range(input.min_pitch, input.max_pitch+1)))
+-        if input.rythm_phrase_len == 1:
+-            child_result= result.copy()
+-            child_input= input.copy()
+-            child_result.pitch= end_pitch
+-            res.append((child_input, child_result))
+-            self.ec.last_support_note= end_pitch
++        remaining_notes= input.rythm_phrase_len - (self.ec.last_support_note is not None)
++        t= TimeMeasurer()
++        #if input.now == 2048: import ipdb;ipdb.set_trace()
++        print "rythm_phrase_len =", input.rythm_phrase_len
++        if self.ec.last_support_note is not None and input.rythm_phrase_len > 1:
++            context= (prev_notes[-1].pitch, self.ec.last_support_note)
++            end_pitch_candidates= possible_support_notes(now_prob_model, prox_prob_model, 
++                                                         input.min_pitch, input.max_pitch, 
++                                                         self.params['support_note_percent'], self.params['middle_note_percent'], 
++                                                         input.rythm_phrase_len, # la proxima nota de apoyo, esta una nota despues
++                                                         context= context, now_chord= input.now_chord, prox_chord=input.prox_chord)
++                                                                     
++            t.measure('possible_support_notes')
++            #if input.rythm_phrase_len == 2: import ipdb;ipdb.set_trace()
++        else:
++            end_pitch_candidates= set(range(input.min_pitch, input.max_pitch+1))
+ 
++        support_note_percent= self.params['support_note_percent']
++        try:
++            end_pitch= self.pick_support_note(input.prox_chord, end_pitch_candidates) 
++        except:
++            end_pitch_candidates= possible_support_notes(now_prob_model, prox_prob_model, 
++                                                         input.min_pitch, input.max_pitch, 
++                                                         self.params['alternate_support_note_percent'], self.params['middle_note_percent'], 
++                                                         input.rythm_phrase_len, # la proxima nota de apoyo, esta una nota despues
++                                                         context= context, now_chord= input.now_chord, prox_chord=input.prox_chord)
++            support_note_percent= self.params['alternate_support_note_percent']
++            t.measure('possible_support_notes(alternate_support_note_percent)')
++            end_pitch= self.pick_support_note(input.prox_chord, end_pitch_candidates) 
+         #for k, v in sorted(input.prox_pitches_distr, key=lambda x:x[1]):
+         #    print k, v
+         #print Note(end_pitch)
+ 
+-        remaining_notes= input.rythm_phrase_len - (self.ec.last_support_note is None)
+         must= build_must_dict(now_prob_model, prox_prob_model, end_pitch, 
+                               input.min_pitch, input.max_pitch, 
+-                              self.params['support_note_percent'], self.params['middle_note_percent'], 
+-                              input.rythm_phrase_len)
++                              support_note_percent, self.params['middle_note_percent'], 
++                              remaining_notes)
++        t.measure('must')
+ 
+ 
+-        if len(prev_notes) < 2 and (input.rythm_phrase_len > 1 or self.ec.last_support_note is None):
+-            if len(prev_notes) == 1:
+-                # quiero los contextos que sean de la nota que acabo de tocar
+-                p= lambda c:c[1]  == prev_notes[0].pitch
+-            else:
+-                # quiero todos los contextos
+-                p= lambda c: True
++        def pick_context():
+             d= {}
+             for context, candidates in must[remaining_notes].iteritems():
+-                if p(context):
+-                    context_prob= 0
+-                    util= False
+-                    for pitch, prob in candidates.iteritems():
+-                        context_prob+= prob
+-                        util= util or Note(pitch).get_canonical_note() in input.now_chord.notes 
++                context_prob= 0
++                util= False
++                for pitch, prob in candidates.iteritems():
++                    context_prob+= prob
++                    util= util or Note(pitch).get_canonical_note() in input.now_chord.notes 
+ 
+-                    if util: d[context]= context_prob
++                if util: d[context]= context_prob
+ 
+             if len(d) == 0:
+                 # no pude empezar
+                 import ipdb;ipdb.set_trace()
+                 raise Exception('no pude empezar')
+             context= RandomPicker(values=d, random=self.random).get_value(normalize=True)
++            return context
++        if self.ec.last_support_note is None:
++            #if len(prev_notes) == 1:
++            #    # quiero los contextos que sean de la nota que acabo de tocar
++            #    p= lambda c:c[1]  == prev_notes[0].pitch
++            #else:
++            #    # quiero todos los contextos
++            #    p= lambda c: True
++            context= pick_context()                
+ 
+-        elif len(prev_notes) >= 2:
+-            #import ipdb;ipdb.set_trace()
+-            context= tuple(prev_notes[-2:])
+-            context= (context[0].pitch, context[1].pitch)
+-        
+         pitches= []
+         if input.rythm_phrase_len == 1:
+             if self.ec.last_support_note is None:
++                candidates= must[1][context]
++                candidates_distr= dict((c, now_prob_model.get_prob(context[0], context[1], c)) for c in candidates)
+                 pitch= RandomPicker(values=must[1][context], random=self.random).get_value(normalize=True)
+             else:
+                 pitch= self.ec.last_support_note
+@@ -153,17 +210,21 @@
+         else:
+             if self.ec.last_support_note is not None:
+                 pitches.append(self.ec.last_support_note)
+-                context= (context[-1], self.ec.last_support_note)
++            else:
++                pass
++                #import ipdb;ipdb.set_trace()
+             for i in xrange(remaining_notes, 0, -1):
+-                candidates= must[i][context]
+-                if len(candidates)==0: 
++                candidates= must[i].get(context)
++                if candidates is None or len(candidates)==0: 
+                     import ipdb;ipdb.set_trace()
+                     raise Exception('no candidates!')
++                candidates_distr= dict((c, now_prob_model.get_prob(context[0], context[1], c, use_harmony=True)) for c in candidates)
+                 pitch= RandomPicker(random=self.random,values=candidates).get_value(normalize=True)
+                 pitches.append(pitch)
+ 
+                 context= (context[-1], pitch)
+ 
++
+         self.ec.last_support_note= end_pitch
+         res= []
+         for pitch in pitches:
+@@ -172,44 +233,14 @@
+             child_result.pitch= pitch
+             res.append((child_input, child_result))
+         
++        if len(res) != input.rythm_phrase_len: 
++            import ipdb;ipdb.set_trace()
++            raise Exception('maal ahi')
++        
+         return res
+ 
+ 
+         
+-
+-
+-def build_max_must_dict(now_prob_model, nf, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
+-    must= defaultdict(lambda : defaultdict(set)) 
+-    for n1 in xrange(min_pitch, max_pitch):
+-        for n2 in xrange(min_pitch, max_pitch):
+-            must[1][(n1, n2)]= set([max([n3 for n3 in xrange(min_pitch, max_pitch)], key= lambda n: now_prob_model.get_prob(n2, n, nf, harmony=False))])
+-
+-    for i in xrange(2, length+1):
+-        for n1 in xrange(min_pitch, max_pitch+1):
+-            for n2, n3 in must[i-1]:
+-                must[i][(n1, n2)]= set([max([n3 for n3 in xrange(min_pitch, max_pitch)], key= lambda n: now_prob_model.get_prob(n2, n, nf, harmony=False))])
+-
+-    return must
+-
+-import pylab
+-import os
+-from matplotlib import ticker
+-
+-def format_pitch(x, pos=None):
+-    if int(x) != x: import ipdb;ipdb.set_trace()
+-    return Note(int(x)).get_pitch_name()[:-1]
+-
+-
+-def do_plot(p, fname):
+-    y= [i[1] for i in sorted(p, key=lambda x:x[0])]
+-    x= [i[0] for i in sorted(p, key=lambda x:x[0])]
+-    e= pylab.plot(x, y, label='score profile', color='black')[0]
+-    ax= e.axes.xaxis
+-    ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
+-    ax.set_major_locator(ticker.MultipleLocator())
+-    pylab.savefig(fname)
+-    pylab.close()
+-
+ plotit= True
+ def build_median_must_dict(now_prob_model, prox_prob_model, nf, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
+     def apply_percent(i, p):
+@@ -219,31 +250,34 @@
+             l.sort(key=lambda x:x[1], reverse=True)
+             size= int(p*len(l))
+             if size==0: size=1
+-            # XXX imprimir cuantos se cuelan porque tienen el mismo valor
+             val= l[size-1][1]
+             must[i][context]= dict(i for i in l if i[1] >= val)
+ 
+     must= {1:{}}
+-    all_contextes= set()
++    all_contextes= defaultdict(list)
+     for n1 in xrange(min_pitch, max_pitch+1):
+         for n2 in xrange(min_pitch, max_pitch+1):
+             must[1][(n1, n2)]= []
+             for n3 in xrange(min_pitch, max_pitch+1):
+-                n3prob= prox_prob_model.get_prob(n2, n3, nf)
++                nfprob= prox_prob_model.get_prob(n2, n3, nf)
++                n3prob= now_prob_model.get_prob(n1, n2, n3)
++                # con must aplico M(n1, n2, n3)
+                 must[1][(n1, n2)].append((n3, n3prob))
+-                all_contextes.add(((n1,n2,n3), n3prob))
++                # con all_contextes aplico S(n2, n3, nf)
++                all_contextes[(n2, n3)]= nfprob #.add(((n1,n2,n3), nfprob))
+ 
+-    # filtro los contextos inmediatos anteriores a la support note
+-    all_contextes= sorted(all_contextes, key=lambda x:x[1], reverse=True)
+-    size= int(middle_note_prob*len(all_contextes))
++    # filtro por S (saco los contextos que no generan implicacion a nf)
++    all_contextes= sorted(all_contextes.iteritems(), key=lambda x:x[1], reverse=True)
++    size= int(support_note_prob*len(all_contextes))
+     if size==0: size=1
+     val= all_contextes[size-1][1]
++    #import ipdb;ipdb.set_trace()
+     all_contextes= set(context for context, p in all_contextes if p >= val)
+     to_remove= []
+     for (n1, n2), nexts in must[1].iteritems():
+         new_nexts= []
+         for n3, prob in nexts:
+-            if (n1, n2, n3) in all_contextes:
++            if (n2, n3) in all_contextes:
+                 new_nexts.append((n3, prob))
+         if len(new_nexts) == 0:
+             to_remove.append((n1, n2))
+@@ -251,8 +285,10 @@
+             must[1][(n1,n2)]= new_nexts
+ 
+     for context in to_remove: must[1].pop(context)
+-    apply_percent(1, support_note_prob)            
+ 
++    # filtro por M
++    apply_percent(1, middle_note_prob)            
++
+     global plotit
+     for i in xrange(2, length+1):
+         must[i]= {}
+@@ -263,8 +299,8 @@
+                 l.append((n3, n3prob))
+                 must[i][(n1, n2)]= l
+ 
+-        if plotit:
+-            plotit=False
++        #if plotit:
++        #    plotit=False
+             #do_plot(must[i][(51,56)], 'p.png')
+         #import ipdb;ipdb.set_trace()
+         apply_percent(i, middle_note_prob)            
+@@ -274,61 +310,101 @@
+     return must
+ 
+ 
+-def possible_support_notes(now_prob_model, prox_prob_model, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
+-    res= {}
+-    for n1 in xrange(min_pitch, max_pitch + 1):
+-        for n2 in xrange(min_pitch, max_pitch + 1):
+-            res[(n1, n2)]= _possible_support_notes(now_prob_model, prox_prob_model, n1, n2, min_pitch, max_pitch, support_note_prob, middle_note_prob, length)
++def possible_support_notes(now_prob_model, prox_prob_model, min_pitch, max_pitch, support_note_prob, middle_note_prob, length, context=None, now_chord=None, prox_chord=None):
++    """
++    en `length` notas se toca una support note
++    """
++    if context is None:
++        res= {}
++        for n1 in xrange(min_pitch, max_pitch + 1):
++            for n2 in xrange(min_pitch, max_pitch + 1):
++                res[(n1, n2)]= _possible_support_notes(now_prob_model, prox_prob_model, n1, n2, min_pitch, max_pitch, support_note_prob, middle_note_prob, length)
++    else:
++        return _possible_support_notes(now_prob_model, prox_prob_model, context[0], context[1], min_pitch, max_pitch, support_note_prob, middle_note_prob, length, now_chord, prox_chord)
++
+     return res            
+ 
+     
+ 
+-def _possible_support_notes(now_prob_model, prox_prob_model, n1, n2, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
+-    contexts= [(n1,n2)]
+-    for i in xrange(length):
++def _possible_support_notes(now_prob_model, prox_prob_model, n1, n2, min_pitch, max_pitch, support_note_prob, middle_note_prob, length, now_chord, prox_chord):
++    possible_contexts= [(n1,n2)]
++    for i in xrange(length-1):
+         new_contexts= []
+-        for n1, n2 in contexts:
++        for n1, n2 in possible_contexts:
+             continuations= []
+             for n3 in xrange(min_pitch, max_pitch+1): 
+-                if i < length -1:
+-                    n3prob= now_prob_model.get_prob(n1, n2, n3)
+-                else:
+-                    n3prob= prox_prob_model.get_prob(n1, n2, n3)
+-
++                n3prob= now_prob_model.get_prob(n1, n2, n3)
+                 continuations.append((n3, n3prob))
+ 
+             continuations.sort(key=lambda x:x[1], reverse=True)
+ 
+-            if i < length -1: size= int(middle_note_prob*len(continuations))
+-            else: size= int(support_note_prob*len(continuations))
++            size= int(middle_note_prob*len(continuations))
++            if size==0: size=1
+ 
+-            if size==0: size=1
+-            val= continuations[size-1][-1]
++            val= continuations[size-1][1]
+             new_contexts.extend((n2, n3) for (n3, n3prob) in continuations if n3prob >= val)
++            
++        possible_contexts= list(set(new_contexts))
+ 
+-        contexts= list(set(new_contexts))
++    required_contexts= {}
++    for nf in xrange(min_pitch, max_pitch+1):
++        l= []
++        for n2 in xrange(min_pitch, max_pitch+1):
++            for n3 in xrange(min_pitch, max_pitch+1):
++                l.append(((n2, n3), prox_prob_model.get_prob(n2, n3, nf)))
++                        
++        l.sort(key=lambda x:x[1], reverse=True)
++        size= int(support_note_prob*len(l))
++        if size==0: size=1
+ 
+-    return set(n3 for n2, n3 in contexts)
++        val= l[size-1][1]
++        required_contexts[nf]= set(context for context, prob in l if prob >=val)
+ 
++    #if length == 2: import ipdb;ipdb.set_trace()
++    ans= set(nf for nf, rcs in required_contexts.iteritems() if rcs.intersection(possible_contexts))
++    if len(ans) == 0: 
++        import ipdb;ipdb.set_trace()
++        raise Exception('No candidates')
++
++    return ans        
++
++
++
+ build_must_dict= build_median_must_dict    
+ 
+ class ProbModel(object):
+-    def __init__(self, narmour_features_prob, notes_distr):
++    def __init__(self, narmour_features_prob, notes_distr, use_harmony=True):
+         self.narmour_features_prob= narmour_features_prob
+         self.notes_distr= notes_distr
++        self.use_harmony= use_harmony
+ 
+-    def get_prob(self, n1, n2, n3, harmony=True):
++    def get_features_prob(self, features, feature_name=None):
++        res= 1.0
++        if feature_name is not None:
++            return self.narmour_features_prob[feature_name][features[feature_name]]
++        else:
++            for k, v in features.iteritems():
++                #if v not in self.narmour_features_prob[k]: import ipdb;ipdb.set_trace()
++                res*= self.narmour_features_prob[k][v]
++        return res            
++
++    def get_interval_prob(self, i1_length, i2_length, feature_name=None):
++        features= get_interval_features(i1_length, i2_length)
++
++        return self.get_features_prob(features, feature_name)
++
++    def get_prob(self, n1, n2, n3, use_harmony=None, feature_name=None):
++        if use_harmony is None: use_harmony= self.use_harmony 
+         features= get_features(n1, n2, n3)
+-        if isinstance(n3, int): n3= Note(n3)
+ 
+-        if harmony: res= self.notes_distr[n3]
+-        else: res= 1.0
+-        for k, v in features.iteritems():
+-            #if v not in self.narmour_features_prob[k]: import ipdb;ipdb.set_trace()
+-            res*= self.narmour_features_prob[k][v]
++        res= self.get_features_prob(features, feature_name)
++        if use_harmony: 
++            if isinstance(n3, int): n3= Note(n3)
++            res*= self.notes_distr[n3]
+         return res            
+ 
+ 
++
+ def sign(n):
+     if n is None: return None
+     if n>=0: return 1
+@@ -341,14 +417,17 @@
+ def get_features(n1, n2, n3):
+     i1_length= get_pitch(n2) - get_pitch(n1)
+     i2_length= get_pitch(n3) - get_pitch(n2)
++    return get_interval_features(i1_length, i2_length)
++
++def get_interval_features(i1_length, i2_length):
+     features= {}
+     if abs(i1_length)>6: 
+         if sign(i1_length) == sign(i2_length): 
+             features['rd']= 0
+         else:
+-            features['rd']= 2
++            features['rd']= 1
+     else: # <=6
+-        features['rd']= 1
++        features['rd']= 2
+ 
+     if abs(i1_length) < 6:
+         if sign(i1_length) != sign(i2_length) and abs(abs(i1_length) - abs(i2_length)) < 3:
+@@ -356,7 +435,7 @@
+         elif sign(i1_length) == sign(i2_length) and abs(abs(i1_length) - abs(i2_length)) < 4:
+             features['id']= 1
+         else:
+-            features['id']= 0
++            features['id']= 0 #0 #2
+     elif abs(i1_length) > 6 and abs(i1_length) >= abs(i2_length):
+         features['id']= 1
+     else:
+@@ -373,17 +452,17 @@
+         features['cl']= 0
+ 
+ 
+-    if abs(i2_length) >=6:
+-        features['pr']= 0
+-    elif 3 <= abs(i2_length) <= 5:
+-        features['pr']= 1
+-    else:
+-        features['pr']= 2
++    if abs(i2_length) < 3:                            features['pr']= 0
++    elif 3 <= abs(i2_length) <= 5:                    features['pr']= 1
++    #else: features['pr']= 2
++    elif abs(i2_length) >=6 and abs(i2_length) < 12:  features['pr']= 2
++    elif abs(i2_length) >= 12:                        features['pr']= 3
+ 
+     if abs(i1_length + i2_length) <= 2:
+         features['rr']= 1
+     else:
+         features['rr']= 0
++    #features['rr']= min(abs(i1_length+i2_length), 3)
+ 
+     #features['id pr cl']= features['id'], features['pr'], features['cl']
+     #features.pop('id')
+@@ -394,16 +473,51 @@
+ 
+ 
+ def all_features_values():
+-    res=defaultdict(list)
++    res={}
+ 
+     #for id_val in (0, 1):
+     #    for cl_val in (0, 1, 2):
+     #        for pr_val in (0, 1, 2):
+     #            res['id pr cl'].append((id_val, pr_val, cl_val))
+     
+-    res['id']= [0,1]
+-    res['cl']= [0,1,2]
+-    res['pr']= [0,1,2]
+-    res['rd']= [0,1,2]
+-    res['rr']= [0,1]
++    res['id']= range(2)
++    res['cl']= range(3)
++    res['pr']= range(4)
++    res['rd']= range(3)
++    res['rr']= range(2)
+     return res
++
++
++def build_max_must_dict(now_prob_model, nf, min_pitch, max_pitch, support_note_prob, middle_note_prob, length):
++    must= defaultdict(lambda : defaultdict(set)) 
++    for n1 in xrange(min_pitch, max_pitch):
++        for n2 in xrange(min_pitch, max_pitch):
++            must[1][(n1, n2)]= set([max([n3 for n3 in xrange(min_pitch, max_pitch)], key= lambda n: now_prob_model.get_prob(n2, n, nf, use_harmony=False))])
++
++    for i in xrange(2, length+1):
++        for n1 in xrange(min_pitch, max_pitch+1):
++            for n2, n3 in must[i-1]:
++                must[i][(n1, n2)]= set([max([n3 for n3 in xrange(min_pitch, max_pitch)], key= lambda n: now_prob_model.get_prob(n2, n, nf, use_harmony=False))])
++
++    return must
++
++import pylab
++import os
++from matplotlib import ticker
++
++def format_pitch(x, pos=None):
++    if int(x) != x: import ipdb;ipdb.set_trace()
++    return Note(int(x)).get_pitch_name()
++
++
++def do_plot(p, fname):
++    y= [i[1] for i in sorted(p, key=lambda x:x[0])]
++    x= [i[0] for i in sorted(p, key=lambda x:x[0])]
++    e= pylab.plot(x, y, label='score profile', color='black')[0]
++    ax= e.axes.xaxis
++    ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
++    ax.set_major_locator(ticker.MultipleLocator())
++    pylab.savefig(fname)
++    pylab.close()
++
++
+Index: electrozart/electrozart/algorithms/base.py
+===================================================================
+--- electrozart/electrozart/algorithms/base.py	(revision 226)
++++ electrozart/electrozart/algorithms/base.py	(working copy)
+@@ -86,6 +86,7 @@
+         super(Algorithm, self).__init__(*args, **kwargs)
+         self.ec= ExecutionContext()
+         self.random= Random(kwargs.get('seed'))
++        self.ec.seed= kwargs.get('seed')
+         
+     def start_creation(self): 
+         self.ec= ExecutionContext()
+Index: electrozart/electrozart/algorithms/applier.py
+===================================================================
+--- electrozart/electrozart/algorithms/applier.py	(revision 189)
++++ electrozart/electrozart/algorithms/applier.py	(working copy)
+@@ -1,4 +1,5 @@
+ from base import ExecutionContext, AcumulatedInput, PartialNote, Algorithm
++import sys, traceback
+ from time import time as time_tell
+ 
+ class AlgorithmsApplier(object):
+@@ -19,8 +20,14 @@
+ 
+     def save_info(self, folder, score):
+         for algorithm in self.algorithms:
+-            algorithm.save_info(folder, score)
++            try: algorithm.save_info(folder, score)
++            except: 
++                print "ERROR: failed to save info of %s" % algorithm.__class__.__name__
++                print '-'*60
++                traceback.print_exc(file=sys.stdout)
++                print '-'*60
+ 
++
+     def create_melody(self, time, print_info=False, general_input=None):
+         if not self.started:
+             self.start_creation()
+Index: electrozart/electrozart/algorithms/crp/phrase_repetition.py
+===================================================================
+--- electrozart/electrozart/algorithms/crp/phrase_repetition.py	(revision 219)
++++ electrozart/electrozart/algorithms/crp/phrase_repetition.py	(working copy)
+@@ -6,7 +6,7 @@
+ class PhraseRepetitions(Algorithm):
+     def __new__(cls, *args, **kwargs):
+         instance= super(PhraseRepetitions, cls).__new__(cls, *args, **kwargs)
+-        instance.params.update(dict(alpha= 0.5))
++        instance.params.update(dict(alpha= 0.01))
+         return instance
+ 
+     def __init__(self, harmonic_context_alg, *args, **kwargs):
+Index: electrozart/electrozart/algorithms/harmonic_context/contextes.py
+===================================================================
+--- electrozart/electrozart/algorithms/harmonic_context/contextes.py	(revision 250)
++++ electrozart/electrozart/algorithms/harmonic_context/contextes.py	(working copy)
+@@ -38,12 +38,13 @@
+ 
+ from random import choice
+ class ChordHarmonicContext(Algorithm):
+-    def __init__(self, context_score, *args, **kwargs):
++    def __init__(self, context_score, pitch_profile, *args, **kwargs):
+         super(ChordHarmonicContext, self).__init__(*args, **kwargs)
+         self.context_score= context_score
++        self.pitch_profile= pitch_profile
+ 
+     def start_creation(self):
+-        self.chordlist= Chord.chordlist(self.context_score, 3)
++        self.chordlist= Chord.chordlist(self.context_score, self.pitch_profile)
+         #self.chords= {}
+         if self.chordlist[0].start > 0:
+             #self.chordlist.insert(0, Chord(0, self.chordlist[0].start, [Note(i) for i in xrange(12)]))
+Index: electrozart/electrozart/algorithms/harmonic_context/notes_distr.py
+===================================================================
+--- electrozart/electrozart/algorithms/harmonic_context/notes_distr.py	(revision 244)
++++ electrozart/electrozart/algorithms/harmonic_context/notes_distr.py	(working copy)
+@@ -17,7 +17,7 @@
+         instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
+         instance.params.update(dict(global_profile_prior_weight = 4,#0.5,#1, #0.5, 
+                                     proportional_to_duration    = True,
+-                                    profile_smooth_factor       = 0.1))
++                                    profile_smooth_factor       = 0.05))
+         return instance
+         
+     def __init__(self, score, **optional):
+@@ -42,13 +42,15 @@
+ 
+         pitches_distr= {}
+         for pc, prob in self.score_profile:
+-            pitches_distr[pc]= prob*self.params['global_profile_prior_weight']
++            #pitches_distr[pc]= self.params['global_profile_prior_weight']
++            pitches_distr[pc]= prob*len(now_notes) #self.params['global_profile_prior_weight']
+ 
+         for i, pc in enumerate(now_pc):
+             #new_distr= self.matching_notes[pc]
+             #for pc2, weight in new_distr.iteritems():
+             #    pitches_distr[pc2]+=weight#*now_notes[i].duration
+             pitches_distr[pc]+=1#*sqrt(float(now_notes[i].pitch - min_pitch)/(max_pitch-min_pitch))
++            #if i == 0: pitches_distr[pc]+=1
+ 
+         s= float(sum(pitches_distr.itervalues()))
+         for k, v in pitches_distr.iteritems():
+@@ -82,7 +84,7 @@
+ 
+         do_plot(self.score_profile, 'prior-profile.png')
+         from random import shuffle
+-        chords= list(set(Chord.chordlist(score)))
++        chords= list(set(Chord.chordlist(score, dict(self.score_profile), enable_prints=False)))
+         shuffle(chords)
+         chords= chords[:4]
+         def chord_name(c):
+@@ -125,7 +127,9 @@
+     min_weight= min(score_profile.itervalues())
+     for i in xrange(12): 
+         n= Note(i)
+-        if n not in score_profile: score_profile[n]= min_weight*profile_smooth_factor
++        if n not in score_profile: 
++            score_profile[n]= min_weight*profile_smooth_factor
++            print "SMOOTHING", n
+     
+     s= sum(score_profile.itervalues())
+     for pitch, weight in score_profile.iteritems():
+Index: electrozart/electrozart/composers/support_notes.py
+===================================================================
+--- electrozart/electrozart/composers/support_notes.py	(revision 220)
++++ electrozart/electrozart/composers/support_notes.py	(working copy)
+@@ -1,4 +1,5 @@
+-from random import randint, seed
++from __future__ import with_statement
++from random import seed
+ from math import sqrt
+ from time import time
+ 
+@@ -6,7 +7,7 @@
+ 
+ from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgorithm
+ 
+-from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
++from electrozart.algorithms.hmm.melody import ListMelody
+ from electrozart.algorithms.hmm.melody.complete_narmour_model import ContourAlgorithm
+ #from electrozart.algorithms.hmm.melody.complete_narmour_model_wo_must import ContourAlgorithm
+ 
+@@ -47,27 +48,23 @@
+             offset                  = 0,
+             enable_part_repetition  = True,
+             save_info               = False,
+-            simple_narmour_model    = False,
+-            notes_distr_duration    = True
++            notes_distr_duration    = True,
++            seed                    = None,
++            folksong_narmour        = False,
++            save_narmour_pickle     = None,
++            load_narmour_pickle     = None
++            )
+ 
+-        )
+ 
+     def matches_description(self, instrument, patch, channel):
+         return instrument.patch == patch and (channel is None or instrument.channel == channel)
+ 
+-    def compose(self, score, **optional):
++    def build_models(self, score, **optional):
+         params= self.params= bind_params(self.params, optional)
+-        melody_instrument= None
+-        rythm_instrument= None
+-        for instrument in score.instruments:
+-            if self.matches_description(instrument, params['melody_patch'], params['melody_channel']):
+-                melody_instrument= instrument
+-            if self.matches_description(instrument, params['rythm_patch'], params['rythm_channel']):
+-                rythm_instrument= instrument
+-        # XXX
+-        #if (melody_instrument is None or rythm_instrument is None) and len(score.instruments) > 1: raise Exception("Que instrument?")
+-        else: 
+-            rythm_instrument= melody_instrument= score.instruments[0]
++        if params['seed'] is None:
++            seed= int(time())
++            print "using seed:", seed
++            params['seed']= seed
+         
+         interval_size= measure_interval_size(score, params['n_measures']) 
+         
+@@ -76,51 +73,63 @@
+         #else: notes_distr= NotesDistr(score)
+         tonic_notes_alg= TonicHarmonicContext(notes_distr) 
+ 
+-        harmonic_context_alg= ChordHarmonicContext(score)
++        harmonic_context_alg= ChordHarmonicContext(score, dict(tonic_notes_alg.nd.pitches_distr()))
+         harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, seed=params['seed'])
+ 
+-        rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel, seed=params['seed'])
++        rythm_alg= RythmHMM(interval_size, seed=params['seed'])
+         #phrase_rythm_alg= rythm_alg
+         phrase_rythm_alg= ListRythm(rythm_alg, seed=params['seed'])
+         if params['enable_part_repetition']:
+             phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id', seed=params['seed'])
+ 
+-        if params['simple_narmour_model']:
+-            melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel, seed=params['seed'])
+-            phrase_melody_alg= melody_alg
+-            if params['enable_part_repetition']:
+-                phrase_melody_alg= ListMelody(melody_alg, seed=params['seed'])
+-                phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id', seed=params['seed'])
+-        else:                
++        if params['load_narmour_pickle'] is not None:
++            import pickle
++            with open(params['load_narmour_pickle']) as f:
++                melody_alg= ContourAlgorithm.load(f, seed=params['seed'])
++        else:            
+             melody_alg= ContourAlgorithm(seed=params['seed'])
+-            phrase_melody_alg= melody_alg
+-            #import ipdb;ipdb.set_trace()
+-            if params['enable_part_repetition']:
+-                phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id', seed=params['seed'])
+ 
++        phrase_melody_alg= melody_alg
++        if params['enable_part_repetition']:
++            phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id', seed=params['seed'])
+ 
+-        #rythm_score= score.copy()
+-        #rythm_score.notes_per_instrument.pop(piano)
+-        print "todos los intrsumentos"
+-        melody_alg.train(score)
+-        for instrument in score.instruments:
+-            if not instrument.is_drums and params['simple_narmour_model']:
+-                melody_alg.obsSeqBuilder.builder.patch= instrument.patch
+-                melody_alg.obsSeqBuilder.builder.channel= instrument.channel
+-                melody_alg.train(score)
+-            rythm_alg.obsSeqBuilder.builder.patch= instrument.patch
+-            rythm_alg.obsSeqBuilder.builder.channel= instrument.channel
+-            rythm_alg.train(score)
+ 
++        if not params['folksong_narmour'] and params['load_narmour_pickle'] is None:
++            melody_alg.train(score)
++            if params['save_narmour_pickle']:
++                with open(params['save_narmour_pickle'], 'w') as f:
++                    melody_alg.dump(f)
++
++        rythm_alg.train(score)
++
+         harmonic_context_alg.train(score)
+ 
+-        applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
+-        self.applier= applier
++        # XXX
++        melody_alg.notes_distr= harmonic_context_alg.harmonic_context_alg.pitch_profile
++        # XXX
++        applier= self.applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
++        self.algorithms= {'tonic_notes_alg':tonic_notes_alg, 
++                          'harmonic_context_alg':harmonic_context_alg, 
++                          'rythm_alg':rythm_alg,
++                          'phrase_rythm_alg':phrase_rythm_alg, 
++                          'notes_distr':notes_distr, 
++                          'phrase_melody_alg':phrase_melody_alg}
++
+         applier.start_creation()
++        return applier
+ 
++    def compose(self, score, **optional):
++        params= self.params= bind_params(self.params, optional)
++        applier= self.build_models(score, **optional) 
++        
++        #import pickle
++        #f=open('r.pickle','w')
++        #pickle.dump(rythm_alg.model, f, 2)
++        #f.close()
++        #1/0
+         # XXX
+-        self.rythm_alg= rythm_alg#.draw_model('rythm.png', score.divisions)
+-        self.melody_alg= melody_alg #.model.draw('melody.png', str)
++        #self.rythm_alg= rythm_alg#.draw_model('rythm.png', score.divisions)
++        #self.melody_alg= melody_alg #.model.draw('melody.png', str)
+ 
+         duration= score.duration
+         #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
+@@ -164,33 +173,34 @@
+         #duration= chord_notes[-1].end
+ 
+         res= score.copy()
+-        rythm_alg.model.calculate_metrical_accents()
++        self.algorithms['rythm_alg'].model.calculate_metrical_accents()
+         #rythm_alg.model.draw_accents('accents.png', score.divisions)
+         import random
++        rnd= random.Random(seed)
+         cache= {}
+         def random_accent(note):
+-            moment= (note.start%rythm_alg.model.interval_size)/rythm_alg.model.global_gcd
++            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+             res= cache.get(moment)
+             if res is None:
+-                res= randint(1, 6)
++                res= rnd.randint(1, 6)
+                 cache[moment]= res
+             return res
+         def dec_accent(note):            
+-            moment= (note.start%rythm_alg.model.interval_size)/rythm_alg.model.global_gcd
++            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+             res= cache.get(moment)
+             if res is None:
+                 res= 7-moment
+                 cache[moment]= res
+             return res
+         def inc_accent(note):            
+-            moment= (note.start%rythm_alg.model.interval_size)/rythm_alg.model.global_gcd
++            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+             res= cache.get(moment)
+             if res is None:
+                 res= moment + 1 
+                 cache[moment]= res
+             return res
+ 
+-        accent_func= rythm_alg.model.get_metrical_accent 
++        accent_func= self.algorithms['rythm_alg'].model.get_metrical_accent 
+         accent_func= inc_accent
+         accent_func= dec_accent
+         accent_func= random_accent
+@@ -234,7 +244,6 @@
+         instrument.patch= 74 #flauta
+         instrument.patch= 25
+         res.notes_per_instrument[instrument]= notes
+-        #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
+         #res.notes_per_instrument= {instrument: notes}
+         #res.notes_per_instrument[piano]= chord_notes
+ 
+Index: shell.py
+===================================================================
+--- shell.py	(revision 131)
++++ shell.py	(working copy)
+@@ -1,4 +1,4 @@
+-from sys import argv
++import sys 
+ from electrozart.parsing.midi import MidiScoreParser, MidiPatchParser, MidiScoreParserCache 
+ #from electrozart.algorithms.lsa import apply_lsa
+ from electrozart.writing.midi import MidiScoreWriter
+Index: analyze_quantization.py
+===================================================================
+--- analyze_quantization.py	(revision 252)
++++ analyze_quantization.py	(working copy)
+@@ -42,6 +42,7 @@
+     score= parser.parse(fname)
+     interval_size= measure_interval_size(score, 1)
+     durations= set(n.start % interval_size for n in score.get_notes())
++    durations.update(n.end % interval_size for n in score.get_notes())
+     return durations
+ 
+ if __name__ == '__main__':
+Index: experiments/test_files
+===================================================================
+--- experiments/test_files	(revision 178)
++++ experiments/test_files	(working copy)
+@@ -1,5 +1,4 @@
+ ../input-mids/Chacarerasa.mid
+-../input-mids/EliteSyncopations.mid
+ ../input-mids/vals.mid
+ ../input-mids/melisma/kp/bach.kindlein.mid
+ ../input-mids/melisma/kp/beet.strio.mid
+Index: experiments/common.yaml
+===================================================================
+--- experiments/common.yaml	(revision 180)
++++ experiments/common.yaml	(working copy)
+@@ -1,4 +1,5 @@
+ main:
+     train3:main
+ options:
+-    seed: 3568
++    seed: 234651
++    save-info: True
+Index: experiments/notes_distr/a.yaml
+===================================================================
+--- experiments/notes_distr/a.yaml	(revision 178)
++++ experiments/notes_distr/a.yaml	(working copy)
+@@ -1,4 +1,4 @@
+ include:
+     - common.yaml
+ electrozart.algorithms.harmonic_context.notes_distr:NotesDistr:
+-     global_profile_prior_weight: 10
++     global_profile_prior_weight: 0.5
+Index: experiments/notes_distr/b.yaml
+===================================================================
+--- experiments/notes_distr/b.yaml	(revision 178)
++++ experiments/notes_distr/b.yaml	(working copy)
+@@ -1,4 +1,4 @@
+ include:
+     - common.yaml
+ electrozart.algorithms.harmonic_context.notes_distr:NotesDistr:
+-     global_profile_prior_weight: 1
++     global_profile_prior_weight: 2
+Index: experiments/notes_distr/c.yaml
+===================================================================
+--- experiments/notes_distr/c.yaml	(revision 178)
++++ experiments/notes_distr/c.yaml	(working copy)
+@@ -1,4 +1,5 @@
+ include:
+     - common.yaml
+-electrozart.algorithms.harmonic_context.notes_distr:NotesDistr:
+-     global_profile_prior_weight: 0.5
++electrozart.algorithms.hmm.melody.complete_narmour_model:ContourAlgorithm:
++    support_note_percent: 0.5
++    middle_note_percent: 1
+Index: compare.py
+===================================================================
+--- compare.py	(revision 251)
++++ compare.py	(working copy)
+@@ -34,6 +34,8 @@
+     analysis_table= '<table border="1">\n%s\n</table>' % rows
+ 
+     solo_len= analysis['solo1_len']
++    if analysis['different_onsets'] != 0:
++        print "WARNING: different_onsets = %s" % analysis['different_onsets']
+ 
+     html= '<html><body>\n%s\n<br><br><strong>solo length:</strong>%s\n%s\n</body></html>' % (desc_table, solo_len, analysis_table)
+     with open('out.html', 'w') as f:
+@@ -86,6 +88,7 @@
+             'solo2_len':len(solo2)}
+ 
+ def get_solo_instrument(score, patch):
++    if len(score.instruments) == 1: return score.instruments[0]
+     candidates= [i for i in score.instruments if i.patch == patch]
+     if len(candidates) != 1: import ipdb;ipdb.set_trace()
+     return candidates[0]
