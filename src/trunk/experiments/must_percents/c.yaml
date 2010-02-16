@@ -1,0 +1,5 @@
+include:
+    - common.yaml
+electrozart.algorithms.hmm.melody.complete_narmour_model:ContourAlgorithm:
+    support_note_percent: 0.8
+    middle_note_percent: 1

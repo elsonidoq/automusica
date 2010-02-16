@@ -1,0 +1,11 @@
+(Chord([Note('B0'), Note('D#0'), Note('F#0')]), 4096) 			1		1
+(Chord([Note('E0'), Note('G#0'), Note('B0')]), 3072)  			1		1
+(Chord([Note('F#0'), Note('A#0'), Note('C#0')]), 3072)			1		1
+(Chord([Note('B0'), Note('D0'), Note('F#0')]), 3072)  			1		1
+(Chord([Note('A0'), Note('C#0'), Note('E0')]), 13312) 			1		1
+(Chord([Note('B0'), Note('D0'), Note('F#0')]), 6144)  			1		1
+(Chord([Note('B0'), Note('D0'), Note('F#0')]), 5120)  			1		1
+(Chord([Note('E0'), Note('G#0'), Note('B0')]), 2048)  			1		1
+(Chord([Note('D0'), Note('F#0'), Note('A0')]), 8192)  			1		1
+(Chord([Note('E0'), Note('G#0'), Note('B0')]), 1024)  			1		1
+(Chord([Note('B0'), Note('D0'), Note('F#0')]), 1024)  			1		1
