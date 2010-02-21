@@ -90,6 +90,7 @@ class Home(object):
         return template.render(**d)
 
 enable_experiment_session= True
+enable_training_melodies= False
 class Experiment(object):
     #@cherrypy.tools.encode(encoding='utf8')
     @cherrypy.expose
@@ -105,20 +106,24 @@ class Experiment(object):
             experiment_session['visitor_id']= visitor_id
             save_visitor_data(visitor_id)
 
-        training_melodies= [ '/mp3/must_percents_results/a_beet.wo13-solo.mp3',
-                             '/mp3/must_percents_results/b_beet.wo14.2-solo.mp3',
-                             '/mp3/must_percents_results/c_beet.wo14.8-solo.mp3',
-                             '/mp3/must_percents_results/d_schub.d973-solo.mp3']
+        if enable_training_melodies:
+            training_melodies= [ '/mp3/must_percents_results/a_beet.wo13-solo.mp3',
+                                 '/mp3/must_percents_results/b_beet.wo14.2-solo.mp3',
+                                 '/mp3/must_percents_results/c_beet.wo14.8-solo.mp3',
+                                 '/mp3/must_percents_results/d_schub.d973-solo.mp3']
+        else:
+            training_melodies= []
 
 
         playlist= experiments[id][:]
         random.seed(visitor_id)
         random.shuffle(playlist)
 
-        if training_melodies[-1] == playlist[0]:
-            training_melodies.insert(0, training_melodies[-1])
-            training_melodies.pop()
-        playlist= training_melodies + playlist
+        if enable_training_melodies:
+            if training_melodies[-1] == playlist[0]:
+                training_melodies.insert(0, training_melodies[-1])
+                training_melodies.pop()
+            playlist= training_melodies + playlist
         #playlist.sort()#(key=lambda x:x.split('/')[-1][1:])
         nplayed= 0
 

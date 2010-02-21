@@ -189,7 +189,11 @@
                 status.show_status('Click para escuchar');
             });
             $("#experiment_progress").fadeIn(500);
-            experiment_progress_text.show_status('Practicando');
+            if (${ntraining} > 0) {
+               experiment_progress_text.show_status('Practicando');
+            } else {
+               experiment_progress_text.show_status('Experimentando');
+            }
         }
         
         
