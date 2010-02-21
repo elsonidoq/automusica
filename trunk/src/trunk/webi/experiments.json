@@ -24,5 +24,17 @@
                 '/mp3/must_percents_results/d_beet.wo14.8-solo.mp3',
                 '/mp3/must_percents_results/d_schub.d973-solo.mp3',
                 '/mp3/must_percents_results/d_schub.d974-solo.mp3'
-                ]
+                ],
+
+ 'phrase':['/mp3/phrase_narmour_results/no_phrase_beet.wo13-solo.mp3',
+           '/mp3/phrase_narmour_results/no_phrase_beet.wo14.2-solo.mp3',
+           '/mp3/phrase_narmour_results/no_phrase_beet.wo14.8-solo.mp3',
+           '/mp3/phrase_narmour_results/no_phrase_schub.d973-solo.mp3',
+           '/mp3/phrase_narmour_results/no_phrase_schub.d974-solo.mp3',
+           '/mp3/phrase_narmour_results/phrase_beet.wo13-solo.mp3',
+           '/mp3/phrase_narmour_results/phrase_beet.wo14.2-solo.mp3',
+           '/mp3/phrase_narmour_results/phrase_beet.wo14.8-solo.mp3',
+           '/mp3/phrase_narmour_results/phrase_schub.d973-solo.mp3',
+           '/mp3/phrase_narmour_results/phrase_schub.d974-solo.mp3']
+
 }
