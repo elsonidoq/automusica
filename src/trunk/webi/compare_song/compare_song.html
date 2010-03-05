@@ -8,30 +8,80 @@
         <script src="jquery.js" type="text/javascript" charset="utf-8"></script>
         <script src="hsv2rgb.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" charset="utf-8">
+            var buttons= null;
+            var selector= null;
+            var on_mouse_down= false;
+            var selected_button= null;
+            var r;
+            function find_closest_button(x) {
+                var last_distance=null, actual_distance= null;
+                for (var i=0; i<buttons.length; i++) {
+                    actual_distance= Math.abs(x - buttons[i].attrs.cx);
+                    if (last_distance && last_distance < actual_distance) {
+                        return [buttons[i-1], last_distance];
+                    }
+                    last_distance= actual_distance;
+                }
+                return [buttons[buttons.length-1], last_distance]
+            }
+            $(window).mouseup(function(e) {
+                if (on_mouse_down) {
+                    on_mouse_down= false;
+                    $("#holder").unbind('mousemove');
+                    var button, distance;
+                    var l= find_closest_button(e.clientX - $("#holder").position().left);
+                    var button= l[0], distance= l[1];
+                    selector.animate({cx:button.attrs.cx}, 100, change_selected_button(button));
+                }
+            });
+            function change_selected_button(button) {
+                var f= function() {
+                    button.node.style.cursor = "move";
+                    selected_button.node.style.cursor = "";
+                    selected_button= button;
+                }
+                return f
+            }
+            function mousedown_handler(e){
+                var l= find_closest_button(e.clientX - $("#holder").position().left);
+                var button= l[0], distance= l[1];
+                selected_button.node.style.cursor = "";
+                if (distance < 20) {
+                    if (selector.attrs.cx == button.attrs.cx) {
+                        var h= $("#holder");
+                        on_mouse_down= true;
+                        h.mousemove(function(e) {
+                            selector.animate({cx:e.clientX - h.position().left}, 100);
+                        });
+                    } else {
+                        selector.animate({cx:button.attrs.cx}, 300, change_selected_button(button));
+                    }
+                } else {
+                    selector.animate({cx:button.attrs.cx}, 300, change_selected_button(button));
+                }
+            } 
             window.onload = function () {
                 resize();
                 var W = 640,
                     H = 50,
-                    r = Raphael("holder", W, H),
                     values = [],
                     len = 9;
                 for (var i = len; i--;) {
                     values.push(50);
                 }
+                r = Raphael("holder", W, H);
+                r.safari();
                 
                 function translate(x, y) {
                     return [
-                        50 + (W - 60) / (values.length - 1) * x,
+                        //50 + (W - 60) / (values.length - 1) * x,
+                        10 + (W-20) / (values.length - 1) * x,
                         H - 10 - (H - 20) / 100 * y
                     ];
                 }
-                var blankets = r.set(),
-                    buttons = r.set(),
-                    w = (W - 60) / values.length,
-                    isDrag = 4,
-                    unhighlight = function () { buttons.items[isDrag].animate({r: 5}, 200); };
-                var h=0, v=0.83, s=0.4;
-                var s0= 0, s1= 1;
+                buttons = r.set();
+                var h=229/360, v=0.83, s=0.4;
+                var s0= 0, s1= 0.81;
                 var v0= 0.53, v1= 0.84;
 
 //                $("#play1").css("background", '#' + hsv2rgb(h0, s, v).join(''));
@@ -42,8 +92,6 @@
                         f;
                     //path = r.path(p.join(",")).attr({stroke: color, "stroke-width": 2}),
                     //h= parseInt((h1 - h0)/(ii-1)*i + h0)/360;
-                    s= (s1 - s0)/(ii-4)*Math.abs(i-4) + s0;
-                    v= (v1 - v0)/(ii-4)*Math.abs(i-4) + v0;
                     var line_s, line_v;
                     if (i < 4) {
                         line_v= (v1 - v0)/(ii-4)*Math.abs(i-4) + v0;
@@ -53,67 +101,72 @@
                         line_v= (v1 - v0)/(ii-4)*Math.abs(i-3) + v0;
                     }
                     var line_color= 'hsb(' + h + ',' + line_s + ',' + line_v + ')';
-                    var color= 'hsb(' + h + ',' + s + ',' + v + ')';
 
                     var l= [['M', xy[0], xy[1]]]
                     l.push(["L", xy1[0], xy1[1]]); 
-//                    console.log(l.join(','));
-                    r.path(l.join(',')).attr({stroke: line_color, "stroke-width": 2});
+                    r.path(l.join(',')).attr({stroke: line_color, "stroke-width": 2});//.mousedown(mousedown_handler);
+
                     (f = function (i, xy) {
-                        buttons.push(r.circle(xy[0], xy[1], 5).attr({fill: color, stroke: "none"}));
-                        blankets.push(r.circle(xy[0], xy[1], w / 2).attr({stroke: "none", fill: "#fff", opacity: 0})
-                        .mouseover(function () {
-                        }).mouseout(function () {
-                        }).mousedown(function (e) {
-                            if (selector.attrs.cx == buttons[i].attrs.cx) {
-                                var h= $("#holder");
-                                h.mousemove(function(e) {
-                                    selector.animate({cx:e.clientX - h.position().left}, 100);
-                                });
-                                $(window).mouseup(function(e) {
-                                    h.unbind('mousemove');
-                                    var last= null;
-                                    var last_xy= null;
-                                    for (var i = 0; i<values.length; i++) {
-                                        var xy= translate(i, values[i]);
-                                        var new_last= Math.abs(xy[0] - (e.clientX - h.position().left));
-                                        if (last && last < new_last) {
-                                            selector.animate({cx:last_xy[0]}, 100);
-                                            break;
-                                        }
-                                        last= new_last;
-                                        last_xy= xy;
-                                    }
-                                    $(window).unbind('mouseup');
-                                });
-                            } else {
-                                selector.animate({cx:buttons[i].attrs.cx}, 300);
-                            }
-                        }) );
-                        blankets.items[blankets.items.length - 1].node.style.cursor = "move";
+                        s= (s1 - s0)/(ii-4)*Math.abs(i-4) + s0;
+                        v= (v1 - v0)/(ii-4)*Math.abs(i-4) + v0;
+                        var color= 'hsb(' + h + ',' + s + ',' + v + ')';
+                        buttons.push(r.circle(xy[0], xy[1], 7).attr({fill: color, stroke: "none"}));//.mousedown(mousedown_handler);
                     })(i, xy);
                     if (i == ii - 1) {
                         f(i + 1, xy1);
                     }
                 }
                 //path.attr({path: p.join(",")});
+                var rectangle= r.rect(0, 0, W, H).attr({stroke:"none", fill:"#fff", opacity:0}).mousedown(mousedown_handler);
                 var selector_xy= translate(4, values[4]);
-                var selector= r.circle(selector_xy[0], selector_xy[1], 7)
+                selector= r.circle(selector_xy[0], selector_xy[1], 9)
+                $("#holder").mousedown(mousedown_handler);
+                buttons.mousedown(mousedown_handler);
+                selector.node.style.cursor = "move";
+                buttons[4].node.style.cursor = "move";
+                selected_button= buttons[4];
             };
         </script>
     </head>
     <body>
         <div>ultimo apretado: <span id="numero"></span></div>
         <div id="wrapper" >
-            <div id="holder" style="display:inline;float:left;"> </div>
-            <div id="play1" style="display:inline;float:left;margin-top:-60px;margin-left:-15px;height:60px;width:60px;">
-<!--                <img style="height:100%;width:100%" src="play1.png"/> -->
+            <div id="holder" style="display:inline;"> </div>
+            <div id="play1" style="display:inline;float:left;margin-top:-58px;margin-left:-80px;height:60px;width:60px;">
+                <img id="play1_callado" style="height:100%;width:100%" src="speaker_callado.png" onclick="javascript:play(this)"/> 
+                <img id="play1_hablando" style="display:none;height:100%;width:100%" src="speaker_hablando.png" onclick="javascript:stop(this)"/> 
             </div>
-            <div id="play2" style="margin-top:-60px;margin-right:-56px;float:right;height:60px;width:60px;">
-<!--                <img style="height:100%;width:100%" src="play2.png"/> -->
+            <div id="play2" style="margin-top:-58px;margin-right:-80px;float:right;height:60px;width:60px;">
+                <img id="play2_callado" style="height:100%;width:100%" src="speaker_callado.png" onclick="javascript:play(this)"/> 
+                <img id="play2_hablando" style="display:none;height:100%;width:100%" src="speaker_hablando.png" onclick="javascript:stop(this)"/> 
+            </div>
+            <div style="text-align:center">
+            <a href="#" onclick="javascript:next()">Proximo</a>
             </div>
         </div>
     <script type="text/javascript">
+    function next() {
+        var h= $("#wrapper");
+        var ww= $(window).width();
+        h.animate({'marginLeft':ww+500},500, function() {
+            h.delay(300)
+             .hide()
+             .css('margin-left', -h.width() - 100)
+             .show()
+             .animate({'marginLeft':parseInt((ww - h.width())/2) + 'px'},500)
+          }
+        );
+    }
+    function stop(yo) {
+        $("#" + yo.id).hide();
+        $("#" + yo.id.replace('hablando','callado')).show();
+    }
+    function play(yo) {
+        $("#" + yo.id).hide();
+        $("#" + yo.id.replace('callado','hablando')).show();
+
+
+    }
     function resize() {
             var ww= $(window).width();
             var wh= $(window).height();
