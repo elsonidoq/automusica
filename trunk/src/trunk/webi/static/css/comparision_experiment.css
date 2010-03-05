@@ -2,7 +2,6 @@ body {
     font-family: Georgia,Times,"Times New Roman",serif;
     color: #666;
     background:#d5daf0;
-    font: 300 100.1% Fontin-Sans, "Gill Sans", Calibri, "Trebuchet MS", sans-serif;
 }
 #experiment-wrapper {
     height: 50px;
@@ -20,7 +19,13 @@ body {
     position:relative;
 }
 
-#description {
+#experiment_progress {
+    text-align:right;
+    display:none;
+    margin-right:10px;
+    margin-top:10px;
+}
+#descriptions-container {
 /*    display:none;*/
     width:50%;
     height:auto;
@@ -34,7 +39,7 @@ body {
     background:#d5daf0;
 }
 
-#description_container {
+.description {
     text-align:justify;
     font-size:15px;
     position:relative;

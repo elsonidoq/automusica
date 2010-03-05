@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>Raphaël · Interactive Chart</title>
         <link href="/css/comparision_experiment.css" rel="stylesheet" type="text/css" media="screen">
 
         <script src="/js/raphael.js" type="text/javascript" charset="utf-8"></script>
@@ -39,18 +38,29 @@
                 return [buttons[buttons.length-1], last_distance]
             }
 
+            function show_interface_description() {
+                $("#show_interface_description").fadeOut(500, function(){
+                    $("#start_experiment").fadeIn();
+                });
+                $("#experiment-description").fadeOut(500, function(){
+                    $("#interface-description").fadeIn();
+                });
+
+            }
             function start_experiment() {
                 if (is_test_sound) {
                     var jplayer= $("#jplayer");
                     jplayer.stop();
                     is_test_sound= false;
                 }
-                $("#description").slideUp(500, function() {
+                $("#descriptions-container").slideUp(500, function() {
 /*                    status.show_status('Click para escuchar');*/
                     $("#experiment-wrapper").fadeIn();
+                $("#experiment_progress").fadeIn(500);
+
+                $("#next_pair").fadeIn(500);
                 });
-/*                $("#experiment_progress").fadeIn(500);
-                if (${ntraining} > 0) {
+ /*               if (${ntraining} > 0) {
                    experiment_progress_text.show_status('Practicando');
                 } else {
                    experiment_progress_text.show_status('Experimentando');
@@ -196,26 +206,32 @@
                 selector.node.style.cursor = "move";
                 buttons[4].node.style.cursor = "move";
                 selected_button= buttons[4];
+
+                r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 3, "=").attr({fill:"#fff"});
+                r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"});
+                r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"});
             };
         </script>
     </head>
-    <body>
-        <div id="description">
-        <div id="description_container" >
+    <body style="margin:0 auto;" >
+            <div  id="experiment_progress" > 
+                <div style="display:none;" id="experiment_progress_text"></div>
+            </div>
+        <div id="descriptions-container">
+        <div class="description" id="experiment-description" >
+            ${experiment_description}
+        </div>
+        <div class="description" id="interface-description" style="display:none;" >
             ${experiment_description}
         </div>
         <div id="comenzar">
-            <a id="a_comenzar" href="#" onclick="javascript:start_experiment();">comenzar</a>
+            <a id="show_interface_description" href="#" onclick="javascript:show_interface_description();">siguiente</a>
+            <a id="start_experiment" style="display:none;" href="#" onclick="javascript:start_experiment();">comenzar</a>
         </div>
         </div>
 
         <div id="jplayer"></div>
 
-        <div style="align:right;width:100%">
-            <div style="text-align:right;" id="experiment_progress" > 
-                <div style="display:none;" id="experiment_progress_text"></div>
-            </div>
-        </div>
         <div id="experiment-wrapper" >
             <div id="holder" style="display:inline;"> </div>
             <div id="play1" style="display:inline;float:left;margin-top:-58px;margin-left:-80px;height:60px;width:60px;">
@@ -232,9 +248,9 @@
                      style="display:none;height:100%;width:100%" src="/images/speaker_hablando.png" onclick="javascript:stop(this)"/> 
                 <div class="loader" id="play2_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
             </div>
-            <div style="text-align:center">
-            <a href="#" onclick="javascript:next()">Pr&oacute;ximo</a>
-            </div>
+        </div>
+        <div id="next_pair" style="display:none;text-align:center;margin-top:150px;">
+        <a href="#" onclick="javascript:next()">Pr&oacute;ximo</a>
         </div>
     <script type="text/javascript">
     function next() {
@@ -274,7 +290,8 @@
         $("#" + yo.id.replace('callado','loader')).fadeIn();
 
         var track;
-        if (yo.id.substr(1,6) == "play1") {
+        console.log(yo.id);
+        if (yo.id.substr(0,5) == "play1") {
             track= play1_playlist[nplayed];
         } else {
             track= play2_playlist[nplayed];
@@ -290,13 +307,14 @@
             var ww= $(window).width();
             var wh= $(window).height();
             var holder= $("#experiment-wrapper");
-            holder.css({'margin-top':parseInt((wh - holder.height())/2 - 30) + 'px',
+            holder.css({'margin-top':parseInt((wh - holder.height())/2 - 100) + 'px',
                         'margin-left':parseInt((ww - holder.width())/2) + 'px'});
+
             // ,+ 'px'});
 //                        'margin-left':(ww - holder.width())/2});// + 'px');
         }
     $(window).resize(resize);
-    start_experiment();
+//    start_experiment();
     </script>
     </body>
 </html>
