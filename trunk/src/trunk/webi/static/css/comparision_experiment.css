@@ -1,0 +1,48 @@
+body {
+    font-family: Georgia,Times,"Times New Roman",serif;
+    color: #666;
+    background:#d5daf0;
+    font: 300 100.1% Fontin-Sans, "Gill Sans", Calibri, "Trebuchet MS", sans-serif;
+}
+#experiment-wrapper {
+    height: 50px;
+    width: 640px;
+    display:none;
+}
+#a_comenzar {
+}
+#comenzar {
+    text-align:right;
+    margin-right:10px;
+    margin-top:20px;
+    margin-bottom:10px;
+    vertical-align:text-top;
+    position:relative;
+}
+
+#description {
+/*    display:none;*/
+    width:50%;
+    height:auto;
+    border-style:solid;
+    border-top:none;
+    border-width:1px;
+    margin-left:25%;
+    margin-right:25%;
+    z-index:1;
+    position:absolute;
+    background:#d5daf0;
+}
+
+#description_container {
+    text-align:justify;
+    font-size:15px;
+    position:relative;
+    height:auto;
+    margin-left:10px;
+    margin-right:10px;
+    margin-top:10px;
+    margin-bottom:20px;
+}
+
+

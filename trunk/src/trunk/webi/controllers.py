@@ -165,6 +165,82 @@ class Experiment(object):
         save_result(experiment_id, visitor_id, track, value)
         
         
+class ComparisionExperiment(object):
+    #@cherrypy.tools.encode(encoding='utf8')
+    @cherrypy.expose
+    def index(self, id):
+        if not enable_experiment_session: print "WARNING enable_experiment_session = False"
+        if id not in cherrypy.session: cherrypy.session[id]= {}
+        experiment_session= cherrypy.session[id]
+
+        if 'visitor_id' in experiment_session and enable_experiment_session:
+            visitor_id= experiment_session['visitor_id']
+        else:
+            visitor_id= get_visitor_id()
+            experiment_session['visitor_id']= visitor_id
+            save_visitor_data(visitor_id)
+
+        if enable_training_melodies:
+            training_melodies= [ '/mp3/must_percents_results/a_beet.wo13-solo.mp3',
+                                 '/mp3/must_percents_results/b_beet.wo14.2-solo.mp3',
+                                 '/mp3/must_percents_results/c_beet.wo14.8-solo.mp3',
+                                 '/mp3/must_percents_results/d_schub.d973-solo.mp3']
+        else:
+            training_melodies= []
+
+
+        playlist1, playlist2= zip(*experiments[id][:])
+        playlist1= list(playlist1)
+        playlist2= list(playlist2)
+
+        random.seed(visitor_id)
+        #random.shuffle(playlist)
+
+        if enable_training_melodies:
+            if training_melodies[-1] == playlist[0]:
+                training_melodies.insert(0, training_melodies[-1])
+                training_melodies.pop()
+            playlist= training_melodies + playlist
+        #playlist.sort()#(key=lambda x:x.split('/')[-1][1:])
+        nplayed= 0
+
+        experiment_description= get_experiment_description(id)
+        resume_experiment= 'false'
+
+        if 'last_rated_track' in experiment_session and enable_experiment_session:
+            last_rated_track= experiment_session['last_rated_track']
+            i= playlist1.index(last_rated_track)
+            nplayed= i+1
+            nplayed= experiment_session['nplayed']
+            resume_experiment= 'true'
+
+        #print "*"*10
+        #print "playlist", playlist
+        #print "nplayed", nplayed
+        #print "last_rated_track", experiment_session.get('last_rated_track')
+        #print "*"*10
+
+        d= dict(playlist1=playlist1,
+                playlist2=playlist2,
+                visitor_id=visitor_id,
+                experiment_description=experiment_description,
+                test_sound='/mp3/vals_corto1.mp3',
+                resume_experiment=resume_experiment,
+                nplayed= nplayed,
+                ntraining= len(training_melodies))
+        template= lookup.get_template('comparision_experiment.mako')
+        return template.render(**d)
+
+    @cherrypy.expose
+    def played(self, experiment_id, visitor_id, track):
+        save_played(experiment_id, visitor_id, track)
+
+    @cherrypy.expose
+    def rated(self, experiment_id, visitor_id, track, value):
+        if experiment_id not in cherrypy.session: cherrypy.session[experiment_id]= {}
+        cherrypy.session[experiment_id]['last_rated_track'] = track
+        cherrypy.session[experiment_id]['nplayed'] = cherrypy.session[experiment_id].get('nplayed',0)+1
+        save_result(experiment_id, visitor_id, track, value)
 
 
 if __name__ == '__main__':    
@@ -176,7 +252,7 @@ if __name__ == '__main__':
 
     conf_fname= os.path.join(current_dir, 'cherrypy.ini')
     root= Home()
-    root.experiment= Experiment()
+    root.experiment= ComparisionExperiment()
     root.questions= Questions()
     root.finished_experiment= FinishedExperiment()
     cherrypy.quickstart(root, '/', config=conf_fname)
