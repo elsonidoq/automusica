@@ -2,9 +2,11 @@ body {
     font-family: Georgia,Times,"Times New Roman",serif;
     color: #666;
     background:#d5daf0;
+    overflow-x: hidden;
 }
+
 #experiment-wrapper {
-    height: 50px;
+    height: 100px;
     width: 640px;
     display:none;
 }
