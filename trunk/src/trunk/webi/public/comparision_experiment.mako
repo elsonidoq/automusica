@@ -13,10 +13,13 @@
         
 
         <script type="text/javascript" charset="utf-8">
+            var task_status= 0;
+            var playing_element= null;
             var buttons= null;
+            var texts= {};
             var selector= null;
-            var on_mouse_down= false;
-            var selected_button= null;
+            var on_drag= false;
+            var selected_elements= null;
             var r;
             var is_test_sound = false;
             var play1_playlist= ${playlist1};
@@ -31,11 +34,11 @@
                 for (var i=0; i<buttons.length; i++) {
                     actual_distance= Math.abs(x - buttons[i].attrs.cx);
                     if (last_distance && last_distance < actual_distance) {
-                        return [buttons[i-1], last_distance];
+                        return [buttons[i-1], last_distance, texts[i-1]];
                     }
                     last_distance= actual_distance;
                 }
-                return [buttons[buttons.length-1], last_distance]
+                return [buttons[buttons.length-1], last_distance, texts[i-1]]
             }
 
             function show_interface_description() {
@@ -68,41 +71,34 @@
             }
             
                 
+                
+
             $(window).mouseup(function(e) {
-                if (on_mouse_down) {
-                    on_mouse_down= false;
+                if (on_drag) {
+                    on_drag= false;
                     $("#holder").unbind('mousemove');
                     var button, distance;
                     var l= find_closest_button(e.clientX - $("#holder").position().left);
-                    var button= l[0], distance= l[1];
-                    selector.animate({cx:button.attrs.cx}, 100, change_selected_button(button));
+                    var button= l[0], distance= l[1], text= l[2];
+                    selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 100);
+                    task_status= task_status | 4;
+                    if (task_status == 7) {
+                        setTimeout('$("#btn_next").removeAttr("disabled");', 100);
+                    }
                 }
             });
-            function change_selected_button(button) {
-                var f= function() {
-                    button.node.style.cursor = "move";
-                    selected_button.node.style.cursor = "";
-                    selected_button= button;
-                }
-                return f
-            }
+
+
             function mousedown_handler(e){
                 var l= find_closest_button(e.clientX - $("#holder").position().left);
                 var button= l[0], distance= l[1];
-                selected_button.node.style.cursor = "";
-                if (distance < 20) {
-                    if (selector.attrs.cx == button.attrs.cx) {
-                        var h= $("#holder");
-                        on_mouse_down= true;
-                        h.mousemove(function(e) {
-                            selector.animate({cx:e.clientX - h.position().left}, 100);
-                        });
-                    } else {
-                        selector.animate({cx:button.attrs.cx}, 300, change_selected_button(button));
-                    }
-                } else {
-                    selector.animate({cx:button.attrs.cx}, 300, change_selected_button(button));
+                selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 300);
+                task_status= task_status | 4;
+                if (task_status == 7) {
+                    //$("#btn_next").removeAttr("disabled");
+                    setTimeout('$("#btn_next").removeAttr("disabled");', 100);
                 }
+                
             } 
             $(document).ready(function() {
                var jplayer= $("#jplayer").jPlayer({
@@ -114,21 +110,12 @@
                     ,swfPath:'/js'
                 })
                .onProgressChange( function(lp,ppr,ppa,pt,tt) {
-                    if (caching && lp < 100) {
-                        var lp= parseInt(lp);
-                        if (lp % 10 == 0)  {
-                            $("#loader_bar").animate({"width":lp+"%"});
-                        }
-                    } else if(caching && lp >= 100) {
+                    if(caching && lp >= 100) {
                         $(".loader").fadeOut();
                         caching= false;
                         jplayer.volume(100);
                         jplayer.playHead(0);
                         
-                        status.hide_status();
-                        $("#loader_bar").fadeOut(500, function() {
-                            $('#playing_img').fadeIn();
-                        });
                     } 
                         
                 }).onSoundComplete( function() {
@@ -137,29 +124,49 @@
                     } else {
                         $(".play_hablando").hide();
                         $(".play_callado").show();
+                        if (playing_element.id.substr(0,5) == "play1") {
+                            $("#" + playing_element.id.replace('1', '2')).css('cursor', 'default');
+                            task_status= task_status | 1;
+                        } else {
+                            $("#" + playing_element.id.replace('2', '1')).css('cursor', 'default');
+                            task_status= task_status | 2;
+                        }
+                        playing_element= null;
+                        if (task_status == 7) {
+                            $("#btn_next").removeAttr('disabled');
+                        }
                     }
 
                     
                 });
             });
 
+            var sound_test = function() {
+                var track= "${test_sound}";
+                var jplayer= $("#jplayer");
+                is_test_sound= true;
+                jplayer.setFile(track);
+                jplayer.play();
+            }
+
             window.onload = function () {
                 spinner= new Spinner("experiment_progress", 10, 40, play1_playlist.length, 2, "#fff", "#abb1f0", ntraining, "#fff", "#cfabf0");
             
                 resize();
                 var W = 640,
-                    H = 50,
+                    H = 100,
                     values = [],
                     len = 9;
                 for (var i = len; i--;) {
                     values.push(50);
                 }
                 r = Raphael("holder", W, H);
+                var rectangle= r.rect(0, 0, W, H).attr({stroke:"none", fill:"#fff", opacity:0}).mousedown(mousedown_handler);
                 r.safari();
                 
                 function translate(x, y) {
                     return [
-                        10 + (W-20) / (values.length - 1) * x,
+                        20 + (W-40) / (values.length - 1) * x,
                         H - 10 - (H - 20) / 100 * y
                     ];
                 }
@@ -192,41 +199,54 @@
                         v= (v1 - v0)/(ii-4)*Math.abs(i-4) + v0;
                         var color= 'hsb(' + h + ',' + s + ',' + v + ')';
                         buttons.push(r.circle(xy[0], xy[1], 7).attr({fill: color, stroke: "none"}));
+                        buttons[buttons.length-1].node.style.cursor="pointer";
                     })(i, xy);
                     if (i == ii - 1) {
                         f(i + 1, xy1);
                     }
                 }
-                //path.attr({path: p.join(",")});
-                var rectangle= r.rect(0, 0, W, H).attr({stroke:"none", fill:"#fff", opacity:0}).mousedown(mousedown_handler);
                 var selector_xy= translate(4, values[4]);
-                selector= r.circle(selector_xy[0], selector_xy[1], 9)
+                selector= r.circle(selector_xy[0], selector_xy[1] - 30, 13).attr({'fill':'#869af0', 'fill-opacity':0.3, stroke:'none'});
+                selector.node.style.cursor= 'move';
+                selector.mousedown(function(e) {
+                    on_drag= true;
+                    h= $("#holder");
+                    h.mousemove(function(e) {
+                        var y= e.clientY - h.position().top;
+                        var x= e.clientX - h.position().left;
+                        selector.animate({cx:x, cy:buttons[0].attrs.cy}, 100);
+                    });
+                });
                 $("#holder").mousedown(mousedown_handler);
                 buttons.mousedown(mousedown_handler);
-                selector.node.style.cursor = "move";
-                buttons[4].node.style.cursor = "move";
-                selected_button= buttons[4];
 
-                r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 3, "=").attr({fill:"#fff"});
-                r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"});
-                r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"});
+                texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 3, "=").attr({fill:"#fff"}).mousedown(mousedown_handler);
+                texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"}).mousedown(mousedown_handler);
+                texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"}).mousedown(mousedown_handler);
+                selected_elements= [buttons[4], texts[4]];
+                texts[4].node.style.cursor = "pointer";
+                texts[0].node.style.cursor = "pointer";
+                texts[8].node.style.cursor = "pointer";
             };
         </script>
     </head>
     <body style="margin:0 auto;" >
-            <div  id="experiment_progress" > 
-                <div style="display:none;" id="experiment_progress_text"></div>
-            </div>
+        <script src="/js/wz_tooltip.js" type="text/javascript" ></script>  
+
+        <input type="hidden" id="visitor_id" value="${visitor_id}"/>
+        <div  id="experiment_progress" > 
+            <div style="display:none;" id="experiment_progress_text"></div>
+        </div>
         <div id="descriptions-container">
         <div class="description" id="experiment-description" >
             ${experiment_description}
         </div>
         <div class="description" id="interface-description" style="display:none;" >
-            ${experiment_description}
+            ${interface_description}
         </div>
         <div id="comenzar">
-            <a id="show_interface_description" href="#" onclick="javascript:show_interface_description();">siguiente</a>
-            <a id="start_experiment" style="display:none;" href="#" onclick="javascript:start_experiment();">comenzar</a>
+            <a id="show_interface_description" style="display:none;" href="#" onclick="javascript:show_interface_description();">siguiente</a>
+            <a id="start_experiment" href="#" onclick="javascript:start_experiment();">comenzar</a>
         </div>
         </div>
 
@@ -234,66 +254,78 @@
 
         <div id="experiment-wrapper" >
             <div id="holder" style="display:inline;"> </div>
-            <div id="play1" style="display:inline;float:left;margin-top:-58px;margin-left:-80px;height:60px;width:60px;">
-                <img class="play_callado" id="play1_callado" style="height:100%;width:100%" 
+            <div id="play1" style="display:inline;float:left;margin-top:-88px;margin-left:-80px;height:60px;width:60px;">
+                <img class="play_callado" id="play1_callado" style="height:100%;width:100%;cursor:pointer;" 
                      src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
-                <img class="play_hablando" id="play1_hablando" style="display:none;height:100%;width:100%" 
-                     src="/images/speaker_hablando.png" onclick="javascript:stop(this)"/> 
+                <img class="play_hablando" id="play1_hablando" style="display:none;height:100%;width:100%;" 
+                     src="/images/speaker_hablando.png" /> 
+                <div style="font-size:10px;text-align:center;">click para escuchar</div> 
                 <div class="loader" id="play1_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
             </div>
-            <div id="play2" style="margin-top:-58px;margin-right:-80px;float:right;height:60px;width:60px;">
-                <img class="play_callado" id="play2_callado" 
-                     style="height:100%;width:100%" src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
-                <img class="play_hablando" id="play2_hablando" 
-                     style="display:none;height:100%;width:100%" src="/images/speaker_hablando.png" onclick="javascript:stop(this)"/> 
+            <div id="play2" style="margin-top:-88px;margin-right:-80px;float:right;height:60px;width:60px;">
+                <img class="play_callado" id="play2_callado" style="height:100%;width:100%;cursor:pointer;" 
+                     src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
+                <img class="play_hablando" id="play2_hablando" style="display:none;height:100%;width:100%;" 
+                     src="/images/speaker_hablando.png" /> 
+                <div style="font-size:10px;text-align:center;">click para escuchar</div> 
                 <div class="loader" id="play2_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
             </div>
         </div>
         <div id="next_pair" style="display:none;text-align:center;margin-top:150px;">
-        <a href="#" onclick="javascript:next()">Pr&oacute;ximo</a>
+        <input style="font-size:20px" type="button" onclick="javascript:next()" value="Siguiente" id="btn_next" disabled="disabled" /> 
+            <div style="display:inline">
+            <img id="question_image" src="/images/question.png" >
         </div>
     <script type="text/javascript">
+
+    $("#question_image").mouseenter(function() {
+        Tip('Para habilitar el bot&oacute;n ten&eacute;s que<br>escuchar al menos una vez cada<br>canci&oacute;n y expresar tu preferencia<br>poniendo el selector en alguna<br>parte de la barra');    
+    }).mouseout(function() {
+        UnTip();
+    });
     function next() {
         var h= $("#experiment-wrapper");
         var ww= $(window).width();
+        task_status= 0;
         nplayed+=1;
         if (nplayed == play1_playlist.length) {
             spinner.next();
-            h.animate({'marginLeft':ww+500},500, function() {
+            h.animate({'marginLeft':-h.width()},500, function() {
                 document.location= "/finished_experiment";
             });
         } else {
-            h.animate({'marginLeft':ww+500},500, function() {
+            $("#btn_next").attr('disabled', true);
+            h.animate({'marginLeft':-h.width()},500, function() {
                 $(".play_hablando").hide();
                 $(".play_callado").show();
                 selector.attr('cx',buttons[parseInt(buttons.length/2)].attrs.cx);
+                selector.attr('cy',buttons[0].attrs.cy - 30);
                 $("#jplayer").stop();
                 spinner.next();
                 h.delay(300)
                  .hide()
-                 .css('margin-left', -h.width() - 100)
+                 .css('margin-left', ww + 150)
                  .show()
-                 .animate({'marginLeft':parseInt((ww - h.width())/2) + 'px'},500)
+                 .animate({'marginLeft':parseInt((ww - h.width())/2) + 'px'},700)
               }
             );
         }
     }
-    function stop(yo) {
-        $("#" + yo.id).hide();
-        $("#" + yo.id.replace('hablando','callado')).show();
-        $("#" + yo.id.replace('hablando','loader')).fadeOut();
-        $("#jplayer").stop();
-    }
     function play(yo) {
+        if(playing_element) {
+            return;
+        }
+        playing_element= yo;
         $("#" + yo.id).hide();
         $("#" + yo.id.replace('callado','hablando')).show();
         $("#" + yo.id.replace('callado','loader')).fadeIn();
 
         var track;
-        console.log(yo.id);
         if (yo.id.substr(0,5) == "play1") {
+            $("#" + yo.id.replace('1', '2')).css('cursor', 'default');
             track= play1_playlist[nplayed];
         } else {
+            $("#" + yo.id.replace('2', '1')).css('cursor', 'default');
             track= play2_playlist[nplayed];
         }
         var jplayer= $("#jplayer");
@@ -310,11 +342,9 @@
             holder.css({'margin-top':parseInt((wh - holder.height())/2 - 100) + 'px',
                         'margin-left':parseInt((ww - holder.width())/2) + 'px'});
 
-            // ,+ 'px'});
-//                        'margin-left':(ww - holder.width())/2});// + 'px');
         }
     $(window).resize(resize);
-//    start_experiment();
+    start_experiment();
     </script>
     </body>
 </html>

@@ -28,6 +28,10 @@ def get_homepage_description():
 def get_player_description():
     return get_page_resource('home', 'player-description', True)
 
+def get_interface_description(id):
+    return get_page_resource('experiment', 'interface_description_%s.html' % id, True)
+    return "Hola!!"
+
 def get_experiment_description(id):
     return get_page_resource('experiment', 'description_%s.html' % id, True)
     return "Hola!!"

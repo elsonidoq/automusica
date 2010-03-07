@@ -8,7 +8,7 @@ import os
 import cherrypy
 
 
-from helpers import get_experiment_description, get_homepage_description, get_player_description
+from helpers import get_experiment_description, get_homepage_description, get_player_description, get_interface_description
 
 
 here= os.path.dirname(os.path.abspath(__file__))
@@ -189,12 +189,15 @@ class ComparisionExperiment(object):
             training_melodies= []
 
 
-        playlist1, playlist2= zip(*experiments[id][:])
+        playlist= experiments[id][:]
+        random.shuffle(playlist)
+        for l in playlist:
+            random.shuffle(l)
+        playlist1, playlist2= zip(*playlist)
         playlist1= list(playlist1)
         playlist2= list(playlist2)
 
         random.seed(visitor_id)
-        #random.shuffle(playlist)
 
         if enable_training_melodies:
             if training_melodies[-1] == playlist[0]:
@@ -205,6 +208,7 @@ class ComparisionExperiment(object):
         nplayed= 0
 
         experiment_description= get_experiment_description(id)
+        interface_description= get_interface_description(id)
         resume_experiment= 'false'
 
         if 'last_rated_track' in experiment_session and enable_experiment_session:
@@ -227,7 +231,8 @@ class ComparisionExperiment(object):
                 test_sound='/mp3/vals_corto1.mp3',
                 resume_experiment=resume_experiment,
                 nplayed= nplayed,
-                ntraining= len(training_melodies))
+                ntraining= len(training_melodies),
+                interface_description=interface_description)
         template= lookup.get_template('comparision_experiment.mako')
         return template.render(**d)
 
