@@ -21,14 +21,17 @@ body {
     position:relative;
 }
 
-#experiment_progress {
+#experiment_progress_container {
+    width:100%;
     text-align:right;
     display:none;
+}
+#experiment_progress {
     margin-right:10px;
     margin-top:10px;
 }
 #descriptions-container {
-/*    display:none;*/
+    display:none;
     width:50%;
     height:auto;
     border-style:solid;

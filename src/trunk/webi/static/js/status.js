@@ -1,9 +1,9 @@
-var Status= function(elem) {
+var EStatus = function EStatus(elem) {
     this.elem= elem;
     this.queue= new Array();
     this.doing_something= false;
 }
-Status.prototype.show_status= function(text, on_queue) {
+EStatus.prototype.show_status= function(text, on_queue) {
     //console.log('show_status ' + this.doing_something);
     if (this.doing_something && !on_queue) {
         this.queue.push(text);
@@ -23,7 +23,7 @@ Status.prototype.show_status= function(text, on_queue) {
 
 }
 
-Status.prototype.hide_status= function(on_queue) {
+EStatus.prototype.hide_status= function(on_queue) {
     if (this.doing_something && !on_queue) {
         this.queue.push(null);
         return;
@@ -35,7 +35,7 @@ Status.prototype.hide_status= function(on_queue) {
 }
 
 
-Status.prototype.set_doing= function() {
+EStatus.prototype.set_doing= function() {
     this.doing_something= (this.queue.length > 0);
     if (this.queue.length > 0) {
         var text= this.queue.splice(0,1)[0];

@@ -22,6 +22,10 @@ def save_played(experiment_id, visitor_id, track):
     with open(os.path.join(results_dir, "play_" + visitor_id), 'a') as f:
         f.write('%s\n' % '\t'.join(map(str, [experiment_id, track, datetime.utcnow().isoformat()])))
 
+def save_comparision_result(experiment_id, visitor_id, track1, track2, value):
+    with open(os.path.join(results_dir, "comparision_" + visitor_id), 'a') as f:
+        f.write('%s\n' % '\t'.join(map(str, [experiment_id, track1, track2, value, datetime.utcnow().isoformat()])))
+
 def save_result(experiment_id, visitor_id, track, value):
     with open(os.path.join(results_dir, visitor_id), 'a') as f:
         f.write('%s\n' % '\t'.join(map(str, [experiment_id, track, value, datetime.utcnow().isoformat()])))
@@ -189,15 +193,13 @@ class ComparisionExperiment(object):
             training_melodies= []
 
 
+        random.seed(visitor_id)
         playlist= experiments[id][:]
         random.shuffle(playlist)
-        for l in playlist:
-            random.shuffle(l)
         playlist1, playlist2= zip(*playlist)
         playlist1= list(playlist1)
         playlist2= list(playlist2)
 
-        random.seed(visitor_id)
 
         if enable_training_melodies:
             if training_melodies[-1] == playlist[0]:
@@ -211,8 +213,8 @@ class ComparisionExperiment(object):
         interface_description= get_interface_description(id)
         resume_experiment= 'false'
 
-        if 'last_rated_track' in experiment_session and enable_experiment_session:
-            last_rated_track= experiment_session['last_rated_track']
+        if 'last_rated_track1' in experiment_session and enable_experiment_session:
+            last_rated_track= experiment_session['last_rated_track1']
             i= playlist1.index(last_rated_track)
             nplayed= i+1
             nplayed= experiment_session['nplayed']
@@ -241,11 +243,12 @@ class ComparisionExperiment(object):
         save_played(experiment_id, visitor_id, track)
 
     @cherrypy.expose
-    def rated(self, experiment_id, visitor_id, track, value):
+    def rated(self, experiment_id, visitor_id, track1, track2, value):
         if experiment_id not in cherrypy.session: cherrypy.session[experiment_id]= {}
-        cherrypy.session[experiment_id]['last_rated_track'] = track
+        cherrypy.session[experiment_id]['last_rated_track1'] = track1
+        cherrypy.session[experiment_id]['last_rated_track2'] = track2
         cherrypy.session[experiment_id]['nplayed'] = cherrypy.session[experiment_id].get('nplayed',0)+1
-        save_result(experiment_id, visitor_id, track, value)
+        save_comparision_result(experiment_id, visitor_id, track1, track2, value)
 
 
 if __name__ == '__main__':    
@@ -257,7 +260,8 @@ if __name__ == '__main__':
 
     conf_fname= os.path.join(current_dir, 'cherrypy.ini')
     root= Home()
-    root.experiment= ComparisionExperiment()
+    root.comparision_experiment= ComparisionExperiment()
+    root.experiment= Experiment()
     root.questions= Questions()
     root.finished_experiment= FinishedExperiment()
     cherrypy.quickstart(root, '/', config=conf_fname)
