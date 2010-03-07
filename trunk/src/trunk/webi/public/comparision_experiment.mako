@@ -13,6 +13,26 @@
         
 
         <script type="text/javascript" charset="utf-8">
+            var play1_playlist= ${playlist1};
+            var play2_playlist= ${playlist2};
+            var nplayed = ${nplayed};
+            if(${resume_experiment}) {
+                if(nplayed >= play1_playlist.length) {
+                    document.location= "/finished_experiment";
+                }
+            }
+
+            var parse_qs = function () {
+                var equalities= document.location.search.substring(1).split("&");
+                var res= {};
+                for (var i in equalities) {
+                    eq= equalities[i];
+                    l= eq.split("=");
+                    res[l[0]]= l[1];
+                }
+                return res;
+            }
+            var experiment_id= parse_qs()['id'];
             var task_status= 0;
             var playing_element= null;
             var buttons= null;
@@ -22,8 +42,6 @@
             var selected_elements= null;
             var r;
             var is_test_sound = false;
-            var play1_playlist= ${playlist1};
-            var play2_playlist= ${playlist2};
             var nplayed= ${nplayed};
             var caching= false;
             var spinner= null;
@@ -50,6 +68,31 @@
                 });
 
             }
+            function post_result() {
+                var d= {experiment_id:experiment_id, 
+                        visitor_id:$("#visitor_id").val(), 
+                        track1:play1_playlist[nplayed], 
+                        track2:play2_playlist[nplayed], 
+                        value: value};
+
+                $.post('/experiment/rated', d , function(data) {
+
+                    spinner.next()
+                    if (spinner.actual_sector == spinner.ntraining) {
+                        experiment_progress_text.show_status('Experimentando');
+                    }
+
+                    if (player.has_next()) {
+                        $("#stars-container").slideUp(callback=function() {
+                            enable_play();
+                            status.show_status('Click para escuchar');
+                        });
+                    } else {
+                        setTimeout("document.location= '/questions?visitor_id=${visitor_id}';", 500);
+                    }
+                });
+            }
+
             function start_experiment() {
                 if (is_test_sound) {
                     var jplayer= $("#jplayer");
@@ -59,7 +102,7 @@
                 $("#descriptions-container").slideUp(500, function() {
 /*                    status.show_status('Click para escuchar');*/
                     $("#experiment-wrapper").fadeIn();
-                $("#experiment_progress").fadeIn(500);
+                $("#experiment_progress_container").fadeIn(500);
 
                 $("#next_pair").fadeIn(500);
                 });
@@ -73,7 +116,7 @@
                 
                 
 
-            $(window).mouseup(function(e) {
+            $(document).mouseup(function(e) {
                 if (on_drag) {
                     on_drag= false;
                     $("#holder").unbind('mousemove');
@@ -83,7 +126,8 @@
                     selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 100);
                     task_status= task_status | 4;
                     if (task_status == 7) {
-                        setTimeout('$("#btn_next").removeAttr("disabled");', 100);
+                        $("#btn_next").removeAttr("disabled");
+                        //setTimeout('$("#btn_next").removeAttr("disabled");', 100);
                     }
                 }
             });
@@ -95,10 +139,9 @@
                 selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 300);
                 task_status= task_status | 4;
                 if (task_status == 7) {
-                    //$("#btn_next").removeAttr("disabled");
-                    setTimeout('$("#btn_next").removeAttr("disabled");', 100);
+                    $("#btn_next").removeAttr("disabled");
+                    //setTimeout('$("#btn_next").removeAttr("disabled");', 300);
                 }
-                
             } 
             $(document).ready(function() {
                var jplayer= $("#jplayer").jPlayer({
@@ -125,10 +168,10 @@
                         $(".play_hablando").hide();
                         $(".play_callado").show();
                         if (playing_element.id.substr(0,5) == "play1") {
-                            $("#" + playing_element.id.replace('1', '2')).css('cursor', 'default');
+                            $("#" + playing_element.id.replace('1', '2')).css('cursor', 'pointer');
                             task_status= task_status | 1;
                         } else {
-                            $("#" + playing_element.id.replace('2', '1')).css('cursor', 'default');
+                            $("#" + playing_element.id.replace('2', '1')).css('cursor', 'pointer');
                             task_status= task_status | 2;
                         }
                         playing_element= null;
@@ -151,7 +194,11 @@
 
             window.onload = function () {
                 spinner= new Spinner("experiment_progress", 10, 40, play1_playlist.length, 2, "#fff", "#abb1f0", ntraining, "#fff", "#cfabf0");
-            
+                if (navigator.appName == 'Microsoft Internet Explorer') {
+                    $("#experiment_progress").css('float','right');
+                    $(".play_container").css('margin-top','0px');
+
+                }
                 resize();
                 var W = 640,
                     H = 100,
@@ -161,7 +208,7 @@
                     values.push(50);
                 }
                 r = Raphael("holder", W, H);
-                var rectangle= r.rect(0, 0, W, H).attr({stroke:"none", fill:"#fff", opacity:0}).mousedown(mousedown_handler);
+                var rectangle= r.rect(0, 0, W, H).attr({fill:"#fff", opacity:0}).mousedown(mousedown_handler);
                 r.safari();
                 
                 function translate(x, y) {
@@ -206,7 +253,7 @@
                     }
                 }
                 var selector_xy= translate(4, values[4]);
-                selector= r.circle(selector_xy[0], selector_xy[1] - 30, 13).attr({'fill':'#869af0', 'fill-opacity':0.3, stroke:'none'});
+                selector= r.circle(selector_xy[0], selector_xy[1] - 30, 13).attr({stroke:"rgb(0,0,0)", 'fill':'#8c00f0', 'fill-opacity':0.4 });
                 selector.node.style.cursor= 'move';
                 selector.mousedown(function(e) {
                     on_drag= true;
@@ -227,6 +274,19 @@
                 texts[4].node.style.cursor = "pointer";
                 texts[0].node.style.cursor = "pointer";
                 texts[8].node.style.cursor = "pointer";
+
+                if(!${resume_experiment}) {
+                    $("#descriptions-container").show();
+                } else {
+                    $("#next_pair").show();
+                    $("#experiment-wrapper").show();
+                    $("#experiment_progress_container").show();
+                }
+
+                for (var i=1; i<=nplayed; i++){
+                    spinner.next();
+                } 
+
             };
         </script>
     </head>
@@ -234,27 +294,29 @@
         <script src="/js/wz_tooltip.js" type="text/javascript" ></script>  
 
         <input type="hidden" id="visitor_id" value="${visitor_id}"/>
-        <div  id="experiment_progress" > 
-            <div style="display:none;" id="experiment_progress_text"></div>
+        <div id="experiment_progress_container">
+            <div  id="experiment_progress" > 
+                <div style="display:none;" id="experiment_progress_text"></div>
+            </div>
         </div>
         <div id="descriptions-container">
-        <div class="description" id="experiment-description" >
-            ${experiment_description}
-        </div>
-        <div class="description" id="interface-description" style="display:none;" >
-            ${interface_description}
-        </div>
-        <div id="comenzar">
-            <a id="show_interface_description" style="display:none;" href="#" onclick="javascript:show_interface_description();">siguiente</a>
-            <a id="start_experiment" href="#" onclick="javascript:start_experiment();">comenzar</a>
-        </div>
+            <div class="description" id="experiment-description" >
+                ${experiment_description}
+            </div>
+            <div class="description" id="interface-description" style="display:none;" >
+                ${interface_description}
+            </div>
+            <div id="comenzar">
+                <a id="show_interface_description" style="display:none;" href="#" onclick="javascript:show_interface_description();">siguiente</a>
+                <a id="start_experiment" href="#" onclick="javascript:start_experiment();">comenzar</a>
+            </div>
         </div>
 
         <div id="jplayer"></div>
 
         <div id="experiment-wrapper" >
             <div id="holder" style="display:inline;"> </div>
-            <div id="play1" style="display:inline;float:left;margin-top:-88px;margin-left:-80px;height:60px;width:60px;">
+            <div class="play_container" id="play1" style="display:inline;float:left;margin-top:-100px;margin-left:-80px;height:60px;width:60px;">
                 <img class="play_callado" id="play1_callado" style="height:100%;width:100%;cursor:pointer;" 
                      src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
                 <img class="play_hablando" id="play1_hablando" style="display:none;height:100%;width:100%;" 
@@ -262,7 +324,7 @@
                 <div style="font-size:10px;text-align:center;">click para escuchar</div> 
                 <div class="loader" id="play1_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
             </div>
-            <div id="play2" style="margin-top:-88px;margin-right:-80px;float:right;height:60px;width:60px;">
+            <div class="play_container" id="play2" style="margin-top:-100px;margin-right:-80px;float:right;height:60px;width:60px;">
                 <img class="play_callado" id="play2_callado" style="height:100%;width:100%;cursor:pointer;" 
                      src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
                 <img class="play_hablando" id="play2_hablando" style="display:none;height:100%;width:100%;" 
@@ -272,10 +334,11 @@
             </div>
         </div>
         <div id="next_pair" style="display:none;text-align:center;margin-top:150px;">
-        <input style="font-size:20px" type="button" onclick="javascript:next()" value="Siguiente" id="btn_next" disabled="disabled" /> 
+            <input style="font-size:20px" type="button" onclick="javascript:next()" value="Siguiente" id="btn_next" disabled="disabled" /> 
             <div style="display:inline">
-            <img id="question_image" src="/images/question.png" >
-        </div>
+                <img id="question_image" src="/images/question.png" >
+            </div>
+         </div>
     <script type="text/javascript">
 
     $("#question_image").mouseenter(function() {
@@ -286,29 +349,48 @@
     function next() {
         var h= $("#experiment-wrapper");
         var ww= $(window).width();
+        var d= {experiment_id:experiment_id, 
+                visitor_id:$("#visitor_id").val(), 
+                track1:play1_playlist[nplayed], 
+                track2:play2_playlist[nplayed], 
+                value: get_actual_value()};
+
         task_status= 0;
         nplayed+=1;
         if (nplayed == play1_playlist.length) {
             spinner.next();
-            h.animate({'marginLeft':-h.width()},500, function() {
-                document.location= "/finished_experiment";
+            h.animate({'marginLeft':-h.width()-100},500, function() {
+                $.post('/comparision_experiment/rated', d , function(data) {
+                    document.location= "/finished_experiment";
+                });
             });
         } else {
             $("#btn_next").attr('disabled', true);
-            h.animate({'marginLeft':-h.width()},500, function() {
+            h.animate({'marginLeft':-h.width()-100},500, function() {
                 $(".play_hablando").hide();
                 $(".play_callado").show();
+                if(playing_element)
+                    $("#jplayer").stop();
+                spinner.next();
+
+                $.post('/comparision_experiment/rated', d , function(data) {
+
+                //h.delay(300)
+                    h.hide()
+                    .css('margin-left', ww + 150)
+                    .show()
+                    .animate({'marginLeft':parseInt((ww - h.width())/2) + 'px'},700)
+                });
                 selector.attr('cx',buttons[parseInt(buttons.length/2)].attrs.cx);
                 selector.attr('cy',buttons[0].attrs.cy - 30);
-                $("#jplayer").stop();
-                spinner.next();
-                h.delay(300)
-                 .hide()
-                 .css('margin-left', ww + 150)
-                 .show()
-                 .animate({'marginLeft':parseInt((ww - h.width())/2) + 'px'},700)
-              }
-            );
+            });
+        }
+    }
+    function get_actual_value() {
+        for(var i=0;i<buttons.length;i++){
+            if (buttons[i].attrs.cx==selector.attrs.cx) {
+                return i-4;
+            } 
         }
     }
     function play(yo) {
@@ -344,7 +426,7 @@
 
         }
     $(window).resize(resize);
-    start_experiment();
+    //start_experiment();
     </script>
     </body>
 </html>

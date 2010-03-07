@@ -44,10 +44,11 @@
                 $("#loader_bar").animate({"width":"100%"});
                 //console.log("cache termino");
                 player.is_muted= false;
+                alert('en chrome no le da bola al volumen');
                 jplayer.volume(100);
                 jplayer.playHead(0);
                 
-                status.hide_status();
+                loader_status.hide_status();
                 $("#loader_bar").fadeOut(500, function() {
                     $('#playing_img').fadeIn();
                 });
@@ -91,7 +92,7 @@
                 if (player.has_next()) {
                     $("#stars-container").slideUp(callback=function() {
                         enable_play();
-                        status.show_status('Click para escuchar');
+                        loader_status.show_status('Click para escuchar');
                     });
                 } else {
                     setTimeout("document.location= '/questions?visitor_id=${visitor_id}';", 500);
@@ -186,7 +187,7 @@
             }
             $("#description").slideUp(500, function() {
                 enable_play();
-                status.show_status('Click para escuchar');
+                loader_status.show_status('Click para escuchar');
             });
             $("#experiment_progress").fadeIn(500);
             if (${ntraining} > 0) {
@@ -228,12 +229,12 @@
             player.width = ww;
         }
         
-        var player = new Player(playlist);
-        player._current_idx= nplayed;
 
         var click_to_start_to= null;
-        var status= new Status($("#loader-text"));
-        var experiment_progress_text= new Status($("#experiment_progress_text"));
+        var loader_status= new EStatus($("#loader-text"));
+        var player = new Player(playlist, loader_status);
+        player._current_idx= nplayed;
+        var experiment_progress_text= new EStatus($("#experiment_progress_text"));
         var is_test_sound = false;
         var experiment_id= parse_qs()['id'];
 
@@ -246,10 +247,10 @@
                 document.location= "/finished_experiment";
             } else {
                 enable_play();
-                status.show_status('Resumiendo experimento');
+                loader_status.show_status('Resumiendo experimento');
                 $("#experiment_progress").fadeIn(500);
 
-                click_to_start_to= setTimeout("if($('#loader-text').is(':visible')) {status.show_status('Click para escuchar');}",1000);
+                click_to_start_to= setTimeout("if($('#loader-text').is(':visible')) {loader_status.show_status('Click para escuchar');}",1000);
                 for (var i=1; i<=nplayed; i++){
                     spinner.next();
                 }

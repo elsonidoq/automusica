@@ -1,7 +1,8 @@
-var Player = function Player(playlist) {
+var Player = function Player(playlist, status) {
     this._current_idx = -1;
     this._ntraining = 0;
     this.playlist = playlist;
+    this.status= status;
     this.width = $(window).width();
     this.current_track = null;
 }
@@ -16,12 +17,12 @@ Player.prototype.play = function(track) {
     $("#loader_bar").show();
     $("#loader").show();
 
-    status.show_status('Cargando');
+    this.status.show_status('Cargando');
 
     this.is_muted= true;
+    jplayer.volume(0);
     jplayer.setFile(track);
     jplayer.play();
-    jplayer.volume(0);
 }
 
 Player.prototype.next = function() {

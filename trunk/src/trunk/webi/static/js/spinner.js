@@ -41,10 +41,15 @@ Spinner.prototype.next= function() {
         } else {
             color= this.on_color;
         }
-        this.sectors[this.actual_sector].animate({stroke:color},300);
+        var sector= this.sectors[this.actual_sector];
+        var the_this= this;
+        sector.animate({stroke:color, "stroke-width":this.width + 2},500, function() {
+            sector.animate({"stroke-width":the_this.width}, 500);
+        });
+        
+        this.actual_sector+=1;
 
         //this.sectors[this.actual_sector].animate({opacity:0.8},300);
-        this.actual_sector+=1;
 //                this.r.safari();
            // tick = setTimeout(ticker, 1000 / sectorsCount);
         /*return function () {
