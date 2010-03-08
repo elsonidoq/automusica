@@ -99,13 +99,17 @@ form#questions label.error { display: none;
     </form>
 
 <script type="text/javascript">
-    onload = function() {
+
+    function resize() {
         var height= $(window).height();
         var width= $(window).width();
         $('#questions').css({'top':height/2 - $('#questions').height()/2 + 'px',
                            'left':width/2 - $('#questions').width()/2 +'px'} );
-        $('#description').css({'top': parseFloat($('#questions').css('top')) - 20 - $("#description").height() + 'px',
+        $('#description').css({'top': Math.max(0, parseFloat($('#questions').css('top')) - 20 - $("#description").height()) + 'px',
                            'left':width/2 - $('#description').width()/2 +'px'} );
+    }
+    function onload()  {
+        resize();
 
        function check() {
             if($("#music_study").is(':checked')) {
@@ -121,6 +125,7 @@ form#questions label.error { display: none;
 
         check();
     }
+    $(window).resize(resize);
 </script>
 </body>
 </html>

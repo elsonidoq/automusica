@@ -105,6 +105,8 @@
                 $("#experiment_progress_container").fadeIn(500);
 
                 $("#next_pair").fadeIn(500);
+                $("#dont_forget").fadeIn(500);
+                resize();
                 });
  /*               if (${ntraining} > 0) {
                    experiment_progress_text.show_status('Practicando');
@@ -136,7 +138,25 @@
             function mousedown_handler(e){
                 var l= find_closest_button(e.clientX - $("#holder").position().left);
                 var button= l[0], distance= l[1];
-                selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 300);
+                selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 300, function() {
+                    if(playing_element) {
+                        if (playing_element.id.substr(0, 5) == 'play1') {
+                            $(".play_container").hide(); 
+                            $(".play_container").show();
+                            $("#play2_callado").hide(1,function(){
+                                $("#play2_callado").show();
+                            });
+                        } else {
+                            $(".play_container").hide(); 
+                            $(".play_container").show();
+                            $("#play1_callado").hide(1,function(){
+                                $("#play1_callado").show();
+                            });
+
+
+                        }
+                    }
+                });
                 task_status= task_status | 4;
                 if (task_status == 7) {
                     $("#btn_next").removeAttr("disabled");
@@ -281,11 +301,14 @@
                     $("#next_pair").show();
                     $("#experiment-wrapper").show();
                     $("#experiment_progress_container").show();
+                    $("#dont_forget").show();
+                    resize();
                 }
 
                 for (var i=1; i<=nplayed; i++){
                     spinner.next();
                 } 
+    //start_experiment();
 
             };
         </script>
@@ -293,6 +316,7 @@
     <body style="margin:0 auto;" >
         <script src="/js/wz_tooltip.js" type="text/javascript" ></script>  
 
+<div id="pepe" style="height:100%;width:100%">
         <input type="hidden" id="visitor_id" value="${visitor_id}"/>
         <div id="experiment_progress_container">
             <div  id="experiment_progress" > 
@@ -311,9 +335,6 @@
                 <a id="start_experiment" href="#" onclick="javascript:start_experiment();">comenzar</a>
             </div>
         </div>
-
-        <div id="jplayer"></div>
-
         <div id="experiment-wrapper" >
             <div id="holder" style="display:inline;"> </div>
             <div class="play_container" id="play1" style="display:inline;float:left;margin-top:-100px;margin-left:-80px;height:60px;width:60px;">
@@ -338,7 +359,12 @@
             <div style="display:inline">
                 <img id="question_image" src="/images/question.png" >
             </div>
-         </div>
+        </div>
+        <div id="dont_forget" style="display:none; text-align:center; margin-left:10px;margin-top:40px;">
+        Expres&aacute; tu preferencia <strong>llevando el selector violeta de forma gradual</strong> hacia el parlante de la canci&oacute;n que m&aacute;s te gust&oacute;.
+        </div>
+        <div id="jplayer"></div>
+</div>
     <script type="text/javascript">
 
     $("#question_image").mouseenter(function() {
@@ -361,7 +387,7 @@
             spinner.next();
             h.animate({'marginLeft':-h.width()-100},500, function() {
                 $.post('/comparision_experiment/rated', d , function(data) {
-                    document.location= "/finished_experiment";
+                    document.location= '/questions?visitor_id=${visitor_id}';
                 });
             });
         } else {
@@ -424,9 +450,14 @@
             holder.css({'margin-top':parseInt((wh - holder.height())/2 - 100) + 'px',
                         'margin-left':parseInt((ww - holder.width())/2) + 'px'});
 
+            var n= $("#next_pair");
+            n.css('margin-top', ($(window).height() - n.position().top - 100) + 'px');
+
+            var d= $("#dont_forget");
+            d.css('margin-top', ($(window).height() - d.position().top - 50) + 'px');
+
         }
     $(window).resize(resize);
-    //start_experiment();
     </script>
     </body>
 </html>
