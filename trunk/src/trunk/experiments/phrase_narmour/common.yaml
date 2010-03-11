@@ -1,0 +1,4 @@
+include:
+    - ../common.yaml
+#options:
+#    output-dir: experiments/notes_distr/output

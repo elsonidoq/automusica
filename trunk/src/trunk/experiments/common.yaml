@@ -1,4 +1,5 @@
 main:
     train3:main
 options:
-    seed: 3568
+    seed: 234651
+    save-info: True
