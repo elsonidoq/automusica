@@ -54,7 +54,7 @@ form#questions label.error { display: none;
             <label>
 	    	Edad: &nbsp;<input style="width:100px;" class="required" type="text" name="age" id="age" /> 
             </label>
-			<br><label for="age" class="error">Por favor, ingresa tu edad</label>
+			<br><label for="age" class="error">Por favor, ingresa un n&uacute;mero v&aacute;lido</label>
             <br><br>
 
 			Sexo: &nbsp;<label for="gender_male">
@@ -77,7 +77,7 @@ form#questions label.error { display: none;
 
              <br>
              <label for="music_study_years" class="error">
-                Por favor, ingres&aacute; hace cu&aacute;nto que estudi&aacute;s m&uacute;sica
+                Por favor, ingres&aacute; un n&uacute;mero
              </label>
              <br><br>
 

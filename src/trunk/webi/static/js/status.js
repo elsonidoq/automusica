@@ -12,9 +12,9 @@ EStatus.prototype.show_status= function(text, on_queue) {
     this.doing_something= true;
     var the_this= this;
     if (this.elem.is(':visible')) {
-        this.elem.fadeOut(250,callback=function() {
+        this.elem.fadeOut(500,callback=function() {
             the_this.elem.text(text);
-            the_this.elem.fadeIn(250);
+            the_this.elem.fadeIn(500);
             the_this.set_doing()});
     } else {
         this.elem.text(text);

@@ -10,6 +10,7 @@
         <script src="/js/jquery.jplayer.js" type="text/javascript"></script>
         <script src="/js/hsv2rgb.js" type="text/javascript" charset="utf-8"></script>
         <script src="/js/spinner.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/js/status.js" type="text/javascript" charset="utf-8"></script>
         
 
         <script type="text/javascript" charset="utf-8">
@@ -36,6 +37,7 @@
             var task_status= 0;
             var playing_element= null;
             var buttons= null;
+            var blankets= null;
             var texts= {};
             var selector= null;
             var on_drag= false;
@@ -45,6 +47,7 @@
             var nplayed= ${nplayed};
             var caching= false;
             var spinner= null;
+            var experiment_progress_text;
             var ntraining= ${ntraining};
 
             function find_closest_button(x) {
@@ -52,11 +55,11 @@
                 for (var i=0; i<buttons.length; i++) {
                     actual_distance= Math.abs(x - buttons[i].attrs.cx);
                     if (last_distance && last_distance < actual_distance) {
-                        return [buttons[i-1], last_distance, texts[i-1]];
+                        return [buttons[i-1], last_distance, texts[i-1], i-1];
                     }
                     last_distance= actual_distance;
                 }
-                return [buttons[buttons.length-1], last_distance, texts[i-1]]
+                return [buttons[buttons.length-1], last_distance, texts[buttons.length-1], buttons.length-1]
             }
 
             function show_interface_description() {
@@ -68,30 +71,6 @@
                 });
 
             }
-            function post_result() {
-                var d= {experiment_id:experiment_id, 
-                        visitor_id:$("#visitor_id").val(), 
-                        track1:play1_playlist[nplayed], 
-                        track2:play2_playlist[nplayed], 
-                        value: value};
-
-                $.post('/experiment/rated', d , function(data) {
-
-                    spinner.next()
-                    if (spinner.actual_sector == spinner.ntraining) {
-                        experiment_progress_text.show_status('Experimentando');
-                    }
-
-                    if (player.has_next()) {
-                        $("#stars-container").slideUp(callback=function() {
-                            enable_play();
-                            status.show_status('Click para escuchar');
-                        });
-                    } else {
-                        setTimeout("document.location= '/questions?visitor_id=${visitor_id}';", 500);
-                    }
-                });
-            }
 
             function start_experiment() {
                 if (is_test_sound) {
@@ -100,24 +79,35 @@
                     is_test_sound= false;
                 }
                 $("#descriptions-container").slideUp(500, function() {
-/*                    status.show_status('Click para escuchar');*/
+                    experiment_progress_text.show_status('Etapa 1');
                     $("#experiment-wrapper").fadeIn();
-                $("#experiment_progress_container").fadeIn(500);
-
-                $("#next_pair").fadeIn(500);
-                $("#dont_forget").fadeIn(500);
-                resize();
+                    $("#experiment_progress_container").fadeIn(500);
+    
+                    $("#btn_next").attr('disabled', true);
+                    $("#next_pair").fadeIn(500);
+                    $("#dont_forget").fadeIn(500);
+                    resize();
                 });
- /*               if (${ntraining} > 0) {
-                   experiment_progress_text.show_status('Practicando');
-                } else {
-                   experiment_progress_text.show_status('Experimentando');
-                }*/
             }
             
                 
+            function change_selected_button(button, text) {
+                if (selected_elements) {
+                    for (var i=0; i<selected_elements.length; i++) {
+                        selected_elements[i].node.style.cursor= 'pointer';
+                    }
+                }
+                button.node.style.cursor= 'default';
+                if (text) {
+                    text.node.style.cursor= 'default';
+                    selected_elements= [button, text];
+                } else {
+                    selected_elements= [button];
+                }
+            }
                 
-
+/*
+Drag and Drop
             $(document).mouseup(function(e) {
                 if (on_drag) {
                     on_drag= false;
@@ -125,7 +115,12 @@
                     var button, distance;
                     var l= find_closest_button(e.clientX - $("#holder").position().left);
                     var button= l[0], distance= l[1], text= l[2];
-                    selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 100);
+                    var x= button.attrs.cx, y= button.attrs.cy;
+                    if (navigator.appName == 'Microsoft Internet Explorer') {
+                        x+=2;
+                        y+=2;
+                    }
+                    selector.animate({cx:x, cy:y}, 100);
                     task_status= task_status | 4;
                     if (task_status == 7) {
                         $("#btn_next").removeAttr("disabled");
@@ -133,13 +128,22 @@
                     }
                 }
             });
-
+*/
 
             function mousedown_handler(e){
                 var l= find_closest_button(e.clientX - $("#holder").position().left);
-                var button= l[0], distance= l[1];
-                selector.animate({cx:button.attrs.cx, cy:button.attrs.cy}, 300, function() {
-                    if(playing_element) {
+                var button= l[0], distance= l[1], text= l[2], index= l[3];
+
+                var x= button.attrs.cx, y= button.attrs.cy;
+                if (navigator.appName == 'Microsoft Internet Explorer') {
+                    if (index > 3) {
+                        x+=1;
+                    }
+                    y+=1;
+                }
+                selector.animate({cx:x, cy:y}, 300, function() {
+                    change_selected_button(button, text);
+                    if (/Chrome/i.exec(navigator.userAgent) && playing_element) {
                         if (playing_element.id.substr(0, 5) == 'play1') {
                             $(".play_container").hide(); 
                             $(".play_container").show();
@@ -174,7 +178,11 @@
                 })
                .onProgressChange( function(lp,ppr,ppa,pt,tt) {
                     if(caching && lp >= 100) {
-                        $(".loader").fadeOut();
+                        if (navigator.appName == 'Microsoft Internet Explorer') {
+                            $(".loader").hide();
+                        } else {
+                            $(".loader").fadeOut();
+                        }
                         caching= false;
                         jplayer.volume(100);
                         jplayer.playHead(0);
@@ -186,12 +194,11 @@
                         is_test_sound= false;
                     } else {
                         $(".play_hablando").hide();
-                        $(".play_callado").show();
+                        $(".play_callado").show().css('cursor', 'pointer');
+                        $(".play_click").css('cursor', 'pointer');
                         if (playing_element.id.substr(0,5) == "play1") {
-                            $("#" + playing_element.id.replace('1', '2')).css('cursor', 'pointer');
                             task_status= task_status | 1;
                         } else {
-                            $("#" + playing_element.id.replace('2', '1')).css('cursor', 'pointer');
                             task_status= task_status | 2;
                         }
                         playing_element= null;
@@ -219,6 +226,12 @@
                     $(".play_container").css('margin-top','0px');
 
                 }
+                if (/Chrome/i.exec(navigator.userAgent)) {
+                    $("#experiment-description").hide();
+                    $("#chrome-message").show();
+                    $("#comenzar").hide();
+                }
+                experiment_progress_text= new EStatus($("#experiment_progress_text"));
                 resize();
                 var W = 640,
                     H = 100,
@@ -228,7 +241,7 @@
                     values.push(50);
                 }
                 r = Raphael("holder", W, H);
-                var rectangle= r.rect(0, 0, W, H).attr({fill:"#fff", opacity:0}).mousedown(mousedown_handler);
+                //var rectangle= r.rect(0, 0, W, H).attr({fill:"#fff", opacity:0}).mousedown(mousedown_handler);
                 r.safari();
                 
                 function translate(x, y) {
@@ -238,6 +251,7 @@
                     ];
                 }
                 buttons = r.set();
+                blankets= r.set();
                 var h=229/360, v=0.83, s=0.4;
                 var s0= 0, s1= 0.81;
                 var v0= 0.53, v1= 0.84;
@@ -265,8 +279,10 @@
                         s= (s1 - s0)/(ii-4)*Math.abs(i-4) + s0;
                         v= (v1 - v0)/(ii-4)*Math.abs(i-4) + v0;
                         var color= 'hsb(' + h + ',' + s + ',' + v + ')';
+                        blankets.push(r.circle(xy[0], xy[1], 25).attr({opacity:0, fill: '#fff', stroke: "none"}));
                         buttons.push(r.circle(xy[0], xy[1], 7).attr({fill: color, stroke: "none"}));
                         buttons[buttons.length-1].node.style.cursor="pointer";
+                        blankets[blankets.length-1].node.style.cursor="pointer";
                     })(i, xy);
                     if (i == ii - 1) {
                         f(i + 1, xy1);
@@ -274,6 +290,7 @@
                 }
                 var selector_xy= translate(4, values[4]);
                 selector= r.circle(selector_xy[0], selector_xy[1] - 30, 13).attr({stroke:"rgb(0,0,0)", 'fill':'#8c00f0', 'fill-opacity':0.4 });
+/*              
                 selector.node.style.cursor= 'move';
                 selector.mousedown(function(e) {
                     on_drag= true;
@@ -281,15 +298,26 @@
                     h.mousemove(function(e) {
                         var y= e.clientY - h.position().top;
                         var x= e.clientX - h.position().left;
+                        if (navigator.appName == 'Microsoft Internet Explorer') {
+                            x+=2;
+                            y+=2;
+                        }
                         selector.animate({cx:x, cy:buttons[0].attrs.cy}, 100);
                     });
                 });
+*/
                 $("#holder").mousedown(mousedown_handler);
                 buttons.mousedown(mousedown_handler);
 
-                texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 3, "=").attr({fill:"#fff"}).mousedown(mousedown_handler);
-                texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"}).mousedown(mousedown_handler);
-                texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({fill:"#fff"}).mousedown(mousedown_handler);
+                if (navigator.appName == 'Microsoft Internet Explorer') {
+                    texts[4]= r.text(buttons[4].attrs.cx+1, buttons[4].attrs.cy + 3, "=").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+                    texts[0]= r.text(buttons[0].attrs.cx-1, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+                    texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+                } else {
+                    texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 3, "=").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                    texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                    texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                }
                 selected_elements= [buttons[4], texts[4]];
                 texts[4].node.style.cursor = "pointer";
                 texts[0].node.style.cursor = "pointer";
@@ -308,6 +336,7 @@
                 for (var i=1; i<=nplayed; i++){
                     spinner.next();
                 } 
+                    experiment_progress_text.show_status('Etapa ' + (nplayed+1));
     //start_experiment();
 
             };
@@ -320,20 +349,25 @@
         <input type="hidden" id="visitor_id" value="${visitor_id}"/>
         <div id="experiment_progress_container">
             <div  id="experiment_progress" > 
-                <div style="display:none;" id="experiment_progress_text"></div>
+                <div style="margin-right:15px;" id="experiment_progress_text"></div>
             </div>
         </div>
         <div id="descriptions-container">
             <div class="description" id="experiment-description" >
                 ${experiment_description}
             </div>
-            <div class="description" id="interface-description" style="display:none;" >
-                ${interface_description}
+            <div class="description" id="chrome-message" style="display:none;" >
+                Me acabo de dar cuenta que tu navegador es Chrome o similar. <br><br>
+                Esta interfaz tiene algunos problemas que no pude solucionar en Chrome, <br><br><br>
+                <center>&iquest;Ser&iacute;as tan amable de entrar desde Firefox?</center>
             </div>
             <div id="comenzar">
                 <a id="show_interface_description" style="display:none;" href="#" onclick="javascript:show_interface_description();">siguiente</a>
                 <a id="start_experiment" href="#" onclick="javascript:start_experiment();">comenzar</a>
             </div>
+        </div>
+        <div id="chrome-warning-container">
+
         </div>
         <div id="experiment-wrapper" >
             <div id="holder" style="display:inline;"> </div>
@@ -342,7 +376,9 @@
                      src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
                 <img class="play_hablando" id="play1_hablando" style="display:none;height:100%;width:100%;" 
                      src="/images/speaker_hablando.png" /> 
-                <div style="font-size:10px;text-align:center;">click para escuchar</div> 
+                <div class="play_click" id="play1_click" onclick="javascript:play_click_para_escuchar(this)" style="font-size:10px;text-align:center;cursor:pointer;">
+                    click para escuchar
+                </div> 
                 <div class="loader" id="play1_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
             </div>
             <div class="play_container" id="play2" style="margin-top:-100px;margin-right:-80px;float:right;height:60px;width:60px;">
@@ -350,7 +386,9 @@
                      src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
                 <img class="play_hablando" id="play2_hablando" style="display:none;height:100%;width:100%;" 
                      src="/images/speaker_hablando.png" /> 
-                <div style="font-size:10px;text-align:center;">click para escuchar</div> 
+                <div class="play_click" id="play2_click" onclick="javascript:play_click_para_escuchar(this)" style="font-size:10px;text-align:center;cursor:pointer;">
+                    click para escuchar
+                </div> 
                 <div class="loader" id="play2_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
             </div>
         </div>
@@ -383,21 +421,22 @@
 
         task_status= 0;
         nplayed+=1;
+        spinner.next();
         if (nplayed == play1_playlist.length) {
-            spinner.next();
+            experiment_progress_text.show_status('Finalizando');
             h.animate({'marginLeft':-h.width()-100},500, function() {
                 $.post('/comparision_experiment/rated', d , function(data) {
                     document.location= '/questions?visitor_id=${visitor_id}';
                 });
             });
         } else {
+            experiment_progress_text.show_status('Etapa ' + (nplayed + 1));
             $("#btn_next").attr('disabled', true);
             h.animate({'marginLeft':-h.width()-100},500, function() {
                 $(".play_hablando").hide();
                 $(".play_callado").show();
                 if(playing_element)
                     $("#jplayer").stop();
-                spinner.next();
 
                 $.post('/comparision_experiment/rated', d , function(data) {
 
@@ -419,18 +458,29 @@
             } 
         }
     }
+    function play_click_para_escuchar(yo) {
+        yo= $("#" + yo.id.replace('click', 'callado'))[0];
+        play(yo);
+    }
+
     function play(yo) {
         if(playing_element) {
             return;
         }
         playing_element= yo;
         $("#" + yo.id).hide();
+        $("#" + yo.id.replace('callado','click')).css('cursor', 'default');
         $("#" + yo.id.replace('callado','hablando')).show();
-        $("#" + yo.id.replace('callado','loader')).fadeIn();
+        if (navigator.appName == 'Microsoft Internet Explorer') {
+            $("#" + yo.id.replace('callado','loader')).show();
+        } else {
+            $("#" + yo.id.replace('callado','loader')).fadeIn();
+        }
 
         var track;
         if (yo.id.substr(0,5) == "play1") {
             $("#" + yo.id.replace('1', '2')).css('cursor', 'default');
+            $("#" + yo.id.replace('1', '2').replace('callado', 'click')).css('cursor', 'default');
             track= play1_playlist[nplayed];
         } else {
             $("#" + yo.id.replace('2', '1')).css('cursor', 'default');
