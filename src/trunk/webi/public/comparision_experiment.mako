@@ -484,7 +484,7 @@ Drag and Drop
             track= play1_playlist[nplayed];
         } else {
             $("#" + yo.id.replace('2', '1')).css('cursor', 'default');
-            $("#" + yo.id.replace('1', '2').replace('callado', 'click')).css('cursor', 'default');
+            $("#" + yo.id.replace('2', '1').replace('callado', 'click')).css('cursor', 'default');
             track= play2_playlist[nplayed];
         }
         var jplayer= $("#jplayer");
