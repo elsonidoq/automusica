@@ -69,6 +69,11 @@ class Questions(object):
     def answer(self, visitor_id, age, gender, observations, music_study=None, music_study_years=None):
         #print "age=",age, "gender=",gender, "music_study", music_study, "music_study_years=",music_study_years, "observations=",observations
         save_answer(visitor_id, age, gender, observations, music_study, music_study_years)
+
+        # para que dos personas puedan hacer el experimento en la misma maquina
+        experiment_session= cherrypy.session.pop("phrase")
+        cherrypy.session["phrase-" + visitor_id]= experiment_session
+
         return lookup.get_template('gracias.mako').render()
             
     
@@ -193,12 +198,20 @@ class ComparisionExperiment(object):
             training_melodies= []
 
 
-        random.seed(visitor_id)
         playlist= experiments[id][:]
+
+        random.seed(visitor_id)
+        # hay que copiar todo
+        for i, tuple in enumerate(playlist): 
+            tuple= list(tuple)
+            random.shuffle(tuple)
+            playlist[i]= tuple
         random.shuffle(playlist)
+
         playlist1, playlist2= zip(*playlist)
         playlist1= list(playlist1)
         playlist2= list(playlist2)
+        
 
 
         if enable_training_melodies:
