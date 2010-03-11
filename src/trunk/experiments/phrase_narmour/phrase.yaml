@@ -1,0 +1,8 @@
+include:
+    - common.yaml
+#electrozart.algorithms.hmm.melody.complete_narmour_model:ContourAlgorithm:
+#    support_note_percent: 0
+#    middle_note_percent: 1
+#options:
+#    no-phrase-narmour: True
+    

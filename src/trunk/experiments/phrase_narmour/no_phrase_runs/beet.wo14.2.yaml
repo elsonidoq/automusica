@@ -1,0 +1,3 @@
+args: [/home/prakuso/tesis/src/trunk/input-mids/favio/beet.wo14.2.mid]
+include: [/home/prakuso/tesis/src/trunk/experiments/phrase_narmour/no_phrase.yaml]
+options: {output-dir: /home/prakuso/tesis/src/trunk/experiments/phrase_narmour/no_phrase_runs/mids}
