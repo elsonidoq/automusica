@@ -12,8 +12,8 @@ class ListRythm(ListAlgorithm):
     def train(self, score):
         self.rythm_alg.train(score)
 
-    def save_info(self, folder, score):
-        return self.rythm_alg.save_info(folder, score)
+    def save_info(self, folder, score, params):
+        return self.rythm_alg.save_info(folder, score, params)
 
     def start_creation(self):
         super(ListRythm, self).start_creation()

@@ -34,6 +34,8 @@ def main():
     analysis_table= '<table border="1">\n%s\n</table>' % rows
 
     solo_len= analysis['solo1_len']
+    if analysis['different_onsets'] != 0:
+        print "WARNING: different_onsets = %s" % analysis['different_onsets']
 
     html= '<html><body>\n%s\n<br><br><strong>solo length:</strong>%s\n%s\n</body></html>' % (desc_table, solo_len, analysis_table)
     with open('out.html', 'w') as f:
@@ -86,6 +88,7 @@ def compare(fname1, fname2, solo_patch):
             'solo2_len':len(solo2)}
 
 def get_solo_instrument(score, patch):
+    if len(score.instruments) == 1: return score.instruments[0]
     candidates= [i for i in score.instruments if i.patch == patch]
     if len(candidates) != 1: import ipdb;ipdb.set_trace()
     return candidates[0]

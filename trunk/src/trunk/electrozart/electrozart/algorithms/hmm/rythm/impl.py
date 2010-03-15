@@ -146,7 +146,10 @@ class RythmHMM(Algorithm):
             n.start+= n_intervals*self.interval_size
         return res            
         
-    def save_info(self, folder, score):
+    def save_info(self, folder, score, params):
+        if len(self.model.state_transition) > 50:
+            print "EL MODELO RITMICO TIENE MAS DE 50 NODOS"
+            return
         import os
         self.model.draw(os.path.join(folder, 'rhythm.png'), score.divisions)
 

@@ -47,18 +47,36 @@ class ContourAlgorithm(ListAlgorithm):
         res.narmour_features_cnt= pickle.load(stream)
         return res
 
-    def save_info(self, folder, score): 
+    def save_info(self, folder, score, params): 
+        from plot import plot_narmour_feature, plot_first_note, paper_plot_narmour_feature, plot_arrival_contexts
+        ### XXX para el paper
+        #prob_model= ProbModel(self.ec.narmour_features_prob, self.notes_distr, use_harmony=True) 
+        #n1= n2= 83
+        #plot_narmour_feature(prob_model, params['min_pitch'], params['max_pitch'], folder, n1, n2)
+        #plot_first_note(prob_model, params['min_pitch'], params['max_pitch'], folder, n1, n2)
+        #plot_arrival_contexts(prob_model, params['min_pitch'], params['max_pitch'], 78, folder)
+
+
+        #import ipdb;ipdb.set_trace()
+
+
+        # XXX
         feature_names= all_features_values().keys() 
         feature_names.append(None)
         # XXX
-        prob_model= ProbModel(self.ec.narmour_features_prob, self.notes_distr, use_harmony=False) 
-        from plot import plot_narmour_feature
+        pitches_distr= {}
+        for n, p in self.notes_distr.iteritems():
+            pitches_distr[n.get_canonical_note()]= pitches_distr.get(n.get_canonical_note(), 0) + p
+        prob_model= ProbModel(self.ec.narmour_features_prob, pitches_distr, use_harmony=False) 
         for feature_name in feature_names:
             plot_narmour_feature(prob_model, 50, 50+12+6, feature_name, folder)
         
-        reference_pitch= max(self.notes_distr.iteritems(), key=lambda x:x[1])[0].pitch
-        plot_narmour_feature(prob_model, 50, 50+12+6, None, folder, reference_note=Note(reference_pitch))
-        plot_narmour_feature(prob_model, 50, 50+12+6, None, folder, reference_note=Note((reference_pitch+7)%12))
+        reference_pitch= 11
+        #reference_pitch= max(self.notes_distr.iteritems(), key=lambda x:x[1])[0].pitch
+        plot_narmour_feature(prob_model, params['min_pitch'], params['max_pitch'], None, folder, reference_note=Note(reference_pitch))
+        reference_pitch= 6
+        plot_narmour_feature(prob_model, params['min_pitch'], params['max_pitch'], None, folder, reference_note=Note(reference_pitch))
+        #plot_narmour_feature(prob_model, 50, 50+12+6, None, folder, reference_note=Note((reference_pitch+7)%12))
         from pprint import pprint
         with open(os.path.join(folder, 'narmour.txt'), 'w') as f:
             pprint(self.ec.narmour_features_prob, f)
@@ -131,8 +149,11 @@ class ContourAlgorithm(ListAlgorithm):
     @needs('rythm_phrase_len', 'notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     def generate_list(self, input, result, prev_notes):
         self.ec.input= input
+        #XXX
+        #print "GUARDA!!! use_harmony=False"
         now_prob_model= ProbModel(self.ec.narmour_features_prob, input.notes_distr, use_harmony=True)
         prox_prob_model= ProbModel(self.ec.narmour_features_prob, input.prox_notes_distr, use_harmony=True)
+        # XXX
 
         remaining_notes= input.rythm_phrase_len - (self.ec.last_support_note is not None)
         t= TimeMeasurer()
@@ -215,6 +236,7 @@ class ContourAlgorithm(ListAlgorithm):
             else:
                 pass
                 #import ipdb;ipdb.set_trace()
+            #now_prob_model= ProbModel(self.ec.narmour_features_prob, input.notes_distr, use_harmony=True)
             for i in xrange(remaining_notes, 0, -1):
                 candidates= must[i].get(context)
                 if candidates is None or len(candidates)==0: 

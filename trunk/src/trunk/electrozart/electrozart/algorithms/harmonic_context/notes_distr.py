@@ -4,7 +4,6 @@ from matplotlib import ticker
 
 from collections import defaultdict
 
-from utils.random import convex_combination
 from utils.params import bind_params
 from electrozart import Note, Chord
 
@@ -17,7 +16,7 @@ class NotesDistr(Algorithm):
         instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
         instance.params.update(dict(global_profile_prior_weight = 4,#0.5,#1, #0.5, 
                                     proportional_to_duration    = True,
-                                    profile_smooth_factor       = 0.1))
+                                    profile_smooth_factor       = 0.05))
         return instance
         
     def __init__(self, score, **optional):
@@ -40,15 +39,33 @@ class NotesDistr(Algorithm):
 
         now_pc= [n.get_canonical_note() for n in now_notes]
 
+        if len(now_pc) != 3: import ipdb;ipdb.set_trace()
+        ##XXX
+        #pitches_distr= dict(self.score_profile)
+        #top_three= sorted(pitches_distr.iteritems(), key=lambda x:x[1], reverse=True)[:3]
+        #for i, pc in enumerate(now_pc):
+        #    pc_prob= pitches_distr[pc]
+        #    other_pc, other_prob= top_three[i]
+        #    pitches_distr[pc]= other_prob
+        #    pitches_distr[other_pc]= pc_prob
+
+        #pitches_distr= pitches_distr.items()
+        #pitches_distr.sort()
+        #return pitches_distr
+        ##XXX
+
         pitches_distr= {}
         for pc, prob in self.score_profile:
-            pitches_distr[pc]= prob*self.params['global_profile_prior_weight']
+            #pitches_distr[pc]= self.params['global_profile_prior_weight']
+            pitches_distr[pc]= prob*len(now_notes) #self.params['global_profile_prior_weight']
+            #pitches_distr[pc]= prob*self.params['global_profile_prior_weight']
 
         for i, pc in enumerate(now_pc):
             #new_distr= self.matching_notes[pc]
             #for pc2, weight in new_distr.iteritems():
             #    pitches_distr[pc2]+=weight#*now_notes[i].duration
             pitches_distr[pc]+=1#*sqrt(float(now_notes[i].pitch - min_pitch)/(max_pitch-min_pitch))
+            #if i == 0: pitches_distr[pc]+=1
 
         s= float(sum(pitches_distr.itervalues()))
         for k, v in pitches_distr.iteritems():
@@ -74,6 +91,8 @@ class NotesDistr(Algorithm):
             y= [i[1] for i in sorted(p, key=lambda x:x[0])]
             x= [i[0].pitch for i in sorted(p, key=lambda x:x[0])]
             e= pylab.plot(x, y, label='score profile', color='black')[0]
+            e.axes.set_xlabel('Nota')
+            e.axes.set_ylabel('Probabilidad')
             ax= e.axes.xaxis
             ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
             ax.set_major_locator(ticker.MultipleLocator())
@@ -82,7 +101,7 @@ class NotesDistr(Algorithm):
 
         do_plot(self.score_profile, 'prior-profile.png')
         from random import shuffle
-        chords= list(set(Chord.chordlist(score)))
+        chords= list(set(Chord.chordlist(score, dict(self.score_profile), enable_prints=False)))
         shuffle(chords)
         chords= chords[:4]
         def chord_name(c):
@@ -125,7 +144,9 @@ def get_score_profile(score, profile_smooth_factor=0.1, proportional_to_duration
     min_weight= min(score_profile.itervalues())
     for i in xrange(12): 
         n= Note(i)
-        if n not in score_profile: score_profile[n]= min_weight*profile_smooth_factor
+        if n not in score_profile: 
+            score_profile[n]= min_weight*profile_smooth_factor
+            print "SMOOTHING", n
     
     s= sum(score_profile.itervalues())
     for pitch, weight in score_profile.iteritems():

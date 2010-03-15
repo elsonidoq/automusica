@@ -49,6 +49,7 @@ class RandomPicker(RandomVariable):
         """
         RandomVariable.__init__(self, name)
         self.values= dict(values.items())
+        if random is None:import ipdb;ipdb.set_trace()
         self.random= random
 
     def add_value(self, value, prob):

@@ -19,6 +19,7 @@ from run_experiments import Experiment
 
 from optparse import OptionParser
 from electrozart.algorithms.hmm.melody.narmour_hmm import NarmourInterval
+from electrozart import Instrument
 
 def get_node_name(score, ticks):
     if isinstance(ticks, NarmourInterval):
@@ -47,15 +48,22 @@ def main(argv):
     parser.add_option('--output-dir', dest='output_dir', default='output-mids', help='the default output dir')
     parser.add_option('-O', '--override', dest='override', help='if the outputfile exists, overrides. Default False', default=False, action='store_true')
     parser.add_option('--pitch-offset', dest='offset', default=0, type='int')
-    parser.add_option('--disable-part-repetition', dest='enable_part_repetition', default=True, action='store_false')
+    parser.add_option('--disable-part-repetition', dest='enable_part_repetition', default=False, action='store_true')
     parser.add_option('--simple-narmour-model', dest='simple_narmour_model', default=False, action='store_true')
     parser.add_option('--global-notes-distr', dest='notes_distr_duration', default=True, action='store_false', help='uso por duracion o global? Default indexo por duracion')
     parser.add_option('-p', '--set-param', dest='params', action='append')
     parser.add_option('-s', '--save-info', dest= 'save_info', default=False, action='store_true')
+    parser.add_option('-S', '--only-save-info', dest= 'only_save_info', default=False, action='store_true')
+    parser.add_option('--folksong-narmour', dest= 'folksong_narmour', default=False, action='store_true')
+    parser.add_option('--load-narmour', dest= 'load_narmour_pickle')
+    parser.add_option('--save-narmour', dest= 'save_narmour_pickle')
+    parser.add_option('--no-phrase-narmour', dest= 'phrase_narmour', default=True, action='store_false')
+
 
 
     options, args= parser.parse_args(argv[1:])
     if len(args) < 1: parser.error('not enaught args')
+
 
     if options.params:
         params= {}
@@ -116,12 +124,7 @@ from electrozart.writing.midi import MidiScoreWriter
 
 def train3(options, args):
     print "using seed", options.seed
-    random.seed(options.seed)
 
-    partition_algorithm= options.partition_algorithm
-    rythm_patch= options.rythm_patch
-    melody_patch= options.melody_patch
-    level= options.level
     infname= args[0]
     if len(args) >= 2:
         outfname= args[1]
@@ -151,7 +154,15 @@ def train3(options, args):
         outfname= path.join(outpath, outfname)
 
 
+    # fnames
+    info_folder= outfname.replace('.mid', '-info')
+    params_file= outfname[:-3] + 'log'
+    diff_file= outfname[:-3] + 'diff'
+    svn_file= outfname[:-3] + 'svn'
+    solo_fname= outfname.replace('.mid', '-solo.mid')
+    wolp_fname= outfname.replace('.mid', '-wolp.mid')
     outfname= outfname.lower()
+
     parser= MidiScoreParser()
     score= parser.parse(infname)
     #score= quantize(score)
@@ -159,6 +170,17 @@ def train3(options, args):
     composer= NarmourMarkov()
     composer= YamlComposer()
     composer= SupportNotesComposer()
+    if options.only_save_info:
+        composer.build_models(score, **options.__dict__)
+        print "\n\nSAVING INFO\n\n"
+        if os.path.exists(info_folder):
+            import shutil
+            shutil.rmtree(info_folder)
+        os.makedirs(info_folder)
+        composer.save_info(info_folder, score)
+        print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder)
+        return
+
     composed_score, instrument= composer.compose(score, **options.__dict__)
     # XXX
     composer.original_score= score
@@ -168,48 +190,64 @@ def train3(options, args):
     writer= MidiScoreWriter()
     writer.dump(composed_score, outfname)
 
-    composed_score.notes_per_instrument= {instrument: composed_score.get_notes(instrument=instrument)}
-    solo_fname= outfname.replace('.mid', '-solo.mid')
+    solo_notes= composed_score.get_notes(instrument=instrument)
+    piano= Instrument(patch=None)
+    composed_score.notes_per_instrument= {piano: solo_notes}
     writer.dump(composed_score, solo_fname)
+
+    lp_notes= set(score.get_first_voice())
+    notes_wolp= []
+    composed_score.notes_per_instrument= {instrument: solo_notes}
+    for i in score.instruments:
+        if i == instrument: continue
+        composed_score.notes_per_instrument[i]= [n for n in score.get_notes(instrument=i) if n not in lp_notes]
+
+    writer.dump(composed_score, wolp_fname)
 
     # draw things
     if options.save_info:
-        info_folder= outfname.replace('.mid', '-info')
         os.makedirs(info_folder)
-        composer.applier.save_info(info_folder, score)
+
+        composer.save_info(info_folder, score)
     
-    # save state
     params= composer.params
     params['options']= options.__dict__
     params['args']= args
+        
+    print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder)
+    save_state(composer, params_file, diff_file, svn_file)
+
+    print 'done!'
+
+    return composer
+
+def save_state(composer, params_file, diff_file, svn_file):
     from pprint import pprint
-    params_file= outfname[:-3] + 'log'
-    print "params file", params_file
     with open(params_file, 'w') as f:
         pprint(composer.params, f)
 
-    diff_file= outfname[:-3] + 'diff'
-    print "diff file", diff_file
     import subprocess
     with open(diff_file, 'w') as f:
         p= subprocess.Popen('svn diff .'.split(), stdout=subprocess.PIPE)
         f.write(p.stdout.read())
 
-    svn_version= outfname[:-3] + 'svn'
-    print "svn info file", svn_version
-    with open(svn_version, 'w') as f:
+    with open(svn_file, 'w') as f:
         p= subprocess.Popen('svn info'.split(), stdout=subprocess.PIPE)
         f.write(p.stdout.read())
+
+def print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder):
+    print "info folder", info_folder
+    print "params file", params_file
+    print "diff file", diff_file
+    print "svn info file", svn_file
         
     from utils.console import get_terminal_size
     width, height= get_terminal_size()
     print "*"*width
     print "midi file ", outfname
     print "solo file ", solo_fname
+    print "wolp file ", wolp_fname
     print "*"*width
-    print 'done!'
-
-    return composer
 
 if __name__ == '__main__':
     import sys

@@ -1,4 +1,5 @@
-from random import randint, seed
+from __future__ import with_statement
+from random import seed
 from math import sqrt
 from time import time
 
@@ -6,9 +7,9 @@ from electrozart import Instrument, PlayedNote, Silence
 
 from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgorithm
 
-from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
+from electrozart.algorithms.hmm.melody import ListMelody
 from electrozart.algorithms.hmm.melody.complete_narmour_model import ContourAlgorithm
-#from electrozart.algorithms.hmm.melody.complete_narmour_model_wo_must import ContourAlgorithm
+from electrozart.algorithms.hmm.melody.complete_narmour_model_wo_must import SimpleContourAlgorithm
 
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
 
@@ -45,86 +46,25 @@ class SupportNotesComposer(object):
             output_patch            = 33,
             patch                   = None,
             offset                  = 0,
-            enable_part_repetition  = True,
+            enable_part_repetition  = False,
             save_info               = False,
-            simple_narmour_model    = False,
-            notes_distr_duration    = True
+            notes_distr_duration    = True,
+            seed                    = None,
+            folksong_narmour        = False,
+            save_narmour_pickle     = None,
+            load_narmour_pickle     = None
+            )
 
-        )
 
     def matches_description(self, instrument, patch, channel):
         return instrument.patch == patch and (channel is None or instrument.channel == channel)
 
-    def compose(self, score, **optional):
+    def build_models(self, score, **optional):
         params= self.params= bind_params(self.params, optional)
-        melody_instrument= None
-        rythm_instrument= None
-        for instrument in score.instruments:
-            if self.matches_description(instrument, params['melody_patch'], params['melody_channel']):
-                melody_instrument= instrument
-            if self.matches_description(instrument, params['rythm_patch'], params['rythm_channel']):
-                rythm_instrument= instrument
-        # XXX
-        #if (melody_instrument is None or rythm_instrument is None) and len(score.instruments) > 1: raise Exception("Que instrument?")
-        else: 
-            rythm_instrument= melody_instrument= score.instruments[0]
-        
-        interval_size= measure_interval_size(score, params['n_measures']) 
-        
-        notes_distr= NotesDistr(score)
-        #if params['notes_distr_duration']: notes_distr= NotesDistrDuration(score)
-        #else: notes_distr= NotesDistr(score)
-        tonic_notes_alg= TonicHarmonicContext(notes_distr) 
-
-        harmonic_context_alg= ChordHarmonicContext(score)
-        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, seed=params['seed'])
-
-        rythm_alg= RythmHMM(interval_size, instrument=rythm_instrument.patch, channel=rythm_instrument.channel, seed=params['seed'])
-        #phrase_rythm_alg= rythm_alg
-        phrase_rythm_alg= ListRythm(rythm_alg, seed=params['seed'])
-        if params['enable_part_repetition']:
-            phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id', seed=params['seed'])
-
-        if params['simple_narmour_model']:
-            melody_alg= NarmourHMM(instrument=melody_instrument.patch, channel=melody_instrument.channel, seed=params['seed'])
-            phrase_melody_alg= melody_alg
-            if params['enable_part_repetition']:
-                phrase_melody_alg= ListMelody(melody_alg, seed=params['seed'])
-                phrase_melody_alg= CacheAlgorithm(ListMelody(melody_alg), 'phrase_id', seed=params['seed'])
-        else:                
-            melody_alg= ContourAlgorithm(seed=params['seed'])
-            phrase_melody_alg= melody_alg
-            #import ipdb;ipdb.set_trace()
-            if params['enable_part_repetition']:
-                phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id', seed=params['seed'])
-
-
-        #rythm_score= score.copy()
-        #rythm_score.notes_per_instrument.pop(piano)
-        print "todos los intrsumentos"
-        melody_alg.train(score)
-        for instrument in score.instruments:
-            if not instrument.is_drums and params['simple_narmour_model']:
-                melody_alg.obsSeqBuilder.builder.patch= instrument.patch
-                melody_alg.obsSeqBuilder.builder.channel= instrument.channel
-                melody_alg.train(score)
-            rythm_alg.obsSeqBuilder.builder.patch= instrument.patch
-            rythm_alg.obsSeqBuilder.builder.channel= instrument.channel
-            rythm_alg.train(score)
-
-        harmonic_context_alg.train(score)
-
-        applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
-        self.applier= applier
-        applier.start_creation()
-
-        # XXX
-        self.rythm_alg= rythm_alg#.draw_model('rythm.png', score.divisions)
-        self.melody_alg= melody_alg #.model.draw('melody.png', str)
-
-        duration= score.duration
-        #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
-        #duration= harmonic_context_alg.chordlist[-1].end
+        if params['seed'] is None:
+            seed= int(time())
+            print "using seed:", seed
+            params['seed']= seed
         
         # octave range
         score_notes= score.get_notes(skip_silences=True)
@@ -149,9 +89,82 @@ class SupportNotesComposer(object):
 
         print "MIN PITCH", min_pitch
         print "MAX PITCH", max_pitch
+        
+        notes_distr= NotesDistr(score, seed=params['seed'])
+        #if params['notes_distr_duration']: notes_distr= NotesDistrDuration(score)
+        #else: notes_distr= NotesDistr(score)
+        tonic_notes_alg= TonicHarmonicContext(notes_distr, seed=params['seed']) 
+
+        harmonic_context_alg= ChordHarmonicContext(score, dict(tonic_notes_alg.nd.pitches_distr()), seed=params['seed'])
+        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, seed=params['seed'])
+
+        interval_size= measure_interval_size(score, params['n_measures']) 
+        rythm_alg= RythmHMM(interval_size, seed=params['seed'])
+        #phrase_rythm_alg= rythm_alg
+        phrase_rythm_alg= ListRythm(rythm_alg, seed=params['seed'])
+        if params['enable_part_repetition']:
+            phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id', seed=params['seed'])
+
+        if params['load_narmour_pickle'] is not None:
+            import pickle
+            with open(params['load_narmour_pickle']) as f:
+                melody_alg= ContourAlgorithm.load(f, seed=params['seed'])
+        elif params['phrase_narmour']:            
+            melody_alg= ContourAlgorithm(seed=params['seed'])
+        else:            
+            melody_alg= SimpleContourAlgorithm(seed=params['seed'])
+
+        phrase_melody_alg= melody_alg
+        if params['enable_part_repetition']:
+            phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id', seed=params['seed'])
+
+
+        if not params['folksong_narmour'] and params['load_narmour_pickle'] is None:
+            melody_alg.train(score)
+            if params['save_narmour_pickle']:
+                with open(params['save_narmour_pickle'], 'w') as f:
+                    melody_alg.dump(f)
+
+        rythm_alg.train(score)
+
+        harmonic_context_alg.train(score)
+
+        # XXX
+        melody_alg.notes_distr= notes_distr.notes_distr([], min_pitch, max_pitch)
+        # XXX
+        applier= self.applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
+        self.algorithms= {'tonic_notes_alg':tonic_notes_alg, 
+                          'harmonic_context_alg':harmonic_context_alg, 
+                          'rythm_alg':rythm_alg,
+                          'phrase_rythm_alg':phrase_rythm_alg, 
+                          'notes_distr':notes_distr, 
+                          'phrase_melody_alg':phrase_melody_alg}
+
+        applier.start_creation()
+        return applier
+
+    def save_info(self, folder, score):
+        self.applier.save_info(folder, score, self.params)
+    def compose(self, score, **optional):
+        applier= self.build_models(score, **optional) 
+        params= self.params= bind_params(self.params, optional)
+        
+        #import pickle
+        #f=open('r.pickle','w')
+        #pickle.dump(rythm_alg.model, f, 2)
+        #f.close()
+        #1/0
+        # XXX
+        #self.rythm_alg= rythm_alg#.draw_model('rythm.png', score.divisions)
+        #self.melody_alg= melody_alg #.model.draw('melody.png', str)
+
+        duration= score.duration
+        #duration= harmonic_context_alg.harmonic_context_alg.chordlist[-1].end
+        #duration= harmonic_context_alg.chordlist[-1].end
+        
         general_input= AcumulatedInput()
-        general_input.min_pitch= min_pitch
-        general_input.max_pitch= max_pitch
+        general_input.min_pitch= params['min_pitch']
+        general_input.max_pitch= params['max_pitch']
 
 
         notes= applier.create_melody(duration, params['print_info'], general_input=general_input)
@@ -164,33 +177,34 @@ class SupportNotesComposer(object):
         #duration= chord_notes[-1].end
 
         res= score.copy()
-        rythm_alg.model.calculate_metrical_accents()
+        self.algorithms['rythm_alg'].model.calculate_metrical_accents()
         #rythm_alg.model.draw_accents('accents.png', score.divisions)
         import random
+        rnd= random.Random(params['seed'])
         cache= {}
         def random_accent(note):
-            moment= (note.start%rythm_alg.model.interval_size)/rythm_alg.model.global_gcd
+            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
             res= cache.get(moment)
             if res is None:
-                res= randint(1, 6)
+                res= rnd.randint(1, 6)
                 cache[moment]= res
             return res
         def dec_accent(note):            
-            moment= (note.start%rythm_alg.model.interval_size)/rythm_alg.model.global_gcd
+            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
             res= cache.get(moment)
             if res is None:
                 res= 7-moment
                 cache[moment]= res
             return res
         def inc_accent(note):            
-            moment= (note.start%rythm_alg.model.interval_size)/rythm_alg.model.global_gcd
+            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
             res= cache.get(moment)
             if res is None:
                 res= moment + 1 
                 cache[moment]= res
             return res
 
-        accent_func= rythm_alg.model.get_metrical_accent 
+        accent_func= self.algorithms['rythm_alg'].model.get_metrical_accent 
         accent_func= inc_accent
         accent_func= dec_accent
         accent_func= random_accent
@@ -234,7 +248,6 @@ class SupportNotesComposer(object):
         instrument.patch= 74 #flauta
         instrument.patch= 25
         res.notes_per_instrument[instrument]= notes
-        #res.notes_per_instrument= {instrument: notes, melody_instrument:res.notes_per_instrument[melody_instrument]}
         #res.notes_per_instrument= {instrument: notes}
         #res.notes_per_instrument[piano]= chord_notes
 

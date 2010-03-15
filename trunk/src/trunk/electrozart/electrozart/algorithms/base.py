@@ -85,14 +85,16 @@ class Algorithm(Parametrizable):
     def __init__(self, *args, **kwargs):
         super(Algorithm, self).__init__(*args, **kwargs)
         self.ec= ExecutionContext()
-        self.random= Random(kwargs.get('seed'))
+        if 'seed' not in kwargs or kwargs.get('seed') is None: import ipdb;ipdb.set_trace()
+        self.random= Random(kwargs['seed'])
+        self.ec.seed= kwargs['seed']
         
     def start_creation(self): 
         self.ec= ExecutionContext()
 
     def next(self, input, result, prev_notes): pass
     def print_info(self): pass
-    def save_info(self, folder, score): pass
+    def save_info(self, folder, score, params): pass
     def train(self, score): pass
         
 

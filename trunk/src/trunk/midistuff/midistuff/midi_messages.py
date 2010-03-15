@@ -14,7 +14,8 @@ class MidiMessage(object):
           mof :: MidiOutStream
         """
         method= getattr(mof, self.method_name)
-        method(*self.msg_args)
+        try: method(*self.msg_args)
+        except Exception, e: print "WARNING: ", e.message
 
     def __repr__(self):
         return 'MidiMessage(%s, %s, %s)' % (repr(self.msg_args), repr(self.method_name), self.time)

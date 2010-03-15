@@ -28,7 +28,8 @@ class ProbModel(object):
 
         res= self.get_features_prob(features, feature_name)
         if use_harmony: 
-            if isinstance(n3, int): n3= Note(n3)
+            if isinstance(n3, int): n3= Note(n3) # XXX que paso aca?
+            if n3 not in self.notes_distr: import ipdb;ipdb.set_trace()
             res*= self.notes_distr[n3]
         return res            
 

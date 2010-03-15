@@ -1,4 +1,5 @@
 from base import ExecutionContext, AcumulatedInput, PartialNote, Algorithm
+import sys, traceback
 from time import time as time_tell
 
 class AlgorithmsApplier(object):
@@ -17,9 +18,15 @@ class AlgorithmsApplier(object):
             res[alg.__class__.__name__]= alg.params
         return res
 
-    def save_info(self, folder, score):
+    def save_info(self, folder, score, params):
         for algorithm in self.algorithms:
-            algorithm.save_info(folder, score)
+            try: algorithm.save_info(folder, score, params)
+            except: 
+                print "ERROR: failed to save info of %s" % algorithm.__class__.__name__
+                print '-'*60
+                traceback.print_exc(file=sys.stdout)
+                print '-'*60
+
 
     def create_melody(self, time, print_info=False, general_input=None):
         if not self.started:
