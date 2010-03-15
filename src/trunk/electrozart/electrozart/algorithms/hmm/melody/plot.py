@@ -1,4 +1,5 @@
 import  matplotlib.pyplot as plt
+from math import log, sqrt
 import pylab
 import os
 import matplotlib.cm as cm
@@ -10,6 +11,63 @@ import numpy as np
 from matplotlib.image import NonUniformImage
 from feature_builder import get_interval_features
 
+
+def plot_first_note(prob_model, min_pitch, max_pitch, folder, n1, n2):
+    def format_pitch(i, pos=None):
+        if int(i) != i: import ipdb;ipdb.set_trace()
+        return Note(int(i + min_pitch)).get_pitch_name()
+
+    p= []
+    for n3 in xrange(min_pitch, max_pitch + 1):
+        p.append((n3, prob_model.get_prob(n1, n2, n3)))
+
+    y= [i[1] for i in sorted(p, key=lambda x:x[0])]
+    x= [i[0] for i in sorted(p, key=lambda x:x[0])]
+    e= pylab.plot(x, y, label='', color='black')[0]
+    e.axes.set_xlabel('Nota')
+    e.axes.set_ylabel('Probabilidad')
+    ax= e.axes.xaxis
+    ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
+    ax.set_major_locator(ticker.MultipleLocator())
+
+    fname= os.path.join(folder, 'n3_prob.png')
+    pylab.savefig(fname)
+    pylab.close()
+
+def paper_plot_narmour_feature(prob_model, min_pitch, max_pitch, folder, n1, n2):
+    vals= []
+    n_notes= max_pitch - min_pitch + 1 + 1
+    probs= [[0]*n_notes for i in xrange(n_notes)]
+    for n3 in xrange(min_pitch, max_pitch + 1):
+        n3_prob= prob_model.get_prob(n1, n2, n3)
+        for n4 in xrange(min_pitch, max_pitch + 1):
+            n4_prob= prob_model.get_prob(n2, n3, n4)
+            probs[n3-min_pitch][n4-min_pitch]= sqrt(n3_prob * n4_prob)
+            vals.append((n3_prob * n4_prob, Note(n3), Note(n4)))
+
+    
+    x= range(n_notes)
+    y= range(n_notes)
+    fname= os.path.join(folder, 'narmour_%s_%s.png' % (n1, n2))
+
+    _do_plot2(x, y, probs, fname, min_pitch)
+
+def plot_arrival_contexts(prob_model, min_pitch, max_pitch, arrival_note, folder):
+    n_notes= max_pitch - min_pitch + 1 + 1
+    probs= [[0]*n_notes for i in xrange(n_notes)]
+    for n1 in xrange(min_pitch, max_pitch + 1):
+        for n2 in xrange(min_pitch, max_pitch + 1):
+            prob= prob_model.get_prob(n1, n2, arrival_note)
+            probs[n1-min_pitch][n2-min_pitch]= prob
+
+    
+    x= range(n_notes)
+    y= range(n_notes)
+    fname= os.path.join(folder, 'arrival_narmour_%s.png' % arrival_note)
+
+    _do_plot2(x, y, probs, fname, min_pitch)
+
+    
 
 def plot_narmour_feature(prob_model, min_pitch, max_pitch, feature_name, folder, reference_note=None):
     if feature_name is not None: return
@@ -94,6 +152,37 @@ def _do_plot(x, y, z, fname, max_interval, reference_note=None):
     else:
         ax.set_ylabel('Intervalo implicativo')
     ax.axes.yaxis.set_major_formatter(ticker.FuncFormatter(format_interval))
+    ax.axes.yaxis.set_major_locator(ticker.MultipleLocator())
+
+    cb = plt.colorbar(im)
+    pylab.grid(True)
+    pylab.savefig(fname)
+    pylab.close()
+
+
+def _do_plot2(x, y, z, fname, min_pitch):    
+    fig = figure(figsize=(15,7.5+7.5/2))
+
+    #fig.suptitle('Narmour')
+    ax = fig.add_subplot(111)
+
+    im = NonUniformImage(ax, interpolation=None, extent=(min(x)-1, max(x)+1, min(y)-1, max(y)+1))
+    im.set_data(x, y, z)
+    ax.images.append(im)
+    ax.set_xlim(min(x)-1, max(x)+1)
+    ax.set_ylim(min(y)-1, max(y)+1)
+
+    def format_pitch(i, pos=None):
+        if int(i) != i: import ipdb;ipdb.set_trace()
+        return Note(int(i + min_pitch)%12).get_pitch_name()[:-1]
+
+
+    ax.set_xlabel('Segunda nota')
+    ax.axes.xaxis.set_major_formatter(ticker.FuncFormatter(format_pitch))
+    ax.axes.xaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
+
+    ax.set_ylabel('Primer nota')
+    ax.axes.yaxis.set_major_formatter(ticker.FuncFormatter(format_pitch))
     ax.axes.yaxis.set_major_locator(ticker.MultipleLocator())
 
     cb = plt.colorbar(im)

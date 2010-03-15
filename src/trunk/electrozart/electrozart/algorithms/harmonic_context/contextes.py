@@ -36,16 +36,16 @@ class ScoreHarmonicContext(Algorithm):
                     if n.start < result.start+result.duration and \
                        n.end >=result.start]
 
-from random import choice
 class ChordHarmonicContext(Algorithm):
-    def __init__(self, context_score, *args, **kwargs):
+    def __init__(self, context_score, pitch_profile, *args, **kwargs):
         super(ChordHarmonicContext, self).__init__(*args, **kwargs)
         self.context_score= context_score
+        self.pitch_profile= pitch_profile
 
     def start_creation(self):
-        self.chordlist= Chord.chordlist(self.context_score, 3)
+        self.chordlist= Chord.chordlist(self.context_score, self.pitch_profile)
         #self.chords= {}
-        if self.chordlist[0].start > 0:
+        if len(self.chordlist) > 0 and self.chordlist[0].start > 0:
             #self.chordlist.insert(0, Chord(0, self.chordlist[0].start, [Note(i) for i in xrange(12)]))
             self.chordlist.insert(0, Chord(0, self.chordlist[0].start, self.chordlist[0].canon_notes))
         self.chord_pos= []

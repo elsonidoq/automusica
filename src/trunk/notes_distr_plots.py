@@ -22,6 +22,8 @@ def plots_posteriors(score, notes, folder='posteriors'):
     y= [i[1] for i in sorted(p, key=lambda x:x[0])]
     x= [i[0].pitch for i in sorted(p, key=lambda x:x[0])]
     e= pylab.plot(x, y, label='score profile', color='black')[0]
+    e.axes.set_xlabel('Nota')
+    e.axes.set_ylabel('Probabilidad')
     ax= e.axes.xaxis
     ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
     ax.set_major_locator(ticker.MultipleLocator())
@@ -35,6 +37,8 @@ def plots_posteriors(score, notes, folder='posteriors'):
         y= [i[1] for i in sorted(p, key=lambda x:x[0])]
         x= [i[0].pitch for i in sorted(p, key=lambda x:x[0])]
         e= pylab.plot(x, y, label=label, color='black')[0]
+        e.axes.set_xlabel('Nota')
+        e.axes.set_ylabel('Probabilidad')
         ax= e.axes.xaxis
         ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
         ax.set_major_locator(ticker.MultipleLocator())

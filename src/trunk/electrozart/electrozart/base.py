@@ -24,7 +24,7 @@ class Chord(Figure):
         self.canon_notes= [n.get_canonical_note() for n in notes]
         
     def get_canonical(self):
-        return Chord(self.start, self.duration, list(set(n.get_canonical_note() for n in self.notes)), volume=self.volume)
+        return Chord(self.start, self.duration, self.canon_notes, volume=self.volume)
 
     def __repr__(self):
         return "Chord(%s)" % map(lambda n:n.get_canonical_note(), self.notes)
@@ -35,31 +35,102 @@ class Chord(Figure):
     def __hash__(self): return hash((tuple(self.notes), self.duration))
     
     @classmethod
-    def chordlist(cls, score, min_notes_per_chord=3):
+    def chordlist(cls, score, pitch_profile, enable_prints=True):
+        res= cls._chordlist(score, pitch_profile, enable_prints=enable_prints)
+        if len(res) < 10:
+            res= cls._chordlist(score, pitch_profile, allow_two=True, enable_prints=enable_prints)
+        return res            
+
+    @classmethod
+    def _chordlist(cls, score, pitch_profile, allow_two=False, enable_prints=True):
         all_notes= score.get_notes(skip_silences=True)
         res= []
         last_start= None
+        top_pitches= [n for n,p in sorted(pitch_profile.iteritems(), key=lambda x:x[1], reverse=True)][:7]
         for start, ns in groupby(all_notes, key=lambda n:n.start):
             ns= list(ns)
             chord_notes= set(n.get_canonical_note() for n in ns)
             #print len(ns)
-            if len(chord_notes) >= min_notes_per_chord: 
+            if len(chord_notes) >= 3 or (len(chord_notes) == 2 and allow_two): 
                 chord= cls(start, None, list(chord_notes))
-                chord.orig_notes= ns
+                best, best_score= chord.score_mdl()
+
+                if len(chord_notes) > 3 and best_score <= 1:
+                    if enable_prints: print "IGNORING CHORD:", best, "(%s)" % best_score
+                    continue
+
+                chord_extended= False
+
+                if len(chord_notes) == 2 or best_score <= 1: 
+                    for n in top_pitches:
+                        if n in chord_notes: continue
+                        chord.notes= list(chord_notes)[:]
+                        chord.notes.append(n)
+                        extended_chord, extended_chord_score= chord.score_mdl(pitch_profile)
+                        if extended_chord_score >= len(chord.notes)-1 and all(n in top_pitches for n in extended_chord[:3]):
+                            best= extended_chord
+                            chord_extended= True
+                            if enable_prints: print "EXTENDING %s with %s to %s" % (chord_notes, n, best)
+                            break
+                    else:                        
+                        if enable_prints: print "IGNORING CHORD:", best, "(%s)" % best_score
+                        continue
+
+                chord= cls(start, None, best[:3])
+                chord.extended= chord_extended
+                chord._orig_notes= ns
                 if len(res) > 0: 
-                    if set(n.get_canonical_note() for n in res[-1].notes) == chord_notes: continue
+                    if best == res[-1].notes: continue
+                    if set(best).issuperset(n.get_canonical_note() for n in res[-1].notes): 
+                        if enable_prints: print "JOINING", best, "with", res[-1]
+                        continue
+                    if set(best).issubset(n.get_canonical_note() for n in res[-1].notes): 
+                        if enable_prints: print "JOINING", best, "with", res[-1]
+                        continue
                     res[-1].duration= start - res[-1].start
                 res.append(chord)
 
         if len(res) > 0: 
             res[-1].duration= all_notes[-1].end - res[-1].start 
+
+        
         return res
+    
+    def score_mdl(self, pitch_profile=None):
+        max= arg_max= None
+        for n in self.notes: 
+            n_best, n_best_score= score_mdl(n, self.notes, [n], 0)
+            tonic_relation= ((n_best[1].pitch - n.pitch) % 12 in (3, 4))
+            if n_best_score > max or (n_best_score == max and tonic_relation==1):
+                max= n_best_score
+                arg_max= n_best
+
+        return arg_max, max
+
 
     def to_notelist(self):
         notes= []
         for note in self.notes:
             notes.append(PlayedNote(note.pitch, chord.start, chord.duration, self.volume or 100))
 
+def score_mdl(tonic, notes, best, best_score):
+    if len(notes) == len(best):
+        return best, best_score
+    else:
+        max= arg_max= None
+        for i, n in enumerate(notes):
+            if n in best: continue
+            
+            tonic_relation= ((n.pitch - tonic.pitch) % 12 in (3, 4))
+            n_best, n_best_score= score_mdl(n, notes, best + [n], best_score + tonic_relation)
+            if n_best_score > max or (n_best_score == max and tonic_relation==1):
+                max= n_best_score
+                arg_max= n_best
+
+        return arg_max, max
+
+
+    
     
 class Silence(Figure):
     """
@@ -92,7 +163,9 @@ class Note(object):
     def __cmp__(self, other): return cmp(self.pitch, other.pitch)            
     def __hash__(self): return hash(self.pitch)
     def get_canonical_note(self): return Note(self.pitch%12)
-    def get_pitch_name(self): return self._pitches[self.pitch%12] + str(self.pitch/12)
+    def get_pitch_name(self, disable_octave=False): 
+        if disable_octave: return self._pitches[self.pitch%12]
+        else: return self._pitches[self.pitch%12] + str(self.pitch/12)
     
 
 class PitchClass(object):
@@ -140,6 +213,10 @@ class PlayedNote(Figure, Note):
         Note.__init__(self, pitch) 
         self.volume= volume
     
+    def __eq__(self, other):
+        return id(self) == id(other)
+    def __hash__(self):
+        return hash(id(self))
     @property
     def is_silence(self): return False
     def copy(self): return PlayedNote(self.pitch, self.start, self.duration, self.volume) 
@@ -149,8 +226,8 @@ class PlayedNote(Figure, Note):
 
 class Instrument(object):
     id_seq= 0
-    def __init__(self, is_drums=False):
-        self._patch= None
+    def __init__(self, is_drums=False, patch=None):
+        self._patch= patch
         self.is_drums= is_drums
         self.messages= []
         self.channel= None
@@ -235,10 +312,14 @@ class Score(object):
 
 
     def get_first_voice(self, skip_silences=False, relative_to=None):
-        allnotes= list(chain(*self.notes_per_instrument.values()))
-        allnotes.sort(key=lambda x:x.start)
+        all_notes= []
+        for instr in self.instruments:
+            if instr.is_drums: continue
+            all_notes.extend(self.get_notes(instrument=instr))
+
+        all_notes.sort(key=lambda x:x.start)
         res= []
-        for start, ns in groupby(allnotes, key=lambda x:x.start):
+        for start, ns in groupby(all_notes, key=lambda x:x.start):
             n= max(ns, key=lambda x:-1 if x.is_silence else x.pitch)
             res.append(n)
 

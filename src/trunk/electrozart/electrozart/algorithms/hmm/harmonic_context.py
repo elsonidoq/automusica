@@ -1,5 +1,4 @@
 from collections import defaultdict
-from random import choice
 
 from utils.hmm.hidden_markov_model import RandomObservation, DPRandomObservation, FullyRepeatableObservation
 from utils.hmm.random_variable import ConstantRandomVariable

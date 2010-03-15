@@ -1,6 +1,7 @@
 from __future__ import with_statement
 from collections import defaultdict
 from math import floor, log
+import os
 
 from utils.hmm.random_variable import RandomPicker
 

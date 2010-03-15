@@ -42,6 +42,7 @@ def process_fname(fname, parser):
     score= parser.parse(fname)
     interval_size= measure_interval_size(score, 1)
     durations= set(n.start % interval_size for n in score.get_notes())
+    durations.update(n.end % interval_size for n in score.get_notes())
     return durations
 
 if __name__ == '__main__':
