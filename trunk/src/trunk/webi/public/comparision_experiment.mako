@@ -83,6 +83,7 @@
                     experiment_progress_text.show_status('Etapa 1');
                     $("#experiment-wrapper").fadeIn();
                     $("#experiment_progress_container").fadeIn(500);
+                    $("#experiment_progress_text").fadeIn(500);
     
                     $("#btn_next").attr('disabled', true);
                     $("#next_pair").fadeIn(500);
@@ -227,11 +228,11 @@ Drag and Drop
                     $(".play_container").css('margin-top','0px');
 
                 }
-/*                if (/Chrome/i.exec(navigator.userAgent)) {
+                if (/Chrome/i.exec(navigator.userAgent)) {
                     $("#experiment-description").hide();
                     $("#chrome-message").show();
                     $("#comenzar").hide();
-                }*/
+                }
                 experiment_progress_text= new EStatus($("#experiment_progress_text"));
                 resize();
                 var W = 640,
@@ -330,14 +331,15 @@ Drag and Drop
                     $("#next_pair").show();
                     $("#experiment-wrapper").show();
                     $("#experiment_progress_container").show();
+                    $("#experiment_progress_text").show();
                     $("#dont_forget").show();
+                    for (var i=1; i<=nplayed; i++){
+                        spinner.next();
+                    } 
+                    experiment_progress_text.show_status('Etapa ' + (nplayed+1));
                     resize();
                 }
 
-                for (var i=1; i<=nplayed; i++){
-                    spinner.next();
-                } 
-                    experiment_progress_text.show_status('Etapa ' + (nplayed+1));
     //start_experiment();
 
             };
@@ -350,9 +352,9 @@ Drag and Drop
         <input type="hidden" id="visitor_id" value="${visitor_id}">
         <div id="experiment_progress_container">
             <div  id="experiment_progress" > 
-                <div style="margin-right:15px;" id="experiment_progress_text"></div>
             </div>
         </div>
+        <div style="display:none;margin-right:25px;text-align:right" id="experiment_progress_text"></div>
         <div id="descriptions-container">
             <div class="description" id="experiment-description" >
                 ${experiment_description}
