@@ -2,6 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
 <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" ></meta>
     <title> Experimentando con la percepci&oacute;n musical </title>
 	<script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/jquery.jplayer.js"></script>

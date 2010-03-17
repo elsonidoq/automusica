@@ -1,7 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title> Experimentando con la percepci&oacute;n musical </title>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" >
         <link href="/css/comparision_experiment.css" rel="stylesheet" type="text/css" media="screen">
 
         <script src="/js/raphael.js" type="text/javascript" charset="utf-8"></script>
@@ -226,11 +227,11 @@ Drag and Drop
                     $(".play_container").css('margin-top','0px');
 
                 }
-                if (/Chrome/i.exec(navigator.userAgent)) {
+/*                if (/Chrome/i.exec(navigator.userAgent)) {
                     $("#experiment-description").hide();
                     $("#chrome-message").show();
                     $("#comenzar").hide();
-                }
+                }*/
                 experiment_progress_text= new EStatus($("#experiment_progress_text"));
                 resize();
                 var W = 640,
@@ -346,7 +347,7 @@ Drag and Drop
         <script src="/js/wz_tooltip.js" type="text/javascript" ></script>  
 
 <div id="pepe" style="height:100%;width:100%">
-        <input type="hidden" id="visitor_id" value="${visitor_id}"/>
+        <input type="hidden" id="visitor_id" value="${visitor_id}">
         <div id="experiment_progress_container">
             <div  id="experiment_progress" > 
                 <div style="margin-right:15px;" id="experiment_progress_text"></div>
@@ -359,43 +360,40 @@ Drag and Drop
             <div class="description" id="chrome-message" style="display:none;" >
                 Me acabo de dar cuenta que tu navegador es Chrome o similar. <br><br>
                 Esta interfaz tiene algunos problemas que no pude solucionar en Chrome, <br><br><br>
-                <center>&iquest;Ser&iacute;as tan amable de entrar desde Firefox?</center>
+                <div style="text-align:center">&iquest;Ser&iacute;as tan amable de entrar desde Firefox?</div>
             </div>
             <div id="comenzar">
                 <a id="show_interface_description" style="display:none;" href="#" onclick="javascript:show_interface_description();">siguiente</a>
                 <a id="start_experiment" href="#" onclick="javascript:start_experiment();">comenzar</a>
             </div>
         </div>
-        <div id="chrome-warning-container">
-
-        </div>
         <div id="experiment-wrapper" >
             <div id="holder" style="display:inline;"> </div>
             <div class="play_container" id="play1" style="display:inline;float:left;margin-top:-100px;margin-left:-80px;height:60px;width:60px;">
                 <img class="play_callado" id="play1_callado" style="height:100%;width:100%;cursor:pointer;" 
-                     src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
+                     src="/images/speaker_callado.png" onclick="javascript:play(this)" alt=""> 
                 <img class="play_hablando" id="play1_hablando" style="display:none;height:100%;width:100%;" 
-                     src="/images/speaker_hablando.png" /> 
+                     src="/images/speaker_hablando.png" alt=""> 
                 <div class="play_click" id="play1_click" onclick="javascript:play_click_para_escuchar(this)" style="font-size:10px;text-align:center;cursor:pointer;">
                     click para escuchar
                 </div> 
-                <div class="loader" id="play1_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
+                <div class="loader" id="play1_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif" alt=""> </div>
             </div>
             <div class="play_container" id="play2" style="margin-top:-100px;margin-right:-80px;float:right;height:60px;width:60px;">
                 <img class="play_callado" id="play2_callado" style="height:100%;width:100%;cursor:pointer;" 
-                     src="/images/speaker_callado.png" onclick="javascript:play(this)"/> 
+                     src="/images/speaker_callado.png" onclick="javascript:play(this)" alt=""> 
                 <img class="play_hablando" id="play2_hablando" style="display:none;height:100%;width:100%;" 
-                     src="/images/speaker_hablando.png" /> 
+                     src="/images/speaker_hablando.png" alt=""> 
                 <div class="play_click" id="play2_click" onclick="javascript:play_click_para_escuchar(this)" style="font-size:10px;text-align:center;cursor:pointer;">
                     click para escuchar
                 </div> 
-                <div class="loader" id="play2_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif"/> </div>
+                <div class="loader" id="play2_loader" style="display:none;text-align:center;"> <img src="/images/loader.gif" alt=""> </div>
             </div>
         </div>
         <div id="next_pair" style="display:none;text-align:center;margin-top:150px;">
-            <input style="font-size:20px" type="button" onclick="javascript:next()" value="Siguiente" id="btn_next" disabled="disabled" /> 
+            <input style="font-size:20px" type="button" onclick="javascript:next()" value="Siguiente" id="btn_next" disabled="disabled" > 
             <div style="display:inline">
-                <img id="question_image" src="/images/question.png" >
+                <img id="question_image" src="/images/question.png" alt="">
             </div>
         </div>
         <div id="dont_forget" style="display:none; text-align:center; margin-left:10px;margin-top:40px;">
