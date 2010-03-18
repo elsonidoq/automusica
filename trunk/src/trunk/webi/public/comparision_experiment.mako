@@ -88,6 +88,7 @@
                     $("#btn_next").attr('disabled', true);
                     $("#next_pair").fadeIn(500);
                     $("#dont_forget").fadeIn(500);
+                    show_texts();
                     resize();
                 });
             }
@@ -292,7 +293,7 @@ Drag and Drop
                 }
                 var selector_xy= translate(4, values[4]);
                 selector= r.circle(selector_xy[0], selector_xy[1] - 30, 13).attr({stroke:"rgb(0,0,0)", 'fill':'#8c00f0', 'fill-opacity':0.4 });
-/*              
+              
                 selector.node.style.cursor= 'move';
                 selector.mousedown(function(e) {
                     on_drag= true;
@@ -307,23 +308,9 @@ Drag and Drop
                         selector.animate({cx:x, cy:buttons[0].attrs.cy}, 100);
                     });
                 });
-*/
+
                 $("#holder").mousedown(mousedown_handler);
                 buttons.mousedown(mousedown_handler);
-
-                if (navigator.appName == 'Microsoft Internet Explorer') {
-                    texts[4]= r.text(buttons[4].attrs.cx+1, buttons[4].attrs.cy + 3, "=").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
-                    texts[0]= r.text(buttons[0].attrs.cx-1, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
-                    texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
-                } else {
-                    texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 3, "=").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
-                    texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
-                    texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
-                }
-                selected_elements= [buttons[4], texts[4]];
-                texts[4].node.style.cursor = "pointer";
-                texts[0].node.style.cursor = "pointer";
-                texts[8].node.style.cursor = "pointer";
 
                 if(!${resume_experiment}) {
                     $("#descriptions-container").show();
@@ -337,12 +324,31 @@ Drag and Drop
                         spinner.next();
                     } 
                     experiment_progress_text.show_status('Etapa ' + (nplayed+1));
+
+                    show_texts();
+
                     resize();
                 }
 
     //start_experiment();
 
             };
+        function show_texts() {
+            if (navigator.appName == 'Microsoft Internet Explorer') {
+                texts[4]= r.text(buttons[4].attrs.cx+1, buttons[4].attrs.cy + 3, "=").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[0]= r.text(buttons[0].attrs.cx-1, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+            } else {
+                texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 1, "=").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 1, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 1, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+            }
+            selected_elements= [buttons[4], texts[4]];
+            texts[4].node.style.cursor = "pointer";
+            texts[0].node.style.cursor = "pointer";
+            texts[8].node.style.cursor = "pointer";
+
+        }
         </script>
     </head>
     <body style="margin:0 auto;" >
