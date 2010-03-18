@@ -55,7 +55,7 @@
                 var last_distance=null, actual_distance= null;
                 for (var i=0; i<buttons.length; i++) {
                     actual_distance= Math.abs(x - buttons[i].attrs.cx);
-                    if (last_distance && last_distance < actual_distance) {
+                    if (last_distance != null && last_distance < actual_distance) {
                         return [buttons[i-1], last_distance, texts[i-1], i-1];
                     }
                     last_distance= actual_distance;
@@ -294,6 +294,9 @@ Drag and Drop
                 var selector_xy= translate(4, values[4]);
                 selector= r.circle(selector_xy[0], selector_xy[1] - 30, 13).attr({stroke:"rgb(0,0,0)", 'fill':'#8c00f0', 'fill-opacity':0.4 });
               
+                selector.mousedown(function(e) {});
+                /*
+                Drag & Drop
                 selector.node.style.cursor= 'move';
                 selector.mousedown(function(e) {
                     on_drag= true;
@@ -307,7 +310,7 @@ Drag and Drop
                         }
                         selector.animate({cx:x, cy:buttons[0].attrs.cy}, 100);
                     });
-                });
+                });*/
 
                 $("#holder").mousedown(mousedown_handler);
                 buttons.mousedown(mousedown_handler);
@@ -318,12 +321,12 @@ Drag and Drop
                     $("#next_pair").show();
                     $("#experiment-wrapper").show();
                     $("#experiment_progress_container").show();
+                    $("#experiment_progress_text").text('Etapa ' + (nplayed+1))
                     $("#experiment_progress_text").show();
                     $("#dont_forget").show();
                     for (var i=1; i<=nplayed; i++){
                         spinner.next();
                     } 
-                    experiment_progress_text.show_status('Etapa ' + (nplayed+1));
 
                     show_texts();
 
@@ -427,8 +430,8 @@ Drag and Drop
 
         task_status= 0;
         nplayed+=1;
-        spinner.next();
         if (nplayed == play1_playlist.length) {
+            spinner.next();
             experiment_progress_text.show_status('Finalizando');
             h.animate({'marginLeft':-h.width()-100},500, function() {
                 $.post('/comparision_experiment/rated', d , function(data) {
@@ -436,7 +439,6 @@ Drag and Drop
                 });
             });
         } else {
-            experiment_progress_text.show_status('Etapa ' + (nplayed + 1));
             $("#btn_next").attr('disabled', true);
             h.animate({'marginLeft':-h.width()-100},500, function() {
                 $(".play_hablando").hide();
@@ -444,13 +446,18 @@ Drag and Drop
                 if(playing_element)
                     $("#jplayer").stop();
 
-                $.post('/comparision_experiment/rated', d , function(data) {
-
-                //h.delay(300)
-                    h.hide()
-                    .css('margin-left', ww + 150)
-                    .show()
-                    .animate({'marginLeft':parseInt((ww - h.width())/2) + 'px'},700)
+                $.ajax({url:'/comparision_experiment/rated',
+                        type:'post',
+                        cache:false,
+                        data:d,
+                        success: function(data) {
+                                    //h.delay(300)
+                                    h.css('margin-left', ww + 150)
+                                    .animate({'marginLeft':parseInt((ww - h.width())/2) + 'px'},700, function(){
+                                                          experiment_progress_text.show_status('Etapa ' + (nplayed + 1));
+                                                          spinner.next();
+                                                          })
+                                }
                 });
                 selector.attr('cx',buttons[parseInt(buttons.length/2)].attrs.cx);
                 selector.attr('cy',buttons[0].attrs.cy - 30);
@@ -458,11 +465,15 @@ Drag and Drop
         }
     }
     function get_actual_value() {
-        for(var i=0;i<buttons.length;i++){
-            if (buttons[i].attrs.cx==selector.attrs.cx) {
-                return i-4;
-            } 
+        var last_distance=null, actual_distance= null;
+        for (var i=0; i<buttons.length; i++) {
+            actual_distance= Math.abs(selector.attrs.cx - buttons[i].attrs.cx);
+            if (last_distance !=null  && last_distance < actual_distance) {
+                return i-1-4;
+            }
+            last_distance= actual_distance;
         }
+        return buttons.length-1-4
     }
     function play_click_para_escuchar(yo) {
         yo= $("#" + yo.id.replace('click', 'callado'))[0];
