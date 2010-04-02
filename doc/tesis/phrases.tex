@@ -1,11 +1,11 @@
 \section{Un modeo parcial para frases}
 \label{sec:phrases}
-Los modelos propuestos hasta el momento est'an focalizados en interacci'ones nota a nota. Sin embargo es bien sabido que la m'usica
+Los modelos propuestos hasta el momento est'an focalizados en interacciones nota a nota. Sin embargo, es sabido que la m'usica
 tiene una estructura jer'arquica. En esta secci'on se trabajar'a un poco con un elemento de 'indole jer'arquico: la frase. 
 
-Antes de intentar modelar una frase es importante tratar de entender de que se trata este objeto a modelar. El fraseo es una
-noci'on complicada de definir, y es por esto que no existe una 'unica definici'on. William Rothstein en su libro Phrase Rhythm 
-in Tonal Music, describe las dos mejores, seg'un su criterio, definiciones de frases. Comienza citando al compositor contemporaneo
+Antes de intentar modelar una frase es importante tratar de entender de qu'e se trata este objeto a modelar. El fraseo es una
+noci'on complicada de definir, y es por esto que no existe una 'unica definici'on. William Rothstein en su libro \texttt{Phrase Rhythm 
+in Tonal Music}, describe las dos mejores, seg'un su criterio, definiciones de frases. Comienza citando al compositor contemporaneo
 Roger Sessions: 
 
 \begin{quote} 
@@ -15,7 +15,7 @@ without letting go, or figuratively, in a single breath?. [\ldots] The phrase is
 
 Si bien esta definici'on lejos est'a de permitir construir un modelo generativo para frases, hay dos nociones que son interesantes. 
 La primer noci'on es la del respiro: Una frase no puede ser arbitrariamente larga, tampoco puede ser arbitrariamente corta. La 
-segunda, es que la frase tiene un \emph{goal}, y este \emph{goal} es la cadencia.%\alert{como defino cadencia?}. 
+segunda, es que la frase tiene un \emph{goal}(meta), y este \emph{goal} es la cadencia.%\alert{como defino cadencia?}. 
 
 Luego Rothstein contin'ua citando la definici'on de Peter Westergaard quien distingue dos conjuntos de alturas, y define
 a la frase como un movimiento entre estos dos conjuntos de forma tal que se cumplan las siguientes tres propiedades:
@@ -27,29 +27,29 @@ a la frase como un movimiento entre estos dos conjuntos de forma tal que se cump
 
 
 Estas dos definiciones comparten la noci'on de meta; en la definici'on de Sessions, la meta es la cadencia y en la Westergaard 
-por el segundo conjunto de notas.  En lo que sigue se propone un modelo que para tratar de capturar parcialmente esta nocion de frase.
+es el segundo conjunto de notas.  En lo que sigue se propone un modelo que para tratar de capturar parcialmente esta nocion de frase.
 
 \subsection{Las notas de apoyo}
 Siguiendo las definiciones
 de frase mel'odica vistas en la secci'on anterior, parece ser que la noci'on de meta es una noci'on importante, y que esta meta
 est'a relacionada con la armon'ia de la pieza en cuesti'on. 
 
-Tomando la definici'on de Westergaard, para poder hablar de frase, entonces es necesario primero saber cuales son los dos conjuntos de 
+Tomando la definici'on de Westergaard, para poder hablar de frase es necesario primero saber cuales son los dos conjuntos de 
 alturas entre los cuales la frase va a desplazarse. La forma m'as sencilla es pensar estos dos conjuntos como dos acordes sucesivos
 y que la melod'ia que transcurre en un acorde en realidad est'a apuntanto hacia el acorde siguiente. Por supuesto
 esta es una simplificaci'on, puesto que de la misma forma que existe una jerarqu'ia a nivel notas, existe tambi'en una jerarqu'ia
-en la progresi'on arm'onica: Ciertos acordes cumplen un rol estructurante mientras que otros cumplen un rol decorativo. Tambi'en
+en la progresi'on arm'onica: ciertos acordes cumplen un rol estructurante mientras que otros cumplen un rol decorativo. Tambi'en
 existen acordes que si bien no son iguales, en ciertos contextos se los puede utilizar como \emph{substitutos}. 
 
 Esta elecci'on de la frase como camino entre dos acordes sucesivos tampoco tiene en cuenta de forma directa la restricci'on 
 que impone sobre la duraci'on de una frase la definici'on de Sessions, sin embargo es de esperarse que la duraci'on de los acordes de una pieza musical
 no sea excesivamente larga ni corta. 
 
-De esta forma, se propone como modelo, tomar, para cada acorde, una \emph{nota de apoyo}. Esta nota de apoyo ser'a la meta de 
+De esta forma, se propone como modelo tomar, para cada acorde, una \emph{nota de apoyo}. Esta nota de apoyo ser'a la meta de 
 la frase. Es importante que las notas de apoyo \emph{sean parte} de la frase que se est'a componiendo, es decir, las notas
-de apoyo no pueden estar desconectadas del modelo probabilistico que vaya a elegir las notas anteriores y posteriores a la misma. 
+de apoyo no pueden estar desconectadas del modelo probabilistico que vaya a elejir las notas anteriores y posteriores a la misma. 
 Esto se puede expresar como propiedades en t'erminos del modelo que asigna probabilidades a las alturas. 
-Estas propiedades descartar'an algunas frases y otras no, y se desea, dentro de las frases que restan, elegir una con probabilidad
+Estas propiedades descartar'an algunas frases y otras no, y se desea, dentro de las frases que restan, elejir una con probabilidad
 proporcional a la que esta ten'ia en el conjunto original de frases. 
 
 Esto en principio podr'ia ser exponencial, ya que la cantidad de posibles frases crece exponencialmente con la longitud de la frase.
@@ -65,23 +65,24 @@ A continuaci'on se definir'a formalmente el problema, y luego se dar'a un algori
 Se cuenta con un modelo que asigna probabilidades a notas seg'un la historia de las 'ultimas dos notas, $P(n_3 | n_1, n_2)$. Si bien se puede generalizar a $k$ notas,
 la construcci'on quedar'ia menos clara, y el hecho es que se utilizar'a con solo 2 notas. Sup'ongase adem'as que se encuentra en un contexto formado por las notas 
 $n_1, n_2$, y se desea generar una frase mel'odica de $d$ notas, de forma tal que se cumpla una cierta propiedad $M$ (middle) sobre la probabilidad de tocar las notas
-del medio de la frase, y cierta propiedad $S$ (support) sobre la nota de apoyo de la siguiente frase.
+del medio de la frase, y cierta propiedad $S$ (support) sobre la nota de apoyo de la siguiente frase. Por ejemplo, $S$ podr'ia restringir a 
+que la nota de apoyo tenga una probabilidad alta en su contexto: $S(n_1, n_2, n_f): P(n_f | n_1, n_2) = \max_{(n'_1, n'_2)}{P(n_f | n'_1, n'_2)}$.
 
 Como no todas las melod'ias de $d$ notas van a garantizar esto, se desea descartar todas las melod'ias que no lo garantizan y construir un nuevo modelo, en donde
 solo se puedan construir las melod'ias que cumplan con los predicados en cuesti'on. Por 'ultimo, se desea tambi'en que la probabilidad de estas l'ineas mel'odicas 
 que satisfacen los predicados, sea proporcional a la asignada por el modelo original. 
 
 La forma en la que se atacar'a este problema, es mediante una sucesi'on de conjuntos indexados por el contexto, la nota final y cuantas notas le queda
-a la frase. Estos conjuntos tendr'an la propiedad de que cualquier nota elegida de ellos garantizar'a la existencia de una continuaci'on de la longitud correspondiente 
- y que \emph{lleve a buen puerto}. Utilizando esta propiedad, es posible implementar un algoritmo eficiente para elegir la frase dentro del submodelo. 
+a la frase. Estos conjuntos tendr'an la propiedad de que cualquier nota elejida de ellos garantizar'a la existencia de una continuaci'on de la longitud correspondiente 
+ y que \emph{lleve a buen puerto}. Utilizando esta propiedad, es posible implementar un algoritmo eficiente para elejir la frase dentro del submodelo. 
 
 Para poder utilizarlo sin cuidado habr'a que demostrar la correctitud de este argumento, demostrando que cualquier frase mel'odica del submodelo se puede construir
-utilizando esta serie de conjuntos. Por 'ultimo, la asignaci'on de probabilidades utilizar'a el modelo original, renormalizando en la sucesion de conjuntos. De esta 
+utilizando esta serie de conjuntos. Por 'ultimo, la asignaci'on de probabilidades utilizar'a el modelo original, renormalizando en la sucesi'on de conjuntos. De esta 
 forma la probabilidad ser'a proporcional al modelo original.
 
 Tomando $M$ y $S$ como restricciones sobre las l'ineas mel'odicas, s'olo ser'an v'alidas las l'ineas $n_1, \cdots, n_k, n_f$ que cumplan con
 
-$$  S(n_{k-1}, n_k, n_f) \land \forall i\leq k-2, M(n_i, n_{i+1}, n_{i+2})$$
+$$  S(n_{k-1}, n_k, n_f) \land \forall i, i\leq k-2 \Rightarrow M(n_i, n_{i+1}, n_{i+2})$$
 
 Se puede dar una definici'on equivalente definiendo la funci'on $Poss$, que determina las notas suceptibles a ser notas de apoyo dado una cierta historia determinada por al menos dos notas.
 
@@ -154,7 +155,10 @@ play_phrase(n1, n2, nf, d, prob_model)
         context := (n2, n3) 
 \end{algoritmo}
 
+Es importante notar que para que este algoritmo funcione, se necesita de alguna forma elejir las primeras dos notas. La elecci'on se realiza a trav'es de 
+marginalizar los contextos de la siguiente forma:
 
+$$P(n_1, n_2) \propto \sum_{n_3}P(n_1,n_2|n_3)P(n_3)$$
 
 
 
@@ -170,24 +174,68 @@ $$S(n_1, n_2, n_3) = P(n_3 | n_1, n_2) \geq X\%$$
 El problema ahora es determinar
 el valor $X$. Como las probabilidades definidas por el modelo de Narmour estan formadas por un producto de cada uno de los principios, habria 
 que considerar esto para la elecci'on de $X$. Adem'as, la elecci'on de un umbral no deja margen para la expermientaci'on con frases
-mas o menos probables puesto que no es facil de controlar el hecho de que el modelo no se haga vacio. 
+m'as o menos probables puesto que no es facil de controlar el hecho de que el modelo no se haga vacio. 
 Por estas razones se descarto la idea de comparar la probabilidad dada por el contexto con una constante. 
 
 Una propiedad deseable de un esquema para predicados $S$ y $M$ es que existan dos casos particulares, 
 donde uno corresponda a la melod'ia m'as probable
 y otro corresponda a eliminar la restricci'on de estos predicados, y adem'as garantize siempre la existencia de una frase. 
 
-Un esquema que encaja dentro de este marco es un predicado compare la probabilidad $P(n_3 | n_1, n_2)$ con un 
+Un esquema que encaja dentro de este marco es un predicado que compare la probabilidad $P(n_3 | n_1, n_2)$ con un 
 $V_p$ percentil, es decir, el valor que deja s'olo al $p\%$ de las notas m'as probables.  De esta forma, si el contexto tiene muchos valores probables, 
-el percentil se ajustar'a mas alto, y lo mismo para contextos menos probables.
+el percentil se ajustar'a m'as alto, y lo mismo para contextos menos probables.
 
 Hay que tener en cuenta que dado que las observaciones son todas discretas, ser'a frecuente el caso donde 
-se asigne exactamente la misma probabilidad a mas de un evento. En ese caso no se podr'a garantizar un $p\%$ puesto que ser'ia arbitrario
-elegir un evento por sobre otro si tienen la misma probabilidad, sin embargo, no se considera que esto sea un mayor problema. Adem'as, este predicado nunca dejara un conjunto vacio, y si se lo define con cuidado, se puede obtener
+se asigne exactamente la misma probabilidad a m'as de un evento. En ese caso no se podr'a garantizar un $p\%$ puesto que ser'ia arbitrario
+elejir un evento por sobre otro si tienen la misma probabilidad, sin embargo, no se considera que esto sea un mayor problema. Adem'as, este predicado nunca dejar'a un conjunto vac'io, y si se lo define con cuidado, se puede obtener
 el comportamiento de la melod'ia m'as probable, cambiando el predicado en el caso de $0\%$.
 
+\subsection{Ejemplo}
+En la Figura \ref{fig:unfinished_phrase} se exhiben los compases 6, 7 y 8 de una melod'ia generada a partir de la Danza Alemana WoO 13 N 11 
+de Beethoven utilizando el percentil 0. Sup'ongase que se ha generado la melod'ia hasta donde se muestran los signos de interrogaci'on. 
+La nota que se encuentra luego de los signos de interrogaci'on es la nota tomada como punto de apoyo para la frase siguiente.
 
-\section{Trabajo a futuro: silencios}
+\begin{imagen}
+    \file{images/figura_nueva_pregunta.png}
+    \labelname{fig:unfinished_phrase}
+    \desc{ Un fragmento de una melod'ia donde ya se eliji'o la pr'oxima nota (Mi) de apoyo y restan tocar dos notas.}
+    \width{5cm}
+\end{imagen}
+
+La meta de que la nota Mi sea fuertemente implicada hace que se establezcan restricciones sobre las dos notas que faltan tocar. 
+Siendo que estas notas se encuentran restringidas por el predicado $S$, en la figura \ref{fig:narmour_arrival} se presenta cual ser'ia 
+la probabilidad de la nota de apoyo (Mi) para las distintas posibilidades de las notas que est'an marcadas con signo de interrogaci'on. 
+Como el percentil utilizado en este caso es el percentil 0, s'olo las notas de la zona marcada con rojo en la figura \ref{fig:narmour_arrival}
+pueden ser utilizadas antes que la nota de apoyo. Asimismo, estas notas, al proceder de un cierto contexto mel'odico 
+(representado por las dos notas anteriores, La y Mi), deber'an ser elejidas tambi'en a partir de la distribuci'on de probabilidad 
+que el modelo compuesto instancie en tal contexto (las notas La y Mi). 
+
+\begin{imagen}
+    \file{images/arrival_narmour_64.png}
+    \labelname{fig:narmour_arrival}
+    \desc{Probabilidad de la nota de apoyo (Mi) para las dos notas anteriores. En el eje X se muestra la primer nota, 
+    y en el eje Y se muestra la segunda}
+    \width{13cm}
+\end{imagen}
+
+\begin{imagen}
+    \file{images/narmour_restricted_69_64.png}
+    \labelname{fig:narmour_restricted}
+    \desc{Probabilidad de la nota de apoyo (Mi) para las dos notas anteriores. En el eje X se muestra la primer nota, y en el eje Y se muestra la segunda }
+    \width{13cm}
+\end{imagen}
+
+La distribuci'on de probabilidad presentada en la figura \ref{fig:narmour_restricted}, no corresponde al modelo compuesto solamente, sino 
+que por sobre este se le aplican las restricciones exhibidas en la figura \ref{fig:narmour_arrival}, de esta forma s'olo las notas que 
+pertenecen a la zona marcada con rojo en la figura \ref{fig:narmour_arrival} tienen probabilidad distinta de cero en la figura \ref{fig:narmour_restricted}.
+
+N'otese que si bien se podr'ia considerar que los valores num'ericos de las probabilidades son bajos, hay que tener en cuenta que lo 
+importante es la proporci'on que hay entre estos valores. Es decir, en el gr'afico se puede ver que las dos continuaciones m'as 
+probables son o bien tocar las notas Do$\sharp$ y luego Re o bien tocar las notas La$\sharp$ y luego F$\sharp$. Estas dos continuaciones 
+tienen cada una una probabilidad aproximadamente de $1.37\times10^{-5}$ y $4.51\times10^{-6}$, que si bien en t'erminos absolutos es 
+un valor pequeño, la continuaci'on m'as probable es aproximadamente $3.04$ m'as probable que la que le sigue. 
+
+\subsection{Trabajo a futuro: silencios}
 Los modelos propuestos hasta el momento no toman en cuenta al silencio. 
 %\cite{PaieThesis} incorpora el silencio como un elemento m'as
 %dentro de la generaci'on de alturas, sin embargo se considera que el silencio no es un elemento con el mismo status que las alturas. 

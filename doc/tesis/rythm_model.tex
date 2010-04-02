@@ -1,21 +1,34 @@
 \section{Modelando la m\'etrica}
 \label{sec:metric_model}
 \subsection{Fundamentos}
+\label{sec:metric_fundamentos}
 El acento m'etrico es una caracter'istica inherente a la m'usica tonal; cualquier pieza musical se enmarca en una estructura 
 (posiblemente ambigua) de beats fuertes y d'ebiles. Si bien 'esta existe s'olo en la mente del que escucha, las reglas para inferirla son culturalmente conocidas 
 y colocan al acento m'etrico como un elemento importante dentro del lenguaje musical. La estructura m'etrica ayuda a medir el tiempo permitiendo a un interprete 
 reproducir y a un oyente reconocer un cierto conjunto de relaci'ones temporales. Esta estructura da contexto para interpretar la r'itmica,  
-donde por r'itmica se refiere a un grupo de al menos dos eventos musicales en donde hay uno acentuado con respecto al resto \citep{CooperMeyer60}.
-Es por esto que un patr'on temporal as'i descripto es interpretado de forma distinta seg'un el contexto m'etrico donde sea escuchado. 
+donde por r'itmica se refiere a un grupo de al menos dos eventos musicales en donde hay uno acentuado o destacado con respecto al resto \citep{CooperMeyer60}.
 
-Siguiendo la teor\'ia de Lerdahl y Jackendoff el acento m'etrico es una construcci'on que si bien es jer'arquica, los niveles altos no son percibidos, puesto
-que en esos niveles entran en juego otro tipo de acentos (como los acentos estructurales y los fenom'enicos). De esta forma se habla de la \emph{localidad} de los acentos m'etricos: 
-s'olo se perciben a niveles bajos en la jerarqu'ia. 
+
+Siguiendo la teor\'ia de \cite{LerdahlJackendoff83} el acento m'etrico es una construcci'on que si bien es jer'arquica, los niveles altos no son percibidos, puesto
+que en esos niveles entran en juego otro tipo de acentos (los acentos estructurales y los fenom'enicos). 
+Otra raz'on para considerar que los niveles altos de la estructura m'etrica no son percibidos es que la noci'on de pulso est'a intr'insecamente relacionada 
+con la memoria de corto plazo \citep[p. 167]{snyder2001}, es decir, un pulso no ser'a considerado como tal si su tempo no recae dentro del intervalo de 250ms hasta 
+2000ms. Siendo as'i, dado que en cada nivel de la jerarqu'ia m'etrica se debe encontrar un pulso, es de esperarse que en cierto punto este desaparezca.
+De esta forma se habla de la \emph{localidad} de los acentos m'etricos: 
+s'olo se perciben a niveles bajos en la jerarqu'ia, y por lo tanto \emph{time-spans} relativamente cortos. 
 
 La estructura m'etrica permite organizar los distintos puntos en el tiempo en clases de equivalencia seg'un c'omo son percibidos \citep{Benjamin84}.
-De esta forma, es posible pensar al paso del tiempo como saltos entre estas clases de equivalencia.
+De esta forma, beats que se encuentren en el mismo nivel en la jerarqu'ia m'etrica, pertenecer'an a la misma clase de equivalencia.
+Esto implicar'ia que dentro de una obra musical que se enmarque en una estructura de $\frac{4}{4}$, el primer beat de cada comp'as se percibir'ia de forma similar, 
+as'i como tambi'en el segundo y el cuarto beat de cada comp'as \footnote{Ver figura \ref{fig:acentos_compas} para visualizar la estructura m'etrica de un comp'as de 
+$\frac{4}{4}$}.
+De esta forma, es posible pensar al paso del tiempo como saltos entre estas clases de equivalencia. 
+Otra noci'on de equivalencia entre los sucesivos beats de un pulso esta dada por su posici'on dentro del comp'as \citep{clarke1987categorical}. Es decir, el primer beat
+de cada comp'as se percibir'a diferente al segundo beat de cada comp'as por el s'olo hecho de que uno es el primero y el otro es el segundo.
 
-Es importante resaltar que dentro de la definici'on de acento m'etrico, se encuentra la condici'on de que este debe ser regular, es decir, \emph{peri'odico}. 
+Por 'ultimo, es importante destacar que la estructura m'etrica es \emph{peri'odica}. Esto se desprende del hecho que cada nivel 
+de la jerarqu'ia m'etrica corresponda a un pulso regular, y de la propiedad de \emph{localidad}. En la figura 
+\ref{fig:acentos_compas} se puede observar esta caracter'istica.  
 
 Las propiedades de \emph{localidad}, \emph{periodicidad} y \emph{equivalencia} permiten realizar ciertas asunciones sobre las dependencias entre variables aleatorias 
 a tener en cuenta para modelar la m'etrica. En primer lugar, la propiedad de localidad, hace que se pueda asumir que no existen dependencias fuertes 
@@ -35,19 +48,19 @@ La asunci'on de que no hay notas sonando en simultaneo permite representar a la 
 funci'on de clases de equivalencia $c$ de la siguiente forma:
 
 \begin{definition}
+\label{def:traduccion_original}
 Dada una nota $n$, se define su clase de equivalencia $c$ como $$c(n) = onset(n)\mod p$$
 \end{definition}
 
-
-Esta definici'on pretende capturar cierta esencia de la noci'on de clase de equivalencia entre acentos m'etricos definida por \cite{Benjamin84} a 
+Donde $onset(n)$ representa el onset de la nota $n$.  Esta definici'on pretende capturar cierta esencia de la noci'on de clase de equivalencia entre acentos m'etricos definida por \cite{Benjamin84} a 
 trav'es de distinguir las clases de equivalencia. Obs'ervese que asumendo una elecci'on de $p$ adecuada, todos los posibles acentos m'etricos 
 son representados, sin embargo, distintos valores de la funci'on $c$ podr'ian recibir el mismo acento m'etrico. 
 
 P'ongase como ejemplo el de la partitura de Figura \ref{fig:simple_measure}. La sucesi'on de onsets que ocurren en ella son 
-$$0, \frac{3}{4}, 1, 2, 2+\frac{3}{4}, 3$$ 
+$$0, \frac{1}{2}, 1, 2, 2+\frac{1}{2}, 3$$ 
 A modo de ilustraci'on, se elije $p=4$. De esta forma, la sucesi'on de clases de equivalencia ser'a igual a la sucesi'on de onsets, puesto que el mayor de los onsets es menor 
 estricto al per'iodo. Dado que el comp'as exhibido en la Figura \ref{fig:simple_measure} es un comp'as de $\frac{4}{4}$, tanto el segundo beat 
-como el cuarto reciben la misma acentuaci'on m'etrica, sin embargo, la funci'on $c$ les asigna las clases de equivalencia $2$ y $4$ respectivamente.
+como el cuarto reciben la misma acentuaci'on m'etrica, sin embargo, la funci'on $c$ les asigna las clases de equivalencia $1$ y $3$ respectivamente.
 
 
 \begin{imagen}
@@ -62,8 +75,8 @@ Adem'as, suponiendo que el evento (nota o silencio) que m'as dura, tiene una dur
 $$\max_{0\leq j \leq k-1}o_{j+1}-o_j \leq p$$ 
 
 es posible reconstruir la secuencia de onsets original mediante la siguiente transformaci'on:
-$$o_i=c(n_i) + \#reset(i)\times p$$ siendo $\#reset(i)=\#\{c(n_j) \leq c(n_{j+1}), j+1 \leq i\}$. En lo sucesivo, se referir'a a esta propiedad como la \emph{pseudo-biyectividad} 
-entre la sucesi'on de clases de equivalencia y la sucesi'on de onsets.
+$$o_i=c(n_i) + \#reset(i)\times p$$ siendo $\#reset(i)=\#\{c(n_j) \leq c(n_{j+1}), j+1 \leq i\}$. 
+En lo sucesivo, se referir'a a esta propiedad como la \emph{pseudo-biyectividad} entre la sucesi'on de clases de equivalencia y la sucesi'on de onsets.
 
 De esta forma, se puede construir un modelo utilizando la funci'on $c$ como mecanismo de generalizaci'on y la generaci'on de onsets es un'ivoca a partir de la secuencia de 
 clases de equivalencia. Es por eso que se propone que un modelo generativo que aprenda el lenguaje $c_i=c(n_i)$ ser'ia entonces capaz de generar una sucesi'on de onsets 
@@ -78,20 +91,25 @@ siendo $n(c_i, c_j)$ la cantidad de veces que se observ'o la clase de equivalenc
 veces que se observ'o la clase de equivalencia $c_i$.
 
 \subsection{Ejemplo}
-La figura \ref{fig:reggae_rhythm}  muestra una partitura sencilla con dos c'elulas r'itmicas.
+La figura \ref{fig:reggae_rhythm}  muestra una partitura sencilla con dos compases.
 \begin{imagen}
-    \file{images/reggae.png}
+    \file{images/rythm2markov.png}
     \labelname{fig:reggae_rhythm}
     \desc{Dos compases para entrenar el modelo}
 \end{imagen}
 
-Suponiendo que el valor elegido para el per'iodo $p$ es el de $4$ negras, entonces, la partitura quedar'ia segmentada en sus dos compases. 
+Suponiendo que el valor elejido para el per'iodo $p$ es el de $4$ negras, la partitura quedar'ia segmentada en sus dos compases. 
 De esta forma, la secuencia de onsets medidos en multiplos de una negra ser'a para el primer comp'as
-$$0, \frac{3}{4}, 1, 2, 2+\frac{3}{4}, 3$$
+$$0, \frac{1}{2}, 1, 2, 2+\frac{1}{2}, 3$$
 y para el segundo comp'as 
-$$4, 4+\frac{1}{3}, 4+\frac{2}{3}, 5, 5+\frac{1}{3}, 5+\frac{2}{3}, 6, 6+\frac{3}{4}, 7$$
+$$4, 5, 5+\frac{1}{2}, 6, 7, 7+\frac{1}{2}$$
 
-Por lo tanto, cocientando los onsets m'odulo el per'iodo y estimando las transiciones resulta la cadena de Markov de la figura \ref{fig:reggae_rhythm_markov}.
+Por lo tanto, cocientando los onsets m'odulo el per'iodo resulta en la siguiente sucesi'on de estados
+
+$$c(0), c(\frac{1}{2}), c(1), c(2), c(2+\frac{1}{2}), c(3) = 0, \frac{1}{2}, 1, 2, 2+\frac{1}{2}, 3$$
+$$c(4), c(5), c(5+\frac{1}{2}), c(6), c(7), c(7+\frac{1}{2}) = 0, 1, 1+\frac{1}{2}, 2, 3, 3+\frac{1}{2}$$
+
+y estimando las transiciones resulta la cadena de Markov de la figura \ref{fig:reggae_rhythm_markov}.
 \begin{imagen}
     \file{images/rhythm_markov_example.png}
     \labelname{fig:reggae_rhythm_markov}
@@ -99,12 +117,20 @@ Por lo tanto, cocientando los onsets m'odulo el per'iodo y estimando las transic
 \end{imagen}
 
 No se han dibujado las probabilidades en las transiciones puesto que no tienen sentido en este ejemplo por ser muy chico. Sin embargo, para ilustrar la cuenta:
-$$p(\frac{1}{3}|0) = \frac{n(0, \frac{1}{3})}{n(0)} = \frac{1}{2}$$
+$$p(1|0) = \frac{n(0, 1)}{n(0)} = \frac{1}{2}$$
+
+En la figura \ref{fig:rythm_mzt2} se presenta el gr'afico del modelo entrenado con un tema real.
+\begin{imagen}
+    \file{images/rythm-mzt.png}
+    \labelname{fig:rythm_mzt2}
+    \desc{Modelo entrenado a partir de un fragmento de Mozart, Piano Trio K.}
+    \width{5cm}
+\end{imagen}
 
 \subsection{El proceso generativo}
-A partir del modelo propuesto y de las propiedades se~naladas, a continuaci'on se precenta un proceso para la generaci'on de onsets, de forma tal 
+A partir del modelo propuesto y de las propiedades se~naladas, a continuaci'on se presenta un proceso para la generaci'on de onsets, de forma tal 
 que un oyente que escuche la sucesi'on de onsets generada por este proceso inferir'a una estructura m'etrica \emph{similar} a la del tema de 
-entrenamiento. Se refiere a una estructura similar puesto que en los casos de ambiguedad no quedar'ia determinada la estructura, por lo tanto
+entrenamiento. Se refiere a una estructura similar puesto que en los casos de ambiguedad no quedar'ia determinada un'ivocamente la estructura, por lo tanto
 no se puede hablar en t'erminos de ``misma estructura''.
 
 Utilizando la propiedad de \emph{pseudo-biyectividad} entre la sucesi'on de clases de equivalencia y la suceci'on de onsets, 
@@ -122,45 +148,51 @@ el proceso generativo quedar'a esquematizado de la siguiente forma:
   \item Actualizar \emph{offset} $= onset$
 \end{enumerate}
 
-El proceso generativo comienza en el estado denominado como $0$, y con la variable \emph{offset} inicializada en $0$.
+Notar que si bien en una cadena de Markov gen'erica los estados no tienen orden, en este caso los estados se encuentran etiquetados con n'umeros que 
+corresponden al orden deseado.
+El proceso generativo comienza en el estado denominado como $0$, y con la variable \emph{offset} inicializada en $0$.\newline
 
-\subsection{Sobre la generaci\'on de r\'itmicas no vistas previamente}
 Una propiedad deseable que cualquier modelo propuesto en este trabajo, en particular el reci'en descripto, es que sea capaz de generar nuevo material, distinto al de entrenamiento
 pero que a su vez est'e relacionado. En este caso, el nuevo material ser'ia r'itmica \emph{nueva}, y la relaci'on con la r'itmica de entrenamiento, es que el acento m'etrico inferido por un oyente 
 sea el mismo al que se infiere de la r'itmica utilizada para el entrenamiento. 
 
-Retomando el ejemplo definido en la figura \ref{fig:reggae_rhythm}, notar que el modelo planteado es capaz de generar la r'itmica de la figura \ref{fig:rhythm_markov_generated}
-que no es ninguno de los dos ejemplos de entrenamiento.
+Retomando el ejemplo definido en la figura \ref{fig:reggae_rhythm}, notar que el modelo planteado es capaz de generar la r'itmica de la figura 
+\ref{fig:rhythm_markov_generated}, cuya sucesi'on de onsets es 
+$$0, 1, 1+\frac{1}{2}, 2, 2+\frac{1}{2}, 3$$
+y no corresponde a ninguno de los dos ejemplos de entrenamiento.
 
 \begin{imagen}
     \file{images/reggae_generated.png}
     \labelname{fig:rhythm_markov_generated}
-    \desc{Una posible r'itmica generada por el modelo}
+    \desc{Una posible r'itmica generada por el modelo.}
     \position{!b}
 \end{imagen}
 
 %\comment{relacionar esto con lo de contexto horizontal definido en \ref{subsec_tension}}
-
 \subsection{Infiriendo el valor del per\'iodo}
-Hasta ahora se dio por dado el valor $p$, sin embargo es un valor cr'itico para el modelo, puesto que forma una parte importante del mecanismo de 
+Hasta ahora se dio por dado el valor $p$, sin embargo es un valor cr'itico para el modelo puesto que forma una parte importante del mecanismo de 
 generalizaci'on que se utiliza. 
-M'as all'a de c'omo sea inferido, este valor deber'ia representar el nivel en la jerarqu'ia m'etrica\footnote{Recordar que niveles altos equivalen a secci'ones m'as largas en el tema} a partir 
+M'as all'a de c'omo sea inferido, este valor deber'ia representar el nivel en la jerarqu'ia m'etrica\footnote{Recordar que niveles altos equivalen a \emph{time-spans} m'as largos en la pieza musical} a partir 
 del cual, en los niveles superiores el acento m'etrico pasa desapercibido del resto de los acentos (estructurales y fenom'enicos). 
-Se entiende que este valor es subjetivo, y que puede no existir un valor para $p$ de forma tal que esto ocurra en todo el tema.
+Se entiende que este valor es subjetivo, y que puede no existir un valor para $p$ de forma tal que esto ocurra durante toda la obra musical.
 
-Dado que la entrada al algoritmo, es de hecho, una partitura, una primera aproximaci'on para inferir el valor $p$, es utilizar la informaci'on del 
+
+Una primera aproximaci'on consistir'ia en dise~nar un algoritmo que infiera la jerarqu'ia de acentos m'etricos de la partitura. 
+Esto se ha realizado con anterioridad por \cite{Temperley2001}. En el software desarrollado por Temperley se encuentran implementadas distintas 
+reglas de preferencia definidas por \cite{LerdahlJackendoff83}, y en particular las relacionadas con el acento m'etrico. El problema al inferir la 
+jerarqu'ia m'etrica, es luego decidir cual ser'a el nivel elejido para utilizar como per'iodo puesto que si se elije un nivel demasiado alto, 
+la funci'on $c$ dejar'ia de representar las clases de equivalencia que pretende representar realizando demasiadas falsas asignaciones como la 
+exhibida en la figura \ref{fig:simple_measure}. Si se elijiera un nivel muy bajo, habr'ia acentos m'etricos que no estar'ian representados 
+y adem'as resultar'ia en una cadena de Markov de muy pocos estados, impactando en r'itmicas muy poco variadas. 
+
+Una segunda posibilidad es aprovechar que la entrada del algoritmo es una partitura. Esto permitir'ia utilizar la informaci'on del 
 comp'as y tomar el valor $p$ como la longitud del comp'as. 
-Esta aproximaci'on tiene la ventaja de que no es necesario realizar ning'un c'omputo, sin embargo, el comp'as escrito en la partitura no necesariamente refleja la jerarqu'ia
-m'etrica inferida por un oyente al escuchar esa partitura puesto que el comp'as en la partitura escrita tambi'en cumple un rol organizativo para facilitar la lectura. 
+Esta aproximaci'on tiene la ventaja de que no es necesario realizar ning'un c'omputo, sin embargo, el comp'as escrito en la partitura no necesariamente 
+refleja la jerarqu'ia m'etrica inferida por un oyente al escuchar esa partitura puesto que el comp'as en la partitura escrita tambi'en cumple 
+un rol organizativo para facilitar la lectura. 
 
-Una segunda aproximaci'on consistir'ia en dise~nar un algoritmo que infiera la jerarqu'ia de acentos m'etricos de la partitura. Esto se ha realizado con anterioridad por
-\cite{Temperley2001}. En el software desarrollado por Temperley se encuentran implementadas distintas reglas de preferencia definidas por Lerdahl y 
-Jackendoff y en particular las relacionadas con el acento m'etrico. El problema al inferir la jerarqu'ia m'etrica, es luego decidir cual ser'a el 
-nivel elegido para utilizar como per'iodo puesto que si se elige un nivel demasiado alto, la funci'on $c$ dejar'ia de representar las clases de 
-equivalencia que pretende representar realizando demasiadas falsas asignaciones como la exhibida en la figura \ref{fig:simple_measure}. Si 
-se eligiera un nivel muy bajo, habr'ia acentos m'etricos que no estar'ian representados y adem'as resultar'ia en una cadena de markov de muy pocos estados,
-impactando en r'itmicas muy poco variadas.
-
+Se considera que tomar la informaci'on del comp'as es suficiente para el marco de este trabajo, y se propone como trabajo a futuro investigar 
+si hacer un an'alisis m'as elaborado permitir'ia llegar a mejores resultados. 
 
 \subsection{Traducci'on cuando hay notas en simult'aneo}
 En el transcurso de esta secci'on se realiz'o la asunci'on de que no existen notas sonando en simult'aneo en la pieza de entrenamiento, sin embargo esta es una asunci'on poco
@@ -174,18 +206,18 @@ realista.
 \end{imagen}
 
 En la figura \ref{fig:multi_rythm} obs'ervese que no s'olo existen notas que suenan en simult'aneo, los acordes de Do mayor y de Fa mayor, 
-sino que durante la nota C hay notas que comienzan luego que ya esta sonando la nota C. Esto requiere que se deba redefinir la traducci'on
-a estados de la cadena de markov, puesto que la traducci'on no queda un'ivocamente determinada en este escenario.
+sino que durante la nota Do hay notas que comienzan luego de que esta ya est'a sonando. Esto requiere que se deba redefinir la traducci'on
+a estados de la cadena de Markov, puesto que no es posible representar la r'itmica de este tipo de partituras como una sucesi'on de onsets. 
 Si se realizara una traducci'on como se defini'o en \ref{sec:rythm_model}, el resultado de esta depender'ia del orden en que se pongan
 las notas de los acordes. Se exhibe a continuaci'on una posible traducci'on:
 
 $$0, 1, 2, 2, 3, 3$$
 
-N'otese que hay dos 2 y dos 3, puesto que el C suena desde la negra 1. Esta traducci'on es irreal, puesto que estar'ia diciendo que la nota C tiene
+N'otese que hay dos 2 y dos 3, puesto que el Do suena desde la negra 1. Esta traducci'on es irreal, puesto que estar'ia diciendo que la nota Do tiene
 una duraci'on de una negra y adem'as tener el onset 2 seguido del onset 2 significa que se observ'o una nota de duraci'on $p$. 
 Deber'ia ser indistinto a la traducci'on el hecho de que existan notas 
-con las caracter'isticas mensionadas antes. Como primer aproximaci'on se propone, en lugar de generar una sola secuencia de entrenamiento para la cadena
-de markov, generar una sucesi'on de secuencias de entrenamiento. En esta sucesi'on, cada elemento ser'a una secuencia de entrenamiento
+con las caracter'isticas mencionadas antes. Como primer aproximaci'on se propone, en lugar de generar una sola secuencia de entrenamiento para la cadena
+de Markov, generar una sucesi'on de secuencias de entrenamiento. En esta sucesi'on, cada elemento ser'a una secuencia de entrenamiento
 que correspondr'a a la observaci'on de una nota con su $onset$ y su \emph{offset}, siendo este 'ultimo el $onset$ m'as la duraci'on. 
 
 \begin{definition}
@@ -193,7 +225,14 @@ que correspondr'a a la observaci'on de una nota con su $onset$ y su \emph{offset
 Dada una nota $n$, se define su secuencia de entrenamiento como un par ordenado $$(onset(n) \mod p, \text{\emph{offset}}(n)\mod p)$$
 \end{definition}
 
-Asumiendo $p=4$, la figura \ref{fig:multi_rythm_translation} exhibe la traducci'on, de la que resulta la cadena de markov de la figura \ref{fig:multi_rythm_markov}.
+N'otese que en el caso de que la partitura sea representable como una sucesion de onsets, como la del ejemplo \ref{fig:reggae_rhythm}, ocurre que 
+
+$$\text{\emph{offset}}(n_i)\mod p = onset(n_{i+1}) \mod p$$
+
+siendo $n_i$ y $n_{i+1}$ dos notas consecutivas, es decir, esta traducci'on generaliza a la anterior. 
+
+Asumiendo $p=4$, \footnote{En general este valor corresponde a un comp'as de $\frac{4}{4}$. Asumiendo que la duraci'on de una negra no es mucho menor que $500ms$, el pulso determinado por el inicio del comp'as no ser'ia percibido como tal, ver \ref{sec:metric_fundamentos} }
+la figura \ref{fig:multi_rythm_translation} exhibe la traducci'on, de la que resulta la cadena de Markov de la figura \ref{fig:multi_rythm_markov}.
 
 \begin{figure}[!h]
 \begin{center}
@@ -231,7 +270,7 @@ a las clases de equivalencia $2$ y $3$, adem'as de la $0$. Es decir,
 Dada una nota $n$, los siguientes pares ordenados pertenecen a la secuencia de entrenamiento asociada a la misma
 \begin{itemize}
  \item El par ordenado $(onset(n) \mod p, \text{\emph{offset}}(n)\mod p)$
- \item $(onset(n) \mod p, onset(n') \mod p)$, si existe una nota $n'$, tal que $onset(n') > onset(n) \land onset(n') \leq offset(n)$
+ \item $(onset(n) \mod p, onset(n') \mod p)$, si existe una nota $n'$, tal que $onset(n') > onset(n) \land onset(n') < \text{\emph{offset}}(n)$
 \end{itemize}
 \end{definition}
 

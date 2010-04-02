@@ -1,23 +1,214 @@
-\section{Experimentos}
-En esta secci'on se presentan una serie de experimentos que se realizaron con sujetos. Sin embargo, se considera
-importante dar un panorama sobre como fueron implementados en la practica los algoritmos descriptos en los capitulos
-anteriores, puesto que es fundamental ser capaz de controlar las variables para estar seguro que se esta poniendo
-a prueba lo que se cree que se esta poniendo a prueba. De esta forma en lo subsiguiente se har'a una peque~na 
-explicaci'on sobre la arquitectura utilizada, y como esta permite llevar a cabo experimentos confiables.
+\section{Introducci\'on}
+En este cap'itulo se presentan una serie de experimentos que se realizaron con sujetos. 
+
+Para llevarlos a cabo hubo que 
+realizar una implementaci'on donde los modelos puedan operar de forma aislada, garantizando que las 'unicas dependencias 
+entre ellos sean las exhibidas en el figura \ref{fig:arquitectura}. Dejando de lado cuestiones implementativas, 
+fue necesario tambi'en analizar y decidir el m'etodo a utilizar para llevar a cabo el experimento y luego evaluar los resultados.
+
+Siendo as'i, este cap'itulo se estructurar'a de la siguiente forma: primero se detallar'an cuestiones relacionadas con 
+la construcci'on de los experimentos, luego los experimentos en s'i, planteando en cada hip'otesis a poner a prueba y los
+resultados obtenidos.
+Por 'ultimo se realizar'a una discusi'on de los resultados respecto al trabajo en general.
 
 \subsection{Agentes independientes}
-El primer concepto en el que se basa la arquitectura, es en el de \emph{agente independiente}. 
+Como se explic'o en la introducci'on, el concepto de de \emph{agente independiente} es fundamental para controlar las variables. 
 Cada algoritmo recibe una entrada y produce una salida. Los algoritmos se afectan entre s'i a partir de las 
 interacciones dadas por la entrada/salida que producen, sin embargo, la implementaci'on interna de cada uno
 no debe afectar. 
 
+En general, la forma generar un comportamiento que parezca aleatorio es mediante un \emph{generador de n'umeros pseudo-aleatorios}. 
+Este generador es b'asicamente una lista infinita de n'umeros que estad'isticamente se comportan como si fueran uniformes. 
+De esta forma el software puede utilizar esta secuencia, consultandola cada vez que deba tomar un comportamiento no determin'istico. 
+Cada consulta descarta un n'umero de esta lista, haciendo que la pr'oxima consulta lea el siguiente n'umero. 
+Como las computadoras son determin'isticas, para que la secuencia de n'umeros cambie cada vez que se ejecute el programa se utiliza un n'umero 
+llamado \emph{semilla} (o \emph{seed} en ingl'es) para inicializar la secuencia (que puede ser, por ejemplo, la hora actual). 
+En el lenguaje en el que se desarroll'o la aplicaci'on (Python\footnote{http://www.python.org}), el generador por defecto de n'umeros aleatorios 
+es global, es decir, todos los algoritmos estar'ian consultando al mismo generador. De esta forma, cambios en cualquier algoritmo que impliquen en 
+una consuta m'as o una consulta menos indirectamente afectar'an al resto de los algoritmos.
+
 Es por esto que un efecto que es necesario aislar es la cantidad de consultas que hace cada algoritmo al
-generador de n'umeros aleatorios; dado que los numeros aleatorios en la computadora no son mas que una secuencia
-de numeros con propiedades estad'isticas que los hacen ver aleatorios, si un algoritmo consulta un n'umero m'as,
-eso querr'a decir que otro algoritmo no podr'a consultarlo. De esta forma, cada agente deber'a contar con su propio
-generador de n'umeros aleatorios.
+generador de n'umeros aleatorios. Es por esto que cada agente cuenta con su propio generador de n'umeros aleatorios.
 
-Siendo adem'as que se desea poder intercambiar implementaciones de algoritmos, y que todos consulten 
+\subsection{Reproducibilidad de los resultados}
 
-Se hace incapi'e en esto 'ultimo puesto que distintas implementaciones de un algoritmo
-podr'ian consultar 
+\subsection{Posibles experimentos}
+En esta secci'on se presentan una serie de posibles experimentos que podr'ian realizarse con los modelos propuestos en este trabajo. 
+No se realizar'a una descripci'on exaustiva de cada uno, s'olo se enunciar'a cu'al es la hip'otesis a probar.
+
+\begin{itemize}
+  \item Experimentos con el acento m'etrico:
+    \begin{enumerate}
+      \item Analizar si el modelo descripto en la secci'on \ref{sec:metric_model} es capaz de generar r'itmicas que hagan a un oyente inferir la misma 
+            estructura m'etrica que la pieza original. 
+      \item Analizar el impacto que tiene la utilizaci'on de distintos valores para el per'iodo en la inferencia por parte del escucha de la estructura m'etrica.
+%      \item Analizar en qu'e punto los acentos fenom'enicos son necesarios para la inferencia del acento m'etrico: El modelo propuesto no contempla su 
+%      existencia y los midis utilizados tampoco conllevan esa informaci'on.
+
+    \end{enumerate}
+
+  \item Experimentos con la tonalidad: 
+    \begin{enumerate}
+      \item Analizar si el modelo de los \emph{pitch profiles} es suficiente como para inducir en el oyente la tonalidad que se desea inducir. 
+      \item Analizar si deber'ia distinguirse entre las notas del acorde, puesto que en la teor'ia de \cite{Lerdahl2001} son distinguidos pero no lo son en 
+      la modelizaci'on propuesta en la secci'on \ref{sec:harmonic_context_model}.
+    \end{enumerate}
+
+  \item Experimentos con el fraseo:
+    \begin{enumerate}
+      \item Analizar si el modelo de las frases mejora al modelo sin las frases.
+      \item Analizar la diferencia entre melod'ias generadas con distintos valores para los percentiles de los predicados $M$ y $S$ (ver secci'on \ref{sec:phrase_model}).
+    \end{enumerate}
+
+
+  \item Experimentos con la elaboraci'on mot'ivica.
+    \begin{enumerate}
+      \item Analizar si el modelo con elaboraciones mot'ivicas mejora al modelo sin elaboraciones mot'ivicas.
+      \item Analizar las diferencias entre melod'ias generadas con distintos valores para $\alpha$ (ver secci'on \ref{sec:crp_model}).
+
+    \end{enumerate}
+
+
+
+\end{itemize}
+
+Varios de los experimentos enunciados surgieron al analizar los resultados de los experimentos conducidos en las secci'ones \ref{sec:exp_percentiles}, 
+\ref{sec:exp_frase} y \ref{sec:exp_ritmica}.
+
+\subsection{Experimento de los percentiles}
+\label{sec:exp_percentiles}
+\subsubsection{Objetivo}
+Este experimento se propone testear la plausibilidad de las melod'ias generadas de acuerdo a diferentes percentiles (ver secci'on \ref{sec:must_predicates})
+con el objeto de encontrar un valor de percentil adecuado para restringir la distribuci'on de probabilidad sobre la que el programa selecciona el 
+intervalo implicativo a las notas de apoyo.
+
+\subsubsection{Sujetos}
+43 personas (20 mujeres y 23 varones) fueron convocadas voluntariamente por correo electr'onico para realizar la tarea. La media de edad fue de 34,23 a'nos 
+(m'inima 19 y m'aximo 64 a'nos). Fueron agrupadas de acuerdo con tres niveles de formaci'on musical sistem'atica: No m'usicos (sin formaci'on musical; 16 sujetos), 
+Formaci'on Moderada, (hasta 10 a'nos de formaci'on musical sistem'atica; 11 sujetos), M'usicos profesionales (m'as de 10 a'nos de formaci'on musical sistem'atica; 16 sujetos).
+
+\subsubsection{Est\'imulos}
+Se seleccionaron 5 fragmentos de piezas para piano del repertorio acad'emico cl'asico: (1) Danza Alemana WoO 13 N 11 de Beethoven; (2) Contradanza WoO 14 N 2 de Beethoven;
+Contradanza WoO 14 N 8 de Beethoven; (4) Danza Alemana D973 N 1 de Schubert; y (5) Danza Alemana D974 N 2 de Schubert. Estas piezas fueron utilizadas como input del 
+programa. Cada uno de ellos gener'o 4 melod'ias de la extensi'on de la pieza original (aproximadamente 30 segundos) de acuerdo a 4 valores diferentes para el percentil 
+que restringe la probabilidad de que las dos notas anteriores a cada punto de apoyo sean elegidas de acuerdo al modelo de Implicaci'on-realizaci'on mel'odica de 
+E. Narmour. Los valores del percentil elegidos fueron 0; 0,3; 0,8 y 1. De tal modo en las melod'ias generadas con la indicaci'on del percentil 0 las notas de apoyo 
+eran m'as probablemente abordada desde un par de notas anteriores siguiendo la teor'ia de Narmour. Por el contrario, las melod'ias generadas con el percentil 1 no 
+presentaban para nada esa restricci'on. Los restantes componentes del modelo de generaci'on de melod'ias fueron mantenidos fijos para todas las melod'ias. Las melod'ias 
+fueron ejecutadas por la computadora con valores de duraci'on y velocidad (sonoridad) normalizados de acuerdo a lo estipulado en la partitura (no expresivo), 
+con un timbre de piano.
+
+\subsubsection{Procedimiento}
+Los sujetos escuchaban cada una de las 20 melod'ias y ten'ian que evaluarlas de acuerdo a sus propios criterios de ``buena forma'' en una escala de 5 puntos. 
+Los sujetos entraban a la p'agina web a trav'es de un link que les era suministrado v'ia correo electr'onico. All'i se les comunicaba los fundamentos y objetivos 
+de la prueba y se les proporcionaba ejemplos de la tarea de composici'on del programa. A continuaci'on se les explicaba el procedimiento y se le proporcionaban 4 
+ejemplos de aprestamiento. Seguidamente se suced'ian los 20 'items de la prueba. Cada sujeto determinaba el momento de escuchar cada ejemplo clickeando sobre un 
+'icono de ``play'', y colocaba su puntuaci'on directamente en un dispositivo ad hoc dise'nado en la p'agina. Al finalizar la prueba respond'ian un 
+cuestionario de datos personales. 
+
+\subsubsection{Resultados}
+Se ejecut'o un modelo lineal general de mediciones repetidas tomando la pieza input (5 niveles) y los percentiles de acuerdo a los que se generaron las melod'ias 
+target (4 niveles) como factores intra-sujetos. Se consideraron los grupos de experiencia musical como factor entre-sujetos. 
+Solamente el factor Pieza result'o significativo (F[4-39]=4.429; p=.002). Lo que m'as interesa aqu'i, el factor Percentil arroj'o una significaci'on marginal 
+(F[3-40]=2.585; p=.056), sin embargo un contraste post hoc mostr'o que el percentil 1 fue evaluado significativamente diferente del percentil 0 (F[1-42]=5.630; p=.023)
+y del percentil 0,3 (F[1-42]=4.029; p=.052). El gr'afico de la figura \ref{fig:histogramas_juicios} muestra esas diferencias. 
+
+\begin{imagen}
+    \file{images/exp_percentiles/fig1.png}
+    \labelname{fig:histogramas_juicios}
+    \desc{Medias de los juicios de los sujetos para los 4 percentiles propuestos para la restricci'on }
+    \width{5cm}
+    \position{htp}
+\end{imagen}
+
+Parad'ojicamente, los sujetos consideraron mejores las melod'ias que no estaban restringidas (o que solo lo estaban moderadamente) por el modelo compuesto (Narmour-Krumhansl). 
+La interacci'on entre Pieza y Percentil tambi'en result'o significativa (F[12-31]=2.937; p=.001). El gr'afico de la figura 5 permite observar que solamente la primera pieza cumple moderadamente con la predicci'on que avala la teor'ia de la implicaci'on interv'alica.
+
+
+\begin{imagen}
+    \file{images/exp_percentiles/fig2.png}
+    \labelname{fig:interaccion_pieza_percentil}
+    \desc{Interacci'on Pieza - Percentil.  }
+    \width{5cm}
+    \position{htp}
+\end{imagen}
+
+
+\subsubsection{Discusi\'on}
+El experimento reportado en este trabajo buscaba obtener evidencia emp'irica acerca de la importancia de que la unidad relativa a la selecci'on de alturas para la 
+melod'ia de un modelo generativo/computacional estuviese m'as o menos restringido por las teor'ias de implicaci'on realizaci'on –que predice qu'e intervalos ser'an los m'as 
+esperados – y de estabilidad tonal – que predice qu'e notas ser'an consideradas como m'as estables. La predicci'on dec'ia que cuanto m'as alta fuera la restricci'on, los 
+juicios de buena forma de los oyentes ser'ian m'as altos. De este modo la restricci'on estipulada en el percentil 0 dar'ia lugar a juicios m'as altos que la correspondiente 
+al percentil 1. Sin embargo, los resultados parecen contradecir esta predicci'on. En esta secci'on se discuten algunos puntos que pueden echar luz sobre esta contradicci'on. 
+
+\subsubsection{En lo metodol\'ogico}
+El experimento buscaba comparar la bondad de conformaci'on de las melod'ias generadas, sin embargo la tarea experimental no era de comparaci'on. Por el contrario la tarea 
+era de juicio de ``buena forma'' para cada melod'ia en forma independiente. De tal manera, la perspectiva psicol'ogica de la comparaci'on no est'a capturada en esta 
+metodolog'ia. Es posible pensar, entonces, que una tarea de comparaci'on en relaci'on a la “buena forma” podr'ia orientar al sujeto en la audici'on de los componentes 
+que en efecto var'ian de una melod'ia a la otra -en este caso restringidos por la variable independiente (percentil).
+
+\subsubsection{En lo musicol\'ogico}
+Al observar en detalle la interacci'on entre los factores Pieza y Percentil se puede apreciar que la diferencia en los juicios relativos a las melod'ias generadas de 
+acuerdo a los diferentes niveles de restricci'on var'ia de acuerdo a la pieza input. Por ejemplo las melod'ias generadas a partir de la pieza 1 dieron lugar a juicios 
+cuya distribuci'on es contraria a la correspondiente a los juicios para las melod'ias generadas por la pieza 5. Un an'alisis musical de las piezas compuestas por el 
+programa puede entonces brindar alg'un indicio de las causas de estos resultados.
+
+\begin{imagen}
+    \file{images/exp_percentiles/fig3.png}
+    \labelname{fig:percentiles_partitura1}
+    \desc{Pieza input N° 1: Danza Alemana WoO 13 N 11 de Beethoven (arriba) y las melod'ias generadas de acuerdo a las restricciones correspondientes al percentil 0 y 
+    al percentil 1 (de arriba hacia abajo) }
+    \width{12cm}
+    \position{htp}
+\end{imagen}
+
+La figura 6 muestra la partitura de la pieza input 1 y las de las melod'ias generadas conforme los percentiles 0 y 1. En lo concerniente a las relaciones interv'alicas, 
+se observa que el contorno mel'odico de la melod'ia percentil 0 es m'as suavizado (con menos y menores saltos), posibilitando una mayor previsi'on de las metas mel'odicas. 
+En lo relativo a la conformaci'on de la estabilidad tonal, se observa que ambas melod'ias se configuran tonalmente alrededor de si menor - a pesar de que la pieza est'a en 
+La Mayor . Mientras que la melod'ia percentil 0 se orienta hacia La Mayor a partir del comp'as 11, la melod'ia percentil 1, permanece en si menor hasta el final, de tal suerte
+que el La final no puede ser interpretado como t'onica. Por el contrario el Do final de la melod'ia percentil 0 puede ser interpretado como la tercera de la funci'on t'onica 
+con la correspondiente estabilidad como para garantizar un cierre y por ende mejorar la ``buena conformaci'on'': Es probable que ambos rasgos - el mel'odico y el tonal - 
+est'en favoreciendo las mayores puntuaciones de los oyentes para dicha melod'ia.
+
+\begin{imagen}
+    \file{images/exp_percentiles/fig4.png}
+    \labelname{fig:percentiles_partitura2}
+    \desc{Pieza input N° 5: Danza Alemana D 974 N° 2 de Schubert (arriba) y las melod'ias generadas de acuerdo a las restricciones correspondientes al percentil 0 y 
+    al percentil 1 (de arriba hacia abajo)}
+    \width{12cm}
+    \position{htp}
+\end{imagen}
+
+La figura 7 muestra la partitura original de la pieza input N°5 con las melod'ias generadas correspondientes a los percentiles 0 y 1 respectivamente. 
+En lo referente a lo interv'alico, se aprecia en la melod'ia restringida al percentil 0, un contorno mel'odico m'as suavizado que el de la otra melod'ia particularmente 
+en los primeros 8 compases y sobre la cadencia final, conforme a lo predicho por la teor'ia de Narmour (en relaci'on al tama'no y la direccionalidad de los intervalos). 
+En lo relativo a la configuraci'on de la tonalidad ambas melod'ias est'an claramente planteadas en Reb Mayor (la tonalidad de la pieza input). 
+Sin embargo la primera termina sobre la dominante apareciendo como inconclusa (inestable), mientras que la segunda termina sobre la t'onica, precedida por la sensible, 
+de modo que aparece como m'as estable. Parece ser, entonces, que los oyentes privilegian la estabilidad tonal a la implicaci'on mel'odica a la hora de establecer sus 
+juicios de ``buena conformaci'on'' (varios sujetos dejaron consignadas observaciones de esta 'indole al finalizar el test).
+
+La naturaleza compuesta del modelo de esta unidad generativa hace que no sea posible separar claramente un componente del otro para testearlos por separado. 
+Sin embargo, a la luz de estos resultados aparece como importante obtener esos datos que permitan establecer la bondad de cada componente individualmente. En tal 
+sentido es posible que eliminando el componente tonal, al seleccionar input atonales, se pueda evaluar mejor la modelizaci'on del componente interv'alico.
+
+
+\subsubsection{En lo computacional}
+Como se vio, del an'alisis musicol'ogico se desprende que es posible que los dos componentes del modelo requieran un tratamiento separado. Esto implicar'ia dise'nar unidades independientes para ellos. 
+Pero adem'as se observa a ra'iz de la desconfiguraci'on tonal de las melod'ias correspondientes al input 1, que es posible que el modelo utilizado para generar la estabilidad tonal (Krumhansl) deba ``componerse'' con el de la frase mel'odica para determinar m'as ajustadamente las notas de apoyo de modo de garantizar una inducci'on tonal m'as ajustada. 
+Es posible tambi'en que la falla en la predicci'on se deba tambi'en a la velocidad del ritmo arm'onico. N'otese que en el fragmento donde la predicci'on (que el percentil 0 iba a recibir un puntaje mayor) fue acertada, figura 6, tiene un ritmo arm'onico que permite que se configuren unidades discursivas de varias notas. Sin embargo, en el fragmento correspondiente a la figura 7, el ritmo arm'onico es m'as ``acelerado'' en este sentido. Es posible que la soluci'on a esto sea elaborar unidades discursivas que no necesariamente utilicen acordes sucesivos para los puntos de apoyo.
+En todo caso, se considera necesario avanzar en la validaci'on de las decisiones te'oricas tomadas para la construcci'on del programa, sobre la base de la evidencia emp'irica obtenida de los juicios de los oyentes como se ha hecho en esta oportunidad.
+
+
+
+
+\subsection{Experimento de las frases}
+\label{sec:exp_frase}
+\subsubsection{Resultados}
+
+\subsection{Experimento de la r\'itmica}
+\label{sec:exp_ritmica}
+\subsubsection{Resultados}
+
+\subsection{Conclusiones}
+
+
