@@ -2,12 +2,12 @@
 \label{sec:melodic_contour}
 Las caracter'isticas definidas en la secci'on anterior son en gran parte restricciones que deber'ian tenerse en cuenta en la construcci'on 
 de l'ineas mel'odicas respecto a una cierta pieza musical, sin embargo, ninguna de ellas habla de propiedades de la l'inea mel'odica 
-respecto a s'i misma.
+respecto de s'i misma.
 
 En 1960, Leonard Meyer elabor'o una teor'ia acerca de la expectativa en la m'usica aplicando principios gest'alticos de la psicolog'ia. La 
 psicolog'ia de la Gestalt define principios que pretenden capturar la forma en que la mente configura los elementos que llegan a ella a trav'es 
-de la percepci'on o de la memoria. Por ejemplo, la ley de cierre establece que nuestra mente a~nade los elementos faltantes a para completar una 
-figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'irculo y un rectangulo, si bien en la imagen s'olo hay partes de ellos.
+de la percepci'on o de la memoria. Por ejemplo, la ley de cierre establece que nuestra mente a~nade los elementos faltantes para completar una 
+figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'irculo y un rect'angulo, si bien en la imagen s'olo hay partes de ellos.
 
 \begin{imagen}
     \file{images/Gestalt_ley_de_cierre.png}
@@ -22,7 +22,7 @@ la expectativa de los contornos mel'odicos.
 En lo que sigue, se explican con mayor detalle las teor'ias de Narmour, para luego detallar el modelo de las l'ineas mel'odicas.
 
 \subsection{La teor\'ia de la Implicaci\'on-Realizaci'on}
-Como se mension'o en la introducci'on de este cap'itulo, Eugene Narmour, basado en la teor'ia de la expectativa musical de Leonard Meyer, propuso una forma para cuantificar
+Como se mencion'o en la introducci'on de este cap'itulo, Eugene Narmour, basado en la teor'ia de la expectativa musical de Leonard Meyer, propuso una forma para cuantificar
 el grado de expectativa sobre el \emph{contorno melod'ico}. El contorno mel'odico est'a conformado de la sucesi'on de intervalos que ocurren en una melod'ia. Por ejemplo, 
 en la figura \ref{fig:simple_melody} se exhibe una melod'ia en donde se tocan las notas Do, Re, Do, Fa\#. 
 El contorno mel'odico de la figura \ref{fig:simple_melody} ser'a entonces \IM{2}, \IM{-2}, \IM{6}.
@@ -39,8 +39,9 @@ N'otese que esta transformaci'on no es biyectiva, puesto que la melod'ia Re, Mi,
 El modelo de la Implicaci'on-Realizaci'on(IR) asume un sistema cognitivo organizado jer'arquicamente. En esta jerarqu'ia, los sistemas 
 de percepci'on m'as simples, como la vista, se encuentran al fondo y los sistemas de percepci'on m'as abstractos o complejos como la memoria
 se encuentran en el tope. De esta forma se distinguen dos tipos de procesos expectaci'on denominados procesos \emph{bottom-up} 
-y \emph{top-down}. Los procesos bottom-up son aquellos procesos cognitivos en donde se parte de una informaci'on ubicada en los niveles bajos de la jerarqu'ia y se la 
-elabora llev'andola a los niveles altos, mientras que los procesos top-down lo hacen en el orden inverso. 
+y \emph{top-down}. Los procesos bottom-up, tambi'en conocidos como \emph{data-driven}, son procesos cognitivos que operan directamente sobre la informaci'on que llega
+a los sentidos, enviando el resultado hacia ``arriba''. Estos procesos se asumen innatos.  Los procesos top-down, tambi'en conocidos como \emph{schema-driven} o 
+\emph{expectancy-driven}, en lugar de operar con la informaci'on perceptual, operan mayormente con la memoria. Es por esto que los procesos top-down est'an asociados al aprendizaje \cite[p. 256, p. 264]{snyder2001}.
 
 Narmour propone que los procesos que regulan la expectaci'on mel'odica son en mayor medida de tipo bottom-up, es decir, parten de informaci'on puramente sensorial. 
 \cite{Krumhansl95} resume en  que seg'un este modelo, la cognici'on de melod'ias puede ser descripta como una sucesi'on de puntos 
@@ -76,7 +77,7 @@ se comporta como si fuera un intervalo peque~no o como si fuera grande.
 
 \subsection{El modelo}
 \label{sec:contour_model}
-Dada un pieza musical, en este caso es de inter'es construir un modelo y entrenarlo con el contorno mel'odico del tema en cuesti'on. De esta forma se puede proyectar
+Dada una pieza musical, en este caso es de inter'es construir un modelo y entrenarlo con el contorno mel'odico del tema en cuesti'on. De esta forma se puede proyectar
 las alturas de las notas del tema, y luego construir la sucesi'on de intervalos mel'odicos tomando la diferencia entre las sucesivas alturas. 
 
 Es importante tener en cuenta que los principios definidos por la teor'ia de Narmour s'olo aplican a contornos mel'odicos. 
@@ -85,7 +86,7 @@ Para solucionar este problema, se tomar'a la \emph{primera voz}, que corresponde
 la teor'ia de la m'usica, esto no es del todo correcto, pero a los efectos de este trabajo es suficiente}. 
 Siendo as'i, puede asumirse que en el tema de entrenamiento no hay notas sonando en simult'aneo. 
 
-Antes de continuar con los detalles del modelo es importante mensionar una simplificaci'on que se hizo a la teor'ia de IR.
+Antes de continuar con los detalles del modelo es importante mencionar una simplificaci'on que se hizo a la teor'ia de IR.
 Esta simplificaci'on consiste en no analizar las condiciones que hacen que un intervalo realizado
 cree un punto de cierre, es decir, se asume que todos los intervalos son implicativos. Se considera que la decisi'on de donde colocar intervalos de cierre es candidata 
 a estar ubicada dentro a otro nivel en la jerarqu'ia de modelos para construir l'ineas mel'odicas, puesto que en general los cierres estan asociados a la estructura
@@ -93,9 +94,22 @@ del tema, de esta forma, para mantener limitado el alcance de esta tesis, se dej
 
 Teniendo en mente el objetivo de generar contornos mel'odicos, lo que se est'a buscando es un modelo que permita estimar la probabilidad de una nota, 
 dadas las dos anteriores, es decir $P(n_3|n_1, n_2)$. Una forma de llevar a cabo esta estimaci'on es considerar una codificaci'on de los principios del modelo de IR.
-Esta codificaci'on corresponde a considerar una funci'on por cada principio que distinga seg'un el principio que corresponda. No existe una 'unica codificaci'on
-de estos principios en la literatura, a saber por el autor, por lo menos  \cite{PaieThesis} y \cite{Schellenberg97} han realizado distintas codificaci'ones, 
-sin embargo, no se desea poner el foco en cual es la codificaci'on adecuada, sino en dar un marco, en donde dada una cierta codificaci'on, 
+Esto corresponde a considerar una funci'on por cada principio que tome como entrada dos intervalos mel'odicos y discrimine seg'un el principio que le corresponda. Por ejemplo,
+el principio de direcci'on registral puede codificarse como:
+
+\begin{align*}
+RD(i_1, i_2)= \left\{
+ \begin{array}{rl}
+  0 & \text{si } abs(i_1) < 6 \land sign(i_1) \ne sign(i_2) \\
+  0 & \text{si } abs(i_1) > 6 \land sign(i_1) = sign(i_2) \\
+  1 & \text{si no}
+ \end{array} \right.
+\end{align*}
+
+Donde $i_1$ y $i_2$ denotan la longitud de dos intervalos consecutivos, $abs$ el valor absoluto y $sign$ el signo.
+
+No existe una 'unica codificaci'on de estos principios en la literatura, a saber por el autor. \cite{PaieThesis} y \cite{Schellenberg97} han realizado distintas 
+codificaci'ones, sin embargo, no se desea poner el foco en cual es la codificaci'on adecuada, sino en dar un marco, en donde dada una cierta codificaci'on, 
 se puedan generar contornos mel'odicos con esa codificaci'on.
 
 De esta forma, as'umase un conjunto de caracter'isticas $F_1, \cdots, F_k$, que en principio codificar'ian los principos de Narmour(es decir, $k$ ser'ia igual a $5$), 
@@ -116,6 +130,7 @@ si bien no es cierta en la mayor'ia de los problemas, se han obtenido resultados
 En este caso, la expresi'on \ref{eq:general_narmour_model} se reescribir'a como
 
 \begin{align}
+\label{eq:naive_bayes_narmour_model}
 P(n_3 | n_1, n_2) = \prod_{i=1}^k P(F_i(n_1, n_2, n_3)|n_1, n_2)
 \end{align}
 
@@ -125,16 +140,64 @@ Luego, uno de los an'alisis que se realiz'o, fue la correlaci'on entre los princ
 y se encontr'o que algunos de ellos estaban correlacionados. Utilizando este conocimiento se podr'ia efectuar una factorizaci'on que est'e en el medio entre 
 la distribuci'on conjunta y la Naive.
 
-Una vez elegida la codificaci'on y la factorizaci'on de la distribuci'on a utilizar, se puede incorporar el contexto arm'onico como una caracter'istica m'as 
+Una vez elejida la codificaci'on y la factorizaci'on de la distribuci'on a utilizar, se puede incorporar el contexto arm'onico como una caracter'istica m'as 
 obteniendo una distribuci'on de probabilidades para las continuaciones de una melod'ia y asumiendo independencia entre el contexto arm'onico y el contorno mel'odico
 se puede escribir la probabilidad de la siguiente forma:
 
-$$P(n_3 | n_1, n_2) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3)|n_1, n_2) P(n_3|\theta)$$
+\begin{align}
+\label{eq:narmour_w_pitch_profile}
+P(n_3 | n_1, n_2, \theta) = P(F_1(n_1, n_2, n_3), \cdots, F_k(n_1, n_2, n_3)|n_1, n_2) P(n_3|\theta)
+\end{align}
 
+En la figura \ref{fig:narmour_all} se exhibe la distribuci'on inferida utilizando la ecuaci'on \ref{eq:naive_bayes_narmour_model} a partir de la 
+codificaci'on original de los principios de Narmour (figura \ref{fig:narmour_coding1}) y de un fragmento de Beethoven, Sonata Op. 10 No. 1, II. 
+En esta figura el eje $Y$ representa la longitud del intervalo implicativo medida en semitonos, y el eje $X$ representa la longitud del intervalo 
+realizado, tambi'en en semitonos. Dado que las ecuaciones propuestas en esta secci'on est'an condicionadas en dos notas, estas predican la probabilidad del intervalo 
+realizado \emph{dado} el intervalo implicativo, de esta forma, estas representan s'olo una fila en el gr'afico.
+
+Obs'ervese que en esta visualizaci'on no est'an representadas directamente las notas tocadas, s'olo sucesiones de dos intervalos mel'odicos. 
+Sin embargo, contextualizando esto en un fragmento mel'odico donde ya se ha tocado alguna nota se puede observar que, las celdas dispuestas en la 
+diagonal de izquierda a derecha representan la misma nota final. Si la nota que ya se ha tocado es $n$, entonces tocar los intervalos 0, 0 
+representa repetir dos veces la nota $n$, tocar los intervalos -1, 1 representa finalizar nuevamente en la nota $n$, de la misma forma que 1, -1. 
+De esta forma si se fija una nota $n$, se puede aplicar la distribuci'on del pitch profile. Como este aplica solamente a la 'ultima nota, las celdas
+dispuestas en diagonal estar'an afectadas por el mismo factor, por ser la misma nota final. De esta forma en la figura \ref{fig:narmour_w_pitch_profile} 
+se exhibe el pitch profile para el mismo fragmento de Beethoven, y en las figuras \ref{fig:narmour_reference_note1} y \ref{fig:narmour_reference_note2} se exhiben 
+las distribuci'on inferidas a partir de la equaci'on \ref{eq:narmour_w_pitch_profile} asumiendo que $n_1=G\sharp$ y $n_1=F\sharp$ respectivamente. 
+Al fijar la nota $n_1$, la sem'antica de los ejes cambian: El eje $Y$ ahora ser'a $n_2$, puesto que al fijar $n_1$ se pierde el grado de 
+libertad que ten'ia el intervalo implicativo, pero el eje $X$ sigue siendo el intervalo realizado ya que la nota que se toque depender'a de la fila elejida.
+\begin{imagen}
+    \position{htb!}
+    \file{images/narmour_all.png}
+    \labelname{fig:narmour_all}
+    \desc{Distribuci'on inferida a partir de la ecuaci'on \ref{eq:naive_bayes_narmour_model}}
+    \width{10cm}
+\end{imagen}
+
+\begin{imagen}
+    \position{htb!}
+    \file{images/narmour_pitch_profile.png}
+    \labelname{fig:narmour_w_pitch_profile}
+    \desc{Pitch profile de  Beethoven, Sonata Op. 10 No. 1, II}
+    \width{10cm}
+\end{imagen}
+
+\begin{imagen}
+    \file{images/narmour_ref_note_tonic_all.png}
+    \labelname{fig:narmour_reference_note1}
+    \desc{Distribuci'on inferida a partir de la ecuaci'on \ref{eq:narmour_w_pitch_profile} asumiendo que $n_1=D\sharp$}
+    \width{10cm}
+\end{imagen}
+
+\begin{imagen}
+    \file{images/narmour_ref_note_seventh_all.png}
+    \labelname{fig:narmour_reference_note2}
+    \desc{Distribuci'on inferida a partir de la ecuaci'on \ref{eq:narmour_w_pitch_profile} asumiendo que $n_1=D\sharp$}
+    \width{10cm}
+\end{imagen}
+\clearpage
 \subsection{Codificaci\'ones existentes}
-Como ya se mension'o con anterioridad, existe m'as de una codificaci'on en la literatura para los principios de Narmour. 
-En esta secci'on se har'a mensi'on de algunas puesto que en el cap'itulo \ref{cap:experiments} se realizar'a una comparaci'on
-entre las composiciones que son generadas a partir de utilizar una u otra codificaci'on. Se se omitir'a la propuesta por \cite{PaieThesis}
+Como ya se mencion'o con anterioridad, existe m'as de una codificaci'on en la literatura para los principios de Narmour. 
+En esta secci'on se har'a menci'on de algunas. Se omitir'a la propuesta por \cite{PaieThesis}
 puesto que se considera que no difiere lo suficiente de la propuesta por \cite{Schellenberg97} y las diferencias radican en intentar disminuir
 el espacio de posibles estados.
 
@@ -168,13 +231,6 @@ en la direcci'on opuesta.
     \width{10cm}
 \end{imagen}
 
-
-En \cite{Schellenberg96}, el autor not'o que existe redundancia en los principios propuestos por \cite{Narmour91}, y con el objeto de explicar los datos
-generados por sus experimentos, redujo el modelo a un modelo de tres principios. Este modelo se presenta en la figura \ref{fig:narmour_revisited}.
-La raz'on por la que se redujo de 5 principios a 3 es porque los principios de proximidad, diferencia interv'alica y cierre estaban altamente 
-correlacionados. De esta forma se dej'o solamente uno, proximidad, con mayor detalle. Los principios de direcci'on registral y retorno registral
-fueron recodificados a partir de los resultados de \cite{CuddyLunney95}.
-
 \begin{imagen}
     \file{images/narmour_revisited.png}
     \labelname{fig:narmour_revisited}
@@ -182,6 +238,12 @@ fueron recodificados a partir de los resultados de \cite{CuddyLunney95}.
     \width{9cm}
 \end{imagen}
 
+
+En \cite{Schellenberg96}, el autor not'o que existe redundancia en los principios propuestos por \cite{Narmour91}, y con el objeto de explicar los datos
+generados por sus experimentos, redujo el modelo a un modelo de tres principios. Este modelo se presenta en la figura \ref{fig:narmour_revisited}.
+La raz'on por la que se redujo de 5 principios a 3 es porque los principios de proximidad, diferencia interv'alica y cierre estaban altamente 
+correlacionados. De esta forma se dej'o solamente uno, proximidad, con mayor detalle. Los principios de direcci'on registral y retorno registral
+fueron recodificados a partir de los resultados de \cite{CuddyLunney95}.
 
 
 Luego, bas'andose en los datos y resultados de los experimentos de \cite{Schellenberg96} y \citet{CuddyLunney95}, Schellemberg aplica el m'etodo de 

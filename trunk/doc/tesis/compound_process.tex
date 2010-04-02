@@ -4,10 +4,9 @@ un proceso generativo para componer lineas mel'odicas de forma relativamente sen
 %Tener en cuenta que dependiendo de la elecci'on del modelo de contorno mel'odico, la cadena de Narmour o la distribuci'on de Narmour, el algoritmo se ver'a
 %afectado. El primer modelo permite elegir un conjunto de notas candidatas, mientras que el segundo permite incorporar dentro de una distribuci'on de 
 %probabilidades el modelo de contornos melodicos con el modelo del contexto arm'onico. 
-A continuaci'on se definir'a el algoritmo exhibiendo el pseudoc'odigo para que quede en una representaci'on compacta, 
-sin embargo se deduce de los roles que se le asign'o a cada modelo: 
-para cada nota a generar, el modelo de la r'itmica eligir'a su duraci'on, mientras que el modelo de Narmour en conjunto con el de contexto arm'onico 
-elijir'an su altura tocarse en funci'on del 'ultimo intervalo tocado.
+A continuaci'on se definir'a el algoritmo exhibiendo el pseudoc'odigo para que quede en una representaci'on compacta: 
+para cada nota a generar, el modelo de la r'itmica elejir'a su duraci'on, mientras que el modelo de Narmour en conjunto con el de contexto arm'onico 
+elejir'an la altura a tocar en funci'on del 'ultimo intervalo tocado.
 
 \begin{algoritmo}
 create_melody(rhythm_model, harmonic_context, contour_model, 
@@ -20,6 +19,8 @@ create_melody(rhythm_model, harmonic_context, contour_model,
         for note in available_notes
             prob := harmonic_context.get_prob(note)*contour_model.get_prob(note, context)
             pitch_distribution[note] := prob 
+
+        pitch_distribution := normalize(pitch_distribution)
         new_pitch := pick(pitch_distribution)
 
         last_note := Note(last_note.start, new_duration, new_pitch)
@@ -30,9 +31,6 @@ create_melody(rhythm_model, harmonic_context, contour_model,
 
     return notes
 \end{algoritmo}
-
-N'otese que el diccionario pitch\_distribution no necesariamente suma 1, sin embargo no es necesario que sume uno, puesto que lo que se desea es elejir un elemento con
-probabildad proporcional al valor que este le atribuye, que es lo que hace la funci'on \emph{pick}.
 
 De esta forma se puede expresar en t'erminos probabil'isticos la elecci'on total de cada nota. Sean $d_j$ la sucesi'on de duraci'ones y $n_j$ 
 la sucesi'on de notas, y $\theta$ el vector de par'ametros del contexto arm'onico, entonces la probabilidad de una nota estar'a dada por:
