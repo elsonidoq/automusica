@@ -338,13 +338,13 @@ Drag and Drop
             };
         function show_texts() {
             if (navigator.appName == 'Microsoft Internet Explorer') {
-                texts[4]= r.text(buttons[4].attrs.cx+1, buttons[4].attrs.cy + 3, "=").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
-                texts[0]= r.text(buttons[0].attrs.cx-1, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 3, "=").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
                 texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 3, "+").attr({"font-size":"15", fill:"#fff"}).mousedown(mousedown_handler);
             } else {
-                texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy + 1, "=").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
-                texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy + 1, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
-                texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy + 1, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[4]= r.text(buttons[4].attrs.cx, buttons[4].attrs.cy, "=").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[0]= r.text(buttons[0].attrs.cx, buttons[4].attrs.cy, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
+                texts[8]= r.text(buttons[8].attrs.cx, buttons[4].attrs.cy, "+").attr({"font-size":"10", fill:"#fff"}).mousedown(mousedown_handler);
             }
             selected_elements= [buttons[4], texts[4]];
             texts[4].node.style.cursor = "pointer";

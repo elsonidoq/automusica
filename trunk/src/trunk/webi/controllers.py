@@ -1,4 +1,5 @@
 from __future__ import with_statement
+import re
 import random
 from uuid import uuid4 as uuid
 from mako.template import Template
@@ -82,6 +83,151 @@ class FinishedExperiment(object):
     def index(self):
         template= lookup.get_template('gracias.mako')
         return template.render()
+
+def get_original_fname_and_description(composed_fname):
+    descriptions= {'bach.annamin.mid': 'Anonymous',
+                   'bach.jesu.mid': 'Bach, Cholare, "Jesu, der du meine Seele"',
+                   'bach.kindlein.mid': 'Bach, Chorale, "Uns ist ein Kindlein heut\' ',
+                   'beet.rondo.mid': 'Beethoven, Rondo Op. 51, no. 1, mm. 103-120',
+                   'beet.son10-1.II.mid': 'Beethoven, Sonata Op. 10 No. 1, II, mm. 1-8',
+                   'beet.son10-3.II.mid': 'Beethoven, Sonata Op. 10 No. 3, II, mm. 9-17',
+                   'beet.son13.II.mid': 'Beethoven, Sonata Op. 13, II, mm. 1-8',
+                   'beet.son14-1.III.mid': 'Beethoven, Sonata Op. 14 No. 1, III',
+                   'beet.son2-3.III.mid': 'Beethoven, Sonata Op. 2 No. 3, III, mm. 81-88',
+                   'beet.son27-2.I.mid': 'Beethoven, Sonata Op. 27 No. I, mm. 1-9',
+                   'beet.sq135.III.mid': 'Beethoven, String Quartet Op. 135, III, ',
+                   'beet.strio.mid': 'Beethoven, String Trio Op. 9 No. 3, II, ',
+                   'brahms.undgehst.mid': 'Brahms, "Und gehst du ueber den Kirchhof", ',
+                   'campbell.barb.mid': 'Ayer (arr. by Campbell), "Oh! You Beautiful',
+                   'chop.maz62-7.mid': 'Chopin, Mazurka Op. 62, No. 7, mm. 1-16',
+                   'chop.maz63-2.mid': 'Chopin, Mazurka Op. 63, No. 2, mm. 1-16',
+                   'chop.maz67-2.mid': 'Chopin, Mazurka Op. 67, No. 2, mm. 1-16',
+                   'chop.noc27-1.mid': 'Chopin, Nocturne Op. 27 No. 1, mm. 41-52',
+                   'grieg.mountain.mid': 'Grieg, "The Mountain Maid", Op. 67 No. 2, ',
+                   'haydn.son22.III.mid': 'Haydn, Sonata No. 22, III, mm. 1-8',
+                   'haydn.son30.I.mid': 'Haydn, Sonata No. 30, I, mm. 84-96',
+                   'haydn.sq.76-6.II.mid': 'Haydn, String Quartet Op. 76 No. 6, II,',
+                   'haydn.sq20-4.I.mid': 'Haydn, String Quartet Op. 20 No. 4, I, ',
+                   'haydn.sq50-6.II.mid': 'Haydn, String Quartet Op. 50 No. 6, II,',
+                   'haydn.sq74-3.II.mid': 'Haydn, String Quartet Op. 74 No. 3, II,',
+                   'mzt.bsnconc.mid': 'Mozart, Bassoon Concerto K. 191, II, mm. 42-50',
+                   'mzt.ekn.II.mid': 'Mozart, "Eine Kleine Nachtmusik", K. 525, II,',
+                   'mzt.pc488.II.mid': 'Mozart, Piano Concerto K. 488, II, mm. 1-12',
+                   'mzt.son330.II.mid': 'Mozart, Sonata K. 330, II, mm. 21-8',
+                   'mzt.son333.III.mid': 'Mozart, Sonata K. 333, III, mm. 91-8',
+                   'mzt.trio.mid': 'Mozart, Piano Trio K. 542, I, mm. 210-229',
+                   'mzt.voiche.mid': 'Mozart, Marriage of Figaro, "Voi che sapete",',
+                   'schub.bfson.I.mid': 'Schubert, Sonata in Bb, D. 960, I, mm. 149-68',
+                   'schub.erlkonig.I.mid': 'Schubert, "Erlkonig", mm. 113-23',
+                   'schub.erlkonig.II.mid': 'Schubert, "Erlkonig", mm. 134-48',
+                   'schub.flusse.mid': 'Schubert, "Auf dem Flusse", mm. 14-21',
+                   'schub.imp1.mid': 'Schubert, Impromptu Op. 90 No. 1, mm. 42-55',
+                   'schub.strio.mid': 'Schubert, String Trio D. 471, mm. 187-201',
+                   'schub.tanze.mid': 'Schubert, Originaltanze Op. 9 No. 14, mm. 1-24',
+                   'schum.grenadiere.mid': 'Schumann, "Die beiden Grenadiere", mm. 23-37',
+                   'schum.sehnsucht.mid': 'Schumann, "Sehnsucht", mm. 2-11',
+                   'schum.thranen.mid': 'Schumann, "Aus meinen Thranen spriessen",',
+                   'schum.tragodie.mid': 'Schumann, "Tragodie", mm. 1-9',
+                   'schum.wennich.mid': 'Schumann, "Wenn ich in deine Augen seh\'", ',
+                   'tchaik.morning.mid': 'Tchaikovsky, "Morning Prayer", mm. 1-17',
+                   'tchaik.nurse.mid': 'Tchaikovsky, "The Nurse\'s Tail", mm. 5-15',
+                   'tchaik.symph6.mid': 'Tchaikovsky, Symphony No. 6, I, mm. 89-97'}
+
+    composed_fname= os.path.basename(composed_fname).replace('.mp3', '')
+    originals_dir= '/examples/originals'
+    original_fnames= [os.path.basename(fname).replace('.mid', '') for fname in descriptions]
+
+    last_end= None
+    partial_composed_fname= ''
+    for m in re.finditer('[A-Za-z0-9]+', composed_fname):
+        if m.start() == 0:
+            partial_composed_fname= composed_fname[m.start():m.end()]
+        else:
+            partial_composed_fname+= composed_fname[last_end:m.end()]
+        last_end= m.end()
+
+
+        candidates= [fname for fname in original_fnames if partial_composed_fname in fname]
+        if len(candidates) == 1:
+            break
+    if len(candidates) == 0: import ipdb;ipdb.set_trace()
+    original_fname= os.path.join(originals_dir, candidates[0])
+    description= descriptions[candidates[0] + '.mid'].strip(' ,')
+    return original_fname + '.mp3', description
+
+    
+class Examples(object):
+    #@cherrypy.tools.encode(encoding='utf8')
+    @cherrypy.expose
+    def index(self):
+        template= lookup.get_template('examples.mako')
+
+        all_examples= {'Modelo del acento m&eacute;trico':[
+                            {'songs':[('Con percusi&oacute;n', '/examples/rhythm/bach.annamin-perc.mp3')]},
+                            {'songs':[('Con percusi&oacute;n', '/examples/rhythm/chop.maz67-2-perc.mp3')]}, 
+                            {'songs':[('Con percusi&oacute;n', '/examples/rhythm/beet.strio-perc.mp3')]} 
+                            ],
+                       'Modelo de los contextos harm&oacute;nicos':[
+                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/selected/schum.thranen_wo_nar_wo_ch.mp3'),
+                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schum.thranen_wo_nar_w_ch.mp3')]},
+                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/selected/mzt.ekn.ii_wo_nar_wo_ch.mp3'),
+                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/mzt.ekn.ii_wo_nar_w_ch.mp3')]},
+                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/selected/schub.bfson.i_wo_nar_wo_ch.mp3'),
+                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schub.bfson.i_wo_nar_w_ch.mp3')]},
+                            ],
+
+                       'Modelo de los contornos mel&oacute;dicos':[
+                            {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schum.thranen_wo_nar_w_ch.mp3'),
+                                       ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schum.thranen_w_nar_w_ch.mp3') ]},
+                            {'songs':[('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/mzt.ekn.ii_wo_nar_w_ch.mp3'),
+                                      ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/mzt.ekn.ii_w_nar_w_ch.mp3')  ]},
+
+                            {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schub.bfson.i_wo_nar_w_ch.mp3'),
+                                       ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schub.bfson.i_w_nar_w_ch.mp3') ]},
+
+                            ],
+
+                       'Modelo de las frases':[
+                            {'songs':[ ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schum.thranen_w_nar_w_ch.mp3') ,
+                                       ('Con modelo de frases', '/examples/phrases/schum.thranen.mp3') ]},
+                            {'songs':[ ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/mzt.ekn.ii_w_nar_w_ch.mp3'), 
+                                       ('Con modelo de frases', '/examples/phrases/mzt.ekn.ii.mp3') ]},
+                            {'songs':[ ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schub.bfson.i_w_nar_w_ch.mp3'), 
+                                       ('Con modelo de frases', '/examples/phrases/schub.bfson.i.mp3') ]},
+                            ],
+
+                       'Modelo de elaboraciones mot&iacute;vicas':[
+                            {'songs':[ ('Con modelo de frases', '/examples/phrases/schum.thranen.mp3'),
+                                       ('Con modelo de elaboraciones mot&iacute;vicas', '/examples/motif/schum.thranen.mp3') ]},
+                            {'songs':[ ('Con modelo de frases', '/examples/phrases/mzt.ekn.ii.mp3'),
+                                       ('Con modelo de elaboraciones mot&iacute;vicas', '/examples/motif/mzt.ekn.ii.mp3') ]},
+                            {'songs':[ ('Con modelo de frases', '/examples/phrases/schub.bfson.i.mp3'),
+                                       ('Con modelo de elaboraciones mot&iacute;vicas', '/examples/motif/schub.bfson.i.mp3') ]},
+                            ]
+                      }
+        
+        ordering= {'Modelo de los contornos mel&oacute;dicos':2,
+                   'Modelo del acento m&eacute;trico':0,
+                   'Modelo de los contextos harm&oacute;nicos':1,
+                   'Modelo de las frases': 3,
+                   'Modelo de elaboraciones mot&iacute;vicas':4
+        }
+        for section, songs in all_examples.items():
+            for song in songs:
+                fname= song['songs'][0][1] 
+                original_fname, description= get_original_fname_and_description(fname)
+                song['name']= description
+                song['songs'].insert(0, ['Original', original_fname])
+        #all_examples= {"a1":[{'name':'Tragodie (Schumann)', 'orig':'schum.tragodie.mp3', 'solo':'schum.tragodie-wolp.mp3'} 
+        #                     ]                             }
+
+        all_examples= sorted(all_examples.items(), key=lambda i:ordering[i[0]])
+
+
+        d={ 'all_examples': all_examples,
+            'songs_base_url'     : '/mp3/sample_mids/'}  
+
+        return template.render(**d)
 
 class Home(object):
     #@cherrypy.tools.encode(encoding='utf8')
@@ -273,6 +419,7 @@ if __name__ == '__main__':
 
     conf_fname= os.path.join(current_dir, 'cherrypy.ini')
     root= Home()
+    root.examples= Examples()
     root.comparision_experiment= ComparisionExperiment()
     root.experiment= Experiment()
     root.questions= Questions()

@@ -82,8 +82,8 @@ class SupportNotesComposer(object):
             min_pitch= mean_pitch - 12
             max_pitch += offset
             min_pitch += offset 
-        min_pitch= int(min_pitch)
-        max_pitch= int(max_pitch)
+        min_pitch= int(min_pitch)-6
+        max_pitch= int(max_pitch)+6
         self.params['min_pitch']= int(min_pitch)
         self.params['max_pitch']= int(max_pitch)
 

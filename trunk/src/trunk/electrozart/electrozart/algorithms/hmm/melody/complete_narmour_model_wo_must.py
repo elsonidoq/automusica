@@ -62,12 +62,13 @@ class SimpleContourAlgorithm(Algorithm):
                 narmour_features_prob[feature_name][feature_value]= float(cnt)/s
 
         self.ec.first_notes= None
+        self.n=0
 
 
     @needs('notes_distr', 'pitches_distr', 'min_pitch', 'max_pitch')
     @produces('pitch')
     def next(self, input, result, prev_notes):
-        prob_model= ProbModel(self.ec.narmour_features_prob, input.notes_distr)
+        prob_model= ProbModel(self.ec.narmour_features_prob, input.notes_distr, use_narmour=True)
         if self.ec.first_notes is None:
             self.ec.first_notes= self._pick_first_notes(prob_model, input.min_pitch, input.max_pitch)
         
@@ -80,6 +81,24 @@ class SimpleContourAlgorithm(Algorithm):
             d= {}
             for n3 in xrange(input.min_pitch, input.max_pitch + 1):
                 d[n3]= prob_model.get_prob(n1, n2, n3)
+            #import ipdb;ipdb.set_trace()
+
+            #with open('distr', 'a') as f:
+            #    f.write('*'*15 + '\n')
+            #    s= sum(d.values())
+            #    for k, v in sorted(d.items(), key=lambda x:x[1]):
+            #        f.write('%s\t\t%.02f\n' % (k, v/s))
+
+            #import pylab
+            #dir= "distrs/wo_nar_w_ch"
+            #if not os.path.exists(dir): os.mkdir(dir)
+            #s= sum(d.values())
+            #x, y= zip(*d.items())
+            #y= [v/s for v in y]
+            #pylab.plot(x,y)
+            #pylab.savefig(os.path.join(dir, "%s.png" % self.n))
+            #pylab.close()
+            #self.n+=1
 
             n3= RandomPicker(values=d, random=self.random).get_value(normalize=True)
             result.pitch= n3
