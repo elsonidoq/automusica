@@ -48,7 +48,7 @@ def main(argv):
     parser.add_option('--output-dir', dest='output_dir', default='output-mids', help='the default output dir')
     parser.add_option('-O', '--override', dest='override', help='if the outputfile exists, overrides. Default False', default=False, action='store_true')
     parser.add_option('--pitch-offset', dest='offset', default=0, type='int')
-    parser.add_option('--disable-part-repetition', dest='enable_part_repetition', default=False, action='store_true')
+    parser.add_option('--disable-part-repetition', dest='enable_part_repetition', default=True, action='store_false')
     parser.add_option('--simple-narmour-model', dest='simple_narmour_model', default=False, action='store_true')
     parser.add_option('--global-notes-distr', dest='notes_distr_duration', default=True, action='store_false', help='uso por duracion o global? Default indexo por duracion')
     parser.add_option('-p', '--set-param', dest='params', action='append')
@@ -160,6 +160,7 @@ def train3(options, args):
     diff_file= outfname[:-3] + 'diff'
     svn_file= outfname[:-3] + 'svn'
     solo_fname= outfname.replace('.mid', '-solo.mid')
+    perc_fname= outfname.replace('.mid', '-perc.mid')
     wolp_fname= outfname.replace('.mid', '-wolp.mid')
     outfname= outfname.lower()
 
@@ -178,13 +179,14 @@ def train3(options, args):
             shutil.rmtree(info_folder)
         os.makedirs(info_folder)
         composer.save_info(info_folder, score)
-        print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder)
+        print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, perc_fname, info_folder)
         return
 
     composed_score, instrument= composer.compose(score, **options.__dict__)
     # XXX
     composer.original_score= score
     composer.composed_score= composed_score
+    orig_composed_score= composed_score.copy()
 
     writer= NotesScoreWriter()
     writer= MidiScoreWriter()
@@ -204,6 +206,12 @@ def train3(options, args):
 
     writer.dump(composed_score, wolp_fname)
 
+    import to_percusion
+    perc_notes= to_percusion.get_percusion_track(solo_notes)
+    orig_composed_score.notes_per_instrument[instrument]= perc_notes
+    instrument.is_drums= True
+    writer.dump(orig_composed_score, perc_fname)
+
     # draw things
     if options.save_info:
         os.makedirs(info_folder)
@@ -214,7 +222,7 @@ def train3(options, args):
     params['options']= options.__dict__
     params['args']= args
         
-    print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder)
+    print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, perc_fname, info_folder)
     save_state(composer, params_file, diff_file, svn_file)
 
     print 'done!'
@@ -235,7 +243,7 @@ def save_state(composer, params_file, diff_file, svn_file):
         p= subprocess.Popen('svn info'.split(), stdout=subprocess.PIPE)
         f.write(p.stdout.read())
 
-def print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, info_folder):
+def print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, perc_fname, info_folder):
     print "info folder", info_folder
     print "params file", params_file
     print "diff file", diff_file
@@ -246,6 +254,7 @@ def print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fna
     print "*"*width
     print "midi file ", outfname
     print "solo file ", solo_fname
+    print "perc file ", perc_fname
     print "wolp file ", wolp_fname
     print "*"*width
 

@@ -14,7 +14,7 @@ from electrozart.algorithms import ExecutionContext, needs, child_input
 class NotesDistr(Algorithm):
     def __new__(cls, *args, **kwargs):
         instance= super(NotesDistr, cls).__new__(cls, *args, **kwargs)
-        instance.params.update(dict(global_profile_prior_weight = 4,#0.5,#1, #0.5, 
+        instance.params.update(dict(global_profile_prior_weight = 16,#0.5,#1, #0.5, 
                                     proportional_to_duration    = True,
                                     profile_smooth_factor       = 0.05))
         return instance
@@ -34,6 +34,8 @@ class NotesDistr(Algorithm):
         if abs(sum(score_profile.values())-1) > 0.001: import ipdb;ipdb.set_trace()
 
     def pitches_distr(self, now_notes=None, min_pitch=None, max_pitch=None):
+        #print "NO USA NOW_NOTES"
+        #return self.score_profile
         if now_notes is None or len(now_notes) == 0:
             return self.score_profile
 
@@ -58,6 +60,7 @@ class NotesDistr(Algorithm):
         for pc, prob in self.score_profile:
             #pitches_distr[pc]= self.params['global_profile_prior_weight']
             pitches_distr[pc]= prob*len(now_notes) #self.params['global_profile_prior_weight']
+            pitches_distr[pc]= prob#*len(now_notes) #self.params['global_profile_prior_weight']
             #pitches_distr[pc]= prob*self.params['global_profile_prior_weight']
 
         for i, pc in enumerate(now_pc):
@@ -82,7 +85,7 @@ class NotesDistr(Algorithm):
         return pitches_distr
 
         
-    def save_info(self, folder, score): 
+    def save_info(self, folder, score, params): 
         def format_pitch(x, pos=None):
             if int(x) != x: import ipdb;ipdb.set_trace()
             return Note(int(x)).get_pitch_name()[:-1]
