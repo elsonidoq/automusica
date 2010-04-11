@@ -46,7 +46,7 @@
 <!-- print_song -->
 <div class="song" >
     <div style="background:#${colors[last_color_index]}"> 
-	<a style="color:#${link_color};padding-left:10px;text-decoration:none;background:#${colors[last_color_index]}" href="#" 
+	<a style="color:#${link_color};padding-left:10px;text-decoration:none;background:#${colors[last_color_index]};cursor:pointer"
 		onclick="javascript:show_songs('#${element_class}');">${song_desc['name']}</a>
     </div>
 
@@ -66,7 +66,7 @@
 		style="background:#${colors[last_color_index]}"
 		onclick="javascript:stop_song('#${song_element_class}');"/> 
 	    
-	    <span style="vertical-align:top;color:#${link_color};background:#${colors[last_color_index]};text-decoration:none;" href="#"> 
+	    <span style="vertical-align:top;color:#${link_color};background:#${colors[last_color_index]};text-decoration:none;" > 
 		${name}
 	    </span> 
 	    

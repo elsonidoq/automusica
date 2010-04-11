@@ -167,22 +167,23 @@ class Examples(object):
                             {'songs':[('Con percusi&oacute;n', '/examples/rhythm/chop.maz67-2-perc.mp3')]}, 
                             {'songs':[('Con percusi&oacute;n', '/examples/rhythm/beet.strio-perc.mp3')]} 
                             ],
+
                        'Modelo de los contextos harm&oacute;nicos':[
-                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/selected/schum.thranen_wo_nar_wo_ch.mp3'),
-                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schum.thranen_wo_nar_w_ch.mp3')]},
-                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/selected/mzt.ekn.ii_wo_nar_wo_ch.mp3'),
-                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/mzt.ekn.ii_wo_nar_w_ch.mp3')]},
-                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/selected/schub.bfson.i_wo_nar_wo_ch.mp3'),
-                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schub.bfson.i_wo_nar_w_ch.mp3')]},
+                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/schum.thranen_wo_nar_wo_ch.mp3'),
+                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schum.thranen_wo_nar_w_ch.mp3')]},
+                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/mzt.ekn.ii_wo_nar_wo_ch.mp3'),
+                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/mzt.ekn.ii_wo_nar_w_ch.mp3')]},
+                            {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/schub.bfson.i_wo_nar_wo_ch.mp3'),
+                                      ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schub.bfson.i_wo_nar_w_ch.mp3')]},
                             ],
 
                        'Modelo de los contornos mel&oacute;dicos':[
-                            {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schum.thranen_wo_nar_w_ch.mp3'),
+                            {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schum.thranen_wo_nar_w_ch.mp3'),
                                        ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schum.thranen_w_nar_w_ch.mp3') ]},
-                            {'songs':[('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/mzt.ekn.ii_wo_nar_w_ch.mp3'),
+                            {'songs':[('Con detecci&oacute;n de acordes', '/examples/harmonic_context/mzt.ekn.ii_wo_nar_w_ch.mp3'),
                                       ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/mzt.ekn.ii_w_nar_w_ch.mp3')  ]},
 
-                            {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/selected/schub.bfson.i_wo_nar_w_ch.mp3'),
+                            {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schub.bfson.i_wo_nar_w_ch.mp3'),
                                        ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schub.bfson.i_w_nar_w_ch.mp3') ]},
 
                             ],
