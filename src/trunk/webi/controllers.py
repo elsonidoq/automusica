@@ -155,95 +155,44 @@ def get_original_fname_and_description(composed_fname):
     return original_fname + '.mp3', description
 
     
+def build_examples(fnames):
+    suffixes=[('Con percusi&oacute;n','-perc.mp3'),
+              ('Un solo pitch profile','_wo_nar_wo_ch.mp3'),
+              ('Con detecci&oacute;n de acordes','_wo_nar_w_ch.mp3'),
+              ('Con contornos mel&oacute;dicos','_w_nar_w_ch.mp3'),
+              ('Con frases','_phrase.mp3'),
+              ('Con motivos','_motif.mp3')]
+
+
+    songs= []
+    for fname in fnames: 
+        fname= '/mp3/examples/' + fname.replace('.mid', '.mp3').lower()
+        l= []
+        for k, v in suffixes:
+            l.append((k, fname.replace('.mp3', v)))
+        songs.append({'songs':l})
+
+    
+    for song in songs:
+        fname= song['songs'][0][1] 
+        original_fname, description= get_original_fname_and_description(fname)
+        song['name']= description
+        song['songs'].insert(0, ['Original', original_fname])
+    return songs
+
 class Examples(object):
     #@cherrypy.tools.encode(encoding='utf8')
     @cherrypy.expose
-    def index(self):
+    def index(self, active_section='sample'):
         template= lookup.get_template('examples.mako')
-
-        songs= []
-        suffixes=[('Con percusi&oacute;n','-perc.mp3'),
-                  ('Un solo pitch profile','_wo_nar_wo_ch.mp3'),
-                  ('Con detecci&oacute;n de acordes','_wo_nar_w_ch.mp3'),
-                  ('Con contornos mel&oacute;dicos','_w_nar_w_ch.mp3'),
-                  ('Con frases','_phrase.mp3'),
-                  ('Con motivos','_motif.mp3')]
-        #import ipdb;ipdb.set_trace()
-        for fname in descriptions: 
-            fname= '/mp3/examples/' + fname.replace('.mid', '.mp3').lower()
-            l= []
-            for k, v in suffixes:
-                l.append((k, fname.replace('.mp3', v)))
-            songs.append({'songs':l})
-        all_examples={'':songs}            
-
+        all_fnames= descriptions
+        sample_fnames= 'chop.maz63.mid schum.grenadiere.mid beet.son13-ii.mid brahms.undgehst.mid bach.jesu.mid schum.thranen.mid mzt.ekn.ii.mid'.split() 
+        sample_examples= build_examples(sample_fnames)
+        all_examples= build_examples(all_fnames)
         
-
-        #all_examples= {'Modelo del acento m&eacute;trico':[
-        #                    {'songs':[('Con percusi&oacute;n', '/examples/rhythm/bach.annamin-perc.mp3')]},
-        #                    {'songs':[('Con percusi&oacute;n', '/examples/rhythm/chop.maz67-2-perc.mp3')]}, 
-        #                    {'songs':[('Con percusi&oacute;n', '/examples/rhythm/beet.strio-perc.mp3')]} 
-        #                    ],
-
-        #               'Modelo de los contextos harm&oacute;nicos':[
-        #                    {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/schum.thranen_wo_nar_wo_ch.mp3'),
-        #                              ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schum.thranen_wo_nar_w_ch.mp3')]},
-        #                    {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/mzt.ekn.ii_wo_nar_wo_ch.mp3'),
-        #                              ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/mzt.ekn.ii_wo_nar_w_ch.mp3')]},
-        #                    {'songs':[('Con pitch profile &uacute;nico', '/examples/harmonic_context/schub.bfson.i_wo_nar_wo_ch.mp3'),
-        #                              ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schub.bfson.i_wo_nar_w_ch.mp3')]},
-        #                    ],
-
-        #               'Modelo de los contornos mel&oacute;dicos':[
-        #                    {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schum.thranen_wo_nar_w_ch.mp3'),
-        #                               ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schum.thranen_w_nar_w_ch.mp3') ]},
-        #                    {'songs':[('Con detecci&oacute;n de acordes', '/examples/harmonic_context/mzt.ekn.ii_wo_nar_w_ch.mp3'),
-        #                              ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/mzt.ekn.ii_w_nar_w_ch.mp3')  ]},
-
-        #                    {'songs':[ ('Con detecci&oacute;n de acordes', '/examples/harmonic_context/schub.bfson.i_wo_nar_w_ch.mp3'),
-        #                               ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schub.bfson.i_w_nar_w_ch.mp3') ]},
-
-        #                    ],
-
-        #               'Modelo de las frases':[
-        #                    {'songs':[ ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schum.thranen_w_nar_w_ch.mp3') ,
-        #                               ('Con modelo de frases', '/examples/phrases/schum.thranen.mp3') ]},
-        #                    {'songs':[ ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/mzt.ekn.ii_w_nar_w_ch.mp3'), 
-        #                               ('Con modelo de frases', '/examples/phrases/mzt.ekn.ii.mp3') ]},
-        #                    {'songs':[ ('Con modelo de contornos mel&oacute;dicos', '/examples/melodic_contour/schub.bfson.i_w_nar_w_ch.mp3'), 
-        #                               ('Con modelo de frases', '/examples/phrases/schub.bfson.i.mp3') ]},
-        #                    ],
-
-        #               'Modelo de elaboraciones mot&iacute;vicas':[
-        #                    {'songs':[ ('Con modelo de frases', '/examples/phrases/schum.thranen.mp3'),
-        #                               ('Con modelo de elaboraciones mot&iacute;vicas', '/examples/motif/schum.thranen.mp3') ]},
-        #                    {'songs':[ ('Con modelo de frases', '/examples/phrases/mzt.ekn.ii.mp3'),
-        #                               ('Con modelo de elaboraciones mot&iacute;vicas', '/examples/motif/mzt.ekn.ii.mp3') ]},
-        #                    {'songs':[ ('Con modelo de frases', '/examples/phrases/schub.bfson.i.mp3'),
-        #                               ('Con modelo de elaboraciones mot&iacute;vicas', '/examples/motif/schub.bfson.i.mp3') ]},
-        #                    ]
-        #              }
-       # 
-        for section, songs in all_examples.items():
-            for song in songs:
-                fname= song['songs'][0][1] 
-                original_fname, description= get_original_fname_and_description(fname)
-                song['name']= description
-                song['songs'].insert(0, ['Original', original_fname])
-        #all_examples= {"a1":[{'name':'Tragodie (Schumann)', 'orig':'schum.tragodie.mp3', 'solo':'schum.tragodie-wolp.mp3'} 
-        #                     ]                             }
-
-        #ordering= {'Modelo de los contornos mel&oacute;dicos':2,
-        #           'Modelo del acento m&eacute;trico':0,
-        #           'Modelo de los contextos harm&oacute;nicos':1,
-        #           'Modelo de las frases': 3,
-        #           'Modelo de elaboraciones mot&iacute;vicas':4
-        #}
-        #all_examples= sorted(all_examples.items(), key=lambda i:ordering[i[0]])
-
-        all_examples= all_examples.items()
-
-        d={ 'all_examples': all_examples,
+        sections= {'sample':sample_examples, 'all':all_examples}
+        d={ 'sections': sections,
+            'active_section': active_section,
             'songs_base_url'     : '/mp3/sample_mids/'}  
 
         return template.render(**d)

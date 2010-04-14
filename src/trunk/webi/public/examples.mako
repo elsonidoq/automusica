@@ -87,14 +87,16 @@
             <div id="copete">An&aacute;lisis musical y composici&oacute;n autom&aacute;tica</div>
             <div id="space-between-title-and-rest"></div>
         </div>
+        % for section_name in sections:
+            <a href="#" onclick="javascript:toggle_section('${section_name}')">${section_name}</a>&nbsp;
+        % endfor
         <div id="player-container" >
-            % for list_name, songs in all_examples:
-		<div class="section">
-		    ${list_name}
-		</div>
-		<div id="playlist">
-			
-				    
+        % for section_name, songs in sections.iteritems():
+        % if active_section == section_name:
+    		<div id="${section_name}" class="playlist" >
+        % else:
+    		<div id="${section_name}" class="playlist" style="display:none">
+        % endif
 		<% 
             i=1 
             songs.sort(key=lambda x:x['name'])
@@ -105,14 +107,14 @@
 		    colors= ["dce0ee", "cbd1f0"]
 		    color1 = colors[i]
 		    color2 = colors[(i+1)%2]
-		    print_song(list_name, song_desc, colors, i)
+		    print_song(section_name, song_desc, colors, i)
 		    i=(i+1)%2
 		%>
 		% endfor
 		</div>
+        % endfor
 
         <div style="height:25px;"></div>
-	    % endfor
 
         
         </div>    
@@ -121,6 +123,12 @@
 
     <script type="text/javascript">
         
+        var active_section= "${active_section}";
+        function toggle_section(section_name) {
+            $("#" + active_section).fadeOut(callback=function() {$("#" + section_name).fadeIn();
+            active_section= section_name;
+            });
+        }
         var playing_element = null;
 
         var show_songs = function(element_class) {
