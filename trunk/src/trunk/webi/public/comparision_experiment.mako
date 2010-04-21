@@ -41,6 +41,7 @@
             var blankets= null;
             var texts= {};
             var selector= null;
+            var mousedown_on_selector= false;
             var on_drag= false;
             var selected_elements= null;
             var r;
@@ -134,6 +135,11 @@ Drag and Drop
 */
 
             function mousedown_handler(e){
+                if(mousedown_on_selector) {
+                    mousedown_on_selector= false;
+                    return;
+                }
+
                 var l= find_closest_button(e.clientX - $("#holder").position().left);
                 var button= l[0], distance= l[1], text= l[2], index= l[3];
 
@@ -294,7 +300,7 @@ Drag and Drop
                 var selector_xy= translate(4, values[4]);
                 selector= r.circle(selector_xy[0], selector_xy[1] - 30, 13).attr({stroke:"rgb(0,0,0)", 'fill':'#8c00f0', 'fill-opacity':0.4 });
               
-                selector.mousedown(function(e) {});
+                selector.mousedown(function(e) {mousedown_on_selector= true;});
                 /*
                 Drag & Drop
                 selector.node.style.cursor= 'move';
@@ -428,6 +434,13 @@ Drag and Drop
                 track2:play2_playlist[nplayed], 
                 value: get_actual_value()};
 
+        if(playing_element) {
+            $(".play_hablando").hide();
+            $(".play_callado").show().css('cursor', 'pointer');
+            $(".play_click").css('cursor', 'pointer');
+            $("#jplayer").stop();
+            playing_element= null;
+        }
         task_status= 0;
         nplayed+=1;
         if (nplayed == play1_playlist.length) {
@@ -443,8 +456,6 @@ Drag and Drop
             h.animate({'marginLeft':-h.width()-100},500, function() {
                 $(".play_hablando").hide();
                 $(".play_callado").show();
-                if(playing_element)
-                    $("#jplayer").stop();
 
                 $.ajax({url:'/comparision_experiment/rated',
                         type:'post',
