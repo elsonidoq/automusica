@@ -374,14 +374,17 @@ Drag and Drop
             <div class="description" id="experiment-description" >
                 ${experiment_description}
             </div>
+            <div class="description" id="interface-description" style="display:none" >
+                ${interface_description}
+            </div>
             <div class="description" id="chrome-message" style="display:none;" >
                 Me acabo de dar cuenta que tu navegador es Chrome o similar. <br><br>
                 Esta interfaz tiene algunos problemas que no pude solucionar en Chrome, <br><br><br>
                 <div style="text-align:center">&iquest;Ser&iacute;as tan amable de entrar desde Firefox?</div>
             </div>
             <div id="comenzar">
-                <a id="show_interface_description" style="display:none;" href="#" onclick="javascript:show_interface_description();">siguiente</a>
-                <a id="start_experiment" href="#" onclick="javascript:start_experiment();">comenzar</a>
+                <a id="show_interface_description"  href="#" onclick="javascript:show_interface_description();">siguiente</a>
+                <a id="start_experiment" href="#" style="display:none" onclick="javascript:start_experiment();">comenzar</a>
             </div>
         </div>
         <div id="experiment-wrapper" >
