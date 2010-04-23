@@ -23,7 +23,7 @@
                             return $("#music_study").is(':checked');
                         },
                         number:true,
-                        range:[0, 40]
+                        range:[0, 80]
                     }
                 },
                 ignore: ".ignore"
@@ -70,8 +70,9 @@ form#questions label.error { display: none;
             <br><br>
 
                 <input type="checkbox" id="music_study" name="music_study"/>
-                &#191;Estudiaste m&uacute;sica?
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="music_study_years_label">&#191;Cu&aacute;ntos a&ntilde;os?</span>
+                &#191;Estudiaste formal o informalmente m&uacute;sica?
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="music_study_years_label">&#191;Cu&aacute;ntos a&ntilde;os? </span>
+
                 <input style="width:100px;" class="required" type="text" 
                         name="music_study_years" id="music_study_years" /> 
 
@@ -90,6 +91,12 @@ form#questions label.error { display: none;
              <textarea name="observations" id="observations" style="width:100%" rows="5"></textarea>
              </label>
              <br>
+
+             <label>
+             Este campo es totalmente opcional. Si quer&eacute;s que te cuente resultados o como avanza el proyecto, o que te mande la tesis terminada
+             dejame tu mail aca:
+             <input type="text" name="mail" id="mail">
+             </label>
 
             <div style="text-align:right">
                 <input type="submit" id="mysubmit" value="Enviar"></input>
