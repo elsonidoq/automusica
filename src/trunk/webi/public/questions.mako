@@ -94,8 +94,8 @@ form#questions label.error { display: none;
 
              <label>
              Este campo es totalmente opcional. Si quer&eacute;s que te cuente resultados o como avanza el proyecto, o que te mande la tesis terminada
-             dejame tu mail aca:
-             <input type="text" name="mail" id="mail">
+             dejame tu mail aca:<br><br>
+             e-mail: <input type="text" name="mail" id="mail">
              </label>
 
             <div style="text-align:right">
