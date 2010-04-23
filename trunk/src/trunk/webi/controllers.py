@@ -31,10 +31,10 @@ def save_result(experiment_id, visitor_id, track, value):
     with open(os.path.join(results_dir, visitor_id), 'a') as f:
         f.write('%s\n' % '\t'.join(map(str, [experiment_id, track, value, datetime.utcnow().isoformat()])))
 
-def save_answer(visitor_id, age, gender, observations, music_study, music_study_years):
+def save_answer(visitor_id, age, gender, observations, music_study, music_study_years, mail):
     with open(os.path.join(results_dir, "ans_" + visitor_id), 'a') as f:
-        f.write('%s\n' % '\t'.join(map(str, [age, gender, observations, music_study, music_study_years, datetime.utcnow().isoformat()])))
-    
+        f.write('%s\n' % '\t'.join(map(str, [age, gender, observations, music_study, music_study_years, mail, datetime.utcnow().isoformat()])))
+
 
 def get_visitor_id():
     prev_visitors= set(os.listdir(results_dir))
@@ -67,13 +67,14 @@ class Questions(object):
         return template.render(visitor_id=visitor_id)
 
     @cherrypy.expose
-    def answer(self, visitor_id, age, gender, observations, music_study=None, music_study_years=None):
+    def answer(self, visitor_id, age, gender, observations, music_study=None, music_study_years=None, mail=None):
         #print "age=",age, "gender=",gender, "music_study", music_study, "music_study_years=",music_study_years, "observations=",observations
-        save_answer(visitor_id, age, gender, observations, music_study, music_study_years)
+        save_answer(visitor_id, age, gender, observations, music_study, music_study_years, mail)
 
         # para que dos personas puedan hacer el experimento en la misma maquina
-        experiment_session= cherrypy.session.pop("phrase")
-        cherrypy.session["phrase-" + visitor_id]= experiment_session
+        if 'baseline' in cherrypy.session:
+            experiment_session= cherrypy.session.pop("baseline")
+            cherrypy.session["baseline-" + visitor_id]= experiment_session
 
         return lookup.get_template('gracias.mako').render()
             
@@ -103,8 +104,8 @@ descriptions= {'bach.annamin.mid': 'Bach Annamin',
                'chop.noc27-1.mid': 'Chopin, Nocturne Op. 27 No. 1, mm. 41-52',
                'grieg.mountain.mid': 'Grieg, "The Mountain Maid", Op. 67 No. 2, ',
                'haydn.son22.iii.mid': 'Haydn, Sonata No. 22, III, mm. 1-8',
-               'haydn.son30.i.mid': 'Haydn, Sonata No. 30, I, mm. 84-96',
-               'haydn.sq.76-6.ii.mid': 'Haydn, String Quartet Op. 76 No. 6, II,',
+               'haydn.son30-i.mid': 'Haydn, Sonata No. 30, I, mm. 84-96',
+               'haydn.sq76-6.ii.mid': 'Haydn, String Quartet Op. 76 No. 6, II,',
                'haydn.sq20-4.i.mid': 'Haydn, String Quartet Op. 20 No. 4, I, ',
                'haydn.sq50-6.ii.mid': 'Haydn, String Quartet Op. 50 No. 6, II,',
                'haydn.sq74-3.ii.mid': 'Haydn, String Quartet Op. 74 No. 3, II,',
@@ -112,7 +113,7 @@ descriptions= {'bach.annamin.mid': 'Bach Annamin',
                'mzt.ekn.ii.mid': 'Mozart, "Eine Kleine Nachtmusik", K. 525, II,',
                'mzt.pc488.ii.mid': 'Mozart, Piano Concerto K. 488, II, mm. 1-12',
                'mzt.son330.ii.mid': 'Mozart, Sonata K. 330, II, mm. 21-8',
-               'mzt.son333.iii.mid': 'Mozart, Sonata K. 333, III, mm. 91-8',
+               'mzt.son333-iii.mid': 'Mozart, Sonata K. 333, III, mm. 91-8',
                'mzt.trio.i.mid': 'Mozart, Piano Trio K. 542, I, mm. 210-229',
                'mzt.voiche.mid': 'Mozart, Marriage of Figaro, "Voi che sapete",',
                'schub.bfson.i.mid': 'Schubert, Sonata in Bb, D. 960, I, mm. 149-68',
@@ -129,7 +130,10 @@ descriptions= {'bach.annamin.mid': 'Bach Annamin',
                'schum.wennich.mid': 'Schumann, "Wenn ich in deine Augen seh\'", ',
                'tchaik.morning.mid': 'Tchaikovsky, "Morning Prayer", mm. 1-17',
                'tchaik.nurse.mid': 'Tchaikovsky, "The Nurse\'s Tail", mm. 5-15',
-               'tchaik.symph6.mid': 'Tchaikovsky, Symphony No. 6, I, mm. 89-97'}
+               'tchaik.symph6.mid': 'Tchaikovsky, Symphony No. 6, I, mm. 89-97',
+               'beet.wo70.mid': 'beet.wo70.mid',
+               'mend.wo_wie_kann.mid': 'mend.wo_wie_kann.mid',
+               }
 
 def get_original_fname_and_description(composed_fname):
     composed_fname= os.path.basename(composed_fname).replace('.mp3', '')
@@ -158,18 +162,30 @@ def get_original_fname_and_description(composed_fname):
 def build_examples(fnames):
     suffixes=[('Con percusi&oacute;n','-perc.mp3'),
               ('Un solo pitch profile','_wo_nar_wo_ch.mp3'),
+              ('Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
               ('Con detecci&oacute;n de acordes','_wo_nar_w_ch.mp3'),
-              ('Con contornos mel&oacute;dicos','_w_nar_w_ch.mp3'),
+              ('Con detecci&oacute;n de acordes + Narmour','_w_nar_w_ch.mp3'),
               ('Con frases','_phrase.mp3'),
               ('Con motivos','_motif.mp3')]
 
+    suffixes=[
+              ('Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
+              ('Con detecci&oacute;n de acordes + Narmour','_w_nar_w_ch.mp3'),
+              ]
+    
+    folders= [ ('Baseline', 'baseline'),
+               ('Copado', 'to_compare')]
 
     songs= []
     for fname in fnames: 
-        fname= '/mp3/examples/' + fname.replace('.mid', '.mp3').lower()
+        #fname= '/mp3/examples/' + fname.replace('.mid', '.mp3').lower()
+        #l= []
+        #for k, v in suffixes:
+        #    l.append((k, fname.replace('.mp3', v)))
+        fname= fname.replace('.mid', '.mp3').lower()
         l= []
-        for k, v in suffixes:
-            l.append((k, fname.replace('.mp3', v)))
+        for k, folder in folders:
+            l.append((k, '/mp3/examples/%s/%s' % (folder, fname)))
         songs.append({'songs':l})
 
     
@@ -186,7 +202,9 @@ class Examples(object):
     def index(self, active_section='sample'):
         template= lookup.get_template('examples.mako')
         all_fnames= descriptions
-        sample_fnames= 'chop.maz63.mid schum.grenadiere.mid beet.son13-ii.mid brahms.undgehst.mid bach.jesu.mid schum.thranen.mid mzt.ekn.ii.mid'.split() 
+        sample_fnames= 'bach.annamin.mid brahms.undgehst.mid chop.maz67-2.mid mend.wo_wie_kann.mid schum.thranen.mid beet.wo70.mid chop.maz63-2.mid haydn.sq74-3.II.mid mzt.ekn.II.mid tchaik.morning.mid'.split()
+        sample_fnames= 'beet.son13-ii.mid brahms.undgehst.mid chop.maz63-2.mid mzt.ekn.ii.mid schum.thranen.mid'.split()
+
         sample_examples= build_examples(sample_fnames)
         all_examples= build_examples(all_fnames)
         
