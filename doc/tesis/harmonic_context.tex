@@ -38,9 +38,9 @@ emp'iricos para cuantificar esta jerarqu'ia.
 %notas que suenen en simult'aneo\footnote{esa es la definici'on que esta en la pagina 9\ldots no habla de superposici'on de 3ras}, y por 
 %tonalidad a la t'onica y su escala, que es un patr'on de intervalos definidos en relaci'on a la t'onica. 
 
-\cite{Lerdahl2001} en su libro A \texttt{Tonal Pitch Space} contin'ua en cierto grado con el trabajo de Krumhansl, y define un espacio en donde pretende 
+Por su parte, \cite{Lerdahl2001} en su libro A \texttt{Tonal Pitch Space} contin'ua en cierto sentido con el trabajo de Krumhansl, y define un espacio en donde pretende 
 modelar, entre otras cosas, el grado de estabilidad de una nota en un cierto contexto, definiendo contexto a partir de dos cosas: una tonalidad y un acorde. 
-El libro es mucho m'as general y abarcativo que lo reci'en mencionado, pero a los efectos de este trabajo, s'olo se tomar'a esa parte.
+Aunque su teor'ia es mucho m'as general y abarcativa, en este trabajo s'olo se tomar'an esos conceptos.
 
 En lo que sigue, se presenta con mayor detalle parte de los estudios de Krumhansl y Lerdahl, para luego dar un marco bayesiano sobre el cual montar las jerarqu'ias tonales.
 
@@ -56,9 +56,8 @@ de la relaci'on que tiene este 'ultimo con la t'onica de la escala.
 Una vez finalizado el experimento, se promedian las calificaciones dadas por los sujetos para construir el pitch profile.
 
 %\red{XXX releer}
-El experimento se realiz'o con sujetos con y sin entrenamiento musical. Si bien el nivel de ruido aumenta a medida que los sujetos 
-tienen menor entrenamiento musical, las tendencias permanecen. En la figura \ref{fig:pitch_profile} se exhibe un ejemplo de pitch profile para la escala mayor: 
-el eje X representa todas las alturas dentro de una escala, el eje Y es el promedio de las respuestas de los sujetos. De esta forma, se puede observar que los grados arm'onicos
+ En la figura \ref{fig:pitch_profile} se exhibe un ejemplo de pitch profile para la escalas mayor y menor: 
+el eje X representa todas las alturas dentro de una escala, el eje Y es el promedio de las respuestas de los sujetos. De esta forma, se puede observar que en la escala mayor, los grados arm'onicos
 1, 3 y 5 (Do, Mi y Sol - o C, E y G en la figura - en la escala de Do mayor) son los m'as estables, luego le sigue los tonos correspondientes al resto de la escala mayor, y por 'ultimo el resto de los 
 tonos.
 
@@ -71,7 +70,7 @@ tonos.
 \end{imagen}
 
 
-En su trabajo, Krumhansl propone distintas caracter'isticas, y las analiza mediante t'ecnicas de regresi'on, llegando a la conclusi'on que la
+En su trabajo, Krumhansl propone distintas caracter'isticas de las notas, y las analiza mediante t'ecnicas de regresi'on, llegando a la conclusi'on que la
 caracter'istica m'as importante es la duraci'on relativa de una nota respecto al resto: La nota cuya proporci\'on es mayor en la obra musical ser'a la t'onica. 
 A partir de este estudio, es posible entonces inferir un pitch profile. Dado que a los efectos de generar una melod'ia no es de inter'es saber el nombre de la 
 tonalidad, se propone utilizar el pitch profile como distribuci'on de probabilidades para la elecci'on de las notas.
@@ -79,18 +78,19 @@ tonalidad, se propone utilizar el pitch profile como distribuci'on de probabilid
 \subsection{El espacio diat\'onico}
 Hist'oricamente se han hecho una gran cantidad de intentos por encuadrar dentro de un modelo grafico/espacial las relaciones de estabilidad entre elementos de la m'usica
 tonal.  \cite{Lerdahl2001} propone un espacio cuyos elementos son alturas, acordes y tonalidades. En 'el, define una noci'on de distancia que pretende 
-reflejar el parentezco entre estos t'erminos de estabilidad, es decir, no s'olo mide la estabilidad de una nota dentro de un contexto, 
-sino que tambi'en mide la distancia entre dos acordes dentro de una tonalidad, y la distancia entre dos tonalidades. 
+reflejar el parentesco entre estos t'erminos de estabilidad. As'i establece tanto la estabilidad de una nota dentro de un contexto, 
+como tambi'en la distancia entre dos acordes dentro de una tonalidad, o entre dos tonalidades. 
 Nuevamente, dentro del alcance de esta tesis no es de inter'es medir esas distancias, sin embargo, se considera que el comportamiento que tiene el modelo de Lerdahl es deseable en un modelo estad'istico
 que vaya a cuantificar la estabilidad de una nota. Se considera que se podr'ian aplicar estas nociones de distancia para poder construir melod'ias en m'usica de 
 tipo modal.
 
-El autor trabaja con la noci'on de contexto como una mezcla entre la tonalidad que rige en el tema  y el
+El autor trabaja con la noci'on de contexto como interacci'on entre la tonalidad que rige en el tema  y el
 acorde que gobierna la estabilidad en ese momento. El primero lo denomina como \emph{espacio b'asico}. 
 El espacio b'asico refleja las relaciones de estabilidad que le son aplicadas a las notas en relaci'on a una tonalidad. 
 
 En la figura \ref{fig:basic_space} se exhibe una representaci'on gr'afica del espacio tonal b'asico para la tonalidad de Do mayor. En el eje vertical, se encuentra
-representado el nivel de estabilidad: Una nota que esta en el nivel \texttt{a} ser'a m'as estable que una nota que se encuentre en un nivel inferior. Como 
+representado el nivel de estabilidad: Una nota que esta en el nivel \texttt{a} ser'a m'as estable que una nota que se encuentre solamente 
+en un nivel inferior. Como 
 podr'a verse, todas las notas se encuentran en el nivel \texttt{e}, de menor estabilidad, y a medida que se sube de nivel, s'olo un subconjunto de notas son las 
 que persisten, es decir, notas de niveles superiores siempre tienen su lugar en los niveles inferiores.
 
@@ -142,8 +142,8 @@ e) & Do & Do\# & Re & Re\# & Mi & Fa & Fa\# & Sol & Sol\# & La & La\# & Si & Do\
 
 \subsection{El modelo}
 \label{sec:harmonic_context_model}
-El objetivo de este modelo es poder cuantificar el grado de estabilidad de una nota dentro de un contexto, definiendo por contexto una tonalidad y un acorde. 
-Dada la teor'ia de Lerdahl, es deseable que este modelo exhiba un comportamiento de alguna forma similar a lo que el describe desde el lado de la teor'ia musical. 
+El objetivo de este modelo es cuantificar el grado de estabilidad de una nota dentro de un contexto, definiendo por contexto una tonalidad y un acorde. 
+Es deseable que este modelo exhiba un comportamiento similar a lo que Lerdahl describe en su teor'ia. 
 
 Como se mencion'o en la secci'on anterior, no es de inter'es saber el nombre de la tonalidad de la pieza musical, es por esto que como estimaci'on de la 
 tonalidad se utilizar'a el pitch profile de la partitura estimado a partir de la proporci'on de tiempo que una nota suena en la pieza. Luego, bas'andose en 
@@ -202,7 +202,8 @@ El modelo planteado en esta secci'on hace ciertas asunciones impl'icitas de las 
 Si bien Krumhansl propone al pitch profile Krumhansl como mecanismo para caracterizar la tonalidad en la que se encuentra una pieza, 
 podr'ia no ser ser suficiente para generar una melod'ia que sea entendida de la misma forma. 
 Como primer variac'ion, en lugar de que la probabilidad de una nota sea la proporci'on de tiempo que esta son'o en el tiempo, 
-se podr'ia construir una familia de distribuci'ones indexadas por duraci'on. 'Esta ser'ia otra forma de reflejar el hecho de que notas largas tienden a ser estables.
+se podr'ia construir una familia de distribuci'ones indexadas por su duraci'on. 'Esta ser'ia otra forma de reflejar el hecho de que notas que 
+suenan m'as tiempo tienden a ser estables.
 
 Obs'ervese que el peso que se le da a cada nota del acorde es igual. En ese caso podr'ia plantearse el modelo en otros t'erminos para permitir un factor de peso, o
 alg'un tipo de condici'on que distinga entre cada nota. 
@@ -215,8 +216,7 @@ soluci'on a este problema.
 \section{Sobre la detecci\'on de acordes}
 Para implementar el modelo propuesto en esta secci'on fue necesario desarrollar una heur'istica para la detecci'on de acordes puesto que la entrada no los trae anotados. 
 Esta heur'istica es relativamente simple y se basa en las notas
-que suenan en simult'aneo, eliminando las notas que son equivalentes bajo la equivalencia entre octavas. Luego refina el resultado descartando candidatos a acordes que 
-que suenan en simult'aneo y no se organizan en saltos de 3 o 4 semitonos, por ejemplo Do, Re, Mi. 
+que suenan en simult'aneo, eliminando las notas que son equivalentes bajo la equivalencia entre octavas. Luego refina el resultado descartando candidatos a acordes que suenan en simult'aneo y no se organizan en saltos de 3 o 4 semitonos, por ejemplo Do, Re, Mi. 
 
 Hay un caso a tener en cuenta, y es que en general, cuando se tocan acordes
 con s'eptima, como Do, Mi, Sol, Si$\flat$ se suele obviar la quinta, en este caso Sol. De esta forma, en la partitura se observar'an que las notas Do, Mi, Si$\flat$ suenan
@@ -233,3 +233,8 @@ sufren un cambio abrupto en su distribuci'on subyacente, de esta forma la estima
 en el foco tonal, la distribuci'on que sufrir'ia un cambio ser'ia la propuesta en esta secci'on, de esta forma, cambios en la distribuci'on a posteriori, indicar'ian
 cambios en el foco tonal.
 
+\section{Ejemplos}
+Al igual que con el modelo de la m'etrica, se generaron ejemplos de melod'ias siguiendo los modelos definidos en esta secci'on. Para 
+cada pieza de entrada se compuso una melod'ia siguiendo un 'unico pitch profile, correspondiente a la tonalidad inferida, y otra
+afectando el pitch profile con los acordes detectados. Los ejemplos se encuentran disponibles en 
+\url{http://lafhis.dc.uba.ar/~pzivic/examples/harmonic_context/}.

@@ -4,7 +4,7 @@ Las caracter'isticas definidas en la secci'on anterior son en gran parte restric
 de l'ineas mel'odicas respecto a una cierta pieza musical, sin embargo, ninguna de ellas habla de propiedades de la l'inea mel'odica 
 respecto de s'i misma.
 
-En 1960, Leonard Meyer elabor'o una teor'ia acerca de la expectativa en la m'usica aplicando principios gest'alticos de la psicolog'ia. La 
+En 1956, Leonard Meyer elabor'o el concepto de expectativa en la m'usica aplicando principios gest'alticos de la psicolog'ia. La 
 psicolog'ia de la Gestalt define principios que pretenden capturar la forma en que la mente configura los elementos que llegan a ella a trav'es 
 de la percepci'on o de la memoria. Por ejemplo, la ley de cierre establece que nuestra mente a~nade los elementos faltantes para completar una 
 figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'irculo y un rect'angulo, si bien en la imagen s'olo hay partes de ellos.
@@ -16,7 +16,7 @@ figura. De esta forma, en la figura \ref{fig:ley_cierre} se puede ver un c'ircul
     \width{6cm}
 \end{imagen}
 
-Luego del trabajo de Meyer, \cite{Narmour91} cuantifica estas reglas en t'erminos de la sucesi'on de intervalos para construir una teor'ia de 
+Luego del trabajo de Meyer, \cite{Narmour90} cuantifica estas reglas en t'erminos de la sucesi'on de intervalos para construir una teor'ia de 
 la expectativa de los contornos mel'odicos. 
 
 En lo que sigue, se explican con mayor detalle las teor'ias de Narmour, para luego detallar el modelo de las l'ineas mel'odicas.
@@ -37,11 +37,13 @@ N'otese que esta transformaci'on no es biyectiva, puesto que la melod'ia Re, Mi,
 
 
 El modelo de la Implicaci'on-Realizaci'on(IR) asume un sistema cognitivo organizado jer'arquicamente. En esta jerarqu'ia, los sistemas 
-de percepci'on m'as simples, como la vista, se encuentran al fondo y los sistemas de percepci'on m'as abstractos o complejos como la memoria
-se encuentran en el tope. De esta forma se distinguen dos tipos de procesos expectaci'on denominados procesos \emph{bottom-up} 
-y \emph{top-down}. Los procesos bottom-up, tambi'en conocidos como \emph{data-driven}, son procesos cognitivos que operan directamente sobre la informaci'on que llega
-a los sentidos, enviando el resultado hacia ``arriba''. Estos procesos se asumen innatos.  Los procesos top-down, tambi'en conocidos como \emph{schema-driven} o 
-\emph{expectancy-driven}, en lugar de operar con la informaci'on perceptual, operan mayormente con la memoria. Es por esto que los procesos top-down est'an asociados al aprendizaje \cite[p. 256, p. 264]{snyder2001}.
+de percepci'on m'as simples, como la vista, se encuentran abajo y los sistemas de percepci'on m'as abstractos o complejos como la memoria
+se encuentran arriba. De esta forma se distinguen dos tipos de procesos expectaci'on denominados procesos \emph{bottom-up} 
+y \emph{top-down}. Los procesos bottom-up (de abajo a arriba), tambi'en conocidos como \emph{data-driven}, son procesos cognitivos que 
+operan directamente sobre la informaci'on que llega a los sentidos, enviando el resultado hacia ``arriba''. 
+Estos procesos se asumen innatos.  Los procesos top-down (de arriba a abajo), tambi'en conocidos como \emph{schema-driven} o 
+\emph{expectancy-driven}, en lugar de operar con la informaci'on perceptual, operan mayormente con la memoria. Es por esto que los 
+procesos top-down est'an asociados al aprendizaje \cite[p. 256, p. 264]{snyder2001}.
 
 Narmour propone que los procesos que regulan la expectaci'on mel'odica son en mayor medida de tipo bottom-up, es decir, parten de informaci'on puramente sensorial. 
 \cite{Krumhansl95} resume en  que seg'un este modelo, la cognici'on de melod'ias puede ser descripta como una sucesi'on de puntos 
@@ -60,8 +62,8 @@ existen seis condiciones que llevan a una sensaci'on de cierre:
 Estas caracter'isticas no son exluyentes, y si ocurren varias en simultaneo, la sensaci'on de cierre es mayor. 
 Si no ocurre ninguna de esas condiciones, entonces se establece un punto de implicaci'on, y el 'ultimo itervalo mel'odico recibe el nombre
 de \emph{intervalo implicativo}, y el intervalo que sigue al implicativo, recibe el nombre de \emph{intervalo realizado}. 
-Un intervalo realizado, puede promover o no una sensacion de cierre, y puede satisfacer o no la implicaci'on establecida por el intervalo 
-implicativo. De hecho, violaciones a las implicaci'ones producen efectos est'eticos y afectivos particulares \citep{Narmour91}.
+Un intervalo realizado, puede promover o no una sensaci'on de cierre, y puede satisfacer o no la implicaci'on establecida por el intervalo 
+implicativo. De hecho, violaciones a las implicaci'ones producen efectos est'eticos y afectivos particulares \citep{Narmour90}.
  
 Teniendo entonces el contorno de una melod'ia, Narmour define ciertas caracter'isticas relacionadas con la psicolog'ia de la gestalt. A continuaci'on 
 se enumeran los cinco principios de esta teor'ia, refiri'endose por intervalos peque~nos, a intervalos de valor absoluto menor o igual a 5 semi tonos, y por intervalos
@@ -93,7 +95,7 @@ a estar ubicada dentro a otro nivel en la jerarqu'ia de modelos para construir l
 del tema, de esta forma, para mantener limitado el alcance de esta tesis, se deja para trabajo a futuro trabajar con puntos de cierre.
 
 Teniendo en mente el objetivo de generar contornos mel'odicos, lo que se est'a buscando es un modelo que permita estimar la probabilidad de una nota, 
-dadas las dos anteriores, es decir $P(n_3|n_1, n_2)$. Una forma de llevar a cabo esta estimaci'on es considerar una codificaci'on de los principios del modelo de IR.
+dadas las dos anteriores, es decir $P(n_3|n_1, n_2)$. Una forma de llevar a cabo esta estimaci'on consiste en considerar una codificaci'on de los principios del modelo de IR.
 Esto corresponde a considerar una funci'on por cada principio que tome como entrada dos intervalos mel'odicos y discrimine seg'un el principio que le corresponda. Por ejemplo,
 el principio de direcci'on registral puede codificarse como:
 
@@ -108,9 +110,8 @@ RD(i_1, i_2)= \left\{
 
 Donde $i_1$ y $i_2$ denotan la longitud de dos intervalos consecutivos, $abs$ el valor absoluto y $sign$ el signo.
 
-No existe una 'unica codificaci'on de estos principios en la literatura, a saber por el autor. \cite{PaieThesis} y \cite{Schellenberg97} han realizado distintas 
-codificaci'ones, sin embargo, no se desea poner el foco en cual es la codificaci'on adecuada, sino en dar un marco, en donde dada una cierta codificaci'on, 
-se puedan generar contornos mel'odicos con esa codificaci'on.
+No existe una 'unica codificaci'on de estos principios en la literatura. \cite{PaieThesis} y \cite{Schellenberg97} han realizado distintas 
+codificaci'ones, sin embargo, no se desea poner el foco en cual es la codificaci'on adecuada, sino en dar un marco, en donde se puedan generar contornos mel'odicos dada una cierta codificaci'on. 
 
 De esta forma, as'umase un conjunto de caracter'isticas $F_1, \cdots, F_k$, que en principio codificar'ian los principos de Narmour(es decir, $k$ ser'ia igual a $5$), 
 sin embargo, no est'an limitadas a ello. Tomando estas caracter'isticas, se puede definir la probabilidad de una nota de la siguiente forma
@@ -134,13 +135,13 @@ En este caso, la expresi'on \ref{eq:general_narmour_model} se reescribir'a como
 P(n_3 | n_1, n_2) = \prod_{i=1}^k P(F_i(n_1, n_2, n_3)|n_1, n_2)
 \end{align}
 
-En \cite{Schellenberg96}, se realizaron una serie de experimentos para poner a prueba el modelo de IR. Uno de los experimentos constaba en exponer a 
-sujetos a una melod'ia que finalizaba por la mitad, y los sujetos ten'ian que decir cual ser'ia la continuaci'on que ellos esperar'ian. 
-Luego, uno de los an'alisis que se realiz'o, fue la correlaci'on entre los principios del modelo aplicados a las respuestas de los sujetos, 
+\cite{Schellenberg96}, realiz'o una serie de experimentos para poner a prueba el modelo de IR. Uno de los experimentos constaba en exponer a 
+sujetos a una melod'ia interrumpida antes de finalizar, pidi'endole a estos que seleccionen la continuaci'on m'as esperada.
+Se correlacionaron los principios del modelo aplicados a las respuestas de los sujetos, 
 y se encontr'o que algunos de ellos estaban correlacionados. Utilizando este conocimiento se podr'ia efectuar una factorizaci'on que est'e en el medio entre 
 la distribuci'on conjunta y la Naive.
 
-Una vez elejida la codificaci'on y la factorizaci'on de la distribuci'on a utilizar, se puede incorporar el contexto arm'onico como una caracter'istica m'as 
+Una vez elegida la codificaci'on y la factorizaci'on de la distribuci'on a utilizar, se puede incorporar el contexto arm'onico como una caracter'istica m'as 
 obteniendo una distribuci'on de probabilidades para las continuaciones de una melod'ia y asumiendo independencia entre el contexto arm'onico y el contorno mel'odico
 se puede escribir la probabilidad de la siguiente forma:
 
@@ -164,7 +165,7 @@ dispuestas en diagonal estar'an afectadas por el mismo factor, por ser la misma 
 se exhibe el pitch profile para el mismo fragmento de Beethoven, y en las figuras \ref{fig:narmour_reference_note1} y \ref{fig:narmour_reference_note2} se exhiben 
 las distribuci'on inferidas a partir de la equaci'on \ref{eq:narmour_w_pitch_profile} asumiendo que $n_1=G\sharp$ y $n_1=F\sharp$ respectivamente. 
 Al fijar la nota $n_1$, la sem'antica de los ejes cambian: El eje $Y$ ahora ser'a $n_2$, puesto que al fijar $n_1$ se pierde el grado de 
-libertad que ten'ia el intervalo implicativo, pero el eje $X$ sigue siendo el intervalo realizado ya que la nota que se toque depender'a de la fila elejida.
+libertad que ten'ia el intervalo implicativo, pero el eje $X$ sigue siendo el intervalo realizado ya que la nota que se toque depender'a de la fila elegida.
 \begin{imagen}
     \position{htb!}
     \file{images/narmour_all.png}
@@ -203,7 +204,7 @@ el espacio de posibles estados.
 
 
 Si bien se podr'ia exhibir las codificaci'ones como funciones $F_i$ como se las utiliz'o en la secci'on anterior, esto ser'ia por dem'as engorroso de leer.
-Es por esto que se utilizar'a un esquema de visualizaci'on simple definido por \cite{Narmour91}. Este esquema consiste en una tabla de doble entrada. 
+Es por esto que se utilizar'a un esquema de visualizaci'on simple definido por \cite{Narmour90}. Este esquema consiste en una tabla de doble entrada. 
 Las filas corresponden a la longitud del intervalo implicativo, mientras que las columnas corresponden a la longitud del intervalo realizado.
 En la figura \ref{fig:grilla_narmour} se exhibe un ejemplo de la tabla vac'ia.
 
@@ -239,7 +240,7 @@ en la direcci'on opuesta.
 \end{imagen}
 
 
-En \cite{Schellenberg96}, el autor not'o que existe redundancia en los principios propuestos por \cite{Narmour91}, y con el objeto de explicar los datos
+En \cite{Schellenberg96}, el autor not'o que existe redundancia en los principios propuestos por \cite{Narmour90}, y con el objeto de explicar los datos
 generados por sus experimentos, redujo el modelo a un modelo de tres principios. Este modelo se presenta en la figura \ref{fig:narmour_revisited}.
 La raz'on por la que se redujo de 5 principios a 3 es porque los principios de proximidad, diferencia interv'alica y cierre estaban altamente 
 correlacionados. De esta forma se dej'o solamente uno, proximidad, con mayor detalle. Los principios de direcci'on registral y retorno registral

@@ -50,9 +50,9 @@ Sin embargo, hay casos en donde se conocen expresiones anal'iticas para la proba
 %, y en ese caso, se puede utilizar
 %como p'arametro $E(\theta|x_1,\cdots,x_n)$ \alert{argumentar bien, montacarlo de la intergral converje a la esperanza}%\footnote{El lector interesado en la justificaci'on referirse a ??? %}.
 
-Un caso particular es cuando los datos se modelan con una distribuci'on multinomial, como la mayor'ia  de los modelos propuestos en este trabajo.
+Un caso particular tiene lugar cuando los datos se modelan con una distribuci'on multinomial, como la mayor'ia  de los modelos propuestos en este trabajo.
 En este caso, si se codifica la creencia previa
-sobre $\theta$ como una distribucion Dirichlet\footnote{Para ver una definici'on formal de esta distribuci'on referirse a \cite{minka2003dir}}, se puede calcular de una forma muy facil la distribuci'on a posteriori de $\theta$ dado por la siguiente
+sobre $\theta$ como una distribuci'on Dirichlet\footnote{Para ver una definici'on formal de esta distribuci'on referirse a \cite{minka2003dir}}, se puede calcular de una forma muy f'acil la distribuci'on a posteriori de $\theta$ dado por la siguiente
 f'ormula:
 
 $$ \theta \sim Dirichlet(\alpha_1,\cdots,\alpha_k) \Rightarrow \theta|x_1,\cdots,x_n \sim Dirichet(\alpha_1+n_1,\cdots,\alpha_k+n_k)$$
@@ -115,7 +115,7 @@ Obs'ervese que cuando la cantidad de muestras tiende a infinito, el estimador ba
 
 \subsection{Cadenas de Markov}
 Sup'ongase que se desea modelar la evoluci'on de un sistema con respecto al tiempo. Es de esperarse que 
-el estado en el que se encuentra el sistema en cierto momento de alguna forma tenga que ver con la historia por la que este transit'o
+el estado en el que se encuentra el sistema en cierto momento de alguna forma tenga que ver con la historia por la que 'este transit'o
 previamente. 
 
 Las cadenas de Markov de orden $k$ permiten modelar este tipo de dependencias haciendo una asunci'on: la probabilidad de que el sistema vaya a un cierto estado
@@ -150,12 +150,12 @@ $P(s_{t+1} = no\ lluvia $ & $|s_t= no\ lluvia $ & $)=0.7$\\
     \width{5cm}
 \end{imagen}
 
-Una caminata al azar es una sucesi'on $s_1, \cdots, s_t$ de estados, donde $s_1$ es elejido de acuerdo a $\pi$, 
-y el resto de los estados de la sucesi'on cada uno elejidos seg'un la matriz de transici'on. De esta forma, en el ejemplo de la figura \ref{fig:markov_clima} y asumiendo 
+Una caminata al azar es una sucesi'on $s_1, \cdots, s_t$ de estados, donde $s_1$ es elegido de acuerdo a $\pi$, 
+y el resto de los estados de la sucesi'on cada uno elegidos seg'un la matriz de transici'on. De esta forma, en el ejemplo de la figura \ref{fig:markov_clima} y asumiendo 
 que $\pi$ asigna probabilidad uniforme a los dos estados, la caminata al azar formada por los estados $lluvia, no\ lluvia, no\ lluvia$ tendr'a probabilidad $0.5\times0.3\times0.7$. 
 
 Se entiende que esta introducci'on es incompleta, sin embargo en esta tesis s'olo se utilizar'an las cadenas de Markov para luego realizar 
-caminatas al azar sobre ellas. El lector interesado en profundizar en cadenas de markov puede ver \cite{Rabiner90}.
+caminatas al azar sobre ellas. El lector interesado en profundizar en cadenas de Markov puede ver \cite{Rabiner90}.
 
 
 \subsection{Restaurantes chinos}
@@ -165,10 +165,10 @@ pre-especificar el n'umero de clusters.
 
 Los restaurantes chinos son un caso particular de los Dirichlet Process que se caracterizan por tener un proceso generativo sencillo de implementar.
 Dado que el uso que se le dar'a a este modelo es puramente generativo, no se har'a incapi'e en los mecanimos necesarios para realizar inferencia
-\footnote{El lector interesado en profundizar en este tema refierase a \cite{Teh2007} para un tutorial sobre Dirichlet Process y \cite{neal2000markov} sobre m'etodos Monte Carlo para realizar inferencia.}.
-Metaf'oricamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Parece ser que los restaurantes chinos de San Fansisco aparentan ser infinitos, y esto dio origen al nombre.}. 
+\footnote{El lector interesado en profundizar en este tema refi'erase a \cite{Teh2007} para un tutorial sobre Dirichlet Process y \cite{neal2000markov} sobre m'etodos Monte Carlo para realizar inferencia.}.
+Metaf'oricamente, el modelo de los restaurantes chinos consiste en un restaurant con una cantidad infinita numerable de mesas\footnote{Parece ser que los restaurantes chinos de San Francisco aparentan ser infinitos, y esto dio origen al nombre.}. 
 En cada mesa, a su vez, pueden sentarse una cantidad no acotada de clientes. Inicialmente todas las mesas se encuentran vac'ias, 
-y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elejir una mesa de las ya ocupadas. 
+y de a uno por vez empiezan a llegar los clientes. Cada cliente puede sentarse o bien en una mesa vac'ia o bien elegir una mesa de las ya ocupadas. 
 Esto lo hace con la siguiente distribuci'on:
 \begin{align}
 \label{eq:crp_evolution}
