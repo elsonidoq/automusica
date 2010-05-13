@@ -4,10 +4,10 @@ Se considera como aporte principal de este trabajo la metodolog'ia de validaci'o
 Contando con modelos generativos aislados para distintos atributos musicales, es posible validar los fundamentos de cada modelo
 realizando una serie de composiciones en donde se ve afectando el funcionamiento del modelo correspondiente.
 
-Para poder alcanzar este objetivo, fue necesario construir modelos ge\-nerativos con respaldo cognitivo para los distintos atributos que 
+Para poder alcanzar este objetivo, fue necesario construir modelos ge\-nerativos con base en teor'ias psicol'ogicas para los distintos atributos que 
 caracterizan a una melod'ia. 
 
-De este modo, la contribuci'on de este trabajo es la siguiente modelizaci'on (muchos de los t'erminos relacionados con teor'ia musical se definir'an
+De este modo, la contribuci'on de este trabajo se sintetiza en la siguiente lista de modelos (muchos de los t'erminos relacionados con teor'ia musical se definir'an
 m'as adelante):
 
 \begin{itemize}
@@ -15,7 +15,7 @@ m'as adelante):
  que cumpla con la propiedad de que la r'itmica generada har'a que un oyente infiera la misma estructura m'etrica que la que el 
  oyente inferir'ia en la obra original.
 
- \item Modelo para los contornos mel'odicos: Basado en la teor'ia de Implicaci'on-Realizaci'on de \cite{Narmour91}, se propone un modelo simple que permite cuantificar 
+ \item Modelo para los contornos mel'odicos: Basado en la teor'ia de Implicaci'on-Realizaci'on de \cite{Narmour90}, se propone un modelo simple que permite cuantificar 
  el grado de implicaci'on que genera un intervalo mel'odico sobre el siguiente.
 
  \item Modelo para contextos arm'onicos: Basado en los trabajos de \cite{Krumhansl90} y \cite{Lerdahl2001} se propone un modelo basado en un marco bayesiano
@@ -24,8 +24,8 @@ m'as adelante):
  \item Modelo para frases mel'odicas: Utilizando los modelos anteriores, y basado en algunas definici'ones de en qu'e consiste una 
  frase musical, se construye un modelo que organize la melod'ia en t'erminos de unidades discursivas.
 
- \item Modelos para generar motivos: Se propone utilizar el modelo de los Restaurantes Chinos \citep{Teh2007} para generar repetici'on de partes, 
- de forma tal que la cantidad de repeticiones de una parte no sea excesiva ni nula.
+ \item Modelos para generar relaciones mot'ivicas: Se propone utilizar el modelo de los Restaurantes Chinos \citep{Teh2007} para generar repetici'on 
+ de partes, de forma tal que la cantidad de repeticiones de una parte no sea excesiva ni nula.
 
 \end{itemize}
 
@@ -62,27 +62,30 @@ t'ecnicas computacionales. Las aplicaciones de este tipo de trabajos son bastant
 composici'on musical asistida, acompa~namiento autom'atico, indexaci'on de m'usica, sistemas de recomendaci'on musical e 
 investigaci'on en psicolog'ia de la m'usica, donde se sit'ua este trabajo.
 
-Seg'un cu'al sea el enfoque que se tome, podr'a variar la representaci'on musical utilizada entre la se~nal sonora cruda, y una partitura\footnote{o midi, que es equivalente a niveles pr'acticos }.
+De acuerdo al enfoque que se tome, puede variar la representaci'on musical utilizada entre la se~nal sonora cruda, 
+y una partitura\footnote{o midi, que es equivalente a niveles pr'acticos }.
 En este trabajo se asumir'a una representaci'on simb'olica de la m'usica para poder desarrollar en profundidad las teor'ias cognitivas de las 
 que luego se hablar'a. A continuaci'on se nombran algunos trabajos que se enmarcan de la misma forma en t'erminos de la representaci'on musical.
 
-\cite{PaieThesis} es el trabajo m'as cercano a 'este. En 'el se propone un modelo generativo para l'ineas mel'odicas, 
+\cite{PaieThesis} propone un modelo generativo para l'ineas mel'odicas, 
 patrones r'itmicos y armonizaci'ones, basado en algunos de los principios que se utilizar'an en este trabajo. 
 Sin embargo, no es el objetivo del autor poner a prueba teor'ias cognitivas de la m'usica; sino desarrollar un modelo generativo,
 y por lo tanto predictivo, basado en una representaci'on simb'olica de la m'usica de forma tal que se pueda utilizar el conocimiento generado por estos
-modelos para mejorar la calidad de algoritmos que trabajan con se~nales sonoras. M'as all'a de que no se comparten los objetivos entre el trabajo de 
-Paiement y este, no es posible tampoco utilizar los modelos propuestos por 'el puesto que hay teor'ias que no utiliza, como la de \cite{Lerdahl2001} 
-y varios de ellos, como el de la r'itmica, no tienen una fundamentaci'on cognitiva clara.
+modelos para mejorar la calidad de algoritmos que trabajan con se~nales sonoras. Este trabajo aborda el problema de la estabilidad tonal a partir
+de entrenar una cadena de Markov que tiene estados ocultos que representan los acordes, aspecto que puede ser abordado utilizando las teor'ias 
+de \cite{Krumhansl90} y \cite{Lerdahl2001}. De la misma manera, el modelo de la r'itmica utiliza una definici'on incorrecta de acento m'etrico, asumiendo
+que tiene caracter'isticas globales. Si bien estos modelos podr'ian funcionar en el marco en el que el autor los plantea, en este marco no son de utilidad.
 
-\cite{Shih-Chuan} propone un software que mediante la utilizaci'on de t'ecnicas de data mining componga m'usica. Estas t'ecnicas las aplican
-para descubrir patrones en la composici'on musical en t'erminos de ciertas propiedades musicales respecto a la estructura, la r'itmica y la mel'odica.
+\cite{Shih-Chuan} proponen un software que mediante la utilizaci'on de t'ecnicas de data mining componga m'usica. Estas t'ecnicas son aplicadas
+para descubrir patrones en la composici'on musical en su estructura r'itmica y mel'odica.
 Si bien estos modelos no son de inter'es para este trabajo por no basarse directamente en fundamentos cognitivos, 
-la arquitectura que presenta \cite{Shih-Chuan} sirvi'o como punto de partida para construir la presentada en este trabajo. 
+la arquitectura que presentan \cite{Shih-Chuan} sirvi'o como punto de partida para construir la presentada en este trabajo. 
 
 Otro software existente dise~nado para componer m'usica es el Melisma Music Generator
 \footnote{Disponible en http://www.link.cs.cmu.edu/melody-generator/} basado en \cite{Temperley2004}. 
 Este software se encuentra disponible para escuchar online sus composiciones, presentando una interfaz web donde es posible ingresarle distintos
-valores a sus par'ametros y escuchar como estos impactan en la composici'on final. El mayor problema 
+valores a sus par'ametros y escuchar como estos impactan en la composici'on final. 
+El mayor problema 
 que tiene es que no se puede entrenar directamente su modelo con una partitura, y por m'as que se intentara realizar esto construyendo un software 
 que estime valores posibles para sus par'ametros, no habr'ia forma de determinarle ciertos par'ametros que son utilizados en este trabajo, 
 como la sucesi'on de contextos arm'onicos.
@@ -93,16 +96,20 @@ como la sucesi'on de contextos arm'onicos.
 %parte de las reglas utilizadas no tienen sustento cognitivo.
 %
 
-\cite{Cambouropoulos98} propone una teor'ia general para el an'alisis musical. Durante el desarrollo de esta tesis no se tuvo conocimiento de la existencia del trabajo de Cambouropoulos.
+\cite{Cambouropoulos98} propone una teor'ia general para el an'alisis musical. 
 Su trabajo consiste en una teor'ia computacional que permitir'ia obtener una descripci'on de la estructura de una cierta obra musical. Si bien sus 
 objetivos son distintos a los que se proponen aqu'i, no distan tanto: 
 \begin{quote}
-[\ldots]Musical theories allow the formulation of hypotheses and models which can be implemented
+[\ldots]Teor'ias musicales permiten formular hip'otesis y modelos que pueden ser implementados
+como programas para luego ser evaluados, y, de forma inversa, resultados de la aplicaci'on de
+estos programas podr'ia forzar la re-examinaci'on y ajuste de las teor'ias iniciales. \footnote{[\ldots]Musical theories allow the formulation of hypotheses and models which can be implemented
 as computer programs and then evaluated, and, conversely, results from the application of the
 computer programs may force the re-examination and adjustment of the initial theories. [\ldots]
+} [\ldots]
+
 \end{quote} 
-Si bien el objetivo de su trabajo es construir una teor'ia descriptiva, es posible que el an'alisis que su teor'ia provee hubiera permitido llegar a modelos m'as precisos 
-en algunos casos. 
+A lo largo de este trabajo no se utiliz'o esta teor'ia y se opt'o por teor'ias que han sido m'as ampliamente discutidas tanto en el marco de la musicolog'ia
+como en el marco de la psicolog'ia de la m'usica.
 
 %
 %En \cite{Simon_mysong:automatic} mediante el an'alisis de caracter'isticas de la se~nal sonora correspondientes a una melod'ia 
@@ -119,5 +126,5 @@ en algunos casos.
 El resto de la tesis se organiza de la siguiente forma: En el cap'itulo 2 se cubren superficialmente los conceptos b'asicos que el lector debe manejar para entender
 este trabajo. Se alienta a los lectores no iniciados en alguna de las tem'aticas abordadas profundizar tales conceptos en la literatura referida. 
 En el cap'itulo 3 se exhibe modelos que capturan dependencias a nivel local en la m'usica tonal. 
-En el cap'itulo 4 exhibe modelos de 'indole jer'arquico y por 'ultimo en el cap'itulo 5 se exhiben los experimentos realizados junto con 
+En el cap'itulo 4 se muestra modelos de 'indole jer'arquico y por 'ultimo en el cap'itulo 5 se reportan los experimentos realizados junto con 
 las conclusiones del trabajo.

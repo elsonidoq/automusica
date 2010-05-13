@@ -5,8 +5,8 @@ un proceso generativo para componer lineas mel'odicas de forma relativamente sen
 %afectado. El primer modelo permite elegir un conjunto de notas candidatas, mientras que el segundo permite incorporar dentro de una distribuci'on de 
 %probabilidades el modelo de contornos melodicos con el modelo del contexto arm'onico. 
 A continuaci'on se definir'a el algoritmo exhibiendo el pseudoc'odigo para que quede en una representaci'on compacta: 
-para cada nota a generar, el modelo de la r'itmica elejir'a su duraci'on, mientras que el modelo de Narmour en conjunto con el de contexto arm'onico 
-elejir'an la altura a tocar en funci'on del 'ultimo intervalo tocado.
+para cada nota a generar, el modelo de la r'itmica elegir'a su duraci'on, mientras que el modelo de Narmour en conjunto con el de contexto arm'onico 
+elegir'an la altura a tocar en funci'on del 'ultimo intervalo tocado.
 
 \begin{algoritmo}
 create_melody(rhythm_model, harmonic_context, contour_model, 
