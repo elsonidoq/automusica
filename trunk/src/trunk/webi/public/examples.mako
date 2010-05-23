@@ -53,7 +53,7 @@
     <div class="song_compositions" id="${element_class}_compositions" >
 	% for name, fname in song_desc['songs']:
 	<%
-	    song_element_class= element_class + name.replace(' ', '_').replace('-','').replace('.','')
+	    song_element_class= element_class + name.replace(' ', '_').replace('-','').replace('.','').replace('+','')
 	%>
 	<div class="song_link_div" id="${song_element_class}" style="background:#${colors[last_color_index]}"> 
 	    <img class="play_img" id="${song_element_class}_play" 
@@ -87,15 +87,21 @@
             <div id="copete">An&aacute;lisis musical y composici&oacute;n autom&aacute;tica</div>
             <div id="space-between-title-and-rest"></div>
         </div>
-        % for section_name in sections:
-            <a href="#" onclick="javascript:toggle_section('${section_name}')">${section_name}</a>&nbsp;
+        <div id="lists" style="margin-left:60px;margin-bottom:15px;font-size:20px">
+        % for list_name in lists:
+            % if active_list == list_name:
+                <a href="#" id="a_${list_name}" class="selected_list" onclick="javascript:toggle_section('${list_name}')">${list_name}</a>&nbsp;
+            % else:
+                <a href="#" id="a_${list_name}" class="not_selected_list" onclick="javascript:toggle_section('${list_name}')">${list_name}</a>&nbsp;
+            % endif
         % endfor
+        </div>
         <div id="player-container" >
-        % for section_name, songs in sections.iteritems():
-        % if active_section == section_name:
-    		<div id="${section_name}" class="playlist" >
+        % for list_name, songs in lists.iteritems():
+        % if active_list == list_name:
+    		<div id="${list_name}" class="playlist" >
         % else:
-    		<div id="${section_name}" class="playlist" style="display:none">
+    		<div id="${list_name}" class="playlist" style="display:none">
         % endif
 		<% 
             i=1 
@@ -107,7 +113,7 @@
 		    colors= ["dce0ee", "cbd1f0"]
 		    color1 = colors[i]
 		    color2 = colors[(i+1)%2]
-		    print_song(section_name, song_desc, colors, i)
+		    print_song(list_name, song_desc, colors, i)
 		    i=(i+1)%2
 		%>
 		% endfor
@@ -123,11 +129,25 @@
 
     <script type="text/javascript">
         
-        var active_section= "${active_section}";
-        function toggle_section(section_name) {
-            $("#" + active_section).fadeOut(callback=function() {$("#" + section_name).fadeIn();
-            active_section= section_name;
+        var active_list= "${active_list}";
+        function toggle_section(list_name) {
+            if (list_name == active_list) return;
+            
+            $("#" + active_list).fadeOut(callback=function() {
+                $("#a_" + list_name).removeClass("not_selected_list");
+                $("#a_" + list_name).addClass("selected_list");
+                $("#a_" + active_list).addClass("not_selected_list");
+                $("#" + list_name).fadeIn();
+                active_list= list_name;
             });
+/*            $("#a_" + active_list).addClass("not_selected_list");
+            $("#a_" + active_list).removeClass("selected_list");
+            $("#" + active_list).hide();
+
+            $("#a_" + list_name).removeClass("not_selected_list");
+            $("#a_" + list_name).addClass("selected_list");
+            $("#" + list_name).show();
+            active_list= list_name;*/
         }
         var playing_element = null;
 
