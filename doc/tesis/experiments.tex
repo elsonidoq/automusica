@@ -338,6 +338,7 @@ Estos finales inconclusos son producto del azar, y no se los desea evaluar. Una 
 
 
 \subsection{Experimento contra una l\'inea de base}
+\label{sec:exp_baseline}
 \subsubsection{Objetivo}
 Siendo que el objetivo de este trabajo se basa en construir modelos generativos con fundamentos cognitiva para luego poder medir caracter'isticas puntuales
 en la cognici'on musical, un primer paso en pos de este objetivo (y a su vez el objetivo de este experimento) es mostrar que los modelos propuestos 
@@ -448,7 +449,135 @@ ese, y del an'alisis musicol'ogico de las partituras buscando diferencias entre 
 \end{imagen}
 
 
+\pagebreak
 \section{Conclusiones}
-En el presente trabajo se propone y se pone a prueba una metodolog'ia novedosa que tiene como objetivo ayudar a validar y aportar conocimiento al area
-de psicolog'ia de la m'usica. Para alcanzar ese objetivo, se implementaron algoritmos no supervisados, que mediante t'ecnicas de aprendizaje autom'atico
-construyan modelos con un buen fundamento cognitivo para luego experimentar mediante los resultados de aplicar el algoritmo.
+
+%En el presente trabajo se plantea como hip'otesis que el an'alisis de melod'ias generadas autom'aticamente por algoritmos con sustento cognitivo 
+%podr'ia ayudar a validar o aportar nuevo conocimiento a las teor'ias cognitivas en las que estos se basan. Con este objetivo, mediante 
+%t'ecnicas de aprendizaje autom'atico, se construyeron modelos generativos generar melod'ias en base a la jerarqu'ia m'etrica, la jerarqu'ia tonal, contornos mel'odicos, 
+%organizaci'on discursiva y elaboraci'on mot'ivica.
+%
+%Los experimentos conducidos en este trabajo, muestran evidencia de que esta hip'o
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%En el presente trabajo se propone y se pone a prueba una metodolog'ia novedosa que tiene como objetivo ayudar a validar y aportar 
+%conocimiento al area de psicolog'ia de la m'usica. Esta metodolog'ia toma como hip'otesis que el an'alisis de melod'ias construidas
+%por algoritmos generativos con sustento cognitivo permitir'ian aportar informaci'on 'util a la psicolog'ia cognitiva de la m'usica.
+%
+%
+%consiste en construir modelos generativos para atributos musicales
+%basados en teor'ias psicol'ogicas que prediquen s
+%
+%Para alcanzar ese objetivo, se implementaron algoritmos no supervisados, 
+%que mediante t'ecnicas de aprendizaje autom'atico construyan modelos con un buen fundamento cognitivo para acento m'etrico, 
+%inferencia de la tonalidad, contornos mel'odicos, fraseo y elaboraci'on mot'ivica. 
+%
+%Los resultados de los experimentos conducidos en este trabajo aportan evidencia significativa para creer que la 
+%metodolog'ia propuesta permitir'ia no s'olo ayudar a validar ciertos postulados de teor'ias cognitivas musicales, sino tambi'en 
+%aportar nuevos resultados.
+%
+%De esta forma, se considera a futuro elaborar los modelos para eliminar ciertas simplificaci'ones introducidas, como tambi'en 
+%analizar que tipo conclusiones podr'ian sacarse a partir de su utilizaci'on.
+%
+%
+%
+%
+%\begin{itemize}
+% \item Hip'otesis del trabajo
+
+En el presente trabajo se plantea como hip'otesis que la experimentaci'on con m'usica generada autom'aticamente a partir de 
+algoritmos con fundamentaci'on cognitiva, podr'ia permitir validar las teor'ias en las que estos algoritmos fueron fundados. 
+Dado que esta hip'otesis no ha sido planteada con anterioridad, y por consiguiente no se han construido modelos generativos 
+teniendo en cuenta todas las teor'ias que se consideran pertinentes, gran parte del trabajo consisti'o en construirlos. 
+Se opt'o por un enfoque estad'istico para contruir los modelos, por sobre enfoques l'ogicos o basados en reglas, puesto 
+que este es m'as flexible, y la noci'on de ``entrenar el modelo'' pasa a tener una interpretaci'on intuitiva. 
+
+Es importante antes de embarcarse en semejante tarea, comprender cual es su alcance para poder definir un trabajo que se mantenga 
+acotado. Es por esto que se decidi'o a priori que los modelos propuestos ser'ian entrenados con una s'ola partitura evitando
+el problema de tener que combinar informaci'on de distintas partituras. Adem'as se decidi'o trabajar solamente con l'ineas 
+mel'odicas y no generar la estructura de la pieza.
+Teniendo en cuenta estas restricci'ones, se aport'o con el desarrollo de los siguientes modelos:
+
+% \item Aportes
+
+\begin{itemize}
+ \item Modelo para la r\'itmica: Basado en la definici'on de \cite{LerdahlJackendoff83} de acento m'etrico, las nociones de 
+ clase de equivalencia por \cite{Benjamin84} y \cite{clarke1987categorical} y la noci'on de pulso definida por \cite{snyder2001}
+ se construy'o un modelo que genera r'itmicas ``en relaci'on a la partitura de entrenamiento''
+
+ \item Modelo para los contornos mel'odicos: Basado en la teor'ia de Implicaci'on-Realizaci'on de \cite{Narmour90}, 
+ se propone un modelo simple que permite cuantificar el grado de implicaci'on que genera un intervalo mel'odico sobre el siguiente.
+
+ \item Modelo para contextos arm'onicos: Basado en los trabajos de \cite{Krumhansl90} y \cite{Lerdahl2001} se propone un 
+ modelo basado en un marco bayesiano para cuantificar la estabilidad de una nota en funci'on de la tonalidad inferida del tema y 
+ el acorde que gobierna la sonoridad del momento.
+
+ \item Modelo para frases mel'odicas: Utilizando los modelos anteriores, y basado en las definiciones para frase musical encontradas
+ en \cite{rothstein1989phrase}, se construye un modelo que organize la melod'ia en t'erminos de unidades discursivas.
+
+ \item Modelos para generar relaciones mot'ivicas: Se propone utilizar el modelo de los Restaurantes Chinos \citep{Teh2007} 
+ para generar repetici'on de partes, siguiendo la teor'ia de extracci'on de pistas presentada en \cite{Deliege90}, de forma tal 
+ que la cantidad de repeticiones de una parte no sea excesiva ni nula.
+
+\end{itemize}
+
+% \item Resumen de experimentos
+Utilizando estos modelos se procedi'o a validar su verosimilitud en t'erminos cognitivos. Plantearlo result'o sencillo, sin embargo
+llevarlo a la pr'actica no lo fue: en los modelos que se proponen, hay una gran cantidad de variables en juego, y al ser este 
+enfoque novedoso, no hab'ia en la literatura experimentos similares en los cuales basarse. Sumado a esto 'ultimo, las desiciones
+que implican en el del dise~no del experimento: qu'e piezas utilizar, qu'e instrumento se le asignar'a a la melod'ia generada, 
+si la melod'ia se presentar'ia sola, o junto a la pieza original, si el experimento ser'a presencial o no, la construcci'on 
+interfaz para presentar los est'imulos, etc.  Todo esto impact'o en que los primeros experimentos (secciones 
+\ref{sec:exp_percentiles} y \ref{sec:exp_frase}) no mostraran un comportamiento estad'isticamente significativo. Sin embargo
+sirvieron como aprendizaje para el 'ultimo, en donde se pudo validar el supuesto de este trabajo. 
+
+En el experimento de la secci'on \ref{sec:exp_baseline} se obtuvieron dos resultados importantes. El primero, 
+objetivo del experimento, mostr'o que los modelos definidos en este trabajo modelan en cierto punto la forma en la que 
+un oyente estructura su percepci'on al escuchar una pieza musical. El segundo, resultado no buscado, mostr'o que ante los
+mismos est'imulos, los sujetos con entrenamiento musical se comportaban significativamente diferente de los sujetos sin
+entrenamiento musical. Esto indica que en el futuro ser'ia posible identificar diferencias perceptuales entre ellos en t'erminos 
+de los modelos planteados en este trabajo. Tambi'en es importante trabajar con ciertas simplificaciones en los modelos propuestos:
+\begin{itemize}
+ \item Mejorar la detecci'on de los cambios de foco arm'onico de forma tal de inferirlo sin necesidad de que est'e expl'icito
+ como un acorde tocado por el piano.
+
+ \item Incorporar nuevas variables para el modelo de la jerarqu'ia tonal. El modelo propuesto por \cite{Krumhansl90} permite 
+ describir la tonalidad en la que se encuentra una pieza, pero como se muestra en el experimento \ref{sec:exp_percentiles} 
+ variables como el acento m'etrico y la duraci'on de la nota a generar son importantes a la hora de construir una melod'ia que 
+ haga que el oyente induzca la tonalidad que se est'a modelando.
+
+ \item Eliminar la simplificaci'on utilizada por el modelo de Narmour en donde se asume que todos los intervalos son de tipo
+ implicativo. Manejar los puntos de cierre permitir'ia adem'as una mejor definici'on operativa de frase mel'odica.
+
+ \item Incorporar el uso de silencios.
+
+\end{itemize}
+
+
+De esta forma se concluye que la metodolog'ia propuesta, no s'olo permitir'ia validar teor'ias cognitivas para la m'usica, sino
+que podr'ia aportar nueva informaci'on relevante al area. 
+
+% \item Conclusi'on propiamente dicha
+
+% \item Trabajo a futuro 
+
+%\end{itemize}
