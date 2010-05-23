@@ -53,6 +53,15 @@
     padding-left:15px;
 
 }
+.selected_list {
+    color:#3e54ae;
+    text-decoration:none;
+}
+
+.not_selected_list {
+    text-decoration:none;
+    color:#8b8e98;
+}
 .playlist{
     text-align:left;
     width:500px;

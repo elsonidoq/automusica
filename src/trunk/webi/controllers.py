@@ -159,23 +159,44 @@ def get_original_fname_and_description(composed_fname):
     return original_fname + '.mp3', description
 
     
-def build_examples(fnames):
-    suffixes=[('Con percusi&oacute;n','-perc.mp3'),
-              ('Un solo pitch profile','_wo_nar_wo_ch.mp3'),
-              ('Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
-              ('Con detecci&oacute;n de acordes','_wo_nar_w_ch.mp3'),
-              ('Con detecci&oacute;n de acordes + Narmour','_w_nar_w_ch.mp3'),
-              ('Con frases','_phrase.mp3'),
-              ('Con motivos','_motif.mp3')]
+class Examples(object):
+    #@cherrypy.tools.encode(encoding='utf8')
+    @cherrypy.expose
+    def index(self, section_name, active_list='Sample'):
+        template= lookup.get_template('examples.mako')
+        all_fnames= descriptions
+        sample_fnames= 'bach.annamin.mid brahms.undgehst.mid chop.maz67-2.mid mend.wo_wie_kann.mid schum.thranen.mid beet.wo70.mid chop.maz63-2.mid haydn.sq74-3.II.mid mzt.ekn.II.mid tchaik.morning.mid'.split()
+        sample_fnames= 'beet.son13-ii.mid brahms.undgehst.mid chop.maz63-2.mid mzt.ekn.ii.mid schum.thranen.mid'.split()
+        sample_fnames= re.sub(' +', ' ', 'bach.annamin.mid  beet.son10-1.ii.mid  haydn.sq50-6.ii.mid bach.jesu.mid     beet.sq135.iii.mid').split()
 
-    suffixes=[
-              ('Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
-              ('Con detecci&oacute;n de acordes + Narmour','_w_nar_w_ch.mp3'),
-              ]
+
+        sample_examples= build_examples(sample_fnames, section_name)
+        all_examples= build_examples(all_fnames, section_name)
+        
+        lists= {'Sample':sample_examples, 'All':all_examples}
+        d={ 'lists': lists,
+            'active_list': active_list,
+            'songs_base_url'     : '/mp3/sample_mids/'}  
+
+        return template.render(**d)
+
+def build_examples(fnames, section_name):
+    versions=[('rhythm', 'Con percusi&oacute;n','rhythm'),
+              ('harmonic_context', 'Un solo pitch profile','wo_nar_wo_ch'),
+              #('melodic_contour', 'Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
+              ('harmonic_context', 'Con detecci&oacute;n de acordes','wo_nar_w_ch'),
+              ('melodic_contour', 'Con detecci&oacute;n de acordes + Narmour','w_nar_w_ch'),
+              ('phrase', 'Con frases','phrase'),
+              ('motif', 'Con motivos','motif')]
+
+    #suffixes=[
+    #          ('Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
+    #          ('Con detecci&oacute;n de acordes + Narmour','_w_nar_w_ch.mp3'),
+    #          ]
     
-    folders= [ ('Baseline', 'baseline'),
-               ('Copado', 'to_compare')]
-
+    #folders= [ 'Baseline', 'baseline'),
+    #           'Copado', 'to_compare')]
+    versions= [v for v in versions if v[0] == section_name]
     songs= []
     for fname in fnames: 
         #fname= '/mp3/examples/' + fname.replace('.mid', '.mp3').lower()
@@ -184,7 +205,7 @@ def build_examples(fnames):
         #    l.append((k, fname.replace('.mp3', v)))
         fname= fname.replace('.mid', '.mp3').lower()
         l= []
-        for k, folder in folders:
+        for section_name, k, folder in versions:
             l.append((k, '/mp3/examples/%s/%s' % (folder, fname)))
         songs.append({'songs':l})
 
@@ -195,25 +216,6 @@ def build_examples(fnames):
         song['name']= description
         song['songs'].insert(0, ['Original', original_fname])
     return songs
-
-class Examples(object):
-    #@cherrypy.tools.encode(encoding='utf8')
-    @cherrypy.expose
-    def index(self, active_section='sample'):
-        template= lookup.get_template('examples.mako')
-        all_fnames= descriptions
-        sample_fnames= 'bach.annamin.mid brahms.undgehst.mid chop.maz67-2.mid mend.wo_wie_kann.mid schum.thranen.mid beet.wo70.mid chop.maz63-2.mid haydn.sq74-3.II.mid mzt.ekn.II.mid tchaik.morning.mid'.split()
-        sample_fnames= 'beet.son13-ii.mid brahms.undgehst.mid chop.maz63-2.mid mzt.ekn.ii.mid schum.thranen.mid'.split()
-
-        sample_examples= build_examples(sample_fnames)
-        all_examples= build_examples(all_fnames)
-        
-        sections= {'sample':sample_examples, 'all':all_examples}
-        d={ 'sections': sections,
-            'active_section': active_section,
-            'songs_base_url'     : '/mp3/sample_mids/'}  
-
-        return template.render(**d)
 
 class Home(object):
     #@cherrypy.tools.encode(encoding='utf8')
