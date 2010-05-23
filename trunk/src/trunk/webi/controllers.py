@@ -137,7 +137,7 @@ descriptions= {'bach.annamin.mid': 'Bach Annamin',
 
 def get_original_fname_and_description(composed_fname):
     composed_fname= os.path.basename(composed_fname).replace('.mp3', '')
-    originals_dir= '/mp3/examples'
+    originals_dir= '/mp3/examples_all/originals'
     original_fnames= [os.path.basename(fname).replace('.mid', '') for fname in descriptions]
 
     partial_composed_fname= ''
@@ -176,18 +176,18 @@ class Examples(object):
         lists= {'Sample':sample_examples, 'All':all_examples}
         d={ 'lists': lists,
             'active_list': active_list,
-            'songs_base_url'     : '/mp3/sample_mids/'}  
+            'songs_base_url'     : '/mp3/examples_all/'}  
 
         return template.render(**d)
 
 def build_examples(fnames, section_name):
-    versions=[('rhythm', 'Con percusi&oacute;n','rhythm'),
-              ('harmonic_context', 'Un solo pitch profile','wo_nar_wo_ch'),
+    versions=[('rhythm', 'Con percusi&oacute;n','-perc'),
+              ('harmonic_context', 'Un solo pitch profile','_wo_nar_wo_ch'),
               #('melodic_contour', 'Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
-              ('harmonic_context', 'Con detecci&oacute;n de acordes','wo_nar_w_ch'),
-              ('melodic_contour', 'Con detecci&oacute;n de acordes + Narmour','w_nar_w_ch'),
-              ('phrase', 'Con frases','phrase'),
-              ('motif', 'Con motivos','motif')]
+              ('harmonic_context', 'Con detecci&oacute;n de acordes','_wo_nar_w_ch'),
+              ('melodic_contour', 'Con detecci&oacute;n de acordes + Narmour','_w_nar_w_ch'),
+              ('phrases', 'Con frases',''),
+              ('motif', 'Con motivos','')]
 
     #suffixes=[
     #          ('Un solo pitch profile + Narmour','_w_nar_wo_ch.mp3'),
@@ -203,10 +203,10 @@ def build_examples(fnames, section_name):
         #l= []
         #for k, v in suffixes:
         #    l.append((k, fname.replace('.mp3', v)))
-        fname= fname.replace('.mid', '.mp3').lower()
+        fname= fname.lower()
         l= []
-        for section_name, k, folder in versions:
-            l.append((k, '/mp3/examples/%s/%s' % (folder, fname)))
+        for folder, k, suffix in versions:
+            l.append((k, '/mp3/examples_all/%s/%s' % (folder, fname.replace('.mid', suffix + '.mp3'))))
         songs.append({'songs':l})
 
     
