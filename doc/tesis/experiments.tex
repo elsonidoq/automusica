@@ -30,13 +30,10 @@ una consulta m'as o una consulta menos indirectamente afectar'an al resto de los
 Es por esto que un efecto que es necesario aislar es la cantidad de consultas que hace cada algoritmo al
 generador de n'umeros aleatorios. Es por esto que cada agente cuenta con su propio generador de n'umeros aleatorios.
 
-\subsection{Reproducibilidad de los resultados}
-
 \subsection{Posibles experimentos}
-En esta secci'on se presentan una serie de posibles experimentos que a realizarse con los modelos propuestos en este trabajo. 
-No se realizar'a una descripci'on exhaustiva de cada uno, s'olo se enunciar'a cu'al es la hip'otesis a probar.
-Dado que todo este emprendimiento emp'irico excede al alcance de este trabajo se llevar'an a cabo s'olo algunos 
-para ilustrar la metodolog'ia de validaci'on propuesta.
+En esta secci'on se presentan una serie de posibles experimentos a realizar con los modelos propuestos en este trabajo. 
+No se abundar'a en una descripci'on exhaustiva de cada uno, s'olo se enunciar'a cu'al es la hip'otesis a probar.
+Se llevar'an a cabo s'olo algunos para ilustrar la metodolog'ia de validaci'on propuesta.
 
 \begin{itemize}
   \item Validaci'on del modelo de acento m'etrico:
@@ -75,12 +72,21 @@ para ilustrar la metodolog'ia de validaci'on propuesta.
 \end{itemize}
 
 Varios de los experimentos enunciados surgieron al analizar los resultados de los experimentos conducidos en las secci'ones \ref{sec:exp_percentiles}, 
-\ref{sec:exp_frase} y \ref{sec:exp_ritmica}.
+\ref{sec:exp_frase}.
 
 \subsection{Experimento con los valores del percentil asociado al predicado S}
 \label{sec:exp_percentiles}
 \subsubsection{Objetivo}
-Este experimento se propone testear la plausibilidad de las melod'ias generadas de acuerdo a diferentes percentiles (ver secci'on \ref{sec:must_predicates})
+En la secci'on \ref{sec:must_predicates} se defini'o un algoritmo para organizar la melod'ia generada en t'ermino de unidades discursivas. Cada una de estas
+unidades tienen la duraci'on de un acorde, y su meta es generar expectativas para el acorde siguiente (en la melod'ia, representado por una nota de anclaje
+o apoyo). Se utiliza como herramienta para generar expectativas la distribuci'on en conjunto definida por el pitch profile afectado con el acorde que 
+gobierna la sonoridad del momento y la distribuci'on de probabilidades que surge a partir de la teor'ia de la implicaci'on realizaci'on. Es posible 
+utilizar esta distribuci'on como herramienta para generar expectativas puesto que tiene una interpretaci'on dual: adem'as de la propia de una distribuci'on 
+de probabilidades, tiene la que corresponde a los fundamentos psicol'ogicos que se le dio. De esta forma notas muy probables son adem'as estables y 
+fuertemente implicadas. Para capturar este hecho, se restringi'o la distribuci'on de probabilidades con un percentil, y se defini'o un criterio para que la 
+frase sea v'alida: La nota de apoyo de la pr'oxima frase tiene que ser fuertemente implicada y estable.
+
+Siendo asi, este experimento se propone testear la plausibilidad de las melod'ias generadas de acuerdo a diferentes percentiles (ver secci'on \ref{sec:must_predicates})
 con el objeto de encontrar un valor de percentil adecuado para restringir la distribuci'on de probabilidad sobre la que el programa selecciona el 
 intervalo implicativo a las notas de apoyo.
 
@@ -118,16 +124,18 @@ cuestionario de datos personales.
 \end{imagen}
 
 \subsubsection{Resultados}
-Se ejecut'o un modelo lineal general de mediciones repetidas tomando la pieza input (5 niveles) y los percentiles de acuerdo a los que se generaron las melod'ias 
+Se ejecut'o un modelo de an'alisis de la varianza (ANOVA) de mediciones repetidas \footnote{Utilizando el software SPSS} tomando la pieza input (5 niveles) 
+y los percentiles de acuerdo a los que se generaron las melod'ias 
 target (4 niveles) como factores intra-sujetos. Se consideraron los grupos de experiencia musical como factor entre-sujetos. 
 Solamente el factor Pieza result'o significativo (F[4-39]=4.429; p=.002). Lo que m'as interesa aqu'i, el factor Percentil arroj'o una significaci'on marginal 
-(F[3-40]=2.585; p=.056), sin embargo un contraste post hoc mostr'o que el percentil 1 fue evaluado significativamente diferente del percentil 0 (F[1-42]=5.630; p=.023)
-y del percentil 0,3 (F[1-42]=4.029; p=.052). El gr'afico de la figura \ref{fig:histogramas_juicios} muestra esas diferencias. 
+(F[3-40]=2.585; p=.056), sin embargo un contraste post hoc mostr'o que el percentil 1 fue evaluado significativamente 
+diferente del percentil 0 (F[1-42]=5.630; p=.023) y del percentil 0,3 (F[1-42]=4.029; p=.035) mediante un test t para muestras relacionadas. 
+El gr'afico de la figura \ref{fig:histogramas_juicios} muestra esas las medias para cada percentil. 
 
 \begin{imagen}
     \file{images/exp_percentiles/marginales_percentiles.png}
     \labelname{fig:histogramas_juicios}
-    \desc{Medias de los juicios de los sujetos para los 4 percentiles propuestos para la restricci'on }
+    \desc{Medias de los juicios de los sujetos para los 4 percentiles propuestos para la restricci'on}
     \width{9cm}
 \end{imagen}
 
@@ -317,7 +325,7 @@ en la pieza 2 que es del 92\%.
 
 \subsubsection{Discusi\'on}
 En un primer momento estos resultados se revelaron desalentadores puesto que se cre'ia que iba a observar una tendencia m'as marcada y estad'isticamente
-significativa. De todas formas, el hecho de que se manifestara una tendencia parcial dio a lugar a reever el procedimiento con el que se realiz'o el 
+significativa. De todas formas, el hecho de que se manifestara una tendencia parcial dio a lugar a rever el procedimiento con el que se realiz'o el 
 experimento. Con este objetivo, se volvi'o a relevar el experimento con mucho cuidado a escuchar las diferencias entre las melod'ias. 
 
 Lo primero que se observ'o fue que para evaluar qu'e melod'ia era ``mejor'' era necesario reproducirla en el contexto de la partitura original, eliminando, de existir, la melod'ia original de la partitura. Es importante notar la diferencia que existe entre el juicio de preferencia cuando se refiere
@@ -326,8 +334,8 @@ melod'ia como ente musical aislado, y en el segundo corresponde a un juicio de `
 los modelos propuestos en este trabajo se entrenan con aspectos de la partitura en s'i, desde la tonalidad y los contornos mel'odicos hasta el ritmo
 arm'onico, es de esperarse que la evaluaci'on sea en el contexto de la partitura original.
 
-Las melod'ias en el contexto de la pieza original permitieron distinguir en ciertos momentos donde se encontraba el algoritmo de frases y donde no,
-sin embargo la diferencia segu'ia siendo sut'il. Esto en parte se debe a que las melod'ias que fueron construidas sin el algoritmo para frases
+Las melod'ias en el contexto de la pieza original permitieron distinguir en ciertos momentos d'onde se encontraba el algoritmo de frases y d'onde no.
+No obstante la diferencia segu'ia siendo sut'il. Esto en parte se debe a que las melod'ias que fueron construidas sin el algoritmo para frases
 tienen en cuenta tambi'en el ritmo arm'onico, puesto que el \emph{pitch profile} se actualiza con cada acorde (ver secci'on \ref{sec:harmonic_context_model}).
 Esto hace que sea razonable que las las melod'ias generadas por ambos modelos difieran s'olo de una forma sutil.
 
@@ -372,9 +380,9 @@ vertical roja indica la media, que coincide con el valor m'as probable de la pru
 
 Un resultado por dem'as curioso surgi'o de la comparaci'on entre los juicios de preferencia entre m'usicos y no m'usicos. Dado que en la poblaci'on 
 de sujetos obtenida no hab'ia una gran cantidad de sujetos m'usicos con m'as de 3 y 5 a~nos de experiencia, hubo que incurrir en un proceso de muestreo
-para poder realizar la comparaci'on. El proceso de muestreo consiste tomar sucesivas muestras de la poblaci'on de no m'usicos del mismo tama~no que la 
+para poder realizar la comparaci'on. El proceso de muestreo consiste en tomar sucesivas muestras de la poblaci'on de no m'usicos del mismo tama~no que la 
 poblaci'on de m'usicos con la que se desea comparar. Teniendo las sucesivas muestras de los no m'usicos, se procede a comparar las medias: la media de los
-m'usicos con los datos de los no m'usicos y viceversa. Los resultados de este proceso arrojaron, en algunos fragmentos musicales que no existen diferencias
+m'usicos con los datos de los no m'usicos y viceversa. Los resultados de este proceso arrojaron, en algunos fragmentos musicales, que no existen diferencias
 significativas entre los juicios, sin embargo, hay dos fragmentos donde parece haber una diferencia. En la figura \ref{fig:pvalues_musician_vs_nonmusician}
 se exhiben todos los p-valores arrojados por realizar un proceso de 100 muestras. Observar que hay 200 valores, puesto que se realizan dos pruebas t por 
 cada muestra. A modo de comparaci'on, en la figura \ref{fig:pvalues_arbitrary_partition} se exhibe el mismo proceso de muestreo partiendo el conjunto 
@@ -449,66 +457,12 @@ ese, y del an'alisis musicol'ogico de las partituras buscando diferencias entre 
 \end{imagen}
 
 
-\pagebreak
-\section{Conclusiones}
-
-%En el presente trabajo se plantea como hip'otesis que el an'alisis de melod'ias generadas autom'aticamente por algoritmos con sustento cognitivo 
-%podr'ia ayudar a validar o aportar nuevo conocimiento a las teor'ias cognitivas en las que estos se basan. Con este objetivo, mediante 
-%t'ecnicas de aprendizaje autom'atico, se construyeron modelos generativos generar melod'ias en base a la jerarqu'ia m'etrica, la jerarqu'ia tonal, contornos mel'odicos, 
-%organizaci'on discursiva y elaboraci'on mot'ivica.
-%
-%Los experimentos conducidos en este trabajo, muestran evidencia de que esta hip'o
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%
-%En el presente trabajo se propone y se pone a prueba una metodolog'ia novedosa que tiene como objetivo ayudar a validar y aportar 
-%conocimiento al area de psicolog'ia de la m'usica. Esta metodolog'ia toma como hip'otesis que el an'alisis de melod'ias construidas
-%por algoritmos generativos con sustento cognitivo permitir'ian aportar informaci'on 'util a la psicolog'ia cognitiva de la m'usica.
-%
-%
-%consiste en construir modelos generativos para atributos musicales
-%basados en teor'ias psicol'ogicas que prediquen s
-%
-%Para alcanzar ese objetivo, se implementaron algoritmos no supervisados, 
-%que mediante t'ecnicas de aprendizaje autom'atico construyan modelos con un buen fundamento cognitivo para acento m'etrico, 
-%inferencia de la tonalidad, contornos mel'odicos, fraseo y elaboraci'on mot'ivica. 
-%
-%Los resultados de los experimentos conducidos en este trabajo aportan evidencia significativa para creer que la 
-%metodolog'ia propuesta permitir'ia no s'olo ayudar a validar ciertos postulados de teor'ias cognitivas musicales, sino tambi'en 
-%aportar nuevos resultados.
-%
-%De esta forma, se considera a futuro elaborar los modelos para eliminar ciertas simplificaci'ones introducidas, como tambi'en 
-%analizar que tipo conclusiones podr'ian sacarse a partir de su utilizaci'on.
-%
-%
-%
-%
-%\begin{itemize}
-% \item Hip'otesis del trabajo
-
+\chapter{Conclusiones}
 En el presente trabajo se plantea como hip'otesis que la experimentaci'on con m'usica generada autom'aticamente a partir de 
 algoritmos con fundamentaci'on cognitiva, podr'ia permitir validar las teor'ias en las que estos algoritmos fueron fundados. 
 Dado que esta hip'otesis no ha sido planteada con anterioridad, y por consiguiente no se han construido modelos generativos 
 teniendo en cuenta todas las teor'ias que se consideran pertinentes, gran parte del trabajo consisti'o en construirlos. 
-Se opt'o por un enfoque estad'istico para contruir los modelos, por sobre enfoques l'ogicos o basados en reglas, puesto 
+Se opt'o por un enfoque estad'istico para construir los modelos, por sobre enfoques l'ogicos o basados en reglas, puesto 
 que este es m'as flexible, y la noci'on de ``entrenar el modelo'' pasa a tener una interpretaci'on intuitiva. 
 
 Es importante antes de embarcarse en semejante tarea, comprender cual es su alcance para poder definir un trabajo que se mantenga 
@@ -516,8 +470,6 @@ acotado. Es por esto que se decidi'o a priori que los modelos propuestos ser'ian
 el problema de tener que combinar informaci'on de distintas partituras. Adem'as se decidi'o trabajar solamente con l'ineas 
 mel'odicas y no generar la estructura de la pieza.
 Teniendo en cuenta estas restricci'ones, se aport'o con el desarrollo de los siguientes modelos:
-
-% \item Aportes
 
 \begin{itemize}
  \item Modelo para la r\'itmica: Basado en la definici'on de \cite{LerdahlJackendoff83} de acento m'etrico, las nociones de 
@@ -540,10 +492,9 @@ Teniendo en cuenta estas restricci'ones, se aport'o con el desarrollo de los sig
 
 \end{itemize}
 
-% \item Resumen de experimentos
 Utilizando estos modelos se procedi'o a validar su verosimilitud en t'erminos cognitivos. Plantearlo result'o sencillo, sin embargo
 llevarlo a la pr'actica no lo fue: en los modelos que se proponen, hay una gran cantidad de variables en juego, y al ser este 
-enfoque novedoso, no hab'ia en la literatura experimentos similares en los cuales basarse. Sumado a esto 'ultimo, las desiciones
+enfoque novedoso, no hab'ia en la literatura experimentos similares en los cuales basarse. Sumado a esto 'ultimo, las decisiones
 que implican en el del dise~no del experimento: qu'e piezas utilizar, qu'e instrumento se le asignar'a a la melod'ia generada, 
 si la melod'ia se presentar'ia sola, o junto a la pieza original, si el experimento ser'a presencial o no, la construcci'on 
 interfaz para presentar los est'imulos, etc.  Todo esto impact'o en que los primeros experimentos (secciones 
@@ -575,9 +526,3 @@ de los modelos planteados en este trabajo. Tambi'en es importante trabajar con c
 
 De esta forma se concluye que la metodolog'ia propuesta, no s'olo permitir'ia validar teor'ias cognitivas para la m'usica, sino
 que podr'ia aportar nueva informaci'on relevante al area. 
-
-% \item Conclusi'on propiamente dicha
-
-% \item Trabajo a futuro 
-
-%\end{itemize}
