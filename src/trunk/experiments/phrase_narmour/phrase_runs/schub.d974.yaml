@@ -1,3 +1,0 @@
-args: [/home/prakuso/tesis/src/trunk/input-mids/favio/schub.d974.mid]
-include: [/home/prakuso/tesis/src/trunk/experiments/phrase_narmour/phrase.yaml]
-options: {output-dir: /home/prakuso/tesis/src/trunk/experiments/phrase_narmour/phrase_runs/mids}

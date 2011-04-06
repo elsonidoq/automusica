@@ -1,9 +1,0 @@
-#!/bin/sh
-rm tesis.aux 
-rm tesis.bbl 
-rm tesis.blg 
-rm tesis.log 
-rm tesis.out 
-rm tesis.toc
-rm tesis.bbl 
-

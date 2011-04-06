@@ -1,7 +1,0 @@
-cp $1 tmp.mid
-midi2abc tmp.mid > tmp.abc
-abc2ly tmp.abc
-lilypond tmp.ly
-lilypond tmp.ly
-mv tmp.pdf $1.pdf
-echo "output in $1.pdf"

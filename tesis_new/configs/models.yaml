@@ -1,0 +1,8 @@
+global_pitch_profile:
+    type: object
+    path: electrozart.algorithms.harmonic_context.notes_distr:NotesDistr
+    args:
+        score: param:score
+        seed: param:seed
+
+        

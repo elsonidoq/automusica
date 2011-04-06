@@ -1,3 +1,0 @@
-args: [/home/prakuso/tesis/src/trunk/input-mids/favio/beet.wo14.8.mid]
-include: [/home/prakuso/tesis/src/trunk/experiments/must_percents/a.yaml]
-options: {output-dir: /home/prakuso/tesis/src/trunk/experiments/must_percents/a_runs/mids}

@@ -1,8 +1,0 @@
-digraph G {
-    rankdir="LR";
-    "lluvia" -> "lluvia" [label="0.9"];
-    "lluvia" -> "no lluvia" [label="0.1"];
-
-    "no lluvia" -> "lluvia" [label="0.3"];
-    "no lluvia" -> "no lluvia" [label="0.7"];
-}

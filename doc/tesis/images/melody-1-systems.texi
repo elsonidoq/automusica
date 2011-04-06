@@ -1,2 +1,0 @@
-@image{melody-1-1}
-@c eof - 'eof' is a Makefile marker; do not remove. 
