@@ -37,10 +37,10 @@ class ScoreHarmonicContext(Algorithm):
                        n.end >=result.start]
 
 class ChordHarmonicContext(Algorithm):
-    def __init__(self, context_score, pitch_profile, *args, **kwargs):
+    def __init__(self, context_score, notes_distr, *args, **kwargs):
         super(ChordHarmonicContext, self).__init__(*args, **kwargs)
         self.context_score= context_score
-        self.pitch_profile= pitch_profile
+        self.pitch_profile= dict(notes_distr.pitches_distr())
 
     def start_creation(self):
         self.chordlist= Chord.chordlist(self.context_score, self.pitch_profile)

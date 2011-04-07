@@ -87,27 +87,19 @@ class SupportNotesComposer(object):
         print "MIN PITCH", min_pitch
         print "MAX PITCH", max_pitch
         
-        notes_distr= NotesDistr(score, **params)# seed=params['seed'], use_chord_detection=params['use_chord_detection'])
-        #if params['notes_distr_duration']: notes_distr= NotesDistrDuration(score)
-        #else: notes_distr= NotesDistr(score)
-        tonic_notes_alg= TonicHarmonicContext(notes_distr, seed=params['seed']) 
+        params['score']= score
+        notes_distr= appctx.get('notes_distr', context=params)
+        tonic_notes_alg= appctx.get('tonic_harmonic_context', context=params)
 
-        harmonic_context_alg= ChordHarmonicContext(score, notes_distr, seed=params['seed'])
-        harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, seed=params['seed'])
+        harmonic_context_alg= appctx.get('phrase_repetitions_harmonic_context', context=params) 
 
-        #interval_size= measure_interval_size(score, params['n_measures']) 
-        rythm_alg= RythmHMM(score, params['n_measures'], seed=params['seed'])
-        #phrase_rythm_alg= rythm_alg
-        phrase_rythm_alg= ListRythm(rythm_alg, seed=params['seed'])
         if params['enable_part_repetition']:
-            phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id', seed=params['seed'])
+            phrase_rhythm_alg= appctx.get('phrase_rhythm_alg_cache', context=params)
+        else:
+            phrase_rhythm_alg= appctx.get('phrase_rhythm_alg', context=params)
 
-        if params['load_narmour_pickle'] is not None:
-            import pickle
-            with open(params['load_narmour_pickle']) as f:
-                melody_alg= ContourAlgorithm.load(f, seed=params['seed'])
-        elif params['phrase_narmour']:            
-            melody_alg= ContourAlgorithm(seed=params['seed'])
+        if params['phrase_narmour']:            
+            melody_alg= appctx.get('phrase_contour_algorithm', context=params)
         else:            
             melody_alg= SimpleContourAlgorithm(seed=params['seed'], use_narmour=params['use_narmour'])
 
@@ -116,24 +108,17 @@ class SupportNotesComposer(object):
             phrase_melody_alg= CacheAlgorithm(phrase_melody_alg, 'phrase_id', seed=params['seed'])
 
 
-        if not params['folksong_narmour'] and params['load_narmour_pickle'] is None:
-            melody_alg.train(score)
-            if params['save_narmour_pickle']:
-                with open(params['save_narmour_pickle'], 'w') as f:
-                    melody_alg.dump(f)
-
-        rythm_alg.train(score)
+        phrase_rhythm_alg.train(score)
 
         harmonic_context_alg.train(score)
 
         # XXX
         melody_alg.notes_distr= notes_distr.notes_distr([], min_pitch, max_pitch)
         # XXX
-        applier= self.applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
+        applier= self.applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rhythm_alg, notes_distr, phrase_melody_alg)
         self.algorithms= {'tonic_notes_alg':tonic_notes_alg, 
                           'harmonic_context_alg':harmonic_context_alg, 
-                          'rythm_alg':rythm_alg,
-                          'phrase_rythm_alg':phrase_rythm_alg, 
+                          'phrase_rythm_alg':phrase_rhythm_alg, 
                           'notes_distr':notes_distr, 
                           'phrase_melody_alg':phrase_melody_alg}
 
