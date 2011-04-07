@@ -163,34 +163,36 @@ class SupportNotesComposer(object):
         #duration= chord_notes[-1].end
 
         res= score.copy()
-        self.algorithms['rythm_alg'].model.calculate_metrical_accents()
+        self.algorithms['phrase_rythm_alg'].algorithm.rythm_alg.model.calculate_metrical_accents()
+        interval_size= self.algorithms['phrase_rythm_alg'].algorithm.rythm_alg.model.interval_size
+        global_gcd= self.algorithms['phrase_rythm_alg'].algorithm.rythm_alg.model.global_gcd
         #rythm_alg.model.draw_accents('accents.png', score.divisions)
         import random
         rnd= random.Random(params['seed'])
         cache= {}
         def random_accent(note):
-            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+            moment= (note.start%interval_size)/global_gcd
             res= cache.get(moment)
             if res is None:
                 res= rnd.randint(1, 6)
                 cache[moment]= res
             return res
         def dec_accent(note):            
-            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+            moment= (note.start%interval_size)/global_gcd
             res= cache.get(moment)
             if res is None:
                 res= 7-moment
                 cache[moment]= res
             return res
         def inc_accent(note):            
-            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+            moment= (note.start%interval_size)/global_gcd
             res= cache.get(moment)
             if res is None:
                 res= moment + 1 
                 cache[moment]= res
             return res
 
-        accent_func= self.algorithms['rythm_alg'].model.get_metrical_accent 
+        #accent_func= self.algorithms['rythm_alg'].model.get_metrical_accent 
         accent_func= inc_accent
         accent_func= dec_accent
         accent_func= random_accent
