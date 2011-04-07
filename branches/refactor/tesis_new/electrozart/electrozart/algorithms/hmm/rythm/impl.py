@@ -45,21 +45,33 @@ class ModuloObsSeq(ConditionalMidiObsSeq):
                 res.append([(k%self.interval_size, {}), (end%self.interval_size, {})])
         return res
         
+def measure_interval_size(score, nmeasures):
+    nunits, unit_type= score.time_signature
+    unit_type= 2**unit_type
+    interval_size= nunits*nmeasures*score.divisions*4/unit_type
+    max_duration= max(score.get_notes(skip_silences=True), key=lambda n:n.duration).duration
+    #XXX
+    #if max_duration > interval_size:
+    #    proportion= max_duration/interval_size
+    #    if max_duration % interval_size != 0: proportion+=1
+    #    interval_size*= proportion            
+
+    return interval_size
+    
 
 class RythmHMM(Algorithm):
     def __new__(cls, *args, **kwargs):
-        instance= super(RythmHMM, cls).__new__(cls, *args, **kwargs)
+        instance= super(RythmHMM, cls).__new__(cls)
         instance.params.update(dict(robs_alpha     = 0.5, 
                                     enable_dp_robs = True,
                                     global_robs    = False))
         return instance
         
         
-    def __init__(self, interval_size, *args, **kwargs):
+    def __init__(self, score, n_measures, *args, **kwargs):
         #self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         super(RythmHMM, self).__init__(*args, **kwargs)
-        self.params['interval_size']= interval_size
-        self.interval_size= interval_size
+        self.interval_size= measure_interval_size(score, n_measures) 
         self.learner= HiddenMarkovLearner()
         self.hidden_states= set()
         

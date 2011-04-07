@@ -1,2 +1,3 @@
-import: models.yaml
-import: midi.yaml
+import: 
+    - models.yaml
+    - midi.yaml

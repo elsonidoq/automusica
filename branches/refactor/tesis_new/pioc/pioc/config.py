@@ -1,7 +1,16 @@
 import yaml
 import os
 
+class UnresolvedParameter(object):
+    def __init__(self, name):
+        self.name= name
+
+class UnresolvedParameterError(Exception): pass
+
 class ApplicationContext(dict):
+    def __getitem__(self, k):
+        return self.get(k)
+
     def get(self, k, context=None):
         v= super(ApplicationContext, self).__getitem__(k)
         if isinstance(v, ObjectDescription):
@@ -41,7 +50,9 @@ class ObjectDescription(object):
                 if arg.name not in context: 
                     raise UnresolvedParameterError('Cant bind parameter %s of class %s:%s' % (arg.name, self.module_path, self.class_name))
                 self.args[k]= context[arg.name]
-        
+            elif isinstance(arg, ObjectDescription):
+                self.args[k]= arg(context) 
+
         module= __import__(self.module_path, fromlist=self.module_path.split('.'))
         klass= getattr(module, self.class_name)
 
@@ -50,13 +61,6 @@ class ObjectDescription(object):
         else:
             instance= klass(**self.args)
         return instance
-                
-class UnresolvedParameter(object):
-    def __init__(self, name):
-        self.name= name
-
-class UnresolvedParameterError(Exception): pass
-
     
 def parse_config(config_fname):
     config= recursive_parse_config(config_fname)
@@ -71,8 +75,9 @@ def recursive_parse_config(config_fname, res=None):
 
     for k, v in parsed_fname.iteritems():
         if k == 'import': 
-            fname= os.path.join(os.path.dirname(config_fname), v)
-            recursive_parse_config(fname, res)
+            for fname in v:
+                fname= os.path.join(os.path.dirname(config_fname), fname)
+                recursive_parse_config(fname, res)
         if not isinstance(v, dict): continue
         if v['type'] == 'object':
             load_if_needed(k, res)
