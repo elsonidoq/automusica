@@ -1,0 +1,13 @@
+parsers:
+    midi:
+        type: object
+        path: electrozart.parsing.midi:MidiScoreParser
+
+writers:
+    midi:
+        type: object
+        path: electrozart.writing.midi:MidiScoreWriter
+        
+
+            
+            

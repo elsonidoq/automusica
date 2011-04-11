@@ -5,9 +5,9 @@ from utils.hmm import HiddenMarkovModel
 from utils.fraction import Fraction, gcd
 
     
-class RythmModel(HiddenMarkovModel):
+class RhythmModel(HiddenMarkovModel):
     def __init__(self, *args, **kwargs):
-        super(RythmModel, self).__init__(*args, **kwargs)
+        super(RhythmModel, self).__init__(*args, **kwargs)
         self.metrical_accents= None
         self.interval_size= kwargs['interval_size']
 
@@ -22,7 +22,7 @@ class RythmModel(HiddenMarkovModel):
                 return "%s" % Fraction(node, divisions)
             else:
                 return "%s->%s" % (Fraction(node[0], divisions), Fraction(node[1], divisions))
-        return super(RythmModel, self).draw(fname, f)
+        return super(RhythmModel, self).draw(fname, f)
 
     def get_metrical_accent(self, note):
         if self.metrical_accents is None:

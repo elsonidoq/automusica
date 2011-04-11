@@ -5,7 +5,7 @@ from time import time
 
 from electrozart import Instrument, PlayedNote, Silence
 
-from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgorithm
+from electrozart.algorithms.hmm.rhythm import ListRhythm, RhythmHMM, RhythmCacheAlgorithm
 
 from electrozart.algorithms.hmm.melody import ListMelody
 from electrozart.algorithms.hmm.melody.complete_narmour_model import ContourAlgorithm
@@ -96,11 +96,11 @@ class SupportNotesComposer(object):
         harmonic_context_alg= PhraseRepetitions(harmonic_context_alg, seed=params['seed'])
 
         #interval_size= measure_interval_size(score, params['n_measures']) 
-        rythm_alg= RythmHMM(score, params['n_measures'], seed=params['seed'])
-        #phrase_rythm_alg= rythm_alg
-        phrase_rythm_alg= ListRythm(rythm_alg, seed=params['seed'])
+        rhythm_alg= RhythmHMM(score, params['n_measures'], seed=params['seed'])
+        #phrase_rhythm_alg= rhythm_alg
+        phrase_rhythm_alg= ListRhythm(rhythm_alg, seed=params['seed'])
         if params['enable_part_repetition']:
-            phrase_rythm_alg= RythmCacheAlgorithm(phrase_rythm_alg, 'phrase_id', seed=params['seed'])
+            phrase_rhythm_alg= RhythmCacheAlgorithm(phrase_rhythm_alg, 'phrase_id', seed=params['seed'])
 
         if params['load_narmour_pickle'] is not None:
             import pickle
@@ -122,18 +122,18 @@ class SupportNotesComposer(object):
                 with open(params['save_narmour_pickle'], 'w') as f:
                     melody_alg.dump(f)
 
-        rythm_alg.train(score)
+        rhythm_alg.train(score)
 
         harmonic_context_alg.train(score)
 
         # XXX
         melody_alg.notes_distr= notes_distr.notes_distr([], min_pitch, max_pitch)
         # XXX
-        applier= self.applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rythm_alg, notes_distr, phrase_melody_alg)
+        applier= self.applier= AlgorithmsApplier(tonic_notes_alg, harmonic_context_alg, phrase_rhythm_alg, notes_distr, phrase_melody_alg)
         self.algorithms= {'tonic_notes_alg':tonic_notes_alg, 
                           'harmonic_context_alg':harmonic_context_alg, 
-                          'rythm_alg':rythm_alg,
-                          'phrase_rythm_alg':phrase_rythm_alg, 
+                          'rhythm_alg':rhythm_alg,
+                          'phrase_rhythm_alg':phrase_rhythm_alg, 
                           'notes_distr':notes_distr, 
                           'phrase_melody_alg':phrase_melody_alg}
 
@@ -151,11 +151,11 @@ class SupportNotesComposer(object):
         
         #import pickle
         #f=open('r.pickle','w')
-        #pickle.dump(rythm_alg.model, f, 2)
+        #pickle.dump(rhythm_alg.model, f, 2)
         #f.close()
         #1/0
         # XXX
-        #self.rythm_alg= rythm_alg#.draw_model('rythm.png', score.divisions)
+        #self.rhythm_alg= rhythm_alg#.draw_model('rythm.png', score.divisions)
         #self.melody_alg= melody_alg #.model.draw('melody.png', str)
 
         duration= score.duration
@@ -178,47 +178,47 @@ class SupportNotesComposer(object):
         #duration= chord_notes[-1].end
 
         res= score.copy()
-        self.algorithms['rythm_alg'].model.calculate_metrical_accents()
+        self.algorithms['rhythm_alg'].model.calculate_metrical_accents()
         #rythm_alg.model.draw_accents('accents.png', score.divisions)
         import random
         rnd= random.Random(params['seed'])
         cache= {}
         def random_accent(note):
-            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+            moment= (note.start%self.algorithms['rhythm_alg'].model.interval_size)/self.algorithms['rhythm_alg'].model.global_gcd
             res= cache.get(moment)
             if res is None:
                 res= rnd.randint(1, 6)
                 cache[moment]= res
             return res
         def dec_accent(note):            
-            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+            moment= (note.start%self.algorithms['rhythm_alg'].model.interval_size)/self.algorithms['rhythm_alg'].model.global_gcd
             res= cache.get(moment)
             if res is None:
                 res= 7-moment
                 cache[moment]= res
             return res
         def inc_accent(note):            
-            moment= (note.start%self.algorithms['rythm_alg'].model.interval_size)/self.algorithms['rythm_alg'].model.global_gcd
+            moment= (note.start%self.algorithms['rhythm_alg'].model.interval_size)/self.algorithms['rhythm_alg'].model.global_gcd
             res= cache.get(moment)
             if res is None:
                 res= moment + 1 
                 cache[moment]= res
             return res
 
-        accent_func= self.algorithms['rythm_alg'].model.get_metrical_accent 
+        accent_func= self.algorithms['rhythm_alg'].model.get_metrical_accent 
         accent_func= inc_accent
         accent_func= dec_accent
         accent_func= random_accent
 
         #seed(time())
-        #max_accent= max(rythm_alg.model.metrical_accents.itervalues())
-        #min_accent= max(rythm_alg.model.metrical_accents.itervalues())
+        #max_accent= max(rhythm_alg.model.metrical_accents.itervalues())
+        #min_accent= max(rhythm_alg.model.metrical_accents.itervalues())
         max_accent= 6
         for i, n in enumerate(notes):
             accent= accent_func(n)
             n.volume=  min(100, max(60, (100 * accent)/max_accent))
             if not n.is_silence: n.pitch+=12
-            #if rythm_alg.model.get_metrical_accent(n)== min_accent  and random.random() > 0.5:
+            #if rhythm_alg.model.get_metrical_accent(n)== min_accent  and random.random() > 0.5:
             #    pass
             #    #notes[i]= Silence(n.start, n.duration)
 
@@ -256,7 +256,7 @@ class SupportNotesComposer(object):
         #res.notes_per_instrument= {instrument: notes}
         #res.notes_per_instrument[piano]= chord_notes
 
-        #rythm_alg.draw_model('rythm.png')
+        #rhythm_alg.draw_model('rythm.png')
 
         import electrozart
         from electrozart import base

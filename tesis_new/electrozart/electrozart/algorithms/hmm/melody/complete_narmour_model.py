@@ -198,7 +198,7 @@ class ContourAlgorithm(ListAlgorithm):
         self.ec.support_note_cache= {}
         self.ec.ncs=0
 
-    @needs('rythm_phrase_len', 'notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
+    @needs('rhythm_phrase_len', 'notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     def generate_list(self, input, result, prev_notes):
         self.ec.input= input
         #XXX
@@ -207,20 +207,20 @@ class ContourAlgorithm(ListAlgorithm):
         prox_prob_model= ProbModel(self.ec.narmour_features_prob, input.prox_notes_distr, use_harmony=True)
         # XXX
 
-        remaining_notes= input.rythm_phrase_len - (self.ec.last_support_note is not None)
+        remaining_notes= input.rhythm_phrase_len - (self.ec.last_support_note is not None)
         t= TimeMeasurer()
         #if input.now == 2048: import ipdb;ipdb.set_trace()
-        print "rythm_phrase_len =", input.rythm_phrase_len
-        if self.ec.last_support_note is not None and input.rythm_phrase_len > 1:
+        print "rhythm_phrase_len =", input.rhythm_phrase_len
+        if self.ec.last_support_note is not None and input.rhythm_phrase_len > 1:
             context= (prev_notes[-1].pitch, self.ec.last_support_note)
             end_pitch_candidates= possible_support_notes(now_prob_model, prox_prob_model, 
                                                          input.min_pitch, input.max_pitch, 
                                                          self.params['support_note_percent'], self.params['middle_note_percent'], 
-                                                         input.rythm_phrase_len, # la proxima nota de apoyo, esta una nota despues
+                                                         input.rhythm_phrase_len, # la proxima nota de apoyo, esta una nota despues
                                                          context= context, now_chord= input.now_chord, prox_chord=input.prox_chord)
                                                                      
             t.measure('possible_support_notes')
-            #if input.rythm_phrase_len == 2: import ipdb;ipdb.set_trace()
+            #if input.rhythm_phrase_len == 2: import ipdb;ipdb.set_trace()
         else:
             end_pitch_candidates= set(range(input.min_pitch, input.max_pitch+1))
 
@@ -231,7 +231,7 @@ class ContourAlgorithm(ListAlgorithm):
             end_pitch_candidates= possible_support_notes(now_prob_model, prox_prob_model, 
                                                          input.min_pitch, input.max_pitch, 
                                                          self.params['alternate_support_note_percent'], self.params['middle_note_percent'], 
-                                                         input.rythm_phrase_len, # la proxima nota de apoyo, esta una nota despues
+                                                         input.rhythm_phrase_len, # la proxima nota de apoyo, esta una nota despues
                                                          context= context, now_chord= input.now_chord, prox_chord=input.prox_chord)
             support_note_percent= self.params['alternate_support_note_percent']
             t.measure('ERROR possible_support_notes(alternate_support_note_percent)')
@@ -274,7 +274,7 @@ class ContourAlgorithm(ListAlgorithm):
             context= pick_context()                
 
         pitches= []
-        if input.rythm_phrase_len == 1:
+        if input.rhythm_phrase_len == 1:
             if self.ec.last_support_note is None:
                 candidates= must[1][context]
                 candidates_distr= dict((c, now_prob_model.get_prob(context[0], context[1], c)) for c in candidates)
@@ -309,7 +309,7 @@ class ContourAlgorithm(ListAlgorithm):
             child_result.pitch= pitch
             res.append((child_input, child_result))
         
-        if len(res) != input.rythm_phrase_len: 
+        if len(res) != input.rhythm_phrase_len: 
             import ipdb;ipdb.set_trace()
             raise Exception('maal ahi')
         

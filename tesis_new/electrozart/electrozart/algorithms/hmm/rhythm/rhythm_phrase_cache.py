@@ -1,7 +1,7 @@
 from electrozart.algorithms import CacheAlgorithm, needs
 
 
-class RythmCacheAlgorithm(CacheAlgorithm):
+class RhythmCacheAlgorithm(CacheAlgorithm):
     @needs('now')
     def generate_list(self, input, result, prev_notes):
         if self.input_key in input:

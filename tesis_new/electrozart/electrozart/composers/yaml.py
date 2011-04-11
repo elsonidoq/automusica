@@ -1,5 +1,5 @@
 from electrozart import Instrument, PlayedNote, Silence
-from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgorithm
+from electrozart.algorithms.hmm.rythm import ListRhythm, RhythmHMM, RhythmCacheAlgorithm
 from electrozart.algorithms.harmonic_context import YamlHarmonicContext
 from electrozart.algorithms.hmm.melody import NarmourHMM, ListMelody
 from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
@@ -35,8 +35,8 @@ class YamlComposer(object):
         harmonic_context_alg= YamlHarmonicContext('/home/prakuso/tesis/src/electrozart/electrozart/composers/base34.yaml', score.divisions)
         harmonic_context_alg= PhraseRepetitions(harmonic_context_alg)
 
-        rythm_alg= RythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
-        phrase_rythm_alg= RythmCacheAlgorithm(ListRythm(rythm_alg), 'part_id')
+        rythm_alg= RhythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
+        phrase_rythm_alg= RhythmCacheAlgorithm(ListRhythm(rythm_alg), 'part_id')
         #phrase_rythm_alg= rythm_alg
 
         melody_alg= NarmourHMM(instrument=piano.patch, channel=piano.channel)
