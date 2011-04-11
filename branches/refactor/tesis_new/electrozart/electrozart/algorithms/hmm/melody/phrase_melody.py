@@ -163,7 +163,7 @@ class ListMelody(ListAlgorithm):
         self.ec.last_support_note= res
         return res
 
-    @needs('rythm_phrase_len', 'notes_distr', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
+    @needs('rhythm_phrase_len', 'notes_distr', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     def generate_list(self, input, result, prev_notes):
         self.ncalls+=1
         if self.ec.last_support_note is None:
@@ -172,7 +172,7 @@ class ListMelody(ListAlgorithm):
             start_pitch= self.ec.last_support_note
         end_pitch= self.pick_support_note(input.prox_chord, input.min_pitch, input.max_pitch)
 
-        phrase_length= input.rythm_phrase_len
+        phrase_length= input.rhythm_phrase_len
         
         assert phrase_length > 0
 

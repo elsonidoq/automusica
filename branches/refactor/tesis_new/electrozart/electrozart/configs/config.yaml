@@ -1,0 +1,2 @@
+paths:
+    midi_out_base: "%(electrozart)s/../../output-midis"

@@ -1,5 +1,5 @@
 from electrozart import Instrument
-from electrozart.algorithms.hmm.rythm import RythmHMM
+from electrozart.algorithms.hmm.rhythm import RhythmHMM
 from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext
 from electrozart.algorithms.hmm.melody import NarmourHMM
 
@@ -36,13 +36,13 @@ class NarmourMarkov(object):
         # XXX ver si hay algun problema con no copiar score
         #chords_notes_alg= ScoreHarmonicContext(score)
         chords_notes_alg= ChordHarmonicContext(score)
-        rythm_alg= RythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
+        rhythm_alg= RhythmHMM(interval_size, multipart=False, instrument=piano.patch, channel=piano.channel)
         melody_alg= MelodyHMM(instrument=piano.patch, channel=piano.channel)
 
-        rythm_alg.train(score)
+        rhythm_alg.train(score)
         chords_notes_alg.train(score)
         melody_alg.train(score)
-        applier= AlgorithmsApplier(chords_notes_alg, rythm_alg, melody_alg)
+        applier= AlgorithmsApplier(chords_notes_alg, rhythm_alg, melody_alg)
         
         notes= applier.create_melody(score.duration, params['print_info'])
         instrument= Instrument()

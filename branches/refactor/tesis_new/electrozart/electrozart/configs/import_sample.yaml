@@ -1,0 +1,13 @@
+responses_queue_path: /home/pablo/repo/meli_catalog/trunk/src/meli_catalog/responses_queue
+job_queue_path: /home/pablo/repo/meli_catalog/trunk/src/meli_catalog/jobs_queue
+private_key_fname: /home/pablo/.ssh/id_rsa 
+username: pablo
+host: localhost
+
+import: config.yaml
+
+responses_queue:
+    type: alias
+    object: remote_responses_queue
+
+
