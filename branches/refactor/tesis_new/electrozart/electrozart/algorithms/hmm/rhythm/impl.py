@@ -11,7 +11,7 @@ from electrozart.algorithms.hmm.obs_seq_builders import ConditionalMidiObsSeq, F
 from electrozart import Score, PlayedNote, Silence, Instrument
 from electrozart.algorithms import ExecutionContext, needs, produces, child_input
 
-from rythm_model import RythmModel
+from rhythm_model import RhythmModel
 
 class ModuloObsSeq(ConditionalMidiObsSeq):
     def __init__(self, builder, interval_size):
@@ -59,9 +59,9 @@ def measure_interval_size(score, nmeasures):
     return interval_size
     
 
-class RythmHMM(Algorithm):
+class RhythmHMM(Algorithm):
     def __new__(cls, *args, **kwargs):
-        instance= super(RythmHMM, cls).__new__(cls)
+        instance= super(RhythmHMM, cls).__new__(cls)
         instance.params.update(dict(robs_alpha     = 0.5, 
                                     enable_dp_robs = True,
                                     global_robs    = False))
@@ -70,7 +70,7 @@ class RythmHMM(Algorithm):
         
     def __init__(self, score, n_measures, *args, **kwargs):
         #self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
-        super(RythmHMM, self).__init__(*args, **kwargs)
+        super(RhythmHMM, self).__init__(*args, **kwargs)
         self.interval_size= measure_interval_size(score, n_measures) 
         self.learner= HiddenMarkovLearner()
         self.hidden_states= set()
@@ -91,7 +91,7 @@ class RythmHMM(Algorithm):
             s= sum(initial_probability.itervalues())
             for k, v in initial_probability.iteritems():
                 initial_probability[k]= v/s
-        hmm= self.learner.get_trainned_model(initial_probability, lambda: RythmModel(interval_size=self.interval_size), random=self.random)
+        hmm= self.learner.get_trainned_model(initial_probability, lambda: RhythmModel(interval_size=self.interval_size), random=self.random)
         hmm.make_walkable()
         self.model= hmm
         return hmm
