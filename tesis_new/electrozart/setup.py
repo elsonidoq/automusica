@@ -16,5 +16,10 @@ setup(
     url="",
     author="",
     author_email="",
+    entry_points="""
+    [console_scripts]
+    electrozart = electrozart.commands:start
+    """,
+
     **extra_kw
 )

@@ -5,18 +5,6 @@ from time import time
 
 from electrozart import Instrument, PlayedNote, Silence
 
-from electrozart.algorithms.hmm.rythm import ListRythm, RythmHMM, RythmCacheAlgorithm
-
-from electrozart.algorithms.hmm.melody import ListMelody
-from electrozart.algorithms.hmm.melody.complete_narmour_model import ContourAlgorithm
-from electrozart.algorithms.hmm.melody.complete_narmour_model_wo_must import SimpleContourAlgorithm
-
-from electrozart.algorithms.crp.phrase_repetition import PhraseRepetitions
-
-from electrozart.algorithms.harmonic_context import ScoreHarmonicContext, ChordHarmonicContext, YamlHarmonicContext, TonicHarmonicContext
-from electrozart.algorithms.harmonic_context.notes_distr import NotesDistr
-from electrozart.algorithms.harmonic_context.notes_distr_duration import NotesDistrDuration
-
 from electrozart.algorithms import AlgorithmsApplier, CacheAlgorithm, AcumulatedInput
 
         
@@ -88,20 +76,20 @@ class SupportNotesComposer(object):
         print "MAX PITCH", max_pitch
         
         params['score']= score
-        notes_distr= appctx.get('notes_distr', context=params)
-        tonic_notes_alg= appctx.get('tonic_harmonic_context', context=params)
+        notes_distr= appctx.get('harmonic_context.notes_distr', context=params)
+        tonic_notes_alg= appctx.get('harmonic_context.tonic', context=params)
 
-        harmonic_context_alg= appctx.get('phrase_repetitions_harmonic_context', context=params) 
+        harmonic_context_alg= appctx.get('harmonic_context.phrase_repetitions', context=params) 
 
         if params['enable_part_repetition']:
-            phrase_rhythm_alg= appctx.get('phrase_rhythm_alg_cache', context=params)
+            phrase_rhythm_alg= appctx.get('rhythm.phrase_cache', context=params)
         else:
-            phrase_rhythm_alg= appctx.get('phrase_rhythm_alg', context=params)
+            phrase_rhythm_alg= appctx.get('rhythm.phrase', context=params)
 
         if params['phrase_narmour']:            
-            melody_alg= appctx.get('phrase_contour_algorithm', context=params)
+            melody_alg= appctx.get('contour.phrase', context=params)
         else:            
-            melody_alg= SimpleContourAlgorithm(seed=params['seed'], use_narmour=params['use_narmour'])
+            melody_alg= appctx.get('contour.simple', context=params)
 
         phrase_melody_alg= melody_alg
         if params['enable_part_repetition']:

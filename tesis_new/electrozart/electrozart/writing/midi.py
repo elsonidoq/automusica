@@ -4,14 +4,9 @@ from electrozart.util import Interval
 from midistuff.midi_messages import MidiMessage
 
 class MidiScoreWriter(ScoreWriter):
-    def __init__(self, fade_end=False, start_fading_time=30, fade_duration=5):
-        self.fade_end= fade_end
-        self.start_fading_time= start_fading_time
-        self.fade_duration= fade_duration
-
-    def dump(self, score, fname):
+    def dump(self, score, fname, fade_end=False, start_fading_time=30, fade_duration=5):
         #import ipdb;ipdb.set_trace()
-        if self.fade_end: score= self._fade_score(score)
+        if fade_end: score= self._fade_score(score)
         tracks= self._organize_tracks(score)
 
         mof= MidiOutFile(fname)
@@ -39,17 +34,17 @@ class MidiScoreWriter(ScoreWriter):
         max_tick= max(n.end for n in notes)
         score_duration= score.ticks2seconds(max_tick)
          
-        if score_duration < self.start_fading_time + self.fade_duration:
+        if score_duration < start_fading_time + fade_duration:
             return max_tick - score.seconds2ticks(5)
         else:    
-            therty_secs_ticks= score.seconds2ticks(self.start_fading_time)
+            therty_secs_ticks= score.seconds2ticks(start_fading_time)
             return therty_secs_ticks
 
     def _fade_score(self, score):
         score= score.copy()
         start_fading_tick= self._get_fading_tick(score)
 
-        fading_time= score.seconds2ticks(self.fade_duration)
+        fading_time= score.seconds2ticks(fade_duration)
         for instrument, notes in score.notes_per_instrument.iteritems():
             notes= [n for n in notes if n.end <= start_fading_tick + fading_time]
             fading_notes= [n for n in notes if n.start >= start_fading_tick]

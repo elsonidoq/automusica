@@ -3,7 +3,7 @@ import re
 from util import Interval
 from utils.fraction import Fraction
 from itertools import groupby, izip, islice
-from math import ceil, log
+from math import ceil, log, sqrt
 from midistuff.midi_messages import MidiMessage
 
 class Figure(object):
@@ -284,6 +284,22 @@ class Score(object):
         self.tempo= None
         self.key_signature= (1,0)
 
+    def get_octave_range(self, offset=0):
+        score_notes= self.get_notes(skip_silences=True)
+        mean_pitch= sum(float(n.pitch) for n in score_notes)/len(score_notes)
+        std_dev= sqrt(sum((n.pitch-mean_pitch)**2 for n in score_notes)/len(score_notes))
+        min_pitch= int(mean_pitch - std_dev+offset)
+        max_pitch= int(mean_pitch + std_dev+offset)
+        if max_pitch - min_pitch <= 24: 
+            max_pitch= mean_pitch + 12 
+            min_pitch= mean_pitch - 12
+            max_pitch += offset
+            min_pitch += offset 
+        min_pitch= max(43, int(min_pitch)-6)
+        max_pitch= int(max_pitch)+6
+        return min_pitch, max_pitch
+
+    
     def ticks2seconds(self, ticks):
         return ticks/(self.divisions*self.bps)
     

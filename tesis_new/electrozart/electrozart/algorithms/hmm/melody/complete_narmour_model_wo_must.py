@@ -26,6 +26,8 @@ class SimpleContourAlgorithm(Algorithm):
             for val in all_vals:
                 self.narmour_features_cnt[feature_name][val]=0.5
 
+        self.notes_distr= kwargs['notes_distr_alg'].notes_distr([], kwargs['min_pitch'], kwargs['max_pitch'])
+
     def save_info(self, folder, score): 
         feature_names= all_features_values().keys() 
         feature_names.append(None)

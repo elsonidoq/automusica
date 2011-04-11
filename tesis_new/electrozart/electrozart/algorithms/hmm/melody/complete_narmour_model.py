@@ -36,7 +36,9 @@ class ContourAlgorithm(ListAlgorithm):
         for feature_name, all_vals in all_features_values().iteritems():
             for val in all_vals:
                 self.narmour_features_cnt[feature_name][val]=0.5
-
+        
+        self.notes_distr= kwargs['notes_distr_alg'].notes_distr([], kwargs['min_pitch'], kwargs['max_pitch'])
+        
 
     def dump(self, stream):
         pickle.dump(self.narmour_features_cnt, stream, 2)
