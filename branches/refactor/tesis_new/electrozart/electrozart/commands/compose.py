@@ -71,6 +71,7 @@ class Compose(BaseCommand):
         parser.add_option('--uniform', dest= 'uniform', default=False, action='store_true')
         parser.add_option('--disable-narmour', dest= 'use_narmour', default=True, action='store_false')
         parser.add_option('--only-percusion', dest= 'only_percusion', default=False, action='store_true')
+        parser.add_option('-l', '--load-model', dest='pickle_models', default= [], action='append')
 
         
 
@@ -91,6 +92,9 @@ class Compose(BaseCommand):
         score_parser= appctx.get('parsers.midi')
         score= score_parser.parse(infname)
 
+        pickle_models= [e.split(',') for e in options.pickle_models]
+        pickle_models= dict(pickle_models)
+
         params= self.params= bind_params(self.params, options.__dict__)
         if params['seed'] is None:
             seed= int(time())
@@ -104,7 +108,16 @@ class Compose(BaseCommand):
         print "MIN PITCH", min_pitch
         print "MAX PITCH", max_pitch
         
+        def load(model_name):
+            if model_name in pickle_models:
+                with open(pickle_models[model_name]) as f:
+                    return pickle.load(f)
+            else:
+                return appctx.get(model_name, context=params)
+
         notes_distr= appctx.get('harmonic_context.notes_distr', context=params)
+        notes_distr.train(score)
+        notes_distr.start_creation()
         tonic_notes_alg= appctx.get('harmonic_context.tonic', context=params)
 
         harmonic_context_alg= appctx.get('harmonic_context.phrase_repetitions', context=params) 
@@ -123,7 +136,9 @@ class Compose(BaseCommand):
             if params['enable_part_repetition']:
                 melody_alg= appctx.get('contour.simple_cache', context=params)
             else:
-                melody_alg= appctx.get('contour.simple', context=params)
+                #melody_alg= appctx.get('contour.simple', context=params)
+                melody_alg= load('contour.simple')
+
 
 
         phrase_rhythm_alg.train(score)
@@ -215,7 +230,7 @@ class Compose(BaseCommand):
         if options.save_info:
             os.makedirs(info_folder)
 
-            applier.save_info(info_folder, score)
+            applier.save_info(info_folder, score, params)
 
         
         params['options']= options.__dict__

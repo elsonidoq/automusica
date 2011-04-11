@@ -10,6 +10,9 @@ class TonicHarmonicContext(Algorithm):
         super(TonicHarmonicContext, self).__init__(*args, **kwargs)
         self.nd= nd
     
+    #def train(self, score):
+    #    self.nd.train(score)
+
     @child_input('tonic_notes')
     def next(self, input, result, prev_notes):
         input.tonic_notes= [i[0] for i in sorted(self.nd.score_profile, key=lambda x:x[1], reverse=True)[:3]]
@@ -40,9 +43,10 @@ class ChordHarmonicContext(Algorithm):
     def __init__(self, context_score, notes_distr, *args, **kwargs):
         super(ChordHarmonicContext, self).__init__(*args, **kwargs)
         self.context_score= context_score
-        self.pitch_profile= dict(notes_distr.pitches_distr())
+        self.notes_distr= notes_distr
 
     def start_creation(self):
+        self.pitch_profile= dict(self.notes_distr.pitches_distr())
         self.chordlist= Chord.chordlist(self.context_score, self.pitch_profile)
         #self.chords= {}
         if len(self.chordlist) > 0 and self.chordlist[0].start > 0:

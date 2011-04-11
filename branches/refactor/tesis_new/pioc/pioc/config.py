@@ -1,71 +1,20 @@
 import yaml
+import re
 import os
 
-class UnresolvedParameter(object):
-    def __init__(self, name):
-        self.name= name
-
-class UnresolvedParameterError(Exception): pass
-
-class ApplicationContext(dict):
-    def __getitem__(self, k):
-        return self.get(k)
-
-    def get(self, k, context=None):
-        v= super(ApplicationContext, self).__getitem__(k)
-        if isinstance(v, ObjectDescription):
-            v= v(context)
-            self[k]= v
-        return v
-
-    def __getattr__(self, k):
-        return self[k]
-
-    @classmethod
-    def from_dict(cls, d):
-        res= cls()
-        for k, v in d.iteritems():
-            if isinstance(v, dict) and not isinstance(v, ApplicationContext):
-                res[k]= cls.from_dict(v)
-            else:
-                res[k]= v
-        return res                
-
-class ObjectDescription(object):
-    def __init__(self, module_path, class_name, args):    
-        self.module_path= module_path
-        self.class_name= class_name
-        self.args= args
-
-    def __call__(self, context=None):
-        context= context or {}
-
-        if isinstance(self.args, list):
-            iterator= enumerate(self.args)
-        elif isinstance(self.args, dict):
-            iterator= self.args.iteritems()
-
-        for k, arg in iterator:
-            if isinstance(arg, UnresolvedParameter):
-                if arg.name not in context: 
-                    raise UnresolvedParameterError('Cant bind parameter %s of class %s:%s' % (arg.name, self.module_path, self.class_name))
-                self.args[k]= context[arg.name]
-            elif isinstance(arg, ObjectDescription):
-                self.args[k]= arg(context) 
-
-        module= __import__(self.module_path, fromlist=self.module_path.split('.'))
-        klass= getattr(module, self.class_name)
-
-        if isinstance(self.args, list):
-            instance= klass(*self.args)
-        else:
-            instance= klass(**self.args)
-        return instance
+from exceptions import ParserError, UnresolvedParameterError
+from model import UnresolvedParameter, ApplicationContext, ObjectDescription
     
 def parse_config(config_fname):
     config= recursive_parse_config(config_fname)
     config= dict((k, v) for k, v in config.iteritems() if k != 'import') 
-    return ApplicationContext.from_dict(config)
+    return ApplicationContext(config)
+
+def parse_object_name(actual_namespace, object_name):
+    if '.' in object_name:
+        return object_name.split('.')
+    else:
+        return actual_namespace, object_name
 
 def recursive_parse_config(config_fname, res=None):
     res= res or {}
@@ -78,59 +27,93 @@ def recursive_parse_config(config_fname, res=None):
             for fname in v:
                 fname= os.path.join(os.path.dirname(config_fname), fname)
                 recursive_parse_config(fname, res)
-        if not isinstance(v, dict): continue
-        if v['type'] == 'object':
-            load_if_needed(k, res)
 
-        elif v['type'] == 'alias':
-            load_if_needed(v['object'], res)
-            res[k]= res[v['object']]
+        else:
+            namespace= k
+            namespace_dict= v
+            for k, v in namespace_dict.iteritems(): 
+                if isinstance(v, basestring):
+                    res[namespace][k]= resolve_string(v)
+                if not isinstance(v, dict): continue
+                if v['type'] == 'object':
+                    load_if_needed(namespace, k, res)
 
-        elif v['type'] == 'config':
-            resolve_collection(v, res)
+                elif v['type'] == 'alias':
+                    object_namespace, object_name= parse_object_name(namespace, v['object'])
+                    load_if_needed(object_namespace, object_name, res)
+                    res[k]= res[object_namespace][object_name]
+
+                elif v['type'] == 'config':
+                    resolve_collection(v, res, namespace)
 
     return res        
 
-def load_object(name, parsed_fname):
-    object_description= parsed_fname[name]
+def load_object(namespace, name, parsed_fname):
+    object_description= parsed_fname[namespace][name]
     if object_description['type'] == 'alias':
-        load_if_needed(object_description['object'], parsed_fname)
-        parsed_fname[name]= parsed_fname[object_description['object']]
+        if '.' in object_description['object']:
+            object_namespace, object_name= object_description['object'].split('.')
+        else:
+            object_namespace= namespace
+            object_name= object_description['object']
+
+        load_if_needed(object_namespace, object_name, parsed_fname)
+        parsed_fname[namespace][name]= parsed_fname[object_namespace][object_name]
     else:
         path= object_description['path']
 
         module_path, class_name= path.split(':')
 
         args= object_description.get('args', [])
-        resolve_collection(args, parsed_fname)
+        props= object_description.get('props', {})
+        if not isinstance(props, dict): raise ParserError('props must be a dictionary')
+        resolve_collection(args, parsed_fname, namespace)
+        resolve_collection(props, parsed_fname, namespace)
         
-        parsed_fname[name]= ObjectDescription(module_path, class_name, args)
+        parsed_fname[namespace][name]= ObjectDescription(namespace, name, module_path, class_name, args, props)
 
 
-def resolve_collection(args, parsed_fname):
+def resolve_collection(args, parsed_fname, actual_namespace):
     if isinstance(args, list):
         iterator= enumerate(args)
     elif isinstance(args, dict):
         iterator= args.iteritems()
 
     for k, arg in iterator:
+        if not isinstance(arg, str): continue
+
         if arg.startswith('object:'):
-            object_name= arg[arg.find(':')+1:]
-            load_if_needed(object_name, parsed_fname)
-            args[k]= parsed_fname[object_name]
+            object_namespace, object_name= parse_object_name(actual_namespace, arg[arg.find(':')+1:])
+            load_if_needed(object_namespace, object_name, parsed_fname)
+            args[k]= parsed_fname[object_namespace][object_name]
 
         elif arg.startswith('config:'):
-            key_name= arg[arg.find(':')+1:]
-            args[k]= parsed_fname[key_name]
+            object_namespace, object_name= parse_object_name(actual_namespace, arg[arg.find(':')+1:])
+            args[k]= parsed_fname[object_namespace][object_name]
 
         elif arg.startswith('param:'):
+            # XXX los param: son sin namespace
             key_name= arg[arg.find(':')+1:]
             args[k]= UnresolvedParameter(key_name) 
 
+def resolve_string(str):
+    p=re.compile('%\((?P<module>.*?)\)s')
+    d= {}
+    for m in p.finditer(str):
+        gd= m.groupdict()
+        try:
+            mod= __import__(gd['module'])
+            d[gd['module']]= os.path.dirname(mod.__file__)
+        except ImportError:
+            d[gd['module']]= '%(' + gd['module'] + ')s'
+            print "WARNING: Could not import module `%s`" % gd['module']
+        
+    return str % d
+            
+        
 
-
-def load_if_needed(name, parsed_fname):
-    if isinstance(parsed_fname[name], dict): load_object(name, parsed_fname)
+def load_if_needed(namespace, name, parsed_fname):
+    if isinstance(parsed_fname[namespace][name], dict): load_object(namespace, name, parsed_fname)
 
 _appctx= None
 def get_appctx():

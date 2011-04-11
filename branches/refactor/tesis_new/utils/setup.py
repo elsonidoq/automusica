@@ -7,10 +7,11 @@ try:
         tests_require=[])
 except ImportError:
     from distutils.core import setup
-    extra_kw = dict(packages=['pioc'])
+    extra_kw = dict(packages=['utils'])
 
 setup(
-    name="pioc",
+    name="utils",
+    version=0.1,
     description="",
     long_description="",
     url="",

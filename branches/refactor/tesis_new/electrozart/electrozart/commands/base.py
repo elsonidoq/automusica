@@ -42,4 +42,5 @@ class MetaCommand(object):
             command()
 
 from compose import Compose
-start= MetaCommand(Compose())
+from batch_train import BatchTrain
+start= MetaCommand(Compose(), BatchTrain())

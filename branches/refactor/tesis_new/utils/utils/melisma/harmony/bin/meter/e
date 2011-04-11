@@ -1,0 +1,881 @@
+%verbosity = 2.00
+%pruning_cutoff = 10.00
+ompatibility values: -5.000 -5.000 -10.000  1.000 -3.000 -10.000  5.000  3.000 -10.000 -10.000  2.000 -10.000 
+%tpc_var_factor = 0.30
+%har_var_factor = 2.00
+%odp_linear_factor = 3.00
+%odp_quadratic_factor = 1.00
+%odp_constant = 2.00
+%compat_factor = 1.00
+%sbp_weight = 2.00
+%sbp_constant = 1.50
+%half_life = 2.00
+%voice_leading_penalty = 3.00
+%voice_leading_time = 1.00
+Beat      0  4
+Beat    240  0
+Beat    504  1
+Beat    768  0
+Beat   1032  2
+Beat   1272  0
+Beat   1536  1
+Beat   1776  0
+Beat   2040  2
+Beat   2304  0
+Beat   2568  1
+Beat   2808  0
+Beat   3072  3
+Beat   3312  0
+Beat   3576  1
+Beat   3840  0
+Beat   4104  2
+Beat   4344  0
+Beat   4608  1
+Beat   4848  0
+Beat   5112  2
+Beat   5352  0
+Beat   5616  1
+Beat   5880  0
+Beat   6144  3
+Beat   6384  0
+Beat   6648  1
+Beat   6912  0
+Beat   7176  2
+Beat   7416  0
+Beat   7680  1
+Beat   7920  0
+Beat   8184  2
+Beat   8424  0
+Beat   8688  1
+Beat   8952  0
+Beat   9216  4
+Beat   9456  0
+Beat   9720  1
+Beat   9984  0
+Beat  10248  2
+Beat  10488  0
+Beat  10752  1
+Beat  10992  0
+Beat  11256  2
+Beat  11496  0
+Beat  11760  1
+Beat  12024  0
+Beat  12288  3
+Beat  12528  0
+Beat  12792  1
+Beat  13056  0
+Beat  13320  2
+Beat  13560  0
+Beat  13824  1
+Beat  14064  0
+Beat  14328  2
+Beat  14592  0
+Beat  14856  1
+Beat  15096  0
+Beat  15360  3
+Beat  15600  0
+Beat  15864  1
+Beat  16128  0
+Beat  16392  2
+Beat  16632  0
+Beat  16896  1
+Beat  17136  0
+Beat  17400  2
+Beat  17640  0
+Beat  17904  1
+Beat  18168  0
+Beat  18432  4
+Beat  18672  0
+Beat  18936  1
+Beat  19200  0
+Beat  19464  2
+Beat  19704  0
+Beat  19968  1
+Beat  20208  0
+Beat  20472  2
+Beat  20712  0
+Beat  20976  1
+Beat  21240  0
+Beat  21504  3
+Beat  21744  0
+Beat  22008  1
+Beat  22272  0
+Beat  22536  2
+Beat  22776  0
+Beat  23040  1
+Beat  23280  0
+Beat  23544  2
+Beat  23784  0
+Beat  24048  1
+Beat  24312  0
+Beat  24576  3
+Beat  24816  0
+Beat  25080  1
+Beat  25344  0
+Beat  25608  2
+Beat  25848  0
+Beat  26112  1
+Beat  26352  0
+Beat  26616  2
+Beat  26880  0
+Beat  27144  1
+Beat  27384  0
+Beat  27648  4
+Beat  27888  0
+Beat  28152  1
+Beat  28416  0
+Beat  28680  2
+Beat  28920  0
+Beat  29184  1
+Beat  29424  0
+Beat  29688  2
+Beat  29952  0
+Beat  30216  1
+Beat  30456  0
+Beat  30720  3
+Beat  30960  0
+Beat  31224  1
+Beat  31488  0
+Beat  31752  2
+Beat  31992  0
+Beat  32256  1
+Beat  32496  0
+Beat  32760  2
+Beat  33024  0
+Beat  33288  1
+Beat  33528  0
+Beat  33792  3
+Beat  34032  0
+Beat  34296  1
+Beat  34560  0
+Beat  34824  2
+Beat  35064  0
+Beat  35328  1
+Beat  35568  0
+Beat  35832  2
+Beat  36072  0
+Beat  36336  1
+Beat  36600  0
+Beat  36864  4
+Beat  37104  0
+Beat  37368  1
+Beat  37632  0
+Beat  37896  2
+Beat  38136  0
+Beat  38400  1
+Beat  38640  0
+Beat  38904  2
+Beat  39168  0
+Beat  39432  1
+Beat  39672  0
+Beat  39936  3
+Beat  40176  0
+Beat  40440  1
+Beat  40704  0
+Beat  40968  2
+Beat  41208  0
+Beat  41472  1
+Beat  41712  0
+Beat  41976  2
+Beat  42216  0
+Beat  42480  1
+Beat  42744  0
+Beat  43008  3
+Beat  43248  0
+Beat  43512  1
+Beat  43776  0
+Beat  44040  2
+Beat  44280  0
+Beat  44544  1
+Beat  44784  0
+Beat  45048  2
+Beat  45288  0
+Beat  45552  1
+Beat  45816  0
+Beat  46080  4
+Beat  46320  0
+Beat  46584  1
+Beat  46848  0
+Beat  47112  2
+Beat  47352  0
+Beat  47616  1
+Beat  47880  0
+Beat  48144  2
+Beat  48384  0
+Beat  48648  1
+Beat  48888  0
+Beat  49152  3
+Finished unit   1.  (keeping     6 options out of 228375)
+Finished unit   2.  (keeping     7 options out of  1475)
+Finished unit   3.  (keeping     5 options out of  1833)
+Finished unit   4.  (keeping     3 options out of  1111)
+Finished unit   5.  (keeping     1 options out of   552)
+Finished unit   6.  (keeping     1 options out of   416)
+Finished unit   7.  (keeping     1 options out of   312)
+Finished unit   8.  (keeping     1 options out of   312)
+Finished unit   9.  (keeping     2 options out of   208)
+Finished unit  10.  (keeping     2 options out of   624)
+Finished unit  11.  (keeping     1 options out of   624)
+Finished unit  12.  (keeping     2 options out of   208)
+Finished unit  13.  (keeping     1 options out of   624)
+Finished unit  14.  (keeping     1 options out of   312)
+Finished unit  15.  (keeping     2 options out of   416)
+Finished unit  16.  (keeping     1 options out of   720)
+Finished unit  17.  (keeping     1 options out of   416)
+Finished unit  18.  (keeping     1 options out of   312)
+Finished unit  19.  (keeping     3 options out of   416)
+Finished unit  20.  (keeping     3 options out of  1248)
+Finished unit  21.  (keeping     2 options out of   876)
+Finished unit  22.  (keeping     1 options out of   624)
+Finished unit  23.  (keeping     1 options out of   312)
+Finished unit  24.  (keeping     1 options out of   312)
+Finished unit  25.  (keeping     1 options out of   312)
+Finished unit  26.  (keeping     1 options out of   312)
+Finished unit  27.  (keeping     1 options out of   312)
+Finished unit  28.  (keeping     1 options out of   312)
+Finished unit  29.  (keeping     1 options out of   416)
+Finished unit  30.  (keeping     1 options out of   416)
+Finished unit  31.  (keeping     1 options out of   312)
+Finished unit  32.  (keeping     1 options out of   312)
+Finished unit  33.  (keeping     1 options out of   416)
+Finished unit  34.  (keeping     1 options out of   416)
+Finished unit  35.  (keeping     3 options out of   416)
+Finished unit  36.  (keeping     1 options out of  1232)
+Finished unit  37.  (keeping     1 options out of   312)
+Finished unit  38.  (keeping     1 options out of   312)
+Finished unit  39.  (keeping     1 options out of   312)
+Finished unit  40.  (keeping     2 options out of   416)
+Finished unit  41.  (keeping     2 options out of   624)
+Finished unit  42.  (keeping     3 options out of   624)
+Finished unit  43.  (keeping     2 options out of  1248)
+Finished unit  44.  (keeping     2 options out of   624)
+Finished unit  45.  (keeping     2 options out of   624)
+Finished unit  46.  (keeping     3 options out of   416)
+Finished unit  47.  (keeping     2 options out of   936)
+Finished unit  48.  (keeping     2 options out of   816)
+Finished unit  49.  (keeping     4 options out of   528)
+Finished unit  50.  (keeping     6 options out of  1248)
+Finished unit  51.  (keeping     4 options out of  2064)
+Finished unit  52.  (keeping     3 options out of   924)
+Finished unit  53.  (keeping     2 options out of   708)
+Chord      0   1032  0
+Chord   1032   2040  0
+Chord   2040   2568  0
+Chord   2568   3072  1
+Chord   3072   4104  1
+Chord   4104   5112  1
+Chord   5112   6144  0
+Chord   6144   7176  1
+Chord   7176   8184  0
+Chord   8184   9216  0
+Chord   9216  10248  0
+Chord  10248  11256  0
+Chord  11256  12288  0
+Chord  12288  13320  0
+Chord  13320  14328  0
+Chord  14328  14856  0
+Chord  14856  15360  1
+Chord  15360  16392  1
+Chord  16392  17400  1
+Chord  17400  18432  0
+Chord  18432  19464  1
+Chord  19464  20472  0
+Chord  20472  21504  0
+Chord  21504  22536  0
+Chord  22536  23544  0
+Chord  23544  24576  0
+Chord  24576  25608  0
+Chord  25608  26616  0
+Chord  26616  27144  0
+Chord  27144  27648  0
+Chord  27648  28680  0
+Chord  28680  29688  0
+Chord  29688  30216  0
+Chord  30216  30720  0
+Chord  30720  31752  0
+Chord  31752  32760 -1
+Chord  32760  33288 -1
+Chord  33288  33792 -1
+Chord  33792  34824 -1
+Chord  34824  35832  2
+Chord  35832  36864  3
+Chord  36864  37896  2
+Chord  37896  38904  0
+Chord  38904  39432  0
+Chord  39432  39936  0
+Chord  39936  40968  0
+Chord  40968  41976  0
+Chord  41976  43008  0
+Chord  43008  44040  0
+Chord  44040  45048  0
+Chord  45048  46080  1
+Chord  46080  47112  1
+Chord  47112  48144  0
+Chord  48144  49152  0
+Harmonic analysis:
+ x x x x x start =     0  duration =  1032  notes: {(74, 4)(70, 0)(65, 1)}
+    root=0(Bb ) score=10.320  score/sec=10.000 com=10.320  har_cog= 0.000  har_var= 0.000
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.504  scaled tpc_var= 3.096  vlp = 0.0
+ x x x     start =  1032  duration =  1008  notes: {(74, 4)(70, 0)(65, 1)(41, 1)}
+    root=0(Bb ) score=20.702  score/sec=20.538 com=13.104  har_cog= 0.000  har_var= 0.000
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.501  scaled tpc_var= 2.722  vlp = 0.0
+ x x x     start =  2040  duration =   528  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(53, 1)}
+    root=0(Bb ) score=21.287  score/sec=40.316 com= 6.864  har_cog= 0.000  har_var= 0.000
+    sbp= 0.000  odp= 3.863  tpc_cog= 1.313  scaled tpc_var= 2.417  vlp = 0.0
+ x x       start =  2568  duration =   504  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=20.985  score/sec=41.638 com= 6.048  har_cog= 0.257  har_var= 1.008
+    sbp= 2.376  odp= 0.000  tpc_cog= 1.399  scaled tpc_var= 2.966  vlp = 0.0
+ x x x x   start =  3072  duration =  1032  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=25.830  score/sec=25.029 com=12.384  har_cog= 0.544  har_var= 1.533
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.484  scaled tpc_var= 6.007  vlp = 0.0
+ x x x     start =  4104  duration =  1008  notes: {(72, 2)(69, 5)(65, 1)(41, 1)}
+    root=1(F  ) score=36.069  score/sec=35.783 com=15.120  har_cog= 0.703  har_var= 0.920
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.730  scaled tpc_var= 3.960  vlp = 0.0
+ x x x     start =  5112  duration =  1032  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(53, 1)}
+    root=0(Bb ) score=36.252  score/sec=35.128 com=13.416  har_cog= 0.466  har_var= 1.452
+    sbp= 0.461  odp= 6.161  tpc_cog= 1.461  scaled tpc_var= 5.160  vlp = 0.0
+ x x x x   start =  6144  duration =  1032  notes: {(75,-1)(72, 2)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=38.402  score/sec=37.211 com= 7.224  har_cog= 0.640  har_var= 1.102
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.095  scaled tpc_var= 3.973  vlp = 0.0
+ x x x     start =  7176  duration =  1008  notes: {(77, 1)(74, 4)(65, 1)(34, 0)}
+    root=0(Bb ) score=46.835  score/sec=46.463 com=13.104  har_cog= 0.440  har_var= 1.290
+    sbp= 0.461  odp= 0.000  tpc_cog= 1.208  scaled tpc_var= 2.920  vlp = 0.0
+ x x x     start =  8184  duration =  1032  notes: {(77, 1)(74, 4)(65, 1)(62, 4)(53, 1)}
+    root=0(Bb ) score=54.475  score/sec=52.786 com=13.416  har_cog= 0.303  har_var= 0.908
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.541  scaled tpc_var= 4.868  vlp = 0.0
+ x x x x x start =  9216  duration =  1032  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)}
+    root=0(Bb ) score=64.669  score/sec=62.664 com=15.480  har_cog= 0.209  har_var= 0.625
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.690  scaled tpc_var= 4.661  vlp = 0.0
+ x x x     start = 10248  duration =  1008  notes: {(77, 1)(74, 4)(65, 1)(34, 0)}
+    root=0(Bb ) score=74.586  score/sec=73.994 com=13.104  har_cog= 0.146  har_var= 0.422
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.639  scaled tpc_var= 2.765  vlp = 0.0
+ x x x     start = 11256  duration =  1032  notes: {(77, 1)(74, 4)(65, 1)(62, 4)(53, 1)}
+    root=0(Bb ) score=83.870  score/sec=81.269 com=13.416  har_cog= 0.102  har_var= 0.302
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.822  scaled tpc_var= 3.831  vlp = 0.0
+ x x x x   start = 12288  duration =  1032  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)}
+    root=0(Bb ) score=94.756  score/sec=91.818 com=15.480  har_cog= 0.071  har_var= 0.210
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.878  scaled tpc_var= 4.384  vlp = 0.0
+ x x x     start = 13320  duration =  1008  notes: {(74, 4)(70, 0)(65, 1)(41, 1)}
+    root=0(Bb ) score=104.822  score/sec=103.990 com=13.104  har_cog= 0.050  har_var= 0.143
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.779  scaled tpc_var= 2.895  vlp = 0.0
+ x x x     start = 14328  duration =   528  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(53, 1)}
+    root=0(Bb ) score=105.072  score/sec=199.001 com= 6.864  har_cog= 0.041  har_var= 0.053
+    sbp= 0.000  odp= 3.863  tpc_cog= 1.627  scaled tpc_var= 2.699  vlp = 0.0
+ x x       start = 14856  duration =   504  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=104.874  score/sec=208.083 com= 6.048  har_cog= 0.206  har_var= 0.967
+    sbp= 2.376  odp= 0.000  tpc_cog= 1.622  scaled tpc_var= 2.904  vlp = 0.0
+ x x x x   start = 15360  duration =  1032  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=109.673  score/sec=106.273 com=12.384  har_cog= 0.440  har_var= 1.640
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.615  scaled tpc_var= 5.945  vlp = 0.0
+ x x x     start = 16392  duration =  1008  notes: {(72, 2)(69, 5)(65, 1)(41, 1)}
+    root=1(F  ) score=119.926  score/sec=118.974 com=15.120  har_cog= 0.604  har_var= 1.129
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.778  scaled tpc_var= 3.738  vlp = 0.0
+ x x x     start = 17400  duration =  1032  notes: {(70, 0)(67, 3)(65, 1)(63,-1)(53, 1)}
+    root=0(Bb ) score=113.045  score/sec=109.539 com=11.352  har_cog= 0.424  har_var= 1.246
+    sbp= 0.461  odp=12.322  tpc_cog= 1.467  scaled tpc_var= 4.205  vlp = 0.0
+ x x x x x start = 18432  duration =  1032  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=118.268  score/sec=114.601 com=12.384  har_cog= 0.596  har_var= 1.189
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.509  scaled tpc_var= 5.972  vlp = 0.0
+ x x x     start = 19464  duration =  1008  notes: {(74, 4)(70, 0)(65, 1)(46, 0)}
+    root=0(Bb ) score=128.394  score/sec=127.375 com=15.120  har_cog= 0.421  har_var= 1.201
+    sbp= 0.461  odp= 0.000  tpc_cog= 1.442  scaled tpc_var= 3.332  vlp = 0.0
+ x x x     start = 20472  duration =  1032  notes: {(74, 4)(70, 0)(65, 1)(58, 0)(53, 1)}
+    root=0(Bb ) score=142.668  score/sec=138.244 com=18.576  har_cog= 0.295  har_var= 0.868
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.365  scaled tpc_var= 3.434  vlp = 0.0
+ x x x x   start = 21504  duration =  1032  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=157.250  score/sec=152.374 com=18.576  har_cog= 0.206  har_var= 0.608
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.313  scaled tpc_var= 3.386  vlp = 0.0
+ x x x     start = 22536  duration =  1008  notes: {(70, 0)(65, 1)(62, 4)(46, 0)}
+    root=0(Bb ) score=168.699  score/sec=167.360 com=15.120  har_cog= 0.145  har_var= 0.416
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.297  scaled tpc_var= 3.256  vlp = 0.0
+ x x x     start = 23544  duration =  1032  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=183.616  score/sec=177.923 com=18.576  har_cog= 0.102  har_var= 0.300
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.266  scaled tpc_var= 3.358  vlp = 0.0
+ x x x x   start = 24576  duration =  1032  notes: {(74, 4)(70, 0)(68,-2)}
+    root=0(Bb ) score=181.422  score/sec=175.796 com= 4.128  har_cog= 0.071  har_var= 0.210
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.137  scaled tpc_var= 6.112  vlp = 0.0
+ x x x     start = 25608  duration =  1008  notes: {(77, 1)(70, 0)(68,-2)(46, 0)(34, 0)}
+    root=0(Bb ) score=192.245  score/sec=190.720 com=15.120  har_cog= 0.050  har_var= 0.144
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.690  scaled tpc_var= 4.153  vlp = 0.0
+ x x x     start = 26616  duration =   528  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=197.729  score/sec=374.486 com= 6.864  har_cog= 0.041  har_var= 0.053
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.553  scaled tpc_var= 1.328  vlp = 0.0
+ x x       start = 27144  duration =   504  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=200.831  score/sec=398.473 com= 6.048  har_cog= 0.034  har_var= 0.041
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.562  scaled tpc_var= 2.905  vlp = 0.0
+ x x x x x start = 27648  duration =  1032  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=207.198  score/sec=200.773 com=12.384  har_cog= 0.024  har_var= 0.070
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.574  scaled tpc_var= 5.947  vlp = 0.0
+ x x x     start = 28680  duration =  1008  notes: {(77, 1)(70, 0)(68,-2)(46, 0)(34, 0)}
+    root=0(Bb ) score=219.913  score/sec=218.167 com=15.120  har_cog= 0.017  har_var= 0.049
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.339  scaled tpc_var= 2.356  vlp = 0.0
+ x x x     start = 29688  duration =   528  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=225.717  score/sec=427.495 com= 6.864  har_cog= 0.014  har_var= 0.018
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.277  scaled tpc_var= 1.041  vlp = 0.0
+ x x       start = 30216  duration =   504  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=228.769  score/sec=453.907 com= 6.048  har_cog= 0.012  har_var= 0.014
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.333  scaled tpc_var= 2.982  vlp = 0.0
+ x x x x   start = 30720  duration =  1032  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=235.074  score/sec=227.785 com=12.384  har_cog= 0.008  har_var= 0.024
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.413  scaled tpc_var= 6.055  vlp = 0.0
+ x x x     start = 31752  duration =  1008  notes: {(77, 1)(70, 0)(68,-2)(51,-1)(39,-1)}
+    root=-1(Eb ) score=227.555  score/sec=225.749 com=13.104  har_cog=-0.284  har_var= 2.033
+    sbp= 0.461  odp=15.007  tpc_cog= 0.115  scaled tpc_var= 3.123  vlp = 0.0
+ x x x     start = 32760  duration =   528  notes: {(77, 1)(70, 0)(68,-2)(63,-1)(58, 0)(51,-1)}
+    root=-1(Eb ) score=234.016  score/sec=443.212 com= 8.448  har_cog=-0.411  har_var= 0.756
+    sbp= 0.000  odp= 0.000  tpc_cog=-0.013  scaled tpc_var= 1.231  vlp = 0.0
+ x x       start = 33288  duration =   504  notes: {(75,-1)(70, 0)(67, 3)(63,-1)(58, 0)(51,-1)}
+    root=-1(Eb ) score=243.200  score/sec=482.539 com=11.592  har_cog=-0.510  har_var= 0.594
+    sbp= 0.000  odp= 0.000  tpc_cog=-0.010  scaled tpc_var= 1.815  vlp = 0.0
+ x x x x   start = 33792  duration =  1032  notes: {(75,-1)(70, 0)(67, 3)(63,-1)(58, 0)(51,-1)}
+    root=-1(Eb ) score=262.210  score/sec=254.079 com=23.736  har_cog=-0.653  har_var= 1.011
+    sbp= 0.000  odp= 0.000  tpc_cog=-0.007  scaled tpc_var= 3.715  vlp = 0.0
+ x x x     start = 34824  duration =  1008  notes: {(75,-1)(67, 3)(60, 2)(55, 3)(48, 2)}
+    root=2(C  ) score=265.333  score/sec=263.228 com=17.136  har_cog= 0.115  har_var= 5.349
+    sbp= 0.461  odp= 0.000  tpc_cog= 0.482  scaled tpc_var= 8.203  vlp = 0.0
+ x x x     start = 35832  duration =  1032  notes: {(74, 4)(67, 3)(65, 1)(59, 7)(55, 3)(50, 4)}
+    root=3(G  ) score=249.577  score/sec=241.838 com=15.480  har_cog= 0.968  har_var= 5.955
+    sbp= 0.461  odp= 0.000  tpc_cog= 1.503  scaled tpc_var=24.821  vlp = 0.0
+ x x x x x start = 36864  duration =  1032  notes: {(72, 2)(67, 3)(63,-1)(60, 2)(55, 3)(51,-1)}
+    root=2(C  ) score=260.604  score/sec=252.523 com=18.576  har_cog= 1.275  har_var= 2.129
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.450  scaled tpc_var= 5.420  vlp = 0.0
+ x x x     start = 37896  duration =  1008  notes: {(72, 2)(65, 1)(62, 4)(41, 1)}
+    root=0(Bb ) score=254.488  score/sec=252.469 com= 8.064  har_cog= 0.901  har_var= 2.571
+    sbp= 0.461  odp= 8.967  tpc_cog= 1.574  scaled tpc_var= 2.181  vlp = 0.0
+ x x x     start = 38904  duration =   528  notes: {(72, 2)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=258.943  score/sec=490.422 com= 6.864  har_cog= 0.740  har_var= 0.951
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.579  scaled tpc_var= 1.458  vlp = 0.0
+ x x       start = 39432  duration =   504  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=265.528  score/sec=526.841 com= 9.072  har_cog= 0.614  har_var= 0.746
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.516  scaled tpc_var= 1.741  vlp = 0.0
+ x x x x   start = 39936  duration =  1032  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=279.339  score/sec=270.677 com=18.576  har_cog= 0.434  har_var= 1.267
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.425  scaled tpc_var= 3.498  vlp = 0.0
+ x x x     start = 40968  duration =  1008  notes: {(65, 1)(62, 4)(41, 1)}
+    root=0(Bb ) score=284.414  score/sec=282.157 com= 8.064  har_cog= 0.308  har_var= 0.875
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.537  scaled tpc_var= 2.114  vlp = 0.0
+ x x x     start = 41976  duration =  1032  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=298.835  score/sec=289.569 com=18.576  har_cog= 0.216  har_var= 0.635
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.429  scaled tpc_var= 3.519  vlp = 0.0
+ x x x x   start = 43008  duration =  1032  notes: {(72, 2)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=302.750  score/sec=293.363 com=13.416  har_cog= 0.152  har_var= 0.447
+    sbp= 0.000  odp= 6.161  tpc_cog= 1.483  scaled tpc_var= 2.894  vlp = 0.0
+ x x x     start = 44040  duration =  1008  notes: {(74, 4)(65, 1)(63,-1)(41, 1)}
+    root=0(Bb ) score=300.547  score/sec=298.161 com= 8.064  har_cog= 0.107  har_var= 0.306
+    sbp= 0.000  odp= 6.040  tpc_cog= 1.422  scaled tpc_var= 3.921  vlp = 0.0
+ x x x     start = 45048  duration =  1032  notes: {(74, 4)(65, 1)(63,-1)(57, 5)(53, 1)}
+    root=1(F  ) score=293.423  score/sec=284.325 com= 9.288  har_cog= 0.374  har_var= 1.843
+    sbp= 0.461  odp= 6.161  tpc_cog= 1.607  scaled tpc_var= 7.947  vlp = 0.0
+ x x x x x start = 46080  duration =  1032  notes: {(72, 2)(65, 1)(63,-1)(57, 5)(53, 1)}
+    root=1(F  ) score=298.571  score/sec=289.313 com=12.384  har_cog= 0.562  har_var= 1.292
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.605  scaled tpc_var= 5.944  vlp = 0.0
+ x x x     start = 47112  duration =  1032  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)(46, 0)}
+    root=0(Bb ) score=316.315  score/sec=306.507 com=23.736  har_cog= 0.393  har_var= 1.159
+    sbp= 0.438  odp= 0.000  tpc_cog= 1.393  scaled tpc_var= 4.395  vlp = 0.0
+ x x x     start = 48144  duration =  1008  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)(46, 0)}
+    root=0(Bb ) score=334.797  score/sec=332.140 com=23.184  har_cog= 0.277  har_var= 0.793
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.264  scaled tpc_var= 3.909  vlp = 0.0
+TPCNote      0   1032  65   1
+TPCNote      0   1032  70   0
+TPCNote      0   1032  74   4
+TPCNote   1032   2040  41   1
+TPCNote   1032   2568  65   1
+TPCNote   1032   2568  70   0
+TPCNote   1032   2568  74   4
+TPCNote   2040   3072  53   1
+TPCNote   2040   3072  63  -1
+TPCNote   2568   3072  65   1
+TPCNote   2568   3072  69   5
+TPCNote   2568   3072  72   2
+TPCNote   3072   4104  65   1
+TPCNote   3072   4104  69   5
+TPCNote   3072   4104  72   2
+TPCNote   3072   4104  53   1
+TPCNote   3072   4104  63  -1
+TPCNote   4104   5112  65   1
+TPCNote   4104   5112  69   5
+TPCNote   4104   5112  72   2
+TPCNote   4104   5112  41   1
+TPCNote   5112   6144  65   1
+TPCNote   5112   6144  70   0
+TPCNote   5112   6144  74   4
+TPCNote   5112   6144  53   1
+TPCNote   5112   6144  63  -1
+TPCNote   6144   7176  65   1
+TPCNote   6144   7176  72   2
+TPCNote   6144   7176  75  -1
+TPCNote   6144   7176  53   1
+TPCNote   6144   7176  63  -1
+TPCNote   7176   8184  34   0
+TPCNote   7176   9216  65   1
+TPCNote   7176   9216  74   4
+TPCNote   7176   9216  77   1
+TPCNote   8184   9216  53   1
+TPCNote   8184   9216  62   4
+TPCNote   9216  10248  65   1
+TPCNote   9216  10248  70   0
+TPCNote   9216  10248  74   4
+TPCNote   9216  10248  53   1
+TPCNote   9216  10248  62   4
+TPCNote  10248  11256  34   0
+TPCNote  10248  12288  65   1
+TPCNote  10248  12288  74   4
+TPCNote  10248  12288  77   1
+TPCNote  11256  12288  53   1
+TPCNote  11256  12288  62   4
+TPCNote  12288  13320  65   1
+TPCNote  12288  13320  70   0
+TPCNote  12288  13320  74   4
+TPCNote  12288  13320  53   1
+TPCNote  12288  13320  62   4
+TPCNote  13320  14328  41   1
+TPCNote  13320  14856  65   1
+TPCNote  13320  14856  70   0
+TPCNote  13320  14856  74   4
+TPCNote  14328  15360  53   1
+TPCNote  14328  15360  63  -1
+TPCNote  14856  15360  65   1
+TPCNote  14856  15360  69   5
+TPCNote  14856  15360  72   2
+TPCNote  15360  16392  65   1
+TPCNote  15360  16392  69   5
+TPCNote  15360  16392  72   2
+TPCNote  15360  16392  53   1
+TPCNote  15360  16392  63  -1
+TPCNote  16392  17400  65   1
+TPCNote  16392  17400  69   5
+TPCNote  16392  17400  72   2
+TPCNote  16392  17400  41   1
+TPCNote  17400  18432  65   1
+TPCNote  17400  18432  67   3
+TPCNote  17400  18432  70   0
+TPCNote  17400  18432  53   1
+TPCNote  17400  18432  63  -1
+TPCNote  18432  19464  65   1
+TPCNote  18432  19464  69   5
+TPCNote  18432  19464  72   2
+TPCNote  18432  19464  53   1
+TPCNote  18432  19464  63  -1
+TPCNote  19464  20472  46   0
+TPCNote  19464  21504  65   1
+TPCNote  19464  21504  70   0
+TPCNote  19464  21504  74   4
+TPCNote  20472  21504  53   1
+TPCNote  20472  21504  58   0
+TPCNote  21504  22536  62   4
+TPCNote  21504  22536  65   1
+TPCNote  21504  22536  70   0
+TPCNote  21504  22536  53   1
+TPCNote  21504  22536  58   0
+TPCNote  22536  23544  46   0
+TPCNote  22536  24576  62   4
+TPCNote  22536  24576  65   1
+TPCNote  22536  24576  70   0
+TPCNote  23544  24576  53   1
+TPCNote  23544  24576  58   0
+TPCNote  24576  25608  68  -2
+TPCNote  24576  25608  70   0
+TPCNote  24576  25608  74   4
+TPCNote  25608  26616  34   0
+TPCNote  25608  26616  46   0
+TPCNote  25608  27144  68  -2
+TPCNote  25608  27144  70   0
+TPCNote  25608  27144  77   1
+TPCNote  26616  27648  58   0
+TPCNote  26616  27648  65   1
+TPCNote  27144  27648  68  -2
+TPCNote  27144  27648  70   0
+TPCNote  27144  27648  74   4
+TPCNote  27648  28680  68  -2
+TPCNote  27648  28680  70   0
+TPCNote  27648  28680  74   4
+TPCNote  27648  28680  58   0
+TPCNote  27648  28680  65   1
+TPCNote  28680  29688  34   0
+TPCNote  28680  29688  46   0
+TPCNote  28680  30216  68  -2
+TPCNote  28680  30216  70   0
+TPCNote  28680  30216  77   1
+TPCNote  29688  30720  58   0
+TPCNote  29688  30720  65   1
+TPCNote  30216  30720  68  -2
+TPCNote  30216  30720  70   0
+TPCNote  30216  30720  74   4
+TPCNote  30720  31752  68  -2
+TPCNote  30720  31752  70   0
+TPCNote  30720  31752  74   4
+TPCNote  30720  31752  58   0
+TPCNote  30720  31752  65   1
+TPCNote  31752  32760  39  -1
+TPCNote  31752  32760  51  -1
+TPCNote  31752  33288  68  -2
+TPCNote  31752  33288  70   0
+TPCNote  31752  33288  77   1
+TPCNote  32760  33792  51  -1
+TPCNote  32760  33792  58   0
+TPCNote  32760  33792  63  -1
+TPCNote  33288  33792  67   3
+TPCNote  33288  33792  70   0
+TPCNote  33288  33792  75  -1
+TPCNote  33792  34824  67   3
+TPCNote  33792  34824  70   0
+TPCNote  33792  34824  75  -1
+TPCNote  33792  34824  51  -1
+TPCNote  33792  34824  58   0
+TPCNote  33792  34824  63  -1
+TPCNote  34824  35832  67   3
+TPCNote  34824  35832  75  -1
+TPCNote  34824  35832  48   2
+TPCNote  34824  35832  55   3
+TPCNote  34824  35832  60   2
+TPCNote  35832  36864  65   1
+TPCNote  35832  36864  67   3
+TPCNote  35832  36864  74   4
+TPCNote  35832  36864  50   4
+TPCNote  35832  36864  55   3
+TPCNote  35832  36864  59   7
+TPCNote  36864  37896  63  -1
+TPCNote  36864  37896  67   3
+TPCNote  36864  37896  72   2
+TPCNote  36864  37896  51  -1
+TPCNote  36864  37896  55   3
+TPCNote  36864  37896  60   2
+TPCNote  37896  38904  41   1
+TPCNote  37896  39432  62   4
+TPCNote  37896  39432  65   1
+TPCNote  37896  39432  72   2
+TPCNote  38904  39936  53   1
+TPCNote  38904  39936  58   0
+TPCNote  39432  39936  62   4
+TPCNote  39432  39936  65   1
+TPCNote  39432  39936  70   0
+TPCNote  39936  40968  62   4
+TPCNote  39936  40968  65   1
+TPCNote  39936  40968  70   0
+TPCNote  39936  40968  53   1
+TPCNote  39936  40968  58   0
+TPCNote  40968  41976  62   4
+TPCNote  40968  41976  65   1
+TPCNote  40968  41976  41   1
+TPCNote  41976  43008  62   4
+TPCNote  41976  43008  65   1
+TPCNote  41976  43008  70   0
+TPCNote  41976  43008  53   1
+TPCNote  41976  43008  58   0
+TPCNote  43008  44040  62   4
+TPCNote  43008  44040  65   1
+TPCNote  43008  44040  72   2
+TPCNote  43008  44040  53   1
+TPCNote  43008  44040  58   0
+TPCNote  44040  45048  41   1
+TPCNote  44040  46080  63  -1
+TPCNote  44040  46080  65   1
+TPCNote  44040  46080  74   4
+TPCNote  45048  46080  53   1
+TPCNote  45048  46080  57   5
+TPCNote  46080  47112  63  -1
+TPCNote  46080  47112  65   1
+TPCNote  46080  47112  72   2
+TPCNote  46080  47112  53   1
+TPCNote  46080  47112  57   5
+TPCNote  47112  49152  62   4
+TPCNote  47112  49152  65   1
+TPCNote  47112  49152  70   0
+TPCNote  47112  49152  46   0
+TPCNote  47112  49152  53   1
+TPCNote  47112  49152  58   0
+
+Analysis:         Harmonic Rep              TPC Rep                                               
+
+     0  x x x x x    Bb               < F   Bb  D             >          +  +        +          
+   240  x            Bb               <                       >          |  |        |          
+   504  x x          Bb               <                       >          |  |        |          
+   768  x            Bb               <                       >          |  |        |          
+  1032  x x x        Bb               < F   F   Bb  D         >          +  +        +          
+  1272  x            Bb               <                       >          |  2        |          
+  1536  x x          Bb               <                       >          |  2        |          
+  1776  x            Bb               <                       >          |  2        |          
+  2040  x x x        Bb               < F   Eb                >       +  |  +        |          
+  2304  x            Bb               <                       >       |  |  2        |          
+  2568  x x             F             < F   A   C             >       |     +  +        +       
+  2808  x               F             <                       >       |     2  |        |       
+  3072  x x x x         F             < F   Eb  F   A   C     >       +     +  +        +       
+  3312  x               F             <                       >       |     2  |        |       
+  3576  x x             F             <                       >       |     2  |        |       
+  3840  x               F             <                       >       |     2  |        |       
+  4104  x x x           F             < F   F   A   C         >             +  +        +       
+  4344  x               F             <                       >             2  |        |       
+  4608  x x             F             <                       >             2  |        |       
+  4848  x               F             <                       >             2  |        |       
+  5112  x x x        Bb               < F   Eb  F   Bb  D     >       +  +  +        +          
+  5352  x            Bb               <                       >       |  |  2        |          
+  5616  x x          Bb               <                       >       |  |  2        |          
+  5880  x            Bb               <                       >       |  |  2        |          
+  6144  x x x x         F             < F   Eb  F   C   Eb    >       +     +  +                
+  6384  x               F             <                       >       2     2  |                
+  6648  x x             F             <                       >       2     2  |                
+  6912  x               F             <                       >       2     2  |                
+  7176  x x x        Bb               < Bb  F   D   F         >          +  +        +          
+  7416  x            Bb               <                       >          |  2        |          
+  7680  x x          Bb               <                       >          |  2        |          
+  7920  x            Bb               <                       >          |  2        |          
+  8184  x x x        Bb               < F   D                 >             +        +          
+  8424  x            Bb               <                       >             3        2          
+  8688  x x          Bb               <                       >             3        2          
+  8952  x            Bb               <                       >             3        2          
+  9216  x x x x x    Bb               < F   D   F   Bb  D     >          +  +        +          
+  9456  x            Bb               <                       >          |  2        2          
+  9720  x x          Bb               <                       >          |  2        2          
+  9984  x            Bb               <                       >          |  2        2          
+ 10248  x x x        Bb               < Bb  F   D   F         >          +  +        +          
+ 10488  x            Bb               <                       >          |  2        |          
+ 10752  x x          Bb               <                       >          |  2        |          
+ 10992  x            Bb               <                       >          |  2        |          
+ 11256  x x x        Bb               < F   D                 >             +        +          
+ 11496  x            Bb               <                       >             3        2          
+ 11760  x x          Bb               <                       >             3        2          
+ 12024  x            Bb               <                       >             3        2          
+ 12288  x x x x      Bb               < F   D   F   Bb  D     >          +  +        +          
+ 12528  x            Bb               <                       >          |  2        2          
+ 12792  x x          Bb               <                       >          |  2        2          
+ 13056  x            Bb               <                       >          |  2        2          
+ 13320  x x x        Bb               < F   F   Bb  D         >          +  +        +          
+ 13560  x            Bb               <                       >          |  2        |          
+ 13824  x x          Bb               <                       >          |  2        |          
+ 14064  x            Bb               <                       >          |  2        |          
+ 14328  x x x        Bb               < F   Eb                >       +  |  +        |          
+ 14592  x            Bb               <                       >       |  |  2        |          
+ 14856  x x             F             < F   A   C             >       |     +  +        +       
+ 15096  x               F             <                       >       |     2  |        |       
+ 15360  x x x x         F             < F   Eb  F   A   C     >       +     +  +        +       
+ 15600  x               F             <                       >       |     2  |        |       
+ 15864  x x             F             <                       >       |     2  |        |       
+ 16128  x               F             <                       >       |     2  |        |       
+ 16392  x x x           F             < F   F   A   C         >             +  +        +       
+ 16632  x               F             <                       >             2  |        |       
+ 16896  x x             F             <                       >             2  |        |       
+ 17136  x               F             <                       >             2  |        |       
+ 17400  x x x        Bb               < F   Eb  F   G   Bb    >       +  +  +     +             
+ 17640  x            Bb               <                       >       |  |  2     |             
+ 17904  x x          Bb               <                       >       |  |  2     |             
+ 18168  x            Bb               <                       >       |  |  2     |             
+ 18432  x x x x x       F             < F   Eb  F   A   C     >       +     +  +        +       
+ 18672  x               F             <                       >       |     2  |        |       
+ 18936  x x             F             <                       >       |     2  |        |       
+ 19200  x               F             <                       >       |     2  |        |       
+ 19464  x x x        Bb               < Bb  F   Bb  D         >          +  +        +          
+ 19704  x            Bb               <                       >          2  |        |          
+ 19968  x x          Bb               <                       >          2  |        |          
+ 20208  x            Bb               <                       >          2  |        |          
+ 20472  x x x        Bb               < F   Bb                >          +  +        |          
+ 20712  x            Bb               <                       >          2  2        |          
+ 20976  x x          Bb               <                       >          2  2        |          
+ 21240  x            Bb               <                       >          2  2        |          
+ 21504  x x x x      Bb               < F   Bb  D   F   Bb    >          +  +        +          
+ 21744  x            Bb               <                       >          2  2        |          
+ 22008  x x          Bb               <                       >          2  2        |          
+ 22272  x            Bb               <                       >          2  2        |          
+ 22536  x x x        Bb               < Bb  D   F   Bb        >          +  +        +          
+ 22776  x            Bb               <                       >          2  |        |          
+ 23040  x x          Bb               <                       >          2  |        |          
+ 23280  x            Bb               <                       >          2  |        |          
+ 23544  x x x        Bb               < F   Bb                >          +  +        |          
+ 23784  x            Bb               <                       >          2  2        |          
+ 24048  x x          Bb               <                       >          2  2        |          
+ 24312  x            Bb               <                       >          2  2        |          
+ 24576  x x x x      Bb               < Ab  Bb  D             >    +     +           +          
+ 24816  x            Bb               <                       >    |     |           |          
+ 25080  x x          Bb               <                       >    |     |           |          
+ 25344  x            Bb               <                       >    |     |           |          
+ 25608  x x x        Bb               < Bb  Bb  Ab  Bb  F     >    +     +  +                   
+ 25848  x            Bb               <                       >    |     3  |                   
+ 26112  x x          Bb               <                       >    |     3  |                   
+ 26352  x            Bb               <                       >    |     3  |                   
+ 26616  x x x        Bb               < Bb  F                 >    |     +  +                   
+ 26880  x            Bb               <                       >    |     2  2                   
+ 27144  x x          Bb               < Ab  Bb  D             >    +     +  |        +          
+ 27384  x            Bb               <                       >    |     2  |        |          
+ 27648  x x x x x    Bb               < Bb  F   Ab  Bb  D     >    +     +  +        +          
+ 27888  x            Bb               <                       >    |     2  |        |          
+ 28152  x x          Bb               <                       >    |     2  |        |          
+ 28416  x            Bb               <                       >    |     2  |        |          
+ 28680  x x x        Bb               < Bb  Bb  Ab  Bb  F     >    +     +  +                   
+ 28920  x            Bb               <                       >    |     3  |                   
+ 29184  x x          Bb               <                       >    |     3  |                   
+ 29424  x            Bb               <                       >    |     3  |                   
+ 29688  x x x        Bb               < Bb  F                 >    |     +  +                   
+ 29952  x            Bb               <                       >    |     2  2                   
+ 30216  x x          Bb               < Ab  Bb  D             >    +     +  |        +          
+ 30456  x            Bb               <                       >    |     2  |        |          
+ 30720  x x x x      Bb               < Bb  F   Ab  Bb  D     >    +     +  +        +          
+ 30960  x            Bb               <                       >    |     2  |        |          
+ 31224  x x          Bb               <                       >    |     2  |        |          
+ 31488  x            Bb               <                       >    |     2  |        |          
+ 31752  x x x     Eb                  < Eb  Eb  Ab  Bb  F     >    +  +  +  +                   
+ 31992  x         Eb                  <                       >    |  2  |  |                   
+ 32256  x x       Eb                  <                       >    |  2  |  |                   
+ 32496  x         Eb                  <                       >    |  2  |  |                   
+ 32760  x x x     Eb                  < Eb  Bb  Eb            >    |  +  +  |                   
+ 33024  x         Eb                  <                       >    |  2  2  |                   
+ 33288  x x       Eb                  < G   Bb  Eb            >       +  +        +             
+ 33528  x         Eb                  <                       >       3  2        |             
+ 33792  x x x x   Eb                  < Eb  Bb  Eb  G   Bb  Eb>       +  +        +             
+ 34032  x         Eb                  <                       >       3  2        |             
+ 34296  x x       Eb                  <                       >       3  2        |             
+ 34560  x         Eb                  <                       >       3  2        |             
+ 34824  x x x              C          < C   G   C   G   Eb    >       +        +  +             
+ 35064  x                  C          <                       >       |        2  2             
+ 35328  x x                C          <                       >       |        2  2             
+ 35568  x                  C          <                       >       |        2  2             
+ 35832  x x x                 G       < D   G   B   F   G   D >             +     +  +        + 
+ 36072  x                     G       <                       >             |     2  2        | 
+ 36336  x x                   G       <                       >             |     2  2        | 
+ 36600  x                     G       <                       >             |     2  2        | 
+ 36864  x x x x x          C          < Eb  G   C   Eb  G   C >       +        +  +             
+ 37104  x                  C          <                       >       2        2  2             
+ 37368  x x                C          <                       >       2        2  2             
+ 37632  x                  C          <                       >       2        2  2             
+ 37896  x x x        Bb               < F   D   F   C         >             +  +     +          
+ 38136  x            Bb               <                       >             2  |     |          
+ 38400  x x          Bb               <                       >             2  |     |          
+ 38640  x            Bb               <                       >             2  |     |          
+ 38904  x x x        Bb               < F   Bb                >          +  +  |     |          
+ 39168  x            Bb               <                       >          |  2  |     |          
+ 39432  x x          Bb               < D   F   Bb            >          +  +        +          
+ 39672  x            Bb               <                       >          2  2        |          
+ 39936  x x x x      Bb               < F   Bb  D   F   Bb    >          +  +        +          
+ 40176  x            Bb               <                       >          2  2        |          
+ 40440  x x          Bb               <                       >          2  2        |          
+ 40704  x            Bb               <                       >          2  2        |          
+ 40968  x x x        Bb               < F   D   F             >             +        +          
+ 41208  x            Bb               <                       >             2        |          
+ 41472  x x          Bb               <                       >             2        |          
+ 41712  x            Bb               <                       >             2        |          
+ 41976  x x x        Bb               < F   Bb  D   F   Bb    >          +  +        +          
+ 42216  x            Bb               <                       >          2  2        |          
+ 42480  x x          Bb               <                       >          2  2        |          
+ 42744  x            Bb               <                       >          2  2        |          
+ 43008  x x x x      Bb               < F   Bb  D   F   C     >          +  +  +     +          
+ 43248  x            Bb               <                       >          |  2  |     |          
+ 43512  x x          Bb               <                       >          |  2  |     |          
+ 43776  x            Bb               <                       >          |  2  |     |          
+ 44040  x x x        Bb               < F   Eb  F   D         >       +     +        +          
+ 44280  x            Bb               <                       >       |     2        |          
+ 44544  x x          Bb               <                       >       |     2        |          
+ 44784  x            Bb               <                       >       |     2        |          
+ 45048  x x x           F             < F   A                 >       |     +        |  +       
+ 45288  x               F             <                       >       |     2        |  |       
+ 45552  x x             F             <                       >       |     2        |  |       
+ 45816  x               F             <                       >       |     2        |  |       
+ 46080  x x x x x       F             < F   A   Eb  F   C     >       +     +  +        +       
+ 46320  x               F             <                       >       |     2  |        |       
+ 46584  x x             F             <                       >       |     2  |        |       
+ 46848  x               F             <                       >       |     2  |        |       
+ 47112  x x x        Bb               < Bb  F   Bb  D   F   Bb>          +  +        +          
+ 47352  x            Bb               <                       >          3  2        |          
+ 47616  x x          Bb               <                       >          3  2        |          
+ 47880  x            Bb               <                       >          3  2        |          
+ 48144  x x x        Bb               <                       >          3  2        |          
+ 48384  x            Bb               <                       >          3  2        |          
+ 48648  x x          Bb               <                       >          3  2        |          
+ 48888  x            Bb               <                       >          3  2        |          
