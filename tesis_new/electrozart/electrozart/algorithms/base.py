@@ -88,14 +88,18 @@ class Algorithm(Parametrizable):
         if 'seed' not in kwargs or kwargs.get('seed') is None: import ipdb;ipdb.set_trace()
         self.random= Random(kwargs['seed'])
         self.ec.seed= kwargs['seed']
+        self.trained= False
+        self.started= False
         
     def start_creation(self): 
         self.ec= ExecutionContext()
+        self.started= True
 
     def next(self, input, result, prev_notes): pass
     def print_info(self): pass
     def save_info(self, folder, score, params): pass
-    def train(self, score): pass
+    def train(self, score): 
+        self.trained= True
         
 
 class StackAlgorithm(Algorithm):

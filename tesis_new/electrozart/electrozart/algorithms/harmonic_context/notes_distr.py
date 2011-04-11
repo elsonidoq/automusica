@@ -22,23 +22,30 @@ class NotesDistr(Algorithm):
                                     uniform                     =False))
         return instance
         
-    def __init__(self, score, **optional):
+    def __init__(self, **optional):
         super(NotesDistr, self).__init__(self, **optional)
-        self.score= score
+        self.score_profile= {}
 
+    def train(self, score):
+        super(NotesDistr, self).train(score)
         score_profile= get_score_profile(score, **self.params)
-        #self.matching_notes= get_matching_notes(score, TriadPrior(2, score_profile))
-        #for n, d in self.matching_notes.iteritems():
-        #    if abs(sum(d.itervalues())-1) > 0.001: 
-        #        import ipdb;ipdb.set_trace()
-        #self.matching_notes= get_matching_notes(score, NoPrior())
-
-        self.score_profile= sorted(score_profile.items(), key=lambda x:x[0])
-        self.per_metrical_accent_profile= get_per_metrical_accent_profile(score)
-        self.interval_size= measure_interval_size(score)
         if abs(sum(score_profile.values())-1) > 0.001: import ipdb;ipdb.set_trace()
 
+        for k, v in score_profile.iteritems():
+            self.score_profile[k]= self.score_profile.get(k, 0) + v
+
+    def start_creation(self):
+        if self.started: return
+        super(NotesDistr, self).start_creation()
+        if self.trained > 0:
+            self.can_be_used= len(self.score_profile)>0
+        s= sum(self.score_profile.itervalues())
+        self.score_profile= sorted(self.score_profile.items(), key=lambda x:x[0])
+        self.score_profile= [(k,v/float(s)) for k, v in self.score_profile]
+        
+        
     def pitches_distr(self, now_notes=None, min_pitch=None, max_pitch=None, now=0):
+        if not self.can_be_used: raise Exception('This instance can not be used yet')
         #import ipdb;ipdb.set_trace()
         if self.params['uniform']: return [(k, 1.0/len(self.score_profile)) for k, v in self.score_profile]
         if not self.params['use_chord_detection']: return self.score_profile
@@ -62,21 +69,13 @@ class NotesDistr(Algorithm):
         ##XXX
 
         score_profile= dict(self.score_profile)
-        #score_profile= get_posterior(score_profile, self.per_metrical_accent_profile[now%self.interval_size]) 
         pitches_distr= {}
         #for pc, prob in score_profile.items():
         for pc, prob in self.score_profile:
-            #pitches_distr[pc]= self.params['global_profile_prior_weight']
-            #pitches_distr[pc]= prob*len(now_notes) #self.params['global_profile_prior_weight']
-            pitches_distr[pc]= prob#*len(now_notes) #self.params['global_profile_prior_weight']
             pitches_distr[pc]= prob*self.params['global_profile_prior_weight']
 
         for i, pc in enumerate(now_pc):
-            #new_distr= self.matching_notes[pc]
-            #for pc2, weight in new_distr.iteritems():
-            #    pitches_distr[pc2]+=weight#*now_notes[i].duration
-            pitches_distr[pc]+=1 + len(now_pc) - i#*sqrt(float(now_notes[i].pitch - min_pitch)/(max_pitch-min_pitch))
-            #if i == 0: pitches_distr[pc]+=0.3
+            pitches_distr[pc]+=1 + len(now_pc) - i
 
         s= float(sum(pitches_distr.itervalues()))
         for k, v in pitches_distr.iteritems():
@@ -85,13 +84,32 @@ class NotesDistr(Algorithm):
         # build result
         pitches_distr= pitches_distr.items()
         pitches_distr.sort()
-        #pitches_distr= convex_combination(pitches_distr, self.score_profile, self.params['score_profile_combination_factor'])
+
         # asserts
         if abs(sum(i[1] for i in pitches_distr) -1) > 0.0001:import ipdb;ipdb.set_trace()
         if len(pitches_distr) == 0: import ipdb;ipdb.set_trace()            
 
         return pitches_distr
 
+
+    def notes_distr(self, now_notes, min_pitch, max_pitch, now=0):
+        pitches_repetition= defaultdict(int)
+        for i in xrange(min_pitch, max_pitch+1):
+            pitches_repetition[i%12]+=1
+
+        pitches_distr= dict(self.pitches_distr(now_notes, now=now, min_pitch=min_pitch, max_pitch=max_pitch))
+        return dict((Note(i), pitches_distr[Note(i%12)]/pitches_repetition[i%12]) for i in xrange(min_pitch, max_pitch+1))
+
+    @needs('now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
+    @child_input('notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr')
+    def next(self, input, result, prev_notes):
+        print input.now
+        input.notes_distr= self.notes_distr(input.now_chord.notes, input.min_pitch, input.max_pitch, now=input.now)
+        input.prox_notes_distr= self.notes_distr(input.prox_chord.notes, input.min_pitch, input.max_pitch, now=input.prox_chord.start)
+
+        input.pitches_distr= self.pitches_distr(input.now_chord.notes, now= input.now_chord.start)
+        input.prox_pitches_distr= self.pitches_distr(input.prox_chord.notes, now=input.prox_chord.start)
+        
         
     def save_info(self, folder, score, params): 
         def format_pitch(x, pos=None):
@@ -140,61 +158,6 @@ class NotesDistr(Algorithm):
             save_txt(self.pitches_distr(chord.notes), 'posterior-%s.txt' % chord_name(chord))
         
 
-
-
-    def notes_distr(self, now_notes, min_pitch, max_pitch, now=0):
-        pitches_repetition= defaultdict(int)
-        for i in xrange(min_pitch, max_pitch+1):
-            pitches_repetition[i%12]+=1
-
-        pitches_distr= dict(self.pitches_distr(now_notes, now=now, min_pitch=min_pitch, max_pitch=max_pitch))
-        return dict((Note(i), pitches_distr[Note(i%12)]/pitches_repetition[i%12]) for i in xrange(min_pitch, max_pitch+1))
-
-    @needs('now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
-    @child_input('notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr')
-    def next(self, input, result, prev_notes):
-        print input.now
-        input.notes_distr= self.notes_distr(input.now_chord.notes, input.min_pitch, input.max_pitch, now=input.now)
-        input.prox_notes_distr= self.notes_distr(input.prox_chord.notes, input.min_pitch, input.max_pitch, now=input.prox_chord.start)
-
-        input.pitches_distr= self.pitches_distr(input.now_chord.notes, now= input.now_chord.start)
-        input.prox_pitches_distr= self.pitches_distr(input.prox_chord.notes, now=input.prox_chord.start)
-        
-def measure_interval_size(score):
-    nunits, unit_type= score.time_signature
-    unit_type= 2**unit_type
-    interval_size= nunits*score.divisions*4/unit_type
-
-    return interval_size
-
-def get_per_metrical_accent_profile(score):    
-    interval_size= measure_interval_size(score)
-
-    d= defaultdict(lambda : defaultdict(list))
-    for n in score.get_notes(skip_silences=True):
-        equiv_class= n.start % interval_size 
-        d[equiv_class][n.pitch % 12].append(n.duration)
-    
-    return d
-
-def get_posterior(prior, to_update):
-    d= {}
-    tot= sum(map(sum, to_update.itervalues()))
-    for k, l in to_update.iteritems():
-        d[k]= (len(l), float(sum(l))/tot)
-        
-    
-    posterior= {}
-    for k, v in prior.iteritems():
-        if k.pitch in d:
-            posterior[k]= 3*v + d[k.pitch][0]#*d[k.pitch][1]
-        else:
-            posterior[k]= 3*v 
-
-    result= dict((k, v/float(sum(posterior.itervalues()))) for k, v in posterior.iteritems())
-    #import ipdb;ipdb.set_trace()
-    return result 
-
 def get_score_profile(score, profile_smooth_factor=0.1, proportional_to_duration=True, **kwargs):
     score_profile= defaultdict(int)
 
@@ -217,79 +180,3 @@ def get_score_profile(score, profile_smooth_factor=0.1, proportional_to_duration
         score_profile[pitch]= float(weight)/s
 
     return dict(score_profile)
-
-#def get_matching_notes(score, prior):
-#    matching_notes= defaultdict(lambda: defaultdict(lambda :0))
-#    notes= score.get_notes(skip_silences=True)
-#    notes.sort(key=lambda n:n.start)
-#    max_duration= max(notes, key=lambda n:n.duration).duration
-
-#    for i, n1 in enumerate(notes):
-#        n1_can= n1.get_canonical_note()
-#        # recorro todas las notas que suenan con n1
-#        for j in xrange(i+1, len(notes)):
-#            n2= notes[j]
-#            # quiere decir que n2 no esta sonando con n1
-#            if n2.start > n1.start + n1.duration: break
-
-#            n2_can= n2.get_canonical_note()
-#            #matching_notes[n1_can][n1_can]+=float(n1.duration)/max_duration
-#            matching_notes[n1_can][n2_can]+=float(n2.duration)/max_duration
-#            matching_notes[n2_can][n1_can]+=float(n1.duration)/max_duration
-
-#    #import ipdb;ipdb.set_trace()
-#    for n, d in matching_notes.iteritems():
-#        s= sum(d.itervalues()) + sum(prior[n].itervalues())
-#        all_notes= set(d.keys()).union(prior[n])
-#        for n2 in all_notes:
-#            d[n2]=float(d[n2] + prior[n].get(n2, 0))/s
-
-#        #d= dict(sorted(d.iteritems(), key=lambda x:x[1], reverse=True)[:5])
-#        #matching_notes[n]= set(d.keys())
-#    for i in xrange(12):
-#        n= Note(i)
-#        if n not in matching_notes:
-#            s= sum(prior[n].itervalues())
-#            for n2, cnt in prior[n].iteritems():
-#                matching_notes[n][n2]= float(cnt)/s
-
-#    matching_notes= dict(matching_notes)
-
-#    for k, v in matching_notes.iteritems():
-#        matching_notes[k]= dict(v)
-
-#    return matching_notes
-
-#class TriadPrior(object):
-#    def __init__(self, strongness, score_profile):
-#        self.strongness= strongness
-#        self.score_profile= score_profile
-
-#    def __getitem__(self, note):
-#        fifth= Note((note.pitch+7)%12)
-#        minor_third= Note((note.pitch+3)%12)
-#        major_third= Note((note.pitch+4)%12)
-
-#        d= {}
-#        d[fifth]= self.score_profile[fifth]*self.strongness
-#        d[major_third]= self.score_profile[major_third]*self.strongness
-#        d[minor_third]= self.score_profile[minor_third]*self.strongness
-#        d[note]= self.score_profile[note]*self.strongness
-
-#        #d[fifth]= self.strongness
-#        #d[major_third]= self.strongness
-#        #d[minor_third]= self.strongness
-#        #d[note]= self.strongness
-
-#        # XXX ver como afecta esto
-#        m= min(d.itervalues())*0.1
-#        for i in xrange(12):
-#            n= Note(i)
-#            if n in d: continue
-#            #d[n]= m
-#        return d
-
-#class NoPrior(object):
-#    def __init__(self, *args, **kwargs): pass
-#    def __getitem__(self, note): return defaultdict(int)
-

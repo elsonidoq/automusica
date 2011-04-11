@@ -37,8 +37,6 @@ class ContourAlgorithm(ListAlgorithm):
             for val in all_vals:
                 self.narmour_features_cnt[feature_name][val]=0.5
         
-        self.notes_distr= kwargs['notes_distr_alg'].notes_distr([], kwargs['min_pitch'], kwargs['max_pitch'])
-        
 
     def dump(self, stream):
         pickle.dump(self.narmour_features_cnt, stream, 2)
@@ -201,11 +199,9 @@ class ContourAlgorithm(ListAlgorithm):
     @needs('rhythm_phrase_len', 'notes_distr', 'prox_notes_distr', 'pitches_distr', 'prox_pitches_distr', 'now_chord', 'prox_chord', 'min_pitch', 'max_pitch')
     def generate_list(self, input, result, prev_notes):
         self.ec.input= input
-        #XXX
-        #print "GUARDA!!! use_harmony=False"
+
         now_prob_model= ProbModel(self.ec.narmour_features_prob, input.notes_distr, use_harmony=True)
         prox_prob_model= ProbModel(self.ec.narmour_features_prob, input.prox_notes_distr, use_harmony=True)
-        # XXX
 
         remaining_notes= input.rhythm_phrase_len - (self.ec.last_support_note is not None)
         t= TimeMeasurer()

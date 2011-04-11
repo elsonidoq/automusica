@@ -25,7 +25,6 @@ harmonic_context:
         type: object
         path: electrozart.algorithms.harmonic_context.notes_distr:NotesDistr
         args:
-            score: param:score
             seed: param:seed
 
 
@@ -60,9 +59,6 @@ contour:
         args:
             seed: param:seed
             use_narmour: param:use_narmour
-            notes_distr_alg: object:harmonic_context.notes_distr
-            min_pitch: param:min_pitch
-            max_pitch: param:max_pitch
 
     phrase:
         type: object
@@ -71,9 +67,6 @@ contour:
             algorithm: object:rhythm.phrase
             input_key: 'phrase_id'
             seed: param:seed
-            notes_distr_alg: object:harmonic_context.notes_distr
-            min_pitch: param:min_pitch
-            max_pitch: param:max_pitch
         
     phrase_cache:
         type: object

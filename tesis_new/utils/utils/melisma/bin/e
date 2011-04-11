@@ -1,0 +1,1824 @@
+%verbosity = 2.00
+%pruning_cutoff = 10.00
+ompatibility values: -5.000 -5.000 -10.000  1.000 -3.000 -10.000  5.000  3.000 -10.000 -10.000  2.000 -10.000 
+%tpc_var_factor = 0.30
+%har_var_factor = 2.00
+%odp_linear_factor = 3.00
+%odp_quadratic_factor = 1.00
+%odp_constant = 2.00
+%compat_factor = 1.00
+%sbp_weight = 2.00
+%sbp_constant = 1.50
+%half_life = 2.00
+%voice_leading_penalty = 3.00
+%voice_leading_time = 1.00
+Ignoring the following lines:
+---> Warning: cannot interpret "pruning_cutoff   10.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "compat_values   -5.0 -5.0 -10.0 1.0 -3.0 -10.0 5.0 3.0 -10.0 -10.0 2.0 -10.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "tpc_var_factor   0.3" in parameters file -- skipping it.
+---> Warning: cannot interpret "har_var_factor   2.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "odp_linear_factor   3.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "odp_quadratic_factor   1.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "odp_constant   2.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "compat_factor   1.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "sbp_weight   2.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "sbp_constant   1.5" in parameters file -- skipping it.
+---> Warning: cannot interpret "half_life   2.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "voice_leading_penalty   3.0" in parameters file -- skipping it.
+---> Warning: cannot interpret "voice_leading_time   1.0" in parameters file -- skipping it.
+---> Computing tactus level.
+---> Trying tactus level range [  385,   735].  Score =   78.746
+---> Trying tactus level range [  455,   805].  Score =   78.746
+---> Trying tactus level range [  490,   875].  Score =   78.746
+---> Trying tactus level range [  525,   945].  Score =   45.343
+---> Trying tactus level range [  595,  1050].  Score =  103.963
+---> Trying tactus level range [  630,  1155].  Score =  103.963
+---> Trying tactus level range [  700,  1260].  Score =  103.963
+---> Trying tactus level range [  770,  1400].  Score =  103.963
+---> Trying tactus level range [  840,  1540].  Score =  103.963
+---> Beat at time     0  (interval =     0) (cumulative score =  1.932)
+---> Beat at time  1015  (interval =  1015) (cumulative score =  4.148)
+---> Beat at time  2065  (interval =  1050) (cumulative score =  5.789)
+---> Beat at time  3080  (interval =  1015) (cumulative score =  8.264)
+---> Beat at time  4095  (interval =  1015) (cumulative score = 10.481)
+---> Beat at time  5110  (interval =  1015) (cumulative score = 12.935)
+---> Beat at time  6160  (interval =  1050) (cumulative score = 15.410)
+---> Beat at time  7175  (interval =  1015) (cumulative score = 17.646)
+---> Beat at time  8190  (interval =  1015) (cumulative score = 19.272)
+---> Beat at time  9205  (interval =  1015) (cumulative score = 21.726)
+---> Beat at time 10255  (interval =  1050) (cumulative score = 23.962)
+---> Beat at time 11270  (interval =  1015) (cumulative score = 25.602)
+---> Beat at time 12285  (interval =  1015) (cumulative score = 28.056)
+---> Beat at time 13300  (interval =  1015) (cumulative score = 30.273)
+---> Beat at time 14350  (interval =  1050) (cumulative score = 31.913)
+---> Beat at time 15365  (interval =  1015) (cumulative score = 34.388)
+---> Beat at time 16380  (interval =  1015) (cumulative score = 36.605)
+---> Beat at time 17395  (interval =  1015) (cumulative score = 39.059)
+---> Beat at time 18445  (interval =  1050) (cumulative score = 41.534)
+---> Beat at time 19460  (interval =  1015) (cumulative score = 43.770)
+---> Beat at time 20475  (interval =  1015) (cumulative score = 45.396)
+---> Beat at time 21490  (interval =  1015) (cumulative score = 47.850)
+---> Beat at time 22540  (interval =  1050) (cumulative score = 50.086)
+---> Beat at time 23555  (interval =  1015) (cumulative score = 51.726)
+---> Beat at time 24570  (interval =  1015) (cumulative score = 53.672)
+---> Beat at time 25585  (interval =  1015) (cumulative score = 56.127)
+---> Beat at time 26635  (interval =  1050) (cumulative score = 57.767)
+---> Beat at time 27650  (interval =  1015) (cumulative score = 60.242)
+---> Beat at time 28665  (interval =  1015) (cumulative score = 62.696)
+---> Beat at time 29680  (interval =  1015) (cumulative score = 64.323)
+---> Beat at time 30730  (interval =  1050) (cumulative score = 66.798)
+---> Beat at time 31745  (interval =  1015) (cumulative score = 69.273)
+---> Beat at time 32760  (interval =  1015) (cumulative score = 71.220)
+---> Beat at time 33775  (interval =  1015) (cumulative score = 73.889)
+---> Beat at time 34825  (interval =  1050) (cumulative score = 76.365)
+---> Beat at time 35840  (interval =  1015) (cumulative score = 79.057)
+---> Beat at time 36855  (interval =  1015) (cumulative score = 81.726)
+---> Beat at time 37905  (interval =  1050) (cumulative score = 83.961)
+---> Beat at time 38920  (interval =  1015) (cumulative score = 85.602)
+---> Beat at time 39935  (interval =  1015) (cumulative score = 88.056)
+---> Beat at time 40950  (interval =  1015) (cumulative score = 90.002)
+---> Beat at time 42000  (interval =  1050) (cumulative score = 92.478)
+---> Beat at time 43015  (interval =  1015) (cumulative score = 94.953)
+---> Beat at time 44030  (interval =  1015) (cumulative score = 97.170)
+---> Beat at time 45045  (interval =  1015) (cumulative score = 98.796)
+---> Beat at time 46095  (interval =  1050) (cumulative score = 101.271)
+---> Beat at time 47110  (interval =  1015) (cumulative score = 103.963)
+---> Beat at time 48125  (interval =  1015) (cumulative score = 103.963)
+---> Beat at time 49140  (interval =  1015) (cumulative score = 103.963)
+---> Computing level  1
+---> Measure   0: [     0   1015] local_score = ( 0.20 0.000)
+---> Measure   1: [  1015   2065] local_score = ( 0.20 0.000)
+---> Measure   2: [  2065   3080] local_score = ( 1.29 0.562)
+---> Measure   3: [  3080   4095] local_score = ( 0.20 0.000)
+---> Measure   4: [  4095   5110] local_score = ( 0.20 0.000)
+---> Measure   5: [  5110   6160] local_score = ( 0.20 0.000)
+---> Measure   6: [  6160   7175] local_score = ( 0.20 0.000)
+---> Measure   7: [  7175   8190] local_score = ( 0.20 0.000)
+---> Measure   8: [  8190   9205] local_score = ( 0.20 0.000)
+---> Measure   9: [  9205  10255] local_score = ( 0.20 0.000)
+---> Measure  10: [ 10255  11270] local_score = ( 0.20 0.000)
+---> Measure  11: [ 11270  12285] local_score = ( 0.20 0.000)
+---> Measure  12: [ 12285  13300] local_score = ( 0.20 0.000)
+---> Measure  13: [ 13300  14350] local_score = ( 0.20 0.000)
+---> Measure  14: [ 14350  15365] local_score = ( 1.29 0.562)
+---> Measure  15: [ 15365  16380] local_score = ( 0.20 0.000)
+---> Measure  16: [ 16380  17395] local_score = ( 0.20 0.000)
+---> Measure  17: [ 17395  18445] local_score = ( 0.20 0.000)
+---> Measure  18: [ 18445  19460] local_score = ( 0.20 0.000)
+---> Measure  19: [ 19460  20475] local_score = ( 0.20 0.000)
+---> Measure  20: [ 20475  21490] local_score = ( 0.20 0.000)
+---> Measure  21: [ 21490  22540] local_score = ( 0.20 0.000)
+---> Measure  22: [ 22540  23555] local_score = ( 0.20 0.000)
+---> Measure  23: [ 23555  24570] local_score = ( 0.20 0.000)
+---> Measure  24: [ 24570  25585] local_score = ( 0.20 0.000)
+---> Measure  25: [ 25585  26635] local_score = ( 0.20 0.000)
+---> Measure  26: [ 26635  27650] local_score = ( 1.29 0.562)
+---> Measure  27: [ 27650  28665] local_score = ( 0.20 0.000)
+---> Measure  28: [ 28665  29680] local_score = ( 0.20 0.000)
+---> Measure  29: [ 29680  30730] local_score = ( 1.29 0.457)
+---> Measure  30: [ 30730  31745] local_score = ( 0.20 0.000)
+---> Measure  31: [ 31745  32760] local_score = ( 0.20 0.000)
+---> Measure  32: [ 32760  33775] local_score = ( 1.29 0.562)
+---> Measure  33: [ 33775  34825] local_score = ( 0.20 0.000)
+---> Measure  34: [ 34825  35840] local_score = ( 0.20 0.000)
+---> Measure  35: [ 35840  36855] local_score = ( 0.20 0.000)
+---> Measure  36: [ 36855  37905] local_score = ( 0.20 0.000)
+---> Measure  37: [ 37905  38920] local_score = ( 0.20 0.000)
+---> Measure  38: [ 38920  39935] local_score = ( 1.29 0.562)
+---> Measure  39: [ 39935  40950] local_score = ( 0.20 0.000)
+---> Measure  40: [ 40950  42000] local_score = ( 0.20 0.000)
+---> Measure  41: [ 42000  43015] local_score = ( 0.20 0.000)
+---> Measure  42: [ 43015  44030] local_score = ( 0.20 0.000)
+---> Measure  43: [ 44030  45045] local_score = ( 0.20 0.000)
+---> Measure  44: [ 45045  46095] local_score = ( 0.20 0.000)
+---> Measure  45: [ 46095  47110] local_score = ( 0.20 0.000)
+---> Measure  46: [ 47110  48125] local_score = ( 0.20 0.000)
+---> Measure  47: [ 48125  49140] local_score = ( 0.20 0.000)
+---> Beat group scores
+---> Measure   0: [     0   1015]  2 beats(   490) ls =   0.20  score =   0.20
+---> Measure   1: [  1015   2065]  2 beats(  1540) ls =   0.20  score =   0.40
+---> Measure   2: [  2065   3080]  2 beats(  2555) ls =   1.29  score =   1.69
+---> Measure   3: [  3080   4095]  2 beats(  3570) ls =   0.20  score =   1.89
+---> Measure   4: [  4095   5110]  2 beats(  4585) ls =   0.20  score =   2.09
+---> Measure   5: [  5110   6160]  2 beats(  5635) ls =   0.20  score =   2.29
+---> Measure   6: [  6160   7175]  2 beats(  6650) ls =   0.20  score =   2.49
+---> Measure   7: [  7175   8190]  2 beats(  7665) ls =   0.20  score =   2.69
+---> Measure   8: [  8190   9205]  2 beats(  8680) ls =   0.20  score =   2.89
+---> Measure   9: [  9205  10255]  2 beats(  9730) ls =   0.20  score =   3.09
+---> Measure  10: [ 10255  11270]  2 beats( 10745) ls =   0.20  score =   3.29
+---> Measure  11: [ 11270  12285]  2 beats( 11760) ls =   0.20  score =   3.49
+---> Measure  12: [ 12285  13300]  2 beats( 12775) ls =   0.20  score =   3.69
+---> Measure  13: [ 13300  14350]  2 beats( 13825) ls =   0.20  score =   3.89
+---> Measure  14: [ 14350  15365]  2 beats( 14840) ls =   1.29  score =   5.17
+---> Measure  15: [ 15365  16380]  2 beats( 15855) ls =   0.20  score =   5.37
+---> Measure  16: [ 16380  17395]  2 beats( 16870) ls =   0.20  score =   5.57
+---> Measure  17: [ 17395  18445]  2 beats( 17920) ls =   0.20  score =   5.77
+---> Measure  18: [ 18445  19460]  2 beats( 18935) ls =   0.20  score =   5.97
+---> Measure  19: [ 19460  20475]  2 beats( 19950) ls =   0.20  score =   6.17
+---> Measure  20: [ 20475  21490]  2 beats( 20965) ls =   0.20  score =   6.37
+---> Measure  21: [ 21490  22540]  2 beats( 22015) ls =   0.20  score =   6.57
+---> Measure  22: [ 22540  23555]  2 beats( 23030) ls =   0.20  score =   6.77
+---> Measure  23: [ 23555  24570]  2 beats( 24045) ls =   0.20  score =   6.97
+---> Measure  24: [ 24570  25585]  2 beats( 25060) ls =   0.20  score =   7.17
+---> Measure  25: [ 25585  26635]  2 beats( 26110) ls =   0.20  score =   7.37
+---> Measure  26: [ 26635  27650]  2 beats( 27125) ls =   1.29  score =   8.66
+---> Measure  27: [ 27650  28665]  2 beats( 28140) ls =   0.20  score =   8.86
+---> Measure  28: [ 28665  29680]  2 beats( 29155) ls =   0.20  score =   9.06
+---> Measure  29: [ 29680  30730]  2 beats( 30205) ls =   1.29  score =  10.35
+---> Measure  30: [ 30730  31745]  2 beats( 31220) ls =   0.20  score =  10.55
+---> Measure  31: [ 31745  32760]  2 beats( 32235) ls =   0.20  score =  10.75
+---> Measure  32: [ 32760  33775]  2 beats( 33285) ls =   1.29  score =  12.03
+---> Measure  33: [ 33775  34825]  2 beats( 34300) ls =   0.20  score =  12.23
+---> Measure  34: [ 34825  35840]  2 beats( 35315) ls =   0.20  score =  12.43
+---> Measure  35: [ 35840  36855]  2 beats( 36330) ls =   0.20  score =  12.63
+---> Measure  36: [ 36855  37905]  2 beats( 37380) ls =   0.20  score =  12.83
+---> Measure  37: [ 37905  38920]  2 beats( 38395) ls =   0.20  score =  13.03
+---> Measure  38: [ 38920  39935]  2 beats( 39410) ls =   1.29  score =  14.32
+---> Measure  39: [ 39935  40950]  2 beats( 40425) ls =   0.20  score =  14.52
+---> Measure  40: [ 40950  42000]  2 beats( 41475) ls =   0.20  score =  14.72
+---> Measure  41: [ 42000  43015]  2 beats( 42490) ls =   0.20  score =  14.92
+---> Measure  42: [ 43015  44030]  2 beats( 43505) ls =   0.20  score =  15.12
+---> Measure  43: [ 44030  45045]  2 beats( 44520) ls =   0.20  score =  15.32
+---> Measure  44: [ 45045  46095]  2 beats( 45570) ls =   0.20  score =  15.52
+---> Measure  45: [ 46095  47110]  2 beats( 46585) ls =   0.20  score =  15.72
+---> Measure  46: [ 47110  48125]  2 beats( 47600) ls =   0.20  score =  15.92
+---> Measure  47: [ 48125  49140]  2 beats( 48615) ls =   0.20  score =  16.12
+---> Computing level  0
+---> Measure   0: [     0    490] local_score = ( 0.20 0.000)
+---> Measure   1: [   490   1015] local_score = ( 0.20 0.000)
+---> Measure   2: [  1015   1540] local_score = ( 0.20 0.000)
+---> Measure   3: [  1540   2065] local_score = ( 0.20 0.000)
+---> Measure   4: [  2065   2555] local_score = ( 0.20 0.000)
+---> Measure   5: [  2555   3080] local_score = ( 0.20 0.000)
+---> Measure   6: [  3080   3570] local_score = ( 0.20 0.000)
+---> Measure   7: [  3570   4095] local_score = ( 0.20 0.000)
+---> Measure   8: [  4095   4585] local_score = ( 0.20 0.000)
+---> Measure   9: [  4585   5110] local_score = ( 0.20 0.000)
+---> Measure  10: [  5110   5635] local_score = ( 0.20 0.000)
+---> Measure  11: [  5635   6160] local_score = ( 0.20 0.000)
+---> Measure  12: [  6160   6650] local_score = ( 0.20 0.000)
+---> Measure  13: [  6650   7175] local_score = ( 0.20 0.000)
+---> Measure  14: [  7175   7665] local_score = ( 0.20 0.000)
+---> Measure  15: [  7665   8190] local_score = ( 0.20 0.000)
+---> Measure  16: [  8190   8680] local_score = ( 0.20 0.000)
+---> Measure  17: [  8680   9205] local_score = ( 0.20 0.000)
+---> Measure  18: [  9205   9730] local_score = ( 0.20 0.000)
+---> Measure  19: [  9730  10255] local_score = ( 0.20 0.000)
+---> Measure  20: [ 10255  10745] local_score = ( 0.20 0.000)
+---> Measure  21: [ 10745  11270] local_score = ( 0.20 0.000)
+---> Measure  22: [ 11270  11760] local_score = ( 0.20 0.000)
+---> Measure  23: [ 11760  12285] local_score = ( 0.20 0.000)
+---> Measure  24: [ 12285  12775] local_score = ( 0.20 0.000)
+---> Measure  25: [ 12775  13300] local_score = ( 0.20 0.000)
+---> Measure  26: [ 13300  13825] local_score = ( 0.20 0.000)
+---> Measure  27: [ 13825  14350] local_score = ( 0.20 0.000)
+---> Measure  28: [ 14350  14840] local_score = ( 0.20 0.000)
+---> Measure  29: [ 14840  15365] local_score = ( 0.20 0.000)
+---> Measure  30: [ 15365  15855] local_score = ( 0.20 0.000)
+---> Measure  31: [ 15855  16380] local_score = ( 0.20 0.000)
+---> Measure  32: [ 16380  16870] local_score = ( 0.20 0.000)
+---> Measure  33: [ 16870  17395] local_score = ( 0.20 0.000)
+---> Measure  34: [ 17395  17920] local_score = ( 0.20 0.000)
+---> Measure  35: [ 17920  18445] local_score = ( 0.20 0.000)
+---> Measure  36: [ 18445  18935] local_score = ( 0.20 0.000)
+---> Measure  37: [ 18935  19460] local_score = ( 0.20 0.000)
+---> Measure  38: [ 19460  19950] local_score = ( 0.20 0.000)
+---> Measure  39: [ 19950  20475] local_score = ( 0.20 0.000)
+---> Measure  40: [ 20475  20965] local_score = ( 0.20 0.000)
+---> Measure  41: [ 20965  21490] local_score = ( 0.20 0.000)
+---> Measure  42: [ 21490  22015] local_score = ( 0.20 0.000)
+---> Measure  43: [ 22015  22540] local_score = ( 0.20 0.000)
+---> Measure  44: [ 22540  23030] local_score = ( 0.20 0.000)
+---> Measure  45: [ 23030  23555] local_score = ( 0.20 0.000)
+---> Measure  46: [ 23555  24045] local_score = ( 0.20 0.000)
+---> Measure  47: [ 24045  24570] local_score = ( 0.20 0.000)
+---> Measure  48: [ 24570  25060] local_score = ( 0.20 0.000)
+---> Measure  49: [ 25060  25585] local_score = ( 0.20 0.000)
+---> Measure  50: [ 25585  26110] local_score = ( 0.20 0.000)
+---> Measure  51: [ 26110  26635] local_score = ( 0.20 0.000)
+---> Measure  52: [ 26635  27125] local_score = ( 0.20 0.000)
+---> Measure  53: [ 27125  27650] local_score = ( 0.20 0.000)
+---> Measure  54: [ 27650  28140] local_score = ( 0.20 0.000)
+---> Measure  55: [ 28140  28665] local_score = ( 0.20 0.000)
+---> Measure  56: [ 28665  29155] local_score = ( 0.20 0.000)
+---> Measure  57: [ 29155  29680] local_score = ( 0.20 0.000)
+---> Measure  58: [ 29680  30205] local_score = ( 0.20 0.000)
+---> Measure  59: [ 30205  30730] local_score = ( 0.20 0.000)
+---> Measure  60: [ 30730  31220] local_score = ( 0.20 0.000)
+---> Measure  61: [ 31220  31745] local_score = ( 0.20 0.000)
+---> Measure  62: [ 31745  32235] local_score = ( 0.20 0.000)
+---> Measure  63: [ 32235  32760] local_score = ( 0.20 0.000)
+---> Measure  64: [ 32760  33285] local_score = ( 0.20 0.000)
+---> Measure  65: [ 33285  33775] local_score = ( 0.20 0.000)
+---> Measure  66: [ 33775  34300] local_score = ( 0.20 0.000)
+---> Measure  67: [ 34300  34825] local_score = ( 0.20 0.000)
+---> Measure  68: [ 34825  35315] local_score = ( 0.20 0.000)
+---> Measure  69: [ 35315  35840] local_score = ( 0.20 0.000)
+---> Measure  70: [ 35840  36330] local_score = ( 0.20 0.000)
+---> Measure  71: [ 36330  36855] local_score = ( 0.20 0.000)
+---> Measure  72: [ 36855  37380] local_score = ( 0.20 0.000)
+---> Measure  73: [ 37380  37905] local_score = ( 0.20 0.000)
+---> Measure  74: [ 37905  38395] local_score = ( 0.20 0.000)
+---> Measure  75: [ 38395  38920] local_score = ( 0.20 0.000)
+---> Measure  76: [ 38920  39410] local_score = ( 0.20 0.000)
+---> Measure  77: [ 39410  39935] local_score = ( 0.20 0.000)
+---> Measure  78: [ 39935  40425] local_score = ( 0.20 0.000)
+---> Measure  79: [ 40425  40950] local_score = ( 0.20 0.000)
+---> Measure  80: [ 40950  41475] local_score = ( 0.20 0.000)
+---> Measure  81: [ 41475  42000] local_score = ( 0.20 0.000)
+---> Measure  82: [ 42000  42490] local_score = ( 0.20 0.000)
+---> Measure  83: [ 42490  43015] local_score = ( 0.20 0.000)
+---> Measure  84: [ 43015  43505] local_score = ( 0.20 0.000)
+---> Measure  85: [ 43505  44030] local_score = ( 0.20 0.000)
+---> Measure  86: [ 44030  44520] local_score = ( 0.20 0.000)
+---> Measure  87: [ 44520  45045] local_score = ( 0.20 0.000)
+---> Measure  88: [ 45045  45570] local_score = ( 0.20 0.000)
+---> Measure  89: [ 45570  46095] local_score = ( 0.20 0.000)
+---> Measure  90: [ 46095  46585] local_score = ( 0.20 0.000)
+---> Measure  91: [ 46585  47110] local_score = ( 0.20 0.000)
+---> Measure  92: [ 47110  47600] local_score = ( 0.20 0.000)
+---> Measure  93: [ 47600  48125] local_score = ( 0.20 0.000)
+---> Measure  94: [ 48125  48615] local_score = ( 0.20 0.000)
+---> Measure  95: [ 48615  49140] local_score = ( 0.20 0.000)
+---> Beat group scores
+---> Measure   0: [     0    490]  2 beats(   245) ls =   0.20  score =   0.20
+---> Measure   1: [   490   1015]  2 beats(   735) ls =   0.20  score =   0.40
+---> Measure   2: [  1015   1540]  2 beats(  1260) ls =   0.20  score =   0.60
+---> Measure   3: [  1540   2065]  2 beats(  1785) ls =   0.20  score =   0.80
+---> Measure   4: [  2065   2555]  2 beats(  2310) ls =   0.20  score =   1.00
+---> Measure   5: [  2555   3080]  2 beats(  2800) ls =   0.20  score =   1.20
+---> Measure   6: [  3080   3570]  2 beats(  3325) ls =   0.20  score =   1.40
+---> Measure   7: [  3570   4095]  2 beats(  3815) ls =   0.20  score =   1.60
+---> Measure   8: [  4095   4585]  2 beats(  4340) ls =   0.20  score =   1.80
+---> Measure   9: [  4585   5110]  2 beats(  4830) ls =   0.20  score =   2.00
+---> Measure  10: [  5110   5635]  2 beats(  5355) ls =   0.20  score =   2.20
+---> Measure  11: [  5635   6160]  2 beats(  5880) ls =   0.20  score =   2.40
+---> Measure  12: [  6160   6650]  2 beats(  6405) ls =   0.20  score =   2.60
+---> Measure  13: [  6650   7175]  2 beats(  6895) ls =   0.20  score =   2.80
+---> Measure  14: [  7175   7665]  2 beats(  7420) ls =   0.20  score =   3.00
+---> Measure  15: [  7665   8190]  2 beats(  7910) ls =   0.20  score =   3.20
+---> Measure  16: [  8190   8680]  2 beats(  8435) ls =   0.20  score =   3.40
+---> Measure  17: [  8680   9205]  2 beats(  8925) ls =   0.20  score =   3.60
+---> Measure  18: [  9205   9730]  2 beats(  9450) ls =   0.20  score =   3.80
+---> Measure  19: [  9730  10255]  2 beats(  9975) ls =   0.20  score =   4.00
+---> Measure  20: [ 10255  10745]  2 beats( 10500) ls =   0.20  score =   4.20
+---> Measure  21: [ 10745  11270]  2 beats( 10990) ls =   0.20  score =   4.40
+---> Measure  22: [ 11270  11760]  2 beats( 11515) ls =   0.20  score =   4.60
+---> Measure  23: [ 11760  12285]  2 beats( 12005) ls =   0.20  score =   4.80
+---> Measure  24: [ 12285  12775]  2 beats( 12530) ls =   0.20  score =   5.00
+---> Measure  25: [ 12775  13300]  2 beats( 13020) ls =   0.20  score =   5.20
+---> Measure  26: [ 13300  13825]  2 beats( 13545) ls =   0.20  score =   5.40
+---> Measure  27: [ 13825  14350]  2 beats( 14070) ls =   0.20  score =   5.60
+---> Measure  28: [ 14350  14840]  2 beats( 14595) ls =   0.20  score =   5.80
+---> Measure  29: [ 14840  15365]  2 beats( 15085) ls =   0.20  score =   6.00
+---> Measure  30: [ 15365  15855]  2 beats( 15610) ls =   0.20  score =   6.20
+---> Measure  31: [ 15855  16380]  2 beats( 16100) ls =   0.20  score =   6.40
+---> Measure  32: [ 16380  16870]  2 beats( 16625) ls =   0.20  score =   6.60
+---> Measure  33: [ 16870  17395]  2 beats( 17115) ls =   0.20  score =   6.80
+---> Measure  34: [ 17395  17920]  2 beats( 17640) ls =   0.20  score =   7.00
+---> Measure  35: [ 17920  18445]  2 beats( 18165) ls =   0.20  score =   7.20
+---> Measure  36: [ 18445  18935]  2 beats( 18690) ls =   0.20  score =   7.40
+---> Measure  37: [ 18935  19460]  2 beats( 19180) ls =   0.20  score =   7.60
+---> Measure  38: [ 19460  19950]  2 beats( 19705) ls =   0.20  score =   7.80
+---> Measure  39: [ 19950  20475]  2 beats( 20195) ls =   0.20  score =   8.00
+---> Measure  40: [ 20475  20965]  2 beats( 20720) ls =   0.20  score =   8.20
+---> Measure  41: [ 20965  21490]  2 beats( 21210) ls =   0.20  score =   8.40
+---> Measure  42: [ 21490  22015]  2 beats( 21735) ls =   0.20  score =   8.60
+---> Measure  43: [ 22015  22540]  2 beats( 22260) ls =   0.20  score =   8.80
+---> Measure  44: [ 22540  23030]  2 beats( 22785) ls =   0.20  score =   9.00
+---> Measure  45: [ 23030  23555]  2 beats( 23275) ls =   0.20  score =   9.20
+---> Measure  46: [ 23555  24045]  2 beats( 23800) ls =   0.20  score =   9.40
+---> Measure  47: [ 24045  24570]  2 beats( 24290) ls =   0.20  score =   9.60
+---> Measure  48: [ 24570  25060]  2 beats( 24815) ls =   0.20  score =   9.80
+---> Measure  49: [ 25060  25585]  2 beats( 25305) ls =   0.20  score =  10.00
+---> Measure  50: [ 25585  26110]  2 beats( 25830) ls =   0.20  score =  10.20
+---> Measure  51: [ 26110  26635]  2 beats( 26355) ls =   0.20  score =  10.40
+---> Measure  52: [ 26635  27125]  2 beats( 26880) ls =   0.20  score =  10.60
+---> Measure  53: [ 27125  27650]  2 beats( 27370) ls =   0.20  score =  10.80
+---> Measure  54: [ 27650  28140]  2 beats( 27895) ls =   0.20  score =  11.00
+---> Measure  55: [ 28140  28665]  2 beats( 28385) ls =   0.20  score =  11.20
+---> Measure  56: [ 28665  29155]  2 beats( 28910) ls =   0.20  score =  11.40
+---> Measure  57: [ 29155  29680]  2 beats( 29400) ls =   0.20  score =  11.60
+---> Measure  58: [ 29680  30205]  2 beats( 29925) ls =   0.20  score =  11.80
+---> Measure  59: [ 30205  30730]  2 beats( 30450) ls =   0.20  score =  12.00
+---> Measure  60: [ 30730  31220]  2 beats( 30975) ls =   0.20  score =  12.20
+---> Measure  61: [ 31220  31745]  2 beats( 31465) ls =   0.20  score =  12.40
+---> Measure  62: [ 31745  32235]  2 beats( 31990) ls =   0.20  score =  12.60
+---> Measure  63: [ 32235  32760]  2 beats( 32480) ls =   0.20  score =  12.80
+---> Measure  64: [ 32760  33285]  2 beats( 33005) ls =   0.20  score =  13.00
+---> Measure  65: [ 33285  33775]  2 beats( 33530) ls =   0.20  score =  13.20
+---> Measure  66: [ 33775  34300]  2 beats( 34020) ls =   0.20  score =  13.40
+---> Measure  67: [ 34300  34825]  2 beats( 34545) ls =   0.20  score =  13.60
+---> Measure  68: [ 34825  35315]  2 beats( 35070) ls =   0.20  score =  13.80
+---> Measure  69: [ 35315  35840]  2 beats( 35560) ls =   0.20  score =  14.00
+---> Measure  70: [ 35840  36330]  2 beats( 36085) ls =   0.20  score =  14.20
+---> Measure  71: [ 36330  36855]  2 beats( 36575) ls =   0.20  score =  14.40
+---> Measure  72: [ 36855  37380]  2 beats( 37100) ls =   0.20  score =  14.60
+---> Measure  73: [ 37380  37905]  2 beats( 37625) ls =   0.20  score =  14.80
+---> Measure  74: [ 37905  38395]  2 beats( 38150) ls =   0.20  score =  15.00
+---> Measure  75: [ 38395  38920]  2 beats( 38640) ls =   0.20  score =  15.20
+---> Measure  76: [ 38920  39410]  2 beats( 39165) ls =   0.20  score =  15.40
+---> Measure  77: [ 39410  39935]  2 beats( 39655) ls =   0.20  score =  15.60
+---> Measure  78: [ 39935  40425]  2 beats( 40180) ls =   0.20  score =  15.80
+---> Measure  79: [ 40425  40950]  2 beats( 40670) ls =   0.20  score =  16.00
+---> Measure  80: [ 40950  41475]  2 beats( 41195) ls =   0.20  score =  16.20
+---> Measure  81: [ 41475  42000]  2 beats( 41720) ls =   0.20  score =  16.40
+---> Measure  82: [ 42000  42490]  2 beats( 42245) ls =   0.20  score =  16.60
+---> Measure  83: [ 42490  43015]  2 beats( 42735) ls =   0.20  score =  16.80
+---> Measure  84: [ 43015  43505]  2 beats( 43260) ls =   0.20  score =  17.00
+---> Measure  85: [ 43505  44030]  2 beats( 43750) ls =   0.20  score =  17.20
+---> Measure  86: [ 44030  44520]  2 beats( 44275) ls =   0.20  score =  17.40
+---> Measure  87: [ 44520  45045]  2 beats( 44765) ls =   0.20  score =  17.60
+---> Measure  88: [ 45045  45570]  2 beats( 45290) ls =   0.20  score =  17.80
+---> Measure  89: [ 45570  46095]  2 beats( 45815) ls =   0.20  score =  18.00
+---> Measure  90: [ 46095  46585]  2 beats( 46340) ls =   0.20  score =  18.20
+---> Measure  91: [ 46585  47110]  2 beats( 46830) ls =   0.20  score =  18.40
+---> Measure  92: [ 47110  47600]  2 beats( 47355) ls =   0.20  score =  18.60
+---> Measure  93: [ 47600  48125]  2 beats( 47845) ls =   0.20  score =  18.80
+---> Measure  94: [ 48125  48615]  2 beats( 48370) ls =   0.20  score =  19.00
+---> Measure  95: [ 48615  49140]  2 beats( 48860) ls =   0.20  score =  19.20
+---> Computing level  3
+---> Beat at time     0  (interval =     0) (cumulative score =  1.932)
+---> Beat at time  3080  (interval =  1015) (cumulative score =  5.343)
+---> Beat at time  6160  (interval =  1050) (cumulative score =  8.753)
+---> Beat at time  9205  (interval =  1015) (cumulative score = 12.164)
+---> Beat at time 12285  (interval =  1015) (cumulative score = 15.574)
+---> Beat at time 15365  (interval =  1015) (cumulative score = 18.985)
+---> Beat at time 18445  (interval =  1050) (cumulative score = 22.395)
+---> Beat at time 21490  (interval =  1015) (cumulative score = 25.806)
+---> Beat at time 24570  (interval =  1015) (cumulative score = 28.510)
+---> Beat at time 27650  (interval =  1015) (cumulative score = 31.921)
+---> Beat at time 30730  (interval =  1050) (cumulative score = 35.331)
+---> Beat at time 33775  (interval =  1015) (cumulative score = 39.041)
+---> Beat at time 36855  (interval =  1015) (cumulative score = 42.750)
+---> Beat at time 39935  (interval =  1015) (cumulative score = 46.160)
+---> Beat at time 43015  (interval =  1015) (cumulative score = 49.571)
+---> Beat at time 46095  (interval =  1050) (cumulative score = 52.981)
+---> Beat at time 49140  (interval =  1015) (cumulative score = 52.981)
+---> Computing level  4
+---> Beat at time     0  (interval =     0) (cumulative score =  1.566)
+---> Beat at time  9205  (interval =  3045) (cumulative score =  3.411)
+---> Beat at time 18445  (interval =  3080) (cumulative score =  5.257)
+---> Beat at time 27650  (interval =  3080) (cumulative score =  7.102)
+---> Beat at time 36855  (interval =  3080) (cumulative score =  9.096)
+---> Beat at time 46095  (interval =  3080) (cumulative score = 10.942)
+---> Beat:     0 x x x x x    (65 70 74)
+---> Beat:   245 x            ()
+---> Beat:   490 x x          ()
+---> Beat:   735 x            ()
+---> Beat:  1015 x x x        (41 65 70 74)
+---> Beat:  1260 x            ()
+---> Beat:  1540 x x          ()
+---> Beat:  1785 x            ()
+---> Beat:  2065 x x x        (53 63)
+---> Beat:  2310 x            ()
+---> Beat:  2555 x x          (65 69 72)
+---> Beat:  2800 x            ()
+---> Beat:  3080 x x x x      (65 69 72 53 63)
+---> Beat:  3325 x            ()
+---> Beat:  3570 x x          ()
+---> Beat:  3815 x            ()
+---> Beat:  4095 x x x        (65 69 72 41)
+---> Beat:  4340 x            ()
+---> Beat:  4585 x x          ()
+---> Beat:  4830 x            ()
+---> Beat:  5110 x x x        (65 70 74 53 63)
+---> Beat:  5355 x            ()
+---> Beat:  5635 x x          ()
+---> Beat:  5880 x            ()
+---> Beat:  6160 x x x x      (65 72 75 53 63)
+---> Beat:  6405 x            ()
+---> Beat:  6650 x x          ()
+---> Beat:  6895 x            ()
+---> Beat:  7175 x x x        (34 65 74 77)
+---> Beat:  7420 x            ()
+---> Beat:  7665 x x          ()
+---> Beat:  7910 x            ()
+---> Beat:  8190 x x x        (53 62)
+---> Beat:  8435 x            ()
+---> Beat:  8680 x x          ()
+---> Beat:  8925 x            ()
+---> Beat:  9205 x x x x x    (65 70 74 53 62)
+---> Beat:  9450 x            ()
+---> Beat:  9730 x x          ()
+---> Beat:  9975 x            ()
+---> Beat: 10255 x x x        (34 65 74 77)
+---> Beat: 10500 x            ()
+---> Beat: 10745 x x          ()
+---> Beat: 10990 x            ()
+---> Beat: 11270 x x x        (53 62)
+---> Beat: 11515 x            ()
+---> Beat: 11760 x x          ()
+---> Beat: 12005 x            ()
+---> Beat: 12285 x x x x      (65 70 74 53 62)
+---> Beat: 12530 x            ()
+---> Beat: 12775 x x          ()
+---> Beat: 13020 x            ()
+---> Beat: 13300 x x x        (41 65 70 74)
+---> Beat: 13545 x            ()
+---> Beat: 13825 x x          ()
+---> Beat: 14070 x            ()
+---> Beat: 14350 x x x        (53 63)
+---> Beat: 14595 x            ()
+---> Beat: 14840 x x          (65 69 72)
+---> Beat: 15085 x            ()
+---> Beat: 15365 x x x x      (65 69 72 53 63)
+---> Beat: 15610 x            ()
+---> Beat: 15855 x x          ()
+---> Beat: 16100 x            ()
+---> Beat: 16380 x x x        (65 69 72 41)
+---> Beat: 16625 x            ()
+---> Beat: 16870 x x          ()
+---> Beat: 17115 x            ()
+---> Beat: 17395 x x x        (65 67 70 53 63)
+---> Beat: 17640 x            ()
+---> Beat: 17920 x x          ()
+---> Beat: 18165 x            ()
+---> Beat: 18445 x x x x x    (65 69 72 53 63)
+---> Beat: 18690 x            ()
+---> Beat: 18935 x x          ()
+---> Beat: 19180 x            ()
+---> Beat: 19460 x x x        (46 65 70 74)
+---> Beat: 19705 x            ()
+---> Beat: 19950 x x          ()
+---> Beat: 20195 x            ()
+---> Beat: 20475 x x x        (53 58)
+---> Beat: 20720 x            ()
+---> Beat: 20965 x x          ()
+---> Beat: 21210 x            ()
+---> Beat: 21490 x x x x      (62 65 70 53 58)
+---> Beat: 21735 x            ()
+---> Beat: 22015 x x          ()
+---> Beat: 22260 x            ()
+---> Beat: 22540 x x x        (46 62 65 70)
+---> Beat: 22785 x            ()
+---> Beat: 23030 x x          ()
+---> Beat: 23275 x            ()
+---> Beat: 23555 x x x        (53 58)
+---> Beat: 23800 x            ()
+---> Beat: 24045 x x          ()
+---> Beat: 24290 x            ()
+---> Beat: 24570 x x x x      (68 70 74)
+---> Beat: 24815 x            ()
+---> Beat: 25060 x x          ()
+---> Beat: 25305 x            ()
+---> Beat: 25585 x x x        (34 46 68 70 77)
+---> Beat: 25830 x            ()
+---> Beat: 26110 x x          ()
+---> Beat: 26355 x            ()
+---> Beat: 26635 x x x        (58 65)
+---> Beat: 26880 x            ()
+---> Beat: 27125 x x          (68 70 74)
+---> Beat: 27370 x            ()
+---> Beat: 27650 x x x x x    (68 70 74 58 65)
+---> Beat: 27895 x            ()
+---> Beat: 28140 x x          ()
+---> Beat: 28385 x            ()
+---> Beat: 28665 x x x        (34 46 68 70 77)
+---> Beat: 28910 x            ()
+---> Beat: 29155 x x          ()
+---> Beat: 29400 x            ()
+---> Beat: 29680 x x x        (58 65)
+---> Beat: 29925 x            ()
+---> Beat: 30205 x x          (68 70 74)
+---> Beat: 30450 x            ()
+---> Beat: 30730 x x x x      (68 70 74 58 65)
+---> Beat: 30975 x            ()
+---> Beat: 31220 x x          ()
+---> Beat: 31465 x            ()
+---> Beat: 31745 x x x        (39 51 68 70 77)
+---> Beat: 31990 x            ()
+---> Beat: 32235 x x          ()
+---> Beat: 32480 x            ()
+---> Beat: 32760 x x x        (51 58 63)
+---> Beat: 33005 x            ()
+---> Beat: 33285 x x          (67 70 75)
+---> Beat: 33530 x            ()
+---> Beat: 33775 x x x x      (67 70 75 51 58 63)
+---> Beat: 34020 x            ()
+---> Beat: 34300 x x          ()
+---> Beat: 34545 x            ()
+---> Beat: 34825 x x x        (67 75 48 55 60)
+---> Beat: 35070 x            ()
+---> Beat: 35315 x x          ()
+---> Beat: 35560 x            ()
+---> Beat: 35840 x x x        (65 67 74 50 55 59)
+---> Beat: 36085 x            ()
+---> Beat: 36330 x x          ()
+---> Beat: 36575 x            ()
+---> Beat: 36855 x x x x x    (63 67 72 51 55 60)
+---> Beat: 37100 x            ()
+---> Beat: 37380 x x          ()
+---> Beat: 37625 x            ()
+---> Beat: 37905 x x x        (41 62 65 72)
+---> Beat: 38150 x            ()
+---> Beat: 38395 x x          ()
+---> Beat: 38640 x            ()
+---> Beat: 38920 x x x        (53 58)
+---> Beat: 39165 x            ()
+---> Beat: 39410 x x          (62 65 70)
+---> Beat: 39655 x            ()
+---> Beat: 39935 x x x x      (62 65 70 53 58)
+---> Beat: 40180 x            ()
+---> Beat: 40425 x x          ()
+---> Beat: 40670 x            ()
+---> Beat: 40950 x x x        (62 65 41)
+---> Beat: 41195 x            ()
+---> Beat: 41475 x x          ()
+---> Beat: 41720 x            ()
+---> Beat: 42000 x x x        (62 65 70 53 58)
+---> Beat: 42245 x            ()
+---> Beat: 42490 x x          ()
+---> Beat: 42735 x            ()
+---> Beat: 43015 x x x x      (62 65 72 53 58)
+---> Beat: 43260 x            ()
+---> Beat: 43505 x x          ()
+---> Beat: 43750 x            ()
+---> Beat: 44030 x x x        (41 63 65 74)
+---> Beat: 44275 x            ()
+---> Beat: 44520 x x          ()
+---> Beat: 44765 x            ()
+---> Beat: 45045 x x x        (53 57)
+---> Beat: 45290 x            ()
+---> Beat: 45570 x x          ()
+---> Beat: 45815 x            ()
+---> Beat: 46095 x x x x x    (63 65 72 53 57)
+---> Beat: 46340 x            ()
+---> Beat: 46585 x x          ()
+---> Beat: 46830 x            ()
+---> Beat: 47110 x x x        (62 65 70 46 53 58)
+---> Beat: 47355 x            ()
+---> Beat: 47600 x x          ()
+---> Beat: 47845 x            ()
+---> Beat: 48125 x x x        ()
+---> Beat: 48370 x            ()
+---> Beat: 48615 x x          ()
+---> Beat: 48860 x            ()
+---> Beat: 49140 x x x x      ()
+Beat      0  4
+Beat    245  0
+Beat    490  1
+Beat    735  0
+Beat   1015  2
+Beat   1260  0
+Beat   1540  1
+Beat   1785  0
+Beat   2065  2
+Beat   2310  0
+Beat   2555  1
+Beat   2800  0
+Beat   3080  3
+Beat   3325  0
+Beat   3570  1
+Beat   3815  0
+Beat   4095  2
+Beat   4340  0
+Beat   4585  1
+Beat   4830  0
+Beat   5110  2
+Beat   5355  0
+Beat   5635  1
+Beat   5880  0
+Beat   6160  3
+Beat   6405  0
+Beat   6650  1
+Beat   6895  0
+Beat   7175  2
+Beat   7420  0
+Beat   7665  1
+Beat   7910  0
+Beat   8190  2
+Beat   8435  0
+Beat   8680  1
+Beat   8925  0
+Beat   9205  4
+Beat   9450  0
+Beat   9730  1
+Beat   9975  0
+Beat  10255  2
+Beat  10500  0
+Beat  10745  1
+Beat  10990  0
+Beat  11270  2
+Beat  11515  0
+Beat  11760  1
+Beat  12005  0
+Beat  12285  3
+Beat  12530  0
+Beat  12775  1
+Beat  13020  0
+Beat  13300  2
+Beat  13545  0
+Beat  13825  1
+Beat  14070  0
+Beat  14350  2
+Beat  14595  0
+Beat  14840  1
+Beat  15085  0
+Beat  15365  3
+Beat  15610  0
+Beat  15855  1
+Beat  16100  0
+Beat  16380  2
+Beat  16625  0
+Beat  16870  1
+Beat  17115  0
+Beat  17395  2
+Beat  17640  0
+Beat  17920  1
+Beat  18165  0
+Beat  18445  4
+Beat  18690  0
+Beat  18935  1
+Beat  19180  0
+Beat  19460  2
+Beat  19705  0
+Beat  19950  1
+Beat  20195  0
+Beat  20475  2
+Beat  20720  0
+Beat  20965  1
+Beat  21210  0
+Beat  21490  3
+Beat  21735  0
+Beat  22015  1
+Beat  22260  0
+Beat  22540  2
+Beat  22785  0
+Beat  23030  1
+Beat  23275  0
+Beat  23555  2
+Beat  23800  0
+Beat  24045  1
+Beat  24290  0
+Beat  24570  3
+Beat  24815  0
+Beat  25060  1
+Beat  25305  0
+Beat  25585  2
+Beat  25830  0
+Beat  26110  1
+Beat  26355  0
+Beat  26635  2
+Beat  26880  0
+Beat  27125  1
+Beat  27370  0
+Beat  27650  4
+Beat  27895  0
+Beat  28140  1
+Beat  28385  0
+Beat  28665  2
+Beat  28910  0
+Beat  29155  1
+Beat  29400  0
+Beat  29680  2
+Beat  29925  0
+Beat  30205  1
+Beat  30450  0
+Beat  30730  3
+Beat  30975  0
+Beat  31220  1
+Beat  31465  0
+Beat  31745  2
+Beat  31990  0
+Beat  32235  1
+Beat  32480  0
+Beat  32760  2
+Beat  33005  0
+Beat  33285  1
+Beat  33530  0
+Beat  33775  3
+Beat  34020  0
+Beat  34300  1
+Beat  34545  0
+Beat  34825  2
+Beat  35070  0
+Beat  35315  1
+Beat  35560  0
+Beat  35840  2
+Beat  36085  0
+Beat  36330  1
+Beat  36575  0
+Beat  36855  4
+Beat  37100  0
+Beat  37380  1
+Beat  37625  0
+Beat  37905  2
+Beat  38150  0
+Beat  38395  1
+Beat  38640  0
+Beat  38920  2
+Beat  39165  0
+Beat  39410  1
+Beat  39655  0
+Beat  39935  3
+Beat  40180  0
+Beat  40425  1
+Beat  40670  0
+Beat  40950  2
+Beat  41195  0
+Beat  41475  1
+Beat  41720  0
+Beat  42000  2
+Beat  42245  0
+Beat  42490  1
+Beat  42735  0
+Beat  43015  3
+Beat  43260  0
+Beat  43505  1
+Beat  43750  0
+Beat  44030  2
+Beat  44275  0
+Beat  44520  1
+Beat  44765  0
+Beat  45045  2
+Beat  45290  0
+Beat  45570  1
+Beat  45815  0
+Beat  46095  4
+Beat  46340  0
+Beat  46585  1
+Beat  46830  0
+Beat  47110  2
+Beat  47355  0
+Beat  47600  1
+Beat  47845  0
+Beat  48125  2
+Beat  48370  0
+Beat  48615  1
+Beat  48860  0
+Beat  49140  3
+Finished unit   1.  (keeping     6 options out of 220325)
+Finished unit   2.  (keeping     8 options out of  1475)
+Finished unit   3.  (keeping    13 options out of  2466)
+Finished unit   4.  (keeping    10 options out of  4619)
+Finished unit   5.  (keeping     3 options out of  3270)
+Finished unit   6.  (keeping     5 options out of  1584)
+Finished unit   7.  (keeping     3 options out of  2422)
+Finished unit   8.  (keeping     2 options out of  1168)
+Finished unit   9.  (keeping     4 options out of  1248)
+Finished unit  10.  (keeping     2 options out of  2020)
+Finished unit  11.  (keeping     2 options out of   720)
+Finished unit  12.  (keeping     7 options out of   688)
+Finished unit  13.  (keeping     3 options out of   884)
+Finished unit  14.  (keeping     4 options out of   832)
+Finished unit  15.  (keeping     3 options out of   792)
+Finished unit  16.  (keeping     2 options out of   924)
+Finished unit  17.  (keeping     3 options out of   624)
+Finished unit  18.  (keeping     2 options out of   912)
+Finished unit  19.  (keeping     2 options out of   624)
+Finished unit  20.  (keeping     2 options out of   624)
+Finished unit  21.  (keeping     2 options out of   624)
+Finished unit  22.  (keeping     3 options out of   624)
+Finished unit  23.  (keeping     2 options out of   720)
+Finished unit  24.  (keeping     2 options out of   612)
+Finished unit  25.  (keeping     1 options out of   612)
+Finished unit  26.  (keeping     1 options out of   312)
+Finished unit  27.  (keeping     2 options out of   416)
+Finished unit  28.  (keeping     6 options out of  1040)
+Finished unit  29.  (keeping     3 options out of  3214)
+Finished unit  30.  (keeping     2 options out of  1632)
+Finished unit  31.  (keeping     5 options out of   936)
+Finished unit  32.  (keeping     2 options out of  1956)
+Finished unit  33.  (keeping     1 options out of   688)
+Finished unit  34.  (keeping     1 options out of   624)
+Finished unit  35.  (keeping     1 options out of   520)
+Finished unit  36.  (keeping     1 options out of   416)
+Finished unit  37.  (keeping     5 options out of   416)
+Finished unit  38.  (keeping     3 options out of  1524)
+Finished unit  39.  (keeping     2 options out of  1776)
+Finished unit  40.  (keeping     3 options out of   492)
+Finished unit  41.  (keeping     2 options out of   744)
+Finished unit  42.  (keeping     2 options out of   468)
+Finished unit  43.  (keeping     1 options out of   600)
+Finished unit  44.  (keeping     1 options out of   312)
+Finished unit  45.  (keeping     1 options out of   312)
+Finished unit  46.  (keeping     1 options out of   312)
+Finished unit  47.  (keeping     1 options out of   416)
+Finished unit  48.  (keeping     2 options out of   416)
+Finished unit  49.  (keeping     1 options out of   780)
+Finished unit  50.  (keeping     1 options out of   416)
+Finished unit  51.  (keeping     1 options out of   416)
+Finished unit  52.  (keeping     1 options out of   416)
+Finished unit  53.  (keeping     3 options out of   416)
+Finished unit  54.  (keeping     3 options out of   860)
+Finished unit  55.  (keeping     2 options out of   520)
+Finished unit  56.  (keeping     4 options out of   494)
+Finished unit  57.  (keeping     1 options out of   756)
+Finished unit  58.  (keeping     1 options out of   416)
+Finished unit  59.  (keeping     1 options out of   416)
+Finished unit  60.  (keeping     3 options out of   416)
+Finished unit  61.  (keeping     3 options out of   912)
+Finished unit  62.  (keeping     2 options out of   650)
+Finished unit  63.  (keeping     2 options out of   650)
+Finished unit  64.  (keeping     4 options out of   650)
+Finished unit  65.  (keeping     8 options out of  1488)
+Finished unit  66.  (keeping     5 options out of  3000)
+Finished unit  67.  (keeping     3 options out of  1980)
+Finished unit  68.  (keeping     6 options out of  1340)
+Finished unit  69.  (keeping     2 options out of  2166)
+Finished unit  70.  (keeping     1 options out of   900)
+Finished unit  71.  (keeping     1 options out of   520)
+Finished unit  72.  (keeping     2 options out of   520)
+Finished unit  73.  (keeping     4 options out of   832)
+Finished unit  74.  (keeping     6 options out of  2088)
+Finished unit  75.  (keeping     6 options out of  1800)
+Finished unit  76.  (keeping     4 options out of  1800)
+Finished unit  77.  (keeping     4 options out of  1248)
+Finished unit  78.  (keeping    10 options out of  2080)
+Finished unit  79.  (keeping    10 options out of  3064)
+Finished unit  80.  (keeping    16 options out of  4854)
+Finished unit  81.  (keeping    15 options out of  5130)
+Finished unit  82.  (keeping     2 options out of  5056)
+Finished unit  83.  (keeping     2 options out of   832)
+Finished unit  84.  (keeping     3 options out of   832)
+Finished unit  85.  (keeping     2 options out of   924)
+Finished unit  86.  (keeping     3 options out of   624)
+Finished unit  87.  (keeping     2 options out of   912)
+Finished unit  88.  (keeping     2 options out of   624)
+Finished unit  89.  (keeping     3 options out of   416)
+Finished unit  90.  (keeping     2 options out of  1072)
+Finished unit  91.  (keeping     4 options out of   800)
+Finished unit  92.  (keeping     2 options out of  1102)
+Finished unit  93.  (keeping     2 options out of   800)
+Finished unit  94.  (keeping     4 options out of  1080)
+Finished unit  95.  (keeping     6 options out of  1488)
+Finished unit  96.  (keeping     4 options out of  1840)
+Finished unit  97.  (keeping     4 options out of  1600)
+Finished unit  98.  (keeping     3 options out of  1056)
+Finished unit  99.  (keeping     3 options out of  1560)
+Chord      0   1015  0
+Chord   1015   2065  0
+Chord   2065   2555  0
+Chord   2555   2800  1
+Chord   2800   3080  1
+Chord   3080   4095  1
+Chord   4095   4340  1
+Chord   4340   4585  1
+Chord   4585   5110  1
+Chord   5110   5880  1
+Chord   5880   6160  1
+Chord   6160   6895  1
+Chord   6895   7175  0
+Chord   7175   8190  0
+Chord   8190   9205  0
+Chord   9205   9450  0
+Chord   9450   9730  0
+Chord   9730   9975  0
+Chord   9975  10255  0
+Chord  10255  10990  0
+Chord  10990  11270  0
+Chord  11270  12285  0
+Chord  12285  12530  0
+Chord  12530  12775  0
+Chord  12775  13300  0
+Chord  13300  14070  0
+Chord  14070  14350  0
+Chord  14350  14840  0
+Chord  14840  15085  1
+Chord  15085  15365  1
+Chord  15365  16380  1
+Chord  16380  16625  1
+Chord  16625  16870  1
+Chord  16870  17395  1
+Chord  17395  18165  1
+Chord  18165  18445  1
+Chord  18445  19180  1
+Chord  19180  19460  0
+Chord  19460  20475  0
+Chord  20475  21490  0
+Chord  21490  21735  0
+Chord  21735  22015  0
+Chord  22015  22260  0
+Chord  22260  22540  0
+Chord  22540  23275  0
+Chord  23275  23555  0
+Chord  23555  24570  0
+Chord  24570  25585  0
+Chord  25585  25830  0
+Chord  25830  26110  0
+Chord  26110  26355  0
+Chord  26355  26635  0
+Chord  26635  27125  0
+Chord  27125  27370  0
+Chord  27370  27650  0
+Chord  27650  28665  0
+Chord  28665  28910  0
+Chord  28910  29155  0
+Chord  29155  29680  0
+Chord  29680  30205  0
+Chord  30205  30450  0
+Chord  30450  30730  0
+Chord  30730  31465  0
+Chord  31465  31745  0
+Chord  31745  32235 -1
+Chord  32235  32760 -1
+Chord  32760  33285 -1
+Chord  33285  33775 -1
+Chord  33775  34020 -1
+Chord  34020  34300 -1
+Chord  34300  34545 -1
+Chord  34545  34825 -1
+Chord  34825  35315  2
+Chord  35315  35840  2
+Chord  35840  36855 -1
+Chord  36855  37100  2
+Chord  37100  37380  2
+Chord  37380  37625  2
+Chord  37625  37905  3
+Chord  37905  38640  0
+Chord  38640  38920  0
+Chord  38920  39410  0
+Chord  39410  39935  0
+Chord  39935  40950  0
+Chord  40950  41195  0
+Chord  41195  41475  0
+Chord  41475  41720  0
+Chord  41720  42000  0
+Chord  42000  42735  0
+Chord  42735  43015  0
+Chord  43015  44030  0
+Chord  44030  44275  0
+Chord  44275  44520  0
+Chord  44520  45045  0
+Chord  45045  45815  0
+Chord  45815  46095  0
+Chord  46095  46830  1
+Chord  46830  47110  1
+Chord  47110  48125  0
+Chord  48125  49140  0
+Harmonic analysis:
+ x x x x x start =     0  duration =  1015  notes: {(74, 4)(70, 0)(65, 1)}
+    root=0(Bb ) score=10.150  score/sec=10.000 com=10.150  har_cog= 0.000  har_var= 0.000
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.502  scaled tpc_var= 3.045  vlp = 0.0
+ x x x     start =  1015  duration =  1050  notes: {(74, 4)(70, 0)(65, 1)(41, 1)}
+    root=0(Bb ) score=20.965  score/sec=19.967 com=13.650  har_cog= 0.000  har_var= 0.000
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.501  scaled tpc_var= 2.835  vlp = 0.0
+ x x x     start =  2065  duration =   490  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(53, 1)}
+    root=0(Bb ) score=21.383  score/sec=43.638 com= 6.370  har_cog= 0.000  har_var= 0.000
+    sbp= 0.000  odp= 3.710  tpc_cog= 1.322  scaled tpc_var= 2.242  vlp = 0.0
+ x x       start =  2555  duration =   245  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=19.948  score/sec=81.421 com= 2.940  har_cog= 0.145  har_var= 0.490
+    sbp= 2.445  odp= 0.000  tpc_cog= 1.370  scaled tpc_var= 1.440  vlp = 0.0
+ x         start =  2800  duration =   280  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)(41, 1)}
+    root=1(F  ) score=17.662  score/sec=63.077 com= 4.760  har_cog= 0.275  har_var= 0.479
+    sbp= 0.000  odp= 4.183  tpc_cog= 1.436  scaled tpc_var= 2.385  vlp = 0.0
+ x x x x   start =  3080  duration =  1015  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)(41, 1)}
+    root=1(F  ) score=24.870  score/sec=24.503 com=17.255  har_cog= 0.550  har_var= 1.471
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.532  scaled tpc_var= 8.575  vlp = 0.0
+ x x x     start =  4095  duration =   245  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)(41, 1)}
+    root=1(F  ) score=26.761  score/sec=109.228 com= 4.165  har_cog= 0.601  har_var= 0.221
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.546  scaled tpc_var= 2.054  vlp = 0.0
+ x         start =  4340  duration =   245  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=27.475  score/sec=112.143 com= 2.940  har_cog= 0.646  har_var= 0.195
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.567  scaled tpc_var= 2.031  vlp = 0.0
+ x x       start =  4585  duration =   525  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=30.378  score/sec=57.863 com= 6.300  har_cog= 0.719  har_var= 0.372
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.572  scaled tpc_var= 3.025  vlp = 0.0
+ x x x     start =  5110  duration =   770  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=23.011  score/sec=29.884 com= 9.240  har_cog= 0.794  har_var= 0.433
+    sbp= 0.000  odp= 9.806  tpc_cog= 1.614  scaled tpc_var= 6.369  vlp = 0.0
+ x         start =  5880  duration =   280  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(41, 1)}
+    root=1(F  ) score=25.359  score/sec=90.569 com= 4.200  har_cog= 0.817  har_var= 0.116
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.674  scaled tpc_var= 1.736  vlp = 0.0
+ x x x x   start =  6160  duration =   735  notes: {(75,-1)(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)(41, 1)}
+    root=1(F  ) score=29.464  score/sec=40.087 com=10.290  har_cog= 0.862  har_var= 0.269
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.532  scaled tpc_var= 5.916  vlp = 0.0
+ x         start =  6895  duration =   280  notes: {(75,-1)(74, 4)(70, 0)(65, 1)(63,-1)(53, 1)}
+    root=0(Bb ) score=20.471  score/sec=73.112 com= 3.640  har_cog= 0.769  har_var= 0.483
+    sbp= 6.134  odp= 4.183  tpc_cog= 1.445  scaled tpc_var= 1.834  vlp = 0.0
+ x x x     start =  7175  duration =  1015  notes: {(77, 1)(74, 4)(70, 0)(65, 1)(34, 0)}
+    root=0(Bb ) score=33.800  score/sec=33.301 com=18.270  har_cog= 0.538  har_var= 1.561
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.383  scaled tpc_var= 3.380  vlp = 0.0
+ x x x     start =  8190  duration =  1015  notes: {(77, 1)(75,-1)(72, 2)(65, 1)(63,-1)(62, 4)(53, 1)}
+    root=0(Bb ) score=19.853  score/sec=19.559 com=11.165  har_cog= 0.377  har_var= 1.092
+    sbp= 0.000  odp=18.226  tpc_cog= 1.256  scaled tpc_var= 5.794  vlp = 0.0
+ x x x x x start =  9205  duration =   245  notes: {(77, 1)(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)(34, 0)}
+    root=0(Bb ) score=23.950  score/sec=97.754 com= 5.635  har_cog= 0.342  har_var= 0.185
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.288  scaled tpc_var= 1.353  vlp = 0.0
+ x         start =  9450  duration =   280  notes: {(77, 1)(74, 4)(70, 0)(65, 1)(62, 4)(34, 0)}
+    root=0(Bb ) score=27.830  score/sec=99.393 com= 5.600  har_cog= 0.306  har_var= 0.192
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.325  scaled tpc_var= 1.528  vlp = 0.0
+ x x       start =  9730  duration =   245  notes: {(77, 1)(74, 4)(70, 0)(65, 1)(62, 4)(34, 0)}
+    root=0(Bb ) score=31.254  score/sec=127.569 com= 4.900  har_cog= 0.279  har_var= 0.150
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.355  scaled tpc_var= 1.325  vlp = 0.0
+ x         start =  9975  duration =   280  notes: {(77, 1)(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)}
+    root=0(Bb ) score=34.777  score/sec=124.204 com= 5.040  har_cog= 0.250  har_var= 0.156
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.402  scaled tpc_var= 1.361  vlp = 0.0
+ x x x     start = 10255  duration =   735  notes: {(77, 1)(74, 4)(65, 1)(34, 0)}
+    root=0(Bb ) score=41.971  score/sec=57.104 com= 9.555  har_cog= 0.193  har_var= 0.368
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.417  scaled tpc_var= 1.993  vlp = 0.0
+ x         start = 10990  duration =   280  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)(34, 0)}
+    root=0(Bb ) score=45.976  score/sec=164.198 com= 5.600  har_cog= 0.174  har_var= 0.108
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.443  scaled tpc_var= 1.487  vlp = 0.0
+ x x x     start = 11270  duration =  1015  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)}
+    root=0(Bb ) score=56.113  score/sec=55.283 com=15.225  har_cog= 0.124  har_var= 0.353
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.587  scaled tpc_var= 4.735  vlp = 0.0
+ x x x x   start = 12285  duration =   245  notes: {(77, 1)(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)(34, 0)}
+    root=0(Bb ) score=60.385  score/sec=246.468 com= 5.635  har_cog= 0.113  har_var= 0.061
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.585  scaled tpc_var= 1.302  vlp = 0.0
+ x         start = 12530  duration =   245  notes: {(77, 1)(74, 4)(65, 1)(34, 0)}
+    root=0(Bb ) score=62.851  score/sec=256.533 com= 3.185  har_cog= 0.103  har_var= 0.055
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.580  scaled tpc_var= 0.664  vlp = 0.0
+ x x       start = 12775  duration =   525  notes: {(77, 1)(74, 4)(65, 1)(34, 0)}
+    root=0(Bb ) score=68.146  score/sec=129.802 com= 6.825  har_cog= 0.085  har_var= 0.108
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.569  scaled tpc_var= 1.422  vlp = 0.0
+ x x x     start = 13300  duration =   770  notes: {(77, 1)(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)(41, 1)}
+    root=0(Bb ) score=80.587  score/sec=104.658 com=16.170  har_cog= 0.066  har_var= 0.131
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.611  scaled tpc_var= 3.598  vlp = 0.0
+ x         start = 14070  duration =   280  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(53, 1)(41, 1)}
+    root=0(Bb ) score=84.319  score/sec=301.139 com= 5.040  har_cog= 0.059  har_var= 0.037
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.634  scaled tpc_var= 1.271  vlp = 0.0
+ x x x     start = 14350  duration =   490  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(62, 4)(53, 1)}
+    root=0(Bb ) score=84.725  score/sec=172.907 com= 7.350  har_cog= 0.050  har_var= 0.058
+    sbp= 0.000  odp= 3.710  tpc_cog= 1.612  scaled tpc_var= 3.176  vlp = 0.0
+ x x       start = 14840  duration =   245  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(62, 4)(53, 1)}
+    root=1(F  ) score=80.137  score/sec=327.092 com= 2.940  har_cog= 0.132  har_var= 0.466
+    sbp= 2.445  odp= 2.786  tpc_cog= 1.647  scaled tpc_var= 1.831  vlp = 0.0
+ x         start = 15085  duration =   280  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(41, 1)}
+    root=1(F  ) score=76.522  score/sec=273.293 com= 3.360  har_cog= 0.217  har_var= 0.486
+    sbp= 0.000  odp= 4.183  tpc_cog= 1.655  scaled tpc_var= 2.307  vlp = 0.0
+ x x x x   start = 15365  duration =  1015  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)(41, 1)}
+    root=1(F  ) score=83.697  score/sec=82.460 com=17.255  har_cog= 0.436  har_var= 1.590
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.644  scaled tpc_var= 8.490  vlp = 0.0
+ x x x     start = 16380  duration =   245  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)(41, 1)}
+    root=1(F  ) score=85.537  score/sec=349.130 com= 4.165  har_cog= 0.486  har_var= 0.276
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.642  scaled tpc_var= 2.049  vlp = 0.0
+ x         start = 16625  duration =   245  notes: {(74, 4)(72, 2)(70, 0)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=86.206  score/sec=351.862 com= 2.940  har_cog= 0.531  har_var= 0.252
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.649  scaled tpc_var= 2.019  vlp = 0.0
+ x x       start = 16870  duration =   525  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=88.987  score/sec=169.500 com= 6.300  har_cog= 0.610  har_var= 0.493
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.642  scaled tpc_var= 3.026  vlp = 0.0
+ x x x     start = 17395  duration =   770  notes: {(72, 2)(70, 0)(69, 5)(67, 3)(65, 1)(63,-1)(53, 1)}
+    root=1(F  ) score=82.335  score/sec=106.928 com= 9.240  har_cog= 0.699  har_var= 0.601
+    sbp= 0.000  odp= 9.806  tpc_cog= 1.625  scaled tpc_var= 5.486  vlp = 0.0
+ x         start = 18165  duration =   280  notes: {(72, 2)(70, 0)(69, 5)(67, 3)(65, 1)(41, 1)}
+    root=1(F  ) score=84.952  score/sec=303.399 com= 4.200  har_cog= 0.729  har_var= 0.168
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.659  scaled tpc_var= 1.415  vlp = 0.0
+ x x x x x start = 18445  duration =   735  notes: {(72, 2)(69, 5)(65, 1)(63,-1)(53, 1)(41, 1)}
+    root=1(F  ) score=92.715  score/sec=126.143 com=12.495  har_cog= 0.789  har_var= 0.399
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.626  scaled tpc_var= 4.333  vlp = 0.0
+ x         start = 19180  duration =   280  notes: {(70, 0)(67, 3)(65, 1)(63,-1)(53, 1)}
+    root=0(Bb ) score=84.011  score/sec=300.040 com= 3.080  har_cog= 0.712  har_var= 0.442
+    sbp= 6.134  odp= 4.183  tpc_cog= 1.561  scaled tpc_var= 1.026  vlp = 0.0
+ x x x     start = 19460  duration =  1015  notes: {(74, 4)(70, 0)(67, 3)(65, 1)(46, 0)}
+    root=0(Bb ) score=93.770  score/sec=92.384 com=15.225  har_cog= 0.511  har_var= 1.444
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.570  scaled tpc_var= 4.022  vlp = 0.0
+ x x x     start = 20475  duration =  1015  notes: {(74, 4)(72, 2)(69, 5)(65, 1)(63,-1)(58, 0)(53, 1)}
+    root=0(Bb ) score=79.305  score/sec=78.133 com=13.195  har_cog= 0.365  har_var= 1.038
+    sbp= 0.000  odp=18.226  tpc_cog= 1.617  scaled tpc_var= 8.396  vlp = 0.0
+ x x x x   start = 21490  duration =   245  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)(46, 0)}
+    root=0(Bb ) score=83.784  score/sec=341.976 com= 6.125  har_cog= 0.333  har_var= 0.179
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.598  scaled tpc_var= 1.467  vlp = 0.0
+ x         start = 21735  duration =   280  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(58, 0)(46, 0)}
+    root=0(Bb ) score=88.115  score/sec=314.697 com= 6.160  har_cog= 0.299  har_var= 0.186
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.589  scaled tpc_var= 1.643  vlp = 0.0
+ x x       start = 22015  duration =   245  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(58, 0)(46, 0)}
+    root=0(Bb ) score=91.922  score/sec=375.190 com= 5.390  har_cog= 0.273  har_var= 0.147
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.581  scaled tpc_var= 1.437  vlp = 0.0
+ x         start = 22260  duration =   280  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=95.909  score/sec=342.532 com= 5.600  har_cog= 0.246  har_var= 0.153
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.589  scaled tpc_var= 1.460  vlp = 0.0
+ x x x     start = 22540  duration =   735  notes: {(74, 4)(70, 0)(65, 1)(62, 4)(46, 0)}
+    root=0(Bb ) score=104.289  score/sec=141.890 com=12.495  har_cog= 0.191  har_var= 0.362
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.629  scaled tpc_var= 3.753  vlp = 0.0
+ x         start = 23275  duration =   280  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)(46, 0)}
+    root=0(Bb ) score=109.414  score/sec=390.766 com= 6.440  har_cog= 0.173  har_var= 0.107
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.566  scaled tpc_var= 1.207  vlp = 0.0
+ x x x     start = 23555  duration =  1015  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=123.841  score/sec=122.011 com=18.270  har_cog= 0.124  har_var= 0.350
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.475  scaled tpc_var= 3.493  vlp = 0.0
+ x x x x   start = 24570  duration =  1015  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(62, 4)(46, 0)}
+    root=0(Bb ) score=128.846  score/sec=126.942 com=14.210  har_cog= 0.088  har_var= 0.252
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.383  scaled tpc_var= 8.954  vlp = 0.0
+ x x x     start = 25585  duration =   245  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(62, 4)(58, 0)(53, 1)(46, 0)(34, 0)}
+    root=0(Bb ) score=133.723  score/sec=545.808 com= 6.860  har_cog= 0.081  har_var= 0.043
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.273  scaled tpc_var= 1.940  vlp = 0.0
+ x         start = 25830  duration =   280  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(62, 4)(58, 0)(53, 1)(34, 0)}
+    root=0(Bb ) score=138.166  score/sec=493.449 com= 6.440  har_cog= 0.073  har_var= 0.045
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.190  scaled tpc_var= 1.952  vlp = 0.0
+ x x       start = 26110  duration =   245  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(62, 4)(58, 0)(53, 1)(34, 0)}
+    root=0(Bb ) score=142.116  score/sec=580.067 com= 5.635  har_cog= 0.066  har_var= 0.036
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.128  scaled tpc_var= 1.649  vlp = 0.0
+ x         start = 26355  duration =   280  notes: {(77, 1)(74, 4)(70, 0)(68,-2)(34, 0)}
+    root=0(Bb ) score=143.709  score/sec=513.248 com= 3.360  har_cog= 0.060  har_var= 0.037
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.087  scaled tpc_var= 1.730  vlp = 0.0
+ x x x     start = 26635  duration =   490  notes: {(77, 1)(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=148.004  score/sec=302.048 com= 7.350  har_cog= 0.050  har_var= 0.058
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.022  scaled tpc_var= 2.998  vlp = 0.0
+ x x       start = 27125  duration =   245  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=149.442  score/sec=609.969 com= 2.940  har_cog= 0.046  har_var= 0.025
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.992  scaled tpc_var= 1.477  vlp = 0.0
+ x         start = 27370  duration =   280  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(58, 0)(46, 0)(34, 0)}
+    root=0(Bb ) score=154.774  score/sec=552.765 com= 6.440  har_cog= 0.041  har_var= 0.026
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.883  scaled tpc_var= 1.083  vlp = 0.0
+ x x x x x start = 27650  duration =  1015  notes: {(77, 1)(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)(46, 0)(34, 0)}
+    root=0(Bb ) score=173.618  score/sec=171.052 com=25.375  har_cog= 0.030  har_var= 0.084
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.755  scaled tpc_var= 6.448  vlp = 0.0
+ x x x     start = 28665  duration =   245  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(58, 0)(46, 0)(34, 0)}
+    root=0(Bb ) score=178.503  score/sec=728.586 com= 5.635  har_cog= 0.027  har_var= 0.015
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.687  scaled tpc_var= 0.735  vlp = 0.0
+ x         start = 28910  duration =   245  notes: {(77, 1)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=181.061  score/sec=739.024 com= 3.185  har_cog= 0.025  har_var= 0.013
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.641  scaled tpc_var= 0.614  vlp = 0.0
+ x x       start = 29155  duration =   525  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=184.310  score/sec=351.066 com= 6.300  har_cog= 0.021  har_var= 0.026
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.636  scaled tpc_var= 3.025  vlp = 0.0
+ x x x     start = 29680  duration =   525  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=187.563  score/sec=357.263 com= 6.300  har_cog= 0.017  har_var= 0.022
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.631  scaled tpc_var= 3.025  vlp = 0.0
+ x x       start = 30205  duration =   245  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=189.083  score/sec=771.767 com= 2.940  har_cog= 0.016  har_var= 0.008
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.629  scaled tpc_var= 1.412  vlp = 0.0
+ x         start = 30450  duration =   280  notes: {(77, 1)(70, 0)(68,-2)(46, 0)(34, 0)}
+    root=0(Bb ) score=192.583  score/sec=687.795 com= 4.200  har_cog= 0.014  har_var= 0.009
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.561  scaled tpc_var= 0.692  vlp = 0.0
+ x x x x   start = 30730  duration =   735  notes: {(77, 1)(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)(46, 0)(34, 0)}
+    root=0(Bb ) score=206.520  score/sec=280.980 com=18.375  har_cog= 0.011  har_var= 0.021
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.544  scaled tpc_var= 4.416  vlp = 0.0
+ x         start = 31465  duration =   280  notes: {(77, 1)(74, 4)(70, 0)(68,-2)(65, 1)(58, 0)}
+    root=0(Bb ) score=209.083  score/sec=746.724 com= 4.200  har_cog= 0.010  har_var= 0.006
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.555  scaled tpc_var= 1.632  vlp = 0.0
+ x x x     start = 31745  duration =   490  notes: {(77, 1)(70, 0)(68,-2)(51,-1)(39,-1)}
+    root=-1(Eb ) score=199.545  score/sec=407.236 com= 6.370  har_cog=-0.149  har_var= 0.990
+    sbp= 0.470  odp=12.702  tpc_cog= 0.406  scaled tpc_var= 1.745  vlp = 0.0
+ x x       start = 32235  duration =   525  notes: {(74, 4)(70, 0)(68,-2)(51,-1)(39,-1)}
+    root=-1(Eb ) score=191.811  score/sec=365.354 com= 6.825  har_cog=-0.291  har_var= 0.893
+    sbp= 0.000  odp=10.071  tpc_cog= 0.349  scaled tpc_var= 3.595  vlp = 0.0
+ x x x     start = 32760  duration =   525  notes: {(74, 4)(70, 0)(68,-2)(65, 1)(63,-1)(58, 0)(51,-1)}
+    root=-1(Eb ) score=184.268  score/sec=350.986 com= 8.400  har_cog=-0.409  har_var= 0.744
+    sbp= 0.000  odp=11.552  tpc_cog= 0.310  scaled tpc_var= 3.647  vlp = 0.0
+ x x       start = 33285  duration =   490  notes: {(75,-1)(74, 4)(70, 0)(67, 3)(65, 1)(63,-1)(58, 0)(51,-1)}
+    root=-1(Eb ) score=191.038  score/sec=389.874 com=11.270  har_cog=-0.502  har_var= 0.579
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.372  scaled tpc_var= 3.920  vlp = 0.0
+ x x x x   start = 33775  duration =   245  notes: {(77, 1)(75,-1)(70, 0)(68,-2)(67, 3)(63,-1)(58, 0)(51,-1)(39,-1)}
+    root=-1(Eb ) score=190.541  score/sec=777.717 com= 6.860  har_cog=-0.545  har_var= 0.244
+    sbp= 0.000  odp= 5.590  tpc_cog= 0.303  scaled tpc_var= 1.524  vlp = 0.0
+ x         start = 34020  duration =   280  notes: {(77, 1)(75,-1)(70, 0)(68,-2)(67, 3)(63,-1)(51,-1)(39,-1)}
+    root=-1(Eb ) score=195.610  score/sec=698.608 com= 7.000  har_cog=-0.588  har_var= 0.255
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.240  scaled tpc_var= 1.675  vlp = 0.0
+ x x       start = 34300  duration =   245  notes: {(77, 1)(75,-1)(70, 0)(68,-2)(67, 3)(63,-1)(51,-1)(39,-1)}
+    root=-1(Eb ) score=200.106  score/sec=816.760 com= 6.125  har_cog=-0.623  har_var= 0.202
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.192  scaled tpc_var= 1.428  vlp = 0.0
+ x         start = 34545  duration =   280  notes: {(77, 1)(75,-1)(70, 0)(68,-2)(67, 3)(63,-1)(58, 0)(51,-1)}
+    root=-1(Eb ) score=204.850  score/sec=731.608 com= 6.440  har_cog=-0.659  har_var= 0.211
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.157  scaled tpc_var= 1.485  vlp = 0.0
+ x x x     start = 34825  duration =   490  notes: {(77, 1)(75,-1)(68,-2)(67, 3)(60, 2)(55, 3)(48, 2)}
+    root=2(C  ) score=198.356  score/sec=404.809 com= 8.330  har_cog=-0.246  har_var= 2.606
+    sbp= 0.438  odp= 7.420  tpc_cog= 0.311  scaled tpc_var= 4.360  vlp = 0.0
+ x x       start = 35315  duration =   525  notes: {(75,-1)(70, 0)(67, 3)(60, 2)(55, 3)(48, 2)}
+    root=2(C  ) score=199.885  score/sec=380.733 com= 7.350  har_cog= 0.123  har_var= 2.359
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.483  scaled tpc_var= 3.463  vlp = 0.0
+ x x x     start = 35840  duration =  1015  notes: {(75,-1)(74, 4)(70, 0)(67, 3)(65, 1)(63,-1)(59, 7)(58, 0)(55, 3)(51,-1)(50, 4)}
+    root=-1(Eb ) score=171.652  score/sec=169.115 com=25.375  har_cog=-0.187  har_var= 2.281
+    sbp= 0.470  odp=24.301  tpc_cog= 0.957  scaled tpc_var=26.556  vlp = 0.0
+ x x x x x start = 36855  duration =   245  notes: {(75,-1)(72, 2)(67, 3)(63,-1)(60, 2)(55, 3)(51,-1)(48, 2)}
+    root=2(C  ) score=174.763  score/sec=713.316 com= 5.880  har_cog= 0.002  har_var= 1.072
+    sbp= 0.000  odp= 0.000  tpc_cog= 0.972  scaled tpc_var= 1.698  vlp = 0.0
+ x         start = 37100  duration =   280  notes: {(75,-1)(72, 2)(67, 3)(60, 2)(55, 3)(48, 2)}
+    root=2(C  ) score=178.520  score/sec=637.571 com= 6.160  har_cog= 0.197  har_var= 1.119
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.037  scaled tpc_var= 1.284  vlp = 0.0
+ x x       start = 37380  duration =   245  notes: {(75,-1)(72, 2)(67, 3)(60, 2)(55, 3)(48, 2)}
+    root=2(C  ) score=181.950  score/sec=742.653 com= 5.390  har_cog= 0.351  har_var= 0.884
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.090  scaled tpc_var= 1.076  vlp = 0.0
+ x         start = 37625  duration =   280  notes: {(74, 4)(72, 2)(67, 3)(65, 1)(59, 7)(55, 3)(50, 4)}
+    root=3(G  ) score=171.403  score/sec=612.153 com= 4.200  har_cog= 0.607  har_var= 1.483
+    sbp= 6.134  odp= 2.091  tpc_cog= 1.299  scaled tpc_var= 5.039  vlp = 0.0
+ x x x     start = 37905  duration =   735  notes: {(74, 4)(72, 2)(65, 1)(62, 4)(59, 7)(50, 4)(41, 1)}
+    root=0(Bb ) score=153.226  score/sec=208.471 com= 8.820  har_cog= 0.474  har_var= 0.892
+    sbp= 0.438  odp=13.525  tpc_cog= 1.706  scaled tpc_var=12.142  vlp = 0.0
+ x         start = 38640  duration =   280  notes: {(72, 2)(67, 3)(63,-1)(62, 4)(60, 2)(55, 3)(51,-1)(41, 1)}
+    root=0(Bb ) score=140.472  score/sec=501.684 com= 1.400  har_cog= 0.428  har_var= 0.266
+    sbp= 0.000  odp=11.879  tpc_cog= 1.698  scaled tpc_var= 2.010  vlp = 0.0
+ x x x     start = 38920  duration =   490  notes: {(72, 2)(67, 3)(63,-1)(62, 4)(60, 2)(58, 0)(55, 3)(53, 1)(51,-1)}
+    root=0(Bb ) score=141.012  score/sec=287.780 com= 4.900  har_cog= 0.361  har_var= 0.420
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.651  scaled tpc_var= 3.939  vlp = 0.0
+ x x       start = 39410  duration =   525  notes: {(70, 0)(67, 3)(65, 1)(63,-1)(62, 4)(60, 2)(58, 0)(55, 3)(53, 1)(51,-1)}
+    root=0(Bb ) score=145.415  score/sec=276.982 com= 9.450  har_cog= 0.301  har_var= 0.379
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.559  scaled tpc_var= 4.668  vlp = 0.0
+ x x x x   start = 39935  duration =  1015  notes: {(72, 2)(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)(41, 1)}
+    root=0(Bb ) score=155.113  score/sec=152.821 com=21.315  har_cog= 0.217  har_var= 0.611
+    sbp= 0.000  odp= 7.368  tpc_cog= 1.490  scaled tpc_var= 3.639  vlp = 0.0
+ x x x     start = 40950  duration =   245  notes: {(72, 2)(65, 1)(62, 4)(58, 0)(53, 1)(41, 1)}
+    root=0(Bb ) score=158.228  score/sec=645.829 com= 3.920  har_cog= 0.198  har_var= 0.106
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.491  scaled tpc_var= 0.698  vlp = 0.0
+ x         start = 41195  duration =   280  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=162.214  score/sec=579.337 com= 5.040  har_cog= 0.179  har_var= 0.111
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.472  scaled tpc_var= 0.943  vlp = 0.0
+ x x       start = 41475  duration =   245  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=165.716  score/sec=676.391 com= 4.410  har_cog= 0.163  har_var= 0.088
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.456  scaled tpc_var= 0.821  vlp = 0.0
+ x         start = 41720  duration =   280  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=169.730  score/sec=606.178 com= 5.040  har_cog= 0.148  har_var= 0.091
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.438  scaled tpc_var= 0.935  vlp = 0.0
+ x x x     start = 42000  duration =   735  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=180.299  score/sec=245.305 com=13.230  har_cog= 0.115  har_var= 0.217
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.398  scaled tpc_var= 2.444  vlp = 0.0
+ x         start = 42735  duration =   280  notes: {(65, 1)(62, 4)(41, 1)}
+    root=0(Bb ) score=181.879  score/sec=649.569 com= 2.240  har_cog= 0.104  har_var= 0.065
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.426  scaled tpc_var= 0.595  vlp = 0.0
+ x x x x   start = 43015  duration =  1015  notes: {(72, 2)(65, 1)(62, 4)(58, 0)(53, 1)(41, 1)}
+    root=0(Bb ) score=188.930  score/sec=186.138 com=16.240  har_cog= 0.075  har_var= 0.211
+    sbp= 0.000  odp= 6.075  tpc_cog= 1.446  scaled tpc_var= 2.903  vlp = 0.0
+ x x x     start = 44030  duration =   245  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(62, 4)(58, 0)(53, 1)(41, 1)}
+    root=0(Bb ) score=189.983  score/sec=775.443 com= 5.635  har_cog= 0.068  har_var= 0.037
+    sbp= 0.000  odp= 2.795  tpc_cog= 1.425  scaled tpc_var= 1.750  vlp = 0.0
+ x         start = 44275  duration =   245  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=193.118  score/sec=788.237 com= 4.900  har_cog= 0.062  har_var= 0.034
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.411  scaled tpc_var= 1.732  vlp = 0.0
+ x x       start = 44520  duration =   525  notes: {(74, 4)(70, 0)(65, 1)(63,-1)(62, 4)(58, 0)(53, 1)}
+    root=0(Bb ) score=199.845  score/sec=380.657 com=10.500  har_cog= 0.052  har_var= 0.066
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.388  scaled tpc_var= 3.707  vlp = 0.0
+ x x x     start = 45045  duration =   770  notes: {(74, 4)(72, 2)(65, 1)(63,-1)(62, 4)(58, 0)(57, 5)(53, 1)}
+    root=0(Bb ) score=185.870  score/sec=241.389 com=11.550  har_cog= 0.040  har_var= 0.080
+    sbp= 0.000  odp=17.362  tpc_cog= 1.553  scaled tpc_var= 8.083  vlp = 0.0
+ x         start = 45815  duration =   280  notes: {(74, 4)(65, 1)(63,-1)(57, 5)(41, 1)}
+    root=0(Bb ) score=185.987  score/sec=664.240 com= 2.240  har_cog= 0.036  har_var= 0.022
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.586  scaled tpc_var= 2.100  vlp = 0.0
+ x x x x x start = 46095  duration =   735  notes: {(72, 2)(65, 1)(63,-1)(57, 5)(53, 1)(41, 1)}
+    root=1(F  ) score=192.756  score/sec=262.253 com=12.495  har_cog= 0.249  har_var= 1.417
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.568  scaled tpc_var= 4.309  vlp = 0.0
+ x         start = 46830  duration =   280  notes: {(72, 2)(65, 1)(63,-1)(57, 5)(53, 1)}
+    root=1(F  ) score=194.082  score/sec=693.150 com= 3.360  har_cog= 0.323  har_var= 0.421
+    sbp= 0.000  odp= 0.000  tpc_cog= 1.571  scaled tpc_var= 1.613  vlp = 0.0
+ x x x     start = 47110  duration =  1015  notes: {(70, 0)(65, 1)(62, 4)(58, 0)(53, 1)(46, 0)}
+    root=0(Bb ) score=212.053  score/sec=208.919 com=23.345  har_cog= 0.232  har_var= 0.655
+    sbp= 0.470  odp= 0.000  tpc_cog= 1.417  scaled tpc_var= 4.249  vlp = 0.0
+ x x x     start = 48125  duration =  1015  notes: {(72, 2)(70, 0)(65, 1)(63,-1)(62, 4)(58, 0)(57, 5)(53, 1)(46, 0)}
+    root=0(Bb ) score=-170.836  score/sec=-168.311 com=23.345  har_cog= 0.166  har_var= 0.471
+    sbp= 0.000  odp=396.000  tpc_cog= 1.386  scaled tpc_var= 9.763  vlp = 0.0
+TPCNote      0   1015  65   1
+TPCNote      0   1015  70   0
+TPCNote      0   1015  74   4
+TPCNote   1015   2065  41   1
+TPCNote   1015   2555  65   1
+TPCNote   1015   2555  70   0
+TPCNote   1015   2555  74   4
+TPCNote   2065   3080  53   1
+TPCNote   2065   3080  63  -1
+TPCNote   2555   3072  65   1
+TPCNote   2555   3080  69   5
+TPCNote   2555   3080  72   2
+TPCNote   3072   4096  41   1
+TPCNote   3072   3080  65   1
+TPCNote   3072   4608  70   0
+TPCNote   3072   4608  74   4
+TPCNote   3080   4095  65   1
+TPCNote   3080   4095  69   5
+TPCNote   3080   4095  72   2
+TPCNote   3080   4095  53   1
+TPCNote   3080   4095  63  -1
+TPCNote   4095   4608  65   1
+TPCNote   4095   5110  69   5
+TPCNote   4095   5110  72   2
+TPCNote   4095   4096  41   1
+TPCNote   4096   5120  53   1
+TPCNote   4096   5120  63  -1
+TPCNote   4608   5110  65   1
+TPCNote   5110   6160  70   0
+TPCNote   5110   6160  74   4
+TPCNote   5120   6144  65   1
+TPCNote   5120   6144  69   5
+TPCNote   5120   6144  72   2
+TPCNote   5120   6144  53   1
+TPCNote   5120   6144  63  -1
+TPCNote   6144   6160  65   1
+TPCNote   6144   7168  69   5
+TPCNote   6144   7168  72   2
+TPCNote   6144   7168  41   1
+TPCNote   6160   7168  65   1
+TPCNote   6160   7175  75  -1
+TPCNote   6160   7175  53   1
+TPCNote   6160   7175  63  -1
+TPCNote   7168   7175  65   1
+TPCNote   7168   8192  70   0
+TPCNote   7168   8192  74   4
+TPCNote   7175   8190  34   0
+TPCNote   7175   8192  65   1
+TPCNote   7175   9205  77   1
+TPCNote   8190   9205  62   4
+TPCNote   8192   9205  65   1
+TPCNote   8192   9216  72   2
+TPCNote   8192   9216  75  -1
+TPCNote   8192   9205  53   1
+TPCNote   8192   9216  63  -1
+TPCNote   9205  10255  70   0
+TPCNote   9205  10255  74   4
+TPCNote   9205   9216  53   1
+TPCNote   9205  10255  62   4
+TPCNote   9216  10240  34   0
+TPCNote   9216  10255  65   1
+TPCNote   9216  11264  77   1
+TPCNote  10240  10255  53   1
+TPCNote  10255  11270  34   0
+TPCNote  10255  11264  65   1
+TPCNote  10255  11264  74   4
+TPCNote  11264  12285  65   1
+TPCNote  11264  12288  70   0
+TPCNote  11264  12285  74   4
+TPCNote  11264  12285  53   1
+TPCNote  11264  12285  62   4
+TPCNote  12285  12288  70   0
+TPCNote  12285  12288  53   1
+TPCNote  12285  12288  62   4
+TPCNote  12288  13312  34   0
+TPCNote  12288  13300  65   1
+TPCNote  12288  13300  74   4
+TPCNote  12288  14336  77   1
+TPCNote  13300  14350  41   1
+TPCNote  13300  14336  65   1
+TPCNote  13300  14840  70   0
+TPCNote  13300  14336  74   4
+TPCNote  13312  14336  53   1
+TPCNote  13312  14336  62   4
+TPCNote  14336  14840  65   1
+TPCNote  14336  14840  74   4
+TPCNote  14336  15360  53   1
+TPCNote  14336  15360  62   4
+TPCNote  14350  15365  63  -1
+TPCNote  14840  15360  65   1
+TPCNote  14840  15365  69   5
+TPCNote  14840  15365  72   2
+TPCNote  15360  16384  41   1
+TPCNote  15360  15365  65   1
+TPCNote  15360  16896  70   0
+TPCNote  15360  16896  74   4
+TPCNote  15365  16380  65   1
+TPCNote  15365  16380  69   5
+TPCNote  15365  16380  72   2
+TPCNote  15365  16380  53   1
+TPCNote  15365  16380  63  -1
+TPCNote  16380  16896  65   1
+TPCNote  16380  17395  69   5
+TPCNote  16380  17395  72   2
+TPCNote  16380  16384  41   1
+TPCNote  16384  17408  53   1
+TPCNote  16384  17408  63  -1
+TPCNote  16896  17395  65   1
+TPCNote  17395  18445  67   3
+TPCNote  17395  18445  70   0
+TPCNote  17408  18432  65   1
+TPCNote  17408  18432  69   5
+TPCNote  17408  18432  72   2
+TPCNote  17408  18432  53   1
+TPCNote  17408  18432  63  -1
+TPCNote  18432  18445  65   1
+TPCNote  18432  19456  69   5
+TPCNote  18432  19456  72   2
+TPCNote  18432  19456  41   1
+TPCNote  18445  19456  65   1
+TPCNote  18445  19460  53   1
+TPCNote  18445  19460  63  -1
+TPCNote  19456  19460  65   1
+TPCNote  19456  20480  67   3
+TPCNote  19456  20480  70   0
+TPCNote  19460  20475  46   0
+TPCNote  19460  20480  65   1
+TPCNote  19460  21490  74   4
+TPCNote  20475  21490  58   0
+TPCNote  20480  21490  65   1
+TPCNote  20480  21504  69   5
+TPCNote  20480  21504  72   2
+TPCNote  20480  21490  53   1
+TPCNote  20480  21504  63  -1
+TPCNote  21490  22540  62   4
+TPCNote  21490  22540  70   0
+TPCNote  21490  21504  53   1
+TPCNote  21490  22540  58   0
+TPCNote  21504  22528  46   0
+TPCNote  21504  22540  65   1
+TPCNote  21504  23552  74   4
+TPCNote  22528  22540  53   1
+TPCNote  22540  23555  46   0
+TPCNote  22540  24570  62   4
+TPCNote  22540  23552  65   1
+TPCNote  22540  23552  70   0
+TPCNote  23552  24570  65   1
+TPCNote  23552  24570  70   0
+TPCNote  23552  24570  53   1
+TPCNote  23552  24570  58   0
+TPCNote  24570  25585  68  -2
+TPCNote  24570  25585  74   4
+TPCNote  24576  25600  46   0
+TPCNote  24576  26624  62   4
+TPCNote  24576  26624  65   1
+TPCNote  24576  25585  70   0
+TPCNote  25585  26635  34   0
+TPCNote  25585  25600  46   0
+TPCNote  25585  27125  68  -2
+TPCNote  25585  26624  70   0
+TPCNote  25585  27125  77   1
+TPCNote  25600  26624  53   1
+TPCNote  25600  26624  58   0
+TPCNote  26624  27125  70   0
+TPCNote  26624  27648  74   4
+TPCNote  26635  27650  58   0
+TPCNote  26635  27650  65   1
+TPCNote  27125  27648  68  -2
+TPCNote  27125  27648  70   0
+TPCNote  27648  28672  34   0
+TPCNote  27648  28672  46   0
+TPCNote  27648  27650  68  -2
+TPCNote  27648  27650  70   0
+TPCNote  27648  29184  77   1
+TPCNote  27650  28665  68  -2
+TPCNote  27650  28665  70   0
+TPCNote  27650  28665  74   4
+TPCNote  27650  28665  58   0
+TPCNote  27650  28665  65   1
+TPCNote  28665  28672  34   0
+TPCNote  28665  28672  46   0
+TPCNote  28665  29184  68  -2
+TPCNote  28665  29184  70   0
+TPCNote  28672  29696  58   0
+TPCNote  28672  29696  65   1
+TPCNote  29184  29696  68  -2
+TPCNote  29184  29696  70   0
+TPCNote  29184  29696  74   4
+TPCNote  29696  30205  68  -2
+TPCNote  29696  30205  70   0
+TPCNote  29696  30720  74   4
+TPCNote  29696  30720  58   0
+TPCNote  29696  30720  65   1
+TPCNote  30205  30720  68  -2
+TPCNote  30205  30720  70   0
+TPCNote  30720  31744  34   0
+TPCNote  30720  31744  46   0
+TPCNote  30720  30730  68  -2
+TPCNote  30720  30730  70   0
+TPCNote  30720  32256  77   1
+TPCNote  30730  31745  68  -2
+TPCNote  30730  31745  70   0
+TPCNote  30730  31745  74   4
+TPCNote  30730  31745  58   0
+TPCNote  30730  31745  65   1
+TPCNote  31745  32760  39  -1
+TPCNote  31745  32760  51  -1
+TPCNote  31745  32256  68  -2
+TPCNote  31745  32256  70   0
+TPCNote  32256  32768  68  -2
+TPCNote  32256  32768  70   0
+TPCNote  32256  32768  74   4
+TPCNote  32760  33775  51  -1
+TPCNote  32760  33775  63  -1
+TPCNote  32768  33285  68  -2
+TPCNote  32768  33285  70   0
+TPCNote  32768  33792  74   4
+TPCNote  32768  33775  58   0
+TPCNote  32768  33792  65   1
+TPCNote  33285  33775  67   3
+TPCNote  33285  33775  70   0
+TPCNote  33285  33775  75  -1
+TPCNote  33775  34825  67   3
+TPCNote  33775  34825  75  -1
+TPCNote  33775  34816  51  -1
+TPCNote  33775  33792  58   0
+TPCNote  33775  34825  63  -1
+TPCNote  33792  34816  39  -1
+TPCNote  33792  35328  68  -2
+TPCNote  33792  34825  70   0
+TPCNote  33792  35328  77   1
+TPCNote  34816  34825  51  -1
+TPCNote  34816  34825  58   0
+TPCNote  34825  35840  67   3
+TPCNote  34825  35840  75  -1
+TPCNote  34825  35840  48   2
+TPCNote  34825  35840  55   3
+TPCNote  34825  35840  60   2
+TPCNote  35328  35840  70   0
+TPCNote  35840  36855  65   1
+TPCNote  35840  36855  74   4
+TPCNote  35840  36855  50   4
+TPCNote  35840  36855  55   3
+TPCNote  35840  36855  59   7
+TPCNote  35840  36855  67   3
+TPCNote  35840  36864  70   0
+TPCNote  35840  36864  75  -1
+TPCNote  35840  36864  51  -1
+TPCNote  35840  36864  58   0
+TPCNote  35840  36864  63  -1
+TPCNote  36855  36864  63  -1
+TPCNote  36855  37905  72   2
+TPCNote  36855  36864  51  -1
+TPCNote  36855  37888  55   3
+TPCNote  36855  37888  60   2
+TPCNote  36864  37888  67   3
+TPCNote  36864  37888  75  -1
+TPCNote  36864  37888  48   2
+TPCNote  37888  38912  65   1
+TPCNote  37888  37905  67   3
+TPCNote  37888  38912  74   4
+TPCNote  37888  38912  50   4
+TPCNote  37888  37905  55   3
+TPCNote  37888  38912  59   7
+TPCNote  37905  38920  41   1
+TPCNote  37905  39410  62   4
+TPCNote  37905  39410  72   2
+TPCNote  38912  39936  63  -1
+TPCNote  38912  39936  67   3
+TPCNote  38912  39936  51  -1
+TPCNote  38912  39936  55   3
+TPCNote  38912  39936  60   2
+TPCNote  38920  39935  53   1
+TPCNote  38920  39935  58   0
+TPCNote  39410  39935  62   4
+TPCNote  39410  39935  65   1
+TPCNote  39410  39935  70   0
+TPCNote  39935  40950  62   4
+TPCNote  39935  40950  65   1
+TPCNote  39935  40950  70   0
+TPCNote  39935  40950  53   1
+TPCNote  39935  40950  58   0
+TPCNote  39936  40960  41   1
+TPCNote  39936  41472  72   2
+TPCNote  40950  41472  62   4
+TPCNote  40950  41472  65   1
+TPCNote  40950  40960  41   1
+TPCNote  40960  41984  53   1
+TPCNote  40960  41984  58   0
+TPCNote  41472  41984  62   4
+TPCNote  41472  41984  65   1
+TPCNote  41472  41984  70   0
+TPCNote  41984  42000  62   4
+TPCNote  41984  42000  65   1
+TPCNote  41984  43008  70   0
+TPCNote  41984  43008  53   1
+TPCNote  41984  43008  58   0
+TPCNote  42000  43008  62   4
+TPCNote  42000  43008  65   1
+TPCNote  43008  43015  62   4
+TPCNote  43008  43015  65   1
+TPCNote  43008  44032  41   1
+TPCNote  43015  44030  62   4
+TPCNote  43015  44030  65   1
+TPCNote  43015  44030  72   2
+TPCNote  43015  44030  53   1
+TPCNote  43015  44030  58   0
+TPCNote  44030  44032  41   1
+TPCNote  44030  46095  63  -1
+TPCNote  44030  46095  74   4
+TPCNote  44032  45056  62   4
+TPCNote  44032  45056  65   1
+TPCNote  44032  45056  70   0
+TPCNote  44032  45056  53   1
+TPCNote  44032  45056  58   0
+TPCNote  45045  46095  57   5
+TPCNote  45056  46080  62   4
+TPCNote  45056  46080  65   1
+TPCNote  45056  46080  72   2
+TPCNote  45056  46080  53   1
+TPCNote  45056  46080  58   0
+TPCNote  46080  47104  41   1
+TPCNote  46080  46095  65   1
+TPCNote  46095  47110  63  -1
+TPCNote  46095  47110  65   1
+TPCNote  46095  47110  72   2
+TPCNote  46095  47110  53   1
+TPCNote  46095  47110  57   5
+TPCNote  47110  49140  62   4
+TPCNote  47110  48128  65   1
+TPCNote  47110  49140  70   0
+TPCNote  47110  49140  46   0
+TPCNote  47110  48128  53   1
+TPCNote  47110  49140  58   0
+TPCNote  48128  49152  63  -1
+TPCNote  48128  49140  65   1
+TPCNote  48128  49152  72   2
+TPCNote  48128  49140  53   1
+TPCNote  48128  49152  57   5
+
+Analysis:         Harmonic Rep              TPC Rep                                                                   
+
+     0  x x x x x    Bb               < F   Bb  D                                 >          +  +        +          
+   245  x            Bb               <                                           >          |  |        |          
+   490  x x          Bb               <                                           >          |  |        |          
+   735  x            Bb               <                                           >          |  |        |          
+  1015  x x x        Bb               < F   F   Bb  D                             >          +  +        +          
+  1260  x            Bb               <                                           >          |  2        |          
+  1540  x x          Bb               <                                           >          |  2        |          
+  1785  x            Bb               <                                           >          |  2        |          
+  2065  x x x        Bb               < F   Eb                                    >       +  |  +        |          
+  2310  x            Bb               <                                           >       |  |  2        |          
+  2555  x x             F             < F   A   C                                 >       |     +  +        +       
+  2800  x               F             <*F  *F  *Bb *D                             >       |  +  +  |     +  |       
+  3080  x x x x         F             < F   Eb  F   A   C                         >       +  |  +  +     |  +       
+  3325  x               F             <                                           >       |  |  3  |     |  |       
+  3570  x x             F             <                                           >       |  |  3  |     |  |       
+  3815  x               F             <                                           >       |  |  3  |     |  |       
+  4095  x x x           F             < F  *F  *Eb  F   A   C                     >       +  |  +  +     |  +       
+  4340  x               F             <                                           >       |  |  2  |     |  |       
+  4585  x x             F             <*F                                         >       |     +  |        |       
+  4830  x               F             <                                           >       |     2  |        |       
+  5110  x x x           F             <*F  *Eb *F  *A   Bb *C   D                 >       +  +  +  +     +  +       
+  5355  x               F             <                                           >       |  |  2  |     |  |       
+  5635  x x             F             <                                           >       |  |  2  |     |  |       
+  5880  x               F             <*F  *F  *A  *C                             >          |  +  +     |  +       
+  6160  x x x x         F             < F   Eb  F   Eb                            >       +     +  |        |       
+  6405  x               F             <                                           >       2     3  |        |       
+  6650  x x             F             <                                           >       2     3  |        |       
+  6895  x            Bb               <*F  *Bb *D                                 >       2  +  +        +          
+  7175  x x x        Bb               < Bb  F   F                                 >          +  +        |          
+  7420  x            Bb               <                                           >          2  2        |          
+  7665  x x          Bb               <                                           >          2  2        |          
+  7910  x            Bb               <                                           >          2  2        |          
+  8190  x x x        Bb               <*F   D  *Eb *F  *C  *Eb                    >       +     +  +     +          
+  8435  x            Bb               <                                           >       2     3  |     |          
+  8680  x x          Bb               <                                           >       2     3  |     |          
+  8925  x            Bb               <                                           >       2     3  |     |          
+  9205  x x x x x    Bb               <*Bb  F   D  *F   Bb  D  *F                 >          +  +        +          
+  9450  x            Bb               <                                           >          2  2        2          
+  9730  x x          Bb               <                                           >          2  2        2          
+  9975  x            Bb               <*F                                         >          |  +        2          
+ 10255  x x x        Bb               < Bb  F   D                                 >          +  +        +          
+ 10500  x            Bb               <                                           >          |  2        |          
+ 10745  x x          Bb               <                                           >          |  2        |          
+ 10990  x            Bb               <*F  *D  *F  *Bb *D                         >          +  +        +          
+ 11270  x x x        Bb               <                                           >          |  2        2          
+ 11515  x            Bb               <                                           >          |  2        2          
+ 11760  x x          Bb               <                                           >          |  2        2          
+ 12005  x            Bb               <                                           >          |  2        2          
+ 12285  x x x x      Bb               <*Bb  F   D  *F   Bb *D  *F                 >          +  +        +          
+ 12530  x            Bb               <                                           >          |  2        |          
+ 12775  x x          Bb               <                                           >          |  2        |          
+ 13020  x            Bb               <                                           >          |  2        |          
+ 13300  x x x        Bb               < F  *F  *D   F   Bb  D                     >          +  +        +          
+ 13545  x            Bb               <                                           >          |  4        2          
+ 13825  x x          Bb               <                                           >          |  4        2          
+ 14070  x            Bb               <*F  *D  *F  *D                             >          |  +        +          
+ 14350  x x x        Bb               < Eb                                        >       +  |  2        2          
+ 14595  x            Bb               <                                           >       |  |  2        2          
+ 14840  x x             F             < F   A   C                                 >       |     +  +     |  +       
+ 15085  x               F             <*F  *F  *Bb *D                             >       |  +  +  |     +  |       
+ 15365  x x x x         F             < F   Eb  F   A   C                         >       +  |  +  +     |  +       
+ 15610  x               F             <                                           >       |  |  3  |     |  |       
+ 15855  x x             F             <                                           >       |  |  3  |     |  |       
+ 16100  x               F             <                                           >       |  |  3  |     |  |       
+ 16380  x x x           F             < F  *F  *Eb  F   A   C                     >       +  |  +  +     |  +       
+ 16625  x               F             <                                           >       |  |  2  |     |  |       
+ 16870  x x             F             <*F                                         >       |     +  |        |       
+ 17115  x               F             <                                           >       |     2  |        |       
+ 17395  x x x           F             <*F  *Eb *F   G  *A   Bb *C                 >       +  +  +  +  +     +       
+ 17640  x               F             <                                           >       |  |  2  |  |     |       
+ 17920  x x             F             <                                           >       |  |  2  |  |     |       
+ 18165  x               F             <*F  *F  *A  *C                             >          |  +  +  |     +       
+ 18445  x x x x x       F             < F   Eb  F                                 >       +     +  |        |       
+ 18690  x               F             <                                           >       |     3  |        |       
+ 18935  x x             F             <                                           >       |     3  |        |       
+ 19180  x            Bb               <*F  *G  *Bb                                >       |  +  +     +             
+ 19460  x x x        Bb               < Bb  F   D                                 >          +  +     |  +          
+ 19705  x            Bb               <                                           >          2  |     |  |          
+ 19950  x x          Bb               <                                           >          2  |     |  |          
+ 20195  x            Bb               <                                           >          2  |     |  |          
+ 20475  x x x        Bb               <*F   Bb *Eb *F  *A  *C                     >       +  +  +  +     |  +       
+ 20720  x            Bb               <                                           >       |  |  2  |     |  |       
+ 20965  x x          Bb               <                                           >       |  |  2  |     |  |       
+ 21210  x            Bb               <                                           >       |  |  2  |     |  |       
+ 21490  x x x x      Bb               <*Bb  F   Bb  D  *F   Bb *D                 >          +  +        +          
+ 21735  x            Bb               <                                           >          3  |        2          
+ 22015  x x          Bb               <                                           >          3  |        2          
+ 22260  x            Bb               <*F                                         >          2  +        2          
+ 22540  x x x        Bb               < Bb  D   F   Bb                            >          +  +        +          
+ 22785  x            Bb               <                                           >          2  |        2          
+ 23030  x x          Bb               <                                           >          2  |        2          
+ 23275  x            Bb               <*F  *Bb *F  *Bb                            >          +  +        |          
+ 23555  x x x        Bb               <                                           >          2  2        |          
+ 23800  x            Bb               <                                           >          2  2        |          
+ 24045  x x          Bb               <                                           >          2  2        |          
+ 24290  x            Bb               <                                           >          2  2        |          
+ 24570  x x x x      Bb               <*Bb *D  *F   Ab *Bb  D                     >    +     +  +        +          
+ 24815  x            Bb               <                                           >    |     2  |        2          
+ 25060  x x          Bb               <                                           >    |     2  |        2          
+ 25305  x            Bb               <                                           >    |     2  |        2          
+ 25585  x x x        Bb               < Bb  Bb *F  *Bb  Ab  Bb  F                 >    +     +  +        |          
+ 25830  x            Bb               <                                           >    |     3  3        |          
+ 26110  x x          Bb               <                                           >    |     3  3        |          
+ 26355  x            Bb               <*Bb *D                                     >    |     +  |        +          
+ 26635  x x x        Bb               < Bb  F                                     >    |     +  +        |          
+ 26880  x            Bb               <                                           >    |     2  2        |          
+ 27125  x x          Bb               < Ab  Bb                                    >    +     +  |        |          
+ 27370  x            Bb               <*Bb *Bb *Ab *Bb *F                         >    +     +  +                   
+ 27650  x x x x x    Bb               < Bb  F   Ab  Bb  D                         >    +     +  +        +          
+ 27895  x            Bb               <                                           >    |     4  2        |          
+ 28140  x x          Bb               <                                           >    |     4  2        |          
+ 28385  x            Bb               <                                           >    |     4  2        |          
+ 28665  x x x        Bb               < Bb  Bb *Bb *F   Ab  Bb                    >    +     +  +                   
+ 28910  x            Bb               <                                           >    |     2  2                   
+ 29155  x x          Bb               <*Ab *Bb *D                                 >    +     +  |        +          
+ 29400  x            Bb               <                                           >    |     2  |        |          
+ 29680  x x x        Bb               <*Bb *F  *Ab *Bb *D                         >    +     +  +        +          
+ 29925  x            Bb               <                                           >    |     2  |        |          
+ 30205  x x          Bb               < Ab  Bb                                    >    +     +  |        |          
+ 30450  x            Bb               <*Bb *Bb *Ab *Bb *F                         >    +     +  +                   
+ 30730  x x x x      Bb               < Bb  F   Ab  Bb  D                         >    +     +  +        +          
+ 30975  x            Bb               <                                           >    |     4  2        |          
+ 31220  x x          Bb               <                                           >    |     4  2        |          
+ 31465  x            Bb               <                                           >    |     2  2        |          
+ 31745  x x x     Eb                  < Eb  Eb  Ab  Bb                            >    +  +  +  |                   
+ 31990  x         Eb                  <                                           >    |  2  |  |                   
+ 32235  x x       Eb                  <*Ab *Bb *D                                 >    +  2  +           +          
+ 32480  x         Eb                  <                                           >    |  2  |           |          
+ 32760  x x x     Eb                  < Eb *Bb  Eb *F  *Ab *Bb *D                 >    +  +  +  +        +          
+ 33005  x         Eb                  <                                           >    |  2  2  |        |          
+ 33285  x x       Eb                  < G   Bb  Eb                                >       +  +  |     +  |          
+ 33530  x         Eb                  <                                           >       3  2  |     |  |          
+ 33775  x x x x   Eb                  <*Eb  Eb  Bb  Eb  G  *Ab *Bb  Eb *F         >    +  +  +  +     +             
+ 34020  x         Eb                  <                                           >    |  4  |  |     |             
+ 34300  x x       Eb                  <                                           >    |  4  |  |     |             
+ 34545  x         Eb                  <*Eb *Bb                                    >    |  +  +  |     |             
+ 34825  x x x              C          < C   G   C   G   Eb                        >    |  +     |  +  +             
+ 35070  x                  C          <                                           >    |  |     |  2  2             
+ 35315  x x                C          <*Bb                                        >       |  +     2  2             
+ 35560  x                  C          <                                           >       |  |     2  2             
+ 35840  x x x     Eb                  < D   Eb  G   Bb  B   Eb  F   G   Bb  D   Eb>       +  +  +     +  +        + 
+ 36085  x         Eb                  <                                           >       3  2  |     2  2        | 
+ 36330  x x       Eb                  <                                           >       3  2  |     2  2        | 
+ 36575  x         Eb                  <                                           >       3  2  |     2  2        | 
+ 36855  x x x x x          C          <*C   Eb  G   C   Eb *G   C  *Eb            >       +        +  +             
+ 37100  x                  C          <                                           >       |        3  2             
+ 37380  x x                C          <                                           >       |        3  2             
+ 37625  x                     G       <*D  *G  *B  *F  *G  *D                     >             +  |  +  +        + 
+ 37905  x x x        Bb               < F   D   C                                 >             +  +     +        | 
+ 38150  x            Bb               <                                           >             2  |     3        | 
+ 38395  x x          Bb               <                                           >             2  |     3        | 
+ 38640  x            Bb               <*Eb *G  *C  *Eb *G                         >       +     |  +  +  |          
+ 38920  x x x        Bb               < F   Bb                                    >       2  +  +  2  2  |          
+ 39165  x            Bb               <                                           >       2  |  |  2  2  |          
+ 39410  x x          Bb               < D   F   Bb                                >       2  +  +  |  2  +          
+ 39655  x            Bb               <                                           >       2  2  2  |  2  |          
+ 39935  x x x x      Bb               <*F   F   Bb  D   F   Bb *C                 >          +  +  +     +          
+ 40180  x            Bb               <                                           >          2  3  |     |          
+ 40425  x x          Bb               <                                           >          2  3  |     |          
+ 40670  x            Bb               <                                           >          2  3  |     |          
+ 40950  x x x        Bb               < F  *F  *Bb  D   F                         >          +  +  |     +          
+ 41195  x            Bb               <*D  *F  *Bb                                >          +  +        +          
+ 41475  x x          Bb               <                                           >          2  2        |          
+ 41720  x            Bb               <*F  *Bb *D  *F  *Bb                        >          +  +        +          
+ 42000  x x x        Bb               < D   F                                     >          2  +        +          
+ 42245  x            Bb               <                                           >          2  2        |          
+ 42490  x x          Bb               <                                           >          2  2        |          
+ 42735  x            Bb               <*F  *D  *F                                 >             +        +          
+ 43015  x x x x      Bb               < F   Bb  D   F   C                         >          +  +  +     +          
+ 43260  x            Bb               <                                           >          |  3  |     |          
+ 43505  x x          Bb               <                                           >          |  3  |     |          
+ 43750  x            Bb               <                                           >          |  3  |     |          
+ 44030  x x x        Bb               < F  *F  *Bb *D   Eb *F  *Bb  D             >       +  +  +        +          
+ 44275  x            Bb               <                                           >       |  2  2        2          
+ 44520  x x          Bb               <                                           >       |  2  2        2          
+ 44765  x            Bb               <                                           >       |  2  2        2          
+ 45045  x x x        Bb               <*F   A  *Bb *D  *F  *C                     >       |  +  +  +     +  +       
+ 45290  x            Bb               <                                           >       |  |  2  |     2  |       
+ 45570  x x          Bb               <                                           >       |  |  2  |     2  |       
+ 45815  x            Bb               <*F  *F                                     >       |     +        |  |       
+ 46095  x x x x x       F             < F   A   Eb  F   C                         >       +     +  +        +       
+ 46340  x               F             <                                           >       |     3  |        |       
+ 46585  x x             F             <                                           >       |     3  |        |       
+ 46830  x               F             <                                           >       |     2  |        |       
+ 47110  x x x        Bb               < Bb  F   Bb  D   F   Bb                    >          +  +        +          
+ 47355  x            Bb               <                                           >          3  2        |          
+ 47600  x x          Bb               <                                           >          3  2        |          
+ 47845  x            Bb               <                                           >          3  2        |          
+ 48125  x x x        Bb               <*F  *A  *Eb *F  *C                         >       +  3  +  +     |  +       
+ 48370  x            Bb               <                                           >       |  3  2  |     |  |       
+ 48615  x x          Bb               <                                           >       |  3  2  |     |  |       
+ 48860  x            Bb               <                                           >       |  3  2  |     |  |       
