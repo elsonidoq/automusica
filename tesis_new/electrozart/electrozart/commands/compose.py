@@ -1,22 +1,9 @@
 from base import BaseCommand
-from math import sqrt
-
-from itertools import groupby
 from time import time
-
-from math import log
-from md5 import md5
 import cPickle as pickle
 import random
 import os
-from os import path
-from datetime import datetime
 
-
-from utils.melisma.meter import meter
-from utils.fraction import Fraction
-
-from electrozart.algorithms.hmm.melody.narmour_hmm import NarmourInterval
 from electrozart import Instrument, Chord, PlayedNote
 from electrozart.algorithms import AcumulatedInput, AlgorithmsApplier
 
@@ -93,7 +80,10 @@ class Compose(BaseCommand):
         score= score_parser.parse(infname)
 
         pickle_models= [e.split(',') for e in options.pickle_models]
-        pickle_models= dict(pickle_models)
+        pickle_models= dict((k + ':statistics', v) for k, v in pickle_models)
+        for k, v in pickle_models.iteritems():
+            with open(v) as f:
+                pickle_models[k]= pickle.load(f)
 
         params= self.params= bind_params(self.params, options.__dict__)
         if params['seed'] is None:
@@ -108,36 +98,28 @@ class Compose(BaseCommand):
         print "MIN PITCH", min_pitch
         print "MAX PITCH", max_pitch
         
-        def load(model_name):
-            if model_name in pickle_models:
-                with open(pickle_models[model_name]) as f:
-                    return pickle.load(f)
-            else:
-                return appctx.get(model_name, context=params)
-
-        notes_distr= appctx.get('harmonic_context.notes_distr', context=params)
+        notes_distr= appctx.get('harmonic_context.notes_distr', context=params, extra=pickle_models)
         notes_distr.train(score)
         notes_distr.start_creation()
-        tonic_notes_alg= appctx.get('harmonic_context.tonic', context=params)
+        tonic_notes_alg= appctx.get('harmonic_context.tonic', context=params, extra=pickle_models)
 
-        harmonic_context_alg= appctx.get('harmonic_context.phrase_repetitions', context=params) 
+        harmonic_context_alg= appctx.get('harmonic_context.phrase_repetitions', context=params, extra=pickle_models) 
 
         if params['enable_part_repetition']:
-            phrase_rhythm_alg= appctx.get('rhythm.phrase_cache', context=params)
+            phrase_rhythm_alg= appctx.get('rhythm.phrase_cache', context=params, extra=pickle_models)
         else:
-            phrase_rhythm_alg= appctx.get('rhythm.phrase', context=params)
+            phrase_rhythm_alg= appctx.get('rhythm.phrase', context=params, extra=pickle_models)
 
         if params['phrase_narmour']:            
             if params['enable_part_repetition']:
-                melody_alg= appctx.get('contour.phrase_cache', context=params)
+                melody_alg= appctx.get('contour.phrase_cache', context=params, extra=pickle_models)
             else:
-                melody_alg= appctx.get('contour.phrase', context=params)
+                melody_alg= appctx.get('contour.phrase', context=params, extra=pickle_models)
         else:            
             if params['enable_part_repetition']:
-                melody_alg= appctx.get('contour.simple_cache', context=params)
+                melody_alg= appctx.get('contour.simple_cache', context=params, extra=pickle_models)
             else:
-                #melody_alg= appctx.get('contour.simple', context=params)
-                melody_alg= load('contour.simple')
+                melody_alg= appctx.get('contour.simple', context=params, extra=pickle_models)
 
 
 

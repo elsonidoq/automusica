@@ -38,8 +38,11 @@ class ContourAlgorithm(ListAlgorithm):
                 self.narmour_features_cnt[feature_name][val]=0.5
         
 
-    def dump(self, stream):
+    def dump_statistics(self, stream):
         pickle.dump(self.narmour_features_cnt, stream, 2)
+    
+    def load_statistics(self, statistics):
+        self.narmour_features_cnt= statistics
 
     @classmethod
     def load(cls, stream, *args, **kwargs):

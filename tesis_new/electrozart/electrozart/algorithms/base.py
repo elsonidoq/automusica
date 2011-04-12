@@ -81,6 +81,14 @@ def bind_params(default, updater):
     res.updater(updater)
     return res
 
+class TrainLoader(object):
+    def __init__(self, algorithm):
+        self.algorithm= algorithm
+
+    def get_model(self, score):
+        self.algorithm.train(score)
+        return self.algorithm
+
 class Algorithm(Parametrizable):
     def __init__(self, *args, **kwargs):
         super(Algorithm, self).__init__(*args, **kwargs)
@@ -90,7 +98,13 @@ class Algorithm(Parametrizable):
         self.ec.seed= kwargs['seed']
         self.trained= False
         self.started= False
+        if 'statistics' in kwargs: 
+            self.load_statistics(kwargs['statistics'])
+            self.trained= True
         
+    def load_statistics(self, statistics): pass
+    def dump_statistics(self, stream): pass
+
     def start_creation(self): 
         self.ec= ExecutionContext()
         self.started= True

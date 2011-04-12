@@ -33,10 +33,20 @@ rhythm:
         type: object
         path: electrozart.algorithms.hmm.rhythm:RhythmHMM
         args:
-            score: param:score
-            n_measures: param:n_measures
+            n_measures: 1 #param:n_measures
             seed: param:seed
         
+    batch_trainer:
+        type: object
+        path: electrozart.algorithms.hmm.rhythm.batch:RhythmHMMBatchTrainer
+        args:
+            hmm_factory: factory:hmm
+        
+    #XXX mmm... no se
+    #batch_loader:
+    #    type: object
+    #    path: electrozart.algorithms.hmm.rhythm.batch:RhythmHMMBatchLoader
+    
     phrase:
         type: object
         path: electrozart.algorithms.hmm.rhythm:ListRhythm
@@ -64,7 +74,6 @@ contour:
         type: object
         path: electrozart.algorithms.hmm.melody.complete_narmour_model:ContourAlgorithm
         args:
-            algorithm: object:rhythm.phrase
             input_key: 'phrase_id'
             seed: param:seed
         
