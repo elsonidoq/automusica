@@ -3,7 +3,7 @@ import re
 import os
 
 from exceptions import ParserError, UnresolvedParameterError
-from model import UnresolvedParameter, ApplicationContext, ObjectDescription
+from model import UnresolvedParameter, ApplicationContext, ObjectDescription, FactoryDescription
     
 def parse_config(config_fname):
     config= recursive_parse_config(config_fname)
@@ -11,10 +11,8 @@ def parse_config(config_fname):
     return ApplicationContext(config)
 
 def parse_object_name(actual_namespace, object_name):
-    if '.' in object_name:
-        return object_name.split('.')
-    else:
-        return actual_namespace, object_name
+    if '.' in object_name: return object_name.split('.')
+    else: return actual_namespace, object_name
 
 def recursive_parse_config(config_fname, res=None):
     res= res or {}
@@ -90,6 +88,11 @@ def resolve_collection(args, parsed_fname, actual_namespace):
         elif arg.startswith('config:'):
             object_namespace, object_name= parse_object_name(actual_namespace, arg[arg.find(':')+1:])
             args[k]= parsed_fname[object_namespace][object_name]
+
+        elif arg.startswith('factory:'):
+            object_namespace, object_name= parse_object_name(actual_namespace, arg[arg.find(':')+1:])
+            load_if_needed(object_namespace, object_name, parsed_fname)
+            args[k]= FactoryDescription('%s.%s' % (object_namespace, object_name))
 
         elif arg.startswith('param:'):
             # XXX los param: son sin namespace

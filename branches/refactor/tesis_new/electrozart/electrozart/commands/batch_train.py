@@ -23,32 +23,40 @@ class BatchTrain(BaseCommand):
 
 
     def setup_arguments(self, parser):
-        parser.add_option('-o', dest= 'outfname', default=None)
-        parser.add_option('-m', dest= 'model_name', default=None)
+        parser.add_option('-p', dest= 'prefix', default="")
+        parser.add_option('-m', dest= 'model_names', action='append')
 
     def start(self, options, args, appctx):
         if len(args) < 1: self.parser.error('not enaught args')
 
-        in_expr= args[0]
-        model_name= options.model_name
-        if model_name is None:
+        in_fnames= args
+        if len(options.model_names) == 0:
             self.parser.error('-m option is mandatory')
-        outfname= options.outfname or '%s.pickle' % model_name 
-        if not outfname.endswith('.pickle'):
-            outfname= '%s.pickle' % outfname
 
-        model= appctx.get(model_name)
+        outfnames= {}
+        for model_name in options.model_names: 
+            outfname= '%s.pickle' % model_name 
+            if options.prefix:
+                outfname= options.prefix + '.' + outfname
+
+            outfnames[model_name]= outfname 
+
 
         score_parser= appctx.get('parsers.midi')
-        for fname in glob(in_expr):
+        for fname in in_fnames:
             score= score_parser.parse(fname)
-            model.train(score)
+            for model_name in options.model_names:
+                model= appctx.get(model_name)
+                model.train(score)
 
-        model.start_creation()
 
-        with open(outfname, 'w') as f:
-            pickle.dump(model, f)
+        for model_name, outfname in outfnames.iteritems():
+            model= appctx.get(model_name)
+            model.start_creation()
+            with open(outfname, 'w') as f:
+                model.dump_statistics(f)
+
+            print '%s -> %s' % (model_name, outfname)
         
         print "Done!"
-        print "outfname: %s" % outfname
 

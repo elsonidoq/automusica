@@ -1,4 +1,5 @@
 from __future__ import with_statement
+import cPickle as pickle
 from collections import defaultdict
 from math import floor, log
 import os
@@ -21,11 +22,18 @@ class SimpleContourAlgorithm(Algorithm):
     def __init__(self, *args, **kwargs):
         super(SimpleContourAlgorithm, self).__init__(*args, **kwargs)
 
-        self.narmour_features_cnt= defaultdict(dict)
-        for feature_name, all_vals in all_features_values().iteritems():
-            for val in all_vals:
-                self.narmour_features_cnt[feature_name][val]=0.5
+        if not hasattr(self, 'narmour_features_cnt'):
+            self.narmour_features_cnt= defaultdict(dict)
+            for feature_name, all_vals in all_features_values().iteritems():
+                for val in all_vals:
+                    self.narmour_features_cnt[feature_name][val]=0.5
 
+    def dump_statistics(self, stream):
+        pickle.dump(self.narmour_features_cnt, stream, 2)
+    
+    def load_statistics(self, statistics):
+        self.narmour_features_cnt= statistics
+        
     def save_info(self, folder, score): 
         feature_names= all_features_values().keys() 
         feature_names.append(None)

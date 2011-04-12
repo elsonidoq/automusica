@@ -1,3 +1,4 @@
+import pickle
 from itertools import chain, imap
 from itertools import groupby
 from bisect import bisect
@@ -68,20 +69,38 @@ class RhythmHMM(Algorithm):
         return instance
         
         
-    def __init__(self, score, n_measures, *args, **kwargs):
+    def __init__(self, n_measures, *args, **kwargs):
         #self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         super(RhythmHMM, self).__init__(*args, **kwargs)
-        self.interval_size= measure_interval_size(score, n_measures) 
-        self.learner= HiddenMarkovLearner()
-        self.hidden_states= set()
+        self.n_measures= n_measures
+        self.interval_size= None 
+        self.time_signature= None
+        if not self.trained:
+            self.learner= HiddenMarkovLearner()
+            self.hidden_states= set()
         
     def train(self, score):
+        interval_size= measure_interval_size(score, self.n_measures) 
+        if self.interval_size is None: 
+            self.interval_size= interval_size
+            self.time_signature= score.time_signature
+            #print self.time_signature
+        elif self.time_signature != score.time_signature:
+            raise Exception('Me diste partituras incompatibles')
+            
         for instrument in score.instruments:
             obs_seqs= ModuloObsSeq(InstrumentObsSeq(instrument), self.interval_size).get_observations(score)
             for obs_seq in obs_seqs:
                 self.hidden_states.update(imap(lambda x:x[0], obs_seq))
                 self.learner.train(obs_seq)
 
+    def dump_statistics(self, stream):
+        pickle.dump([self.learner, self.hidden_states], stream, 2)
+
+    def load_statistics(self, statistics):
+        self.learner= statistics[0]
+        self.hidden_states= statistics[1]
+        
     def create_model(self):
         a_state= iter(self.hidden_states).next()
         if isinstance(a_state, int):
