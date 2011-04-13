@@ -1,25 +1,21 @@
-from utils.fraction import Fraction, gcd
 from electrozart.algorithms import ExecutionContext
-
-from impl import RhythmHMM
+from notes_distr import NotesDistr
 from collections import defaultdict
 import pickle
 
-class RhythmHMMBatchTrainer(object):
-    def __init__(self, hmm_factory):
-        self.models= defaultdict(hmm_factory)
-        self.hmm_factory= hmm_factory
+class NotesDistrBatchTrainer(object):
+    def __init__(self, notes_distr_factory):
+        self.notes_distr_factory= notes_distr_factory
+        self.models= []
 
     def train(self, score):
-        test= self.hmm_factory() 
-        test.train(score)
-        m= max(Fraction(s, score.divisions).numerador() for s in test.hidden_states)
-        if m > 20: raise ValueError('asd')
-        m= max(Fraction(s, score.divisions).denominador() for s in test.hidden_states)
-        if m > 20: raise ValueError('asd')
-        self.models[score.time_signature].train(score)
+        m= self.notes_distr_factory()
+        m.train(score)
+        m.start_creation()
+        self.models.append(m)
 
     def dump_statistics(self, stream):
+        global_profile
         self.models= dict(self.models)
         pickle.dump(self.models, stream, 2)
 
@@ -40,3 +36,4 @@ class RhythmHMMBatch(RhythmHMM):
         self.ec.robses= {}
         self.ec.actual_interval= 0
         self.ec.actual_state= 0
+

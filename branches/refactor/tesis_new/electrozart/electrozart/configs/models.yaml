@@ -42,10 +42,13 @@ rhythm:
         args:
             hmm_factory: factory:hmm
         
-    #XXX mmm... no se
-    #batch_loader:
-    #    type: object
-    #    path: electrozart.algorithms.hmm.rhythm.batch:RhythmHMMBatchLoader
+    batch_hmm:
+        type: object
+        path: electrozart.algorithms.hmm.rhythm.batch:RhythmHMMBatch
+        args:
+            n_measures: 1 #param:n_measures
+            #models: param:models
+            seed: param:seed
     
     phrase:
         type: object

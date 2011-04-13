@@ -1,4 +1,5 @@
 from base import BaseCommand
+import re
 from time import time
 import cPickle as pickle
 import random
@@ -13,8 +14,6 @@ def bind_params(base, override):
     res= base.copy()
     res.update(override)
     return res
-
-
 
 class Compose(BaseCommand):
     name='compose'
@@ -62,6 +61,12 @@ class Compose(BaseCommand):
 
         
 
+    def _parse_load_model_line(self, line):
+        # example='rhythm.hmm=rhythm.batch_hmm(fname)'
+        pattern= re.compile('(?P<dst_object>.*?\..*?)=(?P<src_object>.*?\..*?)\((?P<fname>.*?)\)')
+        match= pattern.match(line)
+        return match.groupdict()
+
     def start(self, options, args, appctx):
         if len(args) < 1: self.parser.error('not enaught args')
 
@@ -79,11 +84,13 @@ class Compose(BaseCommand):
         score_parser= appctx.get('parsers.midi')
         score= score_parser.parse(infname)
 
-        pickle_models= [e.split(',') for e in options.pickle_models]
-        pickle_models= dict((k + ':statistics', v) for k, v in pickle_models)
-        for k, v in pickle_models.iteritems():
-            with open(v) as f:
-                pickle_models[k]= pickle.load(f)
+        pickle_models= [self._parse_load_model_line(e) for e in options.pickle_models]
+        extra= {}
+        for d in pickle_models:
+            with open(d['fname']) as f:
+                statistics= pickle.load(f)
+            appctx.alias(d['src_object'], d['dst_object'])
+            extra['%s:%s' % (d['src_object'], 'statistics')]= statistics
 
         params= self.params= bind_params(self.params, options.__dict__)
         if params['seed'] is None:
@@ -98,28 +105,28 @@ class Compose(BaseCommand):
         print "MIN PITCH", min_pitch
         print "MAX PITCH", max_pitch
         
-        notes_distr= appctx.get('harmonic_context.notes_distr', context=params, extra=pickle_models)
+        notes_distr= appctx.get('harmonic_context.notes_distr', context=params, extra=extra)
         notes_distr.train(score)
         notes_distr.start_creation()
-        tonic_notes_alg= appctx.get('harmonic_context.tonic', context=params, extra=pickle_models)
+        tonic_notes_alg= appctx.get('harmonic_context.tonic', context=params, extra=extra)
 
-        harmonic_context_alg= appctx.get('harmonic_context.phrase_repetitions', context=params, extra=pickle_models) 
+        harmonic_context_alg= appctx.get('harmonic_context.phrase_repetitions', context=params, extra=extra) 
 
         if params['enable_part_repetition']:
-            phrase_rhythm_alg= appctx.get('rhythm.phrase_cache', context=params, extra=pickle_models)
+            phrase_rhythm_alg= appctx.get('rhythm.phrase_cache', context=params, extra=extra)
         else:
-            phrase_rhythm_alg= appctx.get('rhythm.phrase', context=params, extra=pickle_models)
+            phrase_rhythm_alg= appctx.get('rhythm.phrase', context=params, extra=extra)
 
         if params['phrase_narmour']:            
             if params['enable_part_repetition']:
-                melody_alg= appctx.get('contour.phrase_cache', context=params, extra=pickle_models)
+                melody_alg= appctx.get('contour.phrase_cache', context=params, extra=extra)
             else:
-                melody_alg= appctx.get('contour.phrase', context=params, extra=pickle_models)
+                melody_alg= appctx.get('contour.phrase', context=params, extra=extra)
         else:            
             if params['enable_part_repetition']:
-                melody_alg= appctx.get('contour.simple_cache', context=params, extra=pickle_models)
+                melody_alg= appctx.get('contour.simple_cache', context=params, extra=extra)
             else:
-                melody_alg= appctx.get('contour.simple', context=params, extra=pickle_models)
+                melody_alg= appctx.get('contour.simple', context=params, extra=extra)
 
 
 
@@ -159,7 +166,7 @@ class Compose(BaseCommand):
                 import shutil
                 shutil.rmtree(info_folder)
             os.makedirs(info_folder)
-            applier.save_info(info_folder, score)
+            applier.save_info(info_folder, score, params)
             print_files(params_file, diff_file, svn_file, outfname, solo_fname, wolp_fname, perc_fname, ch_fname, info_folder)
             return
 
