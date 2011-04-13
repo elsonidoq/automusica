@@ -23,7 +23,7 @@ class NotesDistr(Algorithm):
         return instance
         
     def __init__(self, **optional):
-        super(NotesDistr, self).__init__(self, **optional)
+        super(NotesDistr, self).__init__(**optional)
         self.score_profile= {}
 
     def train(self, score):

@@ -1,7 +1,6 @@
 import os
 
 from base import BaseCommand
-from glob import glob 
 
 import cPickle as pickle
 
@@ -47,12 +46,13 @@ class BatchTrain(BaseCommand):
             score= score_parser.parse(fname)
             for model_name in options.model_names:
                 model= appctx.get(model_name)
-                model.train(score)
+                try: model.train(score)
+                except: print "%s ignored %s" % (model_name, fname)
 
 
         for model_name, outfname in outfnames.iteritems():
             model= appctx.get(model_name)
-            model.start_creation()
+            #model.start_creation()
             with open(outfname, 'w') as f:
                 model.dump_statistics(f)
 

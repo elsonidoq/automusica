@@ -70,16 +70,14 @@ class RhythmHMM(Algorithm):
         
         
     def __init__(self, n_measures, *args, **kwargs):
-        #self.obsSeqBuilder= ModuloObsSeq(self.obsSeqBuilder, interval_size)
         super(RhythmHMM, self).__init__(*args, **kwargs)
         self.n_measures= n_measures
         self.interval_size= None 
         self.time_signature= None
-        if not self.trained:
-            self.learner= HiddenMarkovLearner()
-            self.hidden_states= set()
+        self.learner= HiddenMarkovLearner()
+        self.hidden_states= set()
         
-    def train(self, score):
+    def _set_interval_size(self, score):
         interval_size= measure_interval_size(score, self.n_measures) 
         if self.interval_size is None: 
             self.interval_size= interval_size
@@ -87,6 +85,9 @@ class RhythmHMM(Algorithm):
             #print self.time_signature
         elif self.time_signature != score.time_signature:
             raise Exception('Me diste partituras incompatibles')
+
+    def train(self, score):
+        self._set_interval_size(score)
             
         for instrument in score.instruments:
             obs_seqs= ModuloObsSeq(InstrumentObsSeq(instrument), self.interval_size).get_observations(score)

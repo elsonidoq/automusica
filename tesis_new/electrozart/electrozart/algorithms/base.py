@@ -81,16 +81,8 @@ def bind_params(default, updater):
     res.updater(updater)
     return res
 
-class TrainLoader(object):
-    def __init__(self, algorithm):
-        self.algorithm= algorithm
-
-    def get_model(self, score):
-        self.algorithm.train(score)
-        return self.algorithm
-
 class Algorithm(Parametrizable):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, loader=None, *args, **kwargs):
         super(Algorithm, self).__init__(*args, **kwargs)
         self.ec= ExecutionContext()
         if 'seed' not in kwargs or kwargs.get('seed') is None: import ipdb;ipdb.set_trace()
@@ -98,9 +90,7 @@ class Algorithm(Parametrizable):
         self.ec.seed= kwargs['seed']
         self.trained= False
         self.started= False
-        if 'statistics' in kwargs: 
-            self.load_statistics(kwargs['statistics'])
-            self.trained= True
+        self.loader= loader
         
     def load_statistics(self, statistics): pass
     def dump_statistics(self, stream): pass
@@ -114,6 +104,11 @@ class Algorithm(Parametrizable):
     def save_info(self, folder, score, params): pass
     def train(self, score): 
         self.trained= True
+        if self.loader is not None:
+            self.load_statistics(self.loader.get_model(score))
+            return True
+        else:
+            return False
         
 
 class StackAlgorithm(Algorithm):

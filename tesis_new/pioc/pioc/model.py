@@ -33,22 +33,39 @@ class ApplicationContext(object):
         self.object_descriptions= parsed_config
 
     def get_factory(self, object_full_name, context=None, extra=None):
-        if '.' not in object_full_name: raise Exception('Object name error, missing namespace')
-        object_namespace, object_name= object_full_name.split('.')
+        object_namespace, object_name= self._parse_object_full_name(object_full_name)
         od= self.object_descriptions[object_namespace][object_name]
         extra= extra or {}
         return ObjectFactory(od, ApplicationContextFactory(self.object_descriptions), context, extra)
 
     def get(self, object_full_name, context=None, extra=None):
-        if '.' not in object_full_name: raise Exception('Object name error, missing namespace')
-        object_namespace, object_name= object_full_name.split('.')
-        o= self.parsed_config[object_namespace][object_name]
+        object_namespace, object_name= self._parse_object_full_name(object_full_name)
+        try:
+            o= self.parsed_config[object_namespace][object_name]
+        except KeyError:
+            raise ValueError('Invalid object name')
+
         if isinstance(o, ObjectDescription):
             extra= extra or {}
             o= o(self, context, extra)
             self.parsed_config[object_namespace][object_name]= o
         return o
 
+    def _parse_object_full_name(self, object_full_name):
+        if '.' not in object_full_name: raise Exception('Object name error, missing namespace')
+        object_namespace, object_name= object_full_name.split('.')
+        return object_namespace, object_name
+
+    def alias(self, src, dst):
+        src_object_namespace, src_object_name= self._parse_object_full_name(src)
+        dst_object_namespace, dst_object_name= self._parse_object_full_name(dst)
+
+        src_object= self.parsed_config[src_object_namespace][src_object_name]
+        self.parsed_config[dst_object_namespace][dst_object_name]= src_object
+
+        src_object= self.object_descriptions[src_object_namespace][src_object_name]
+        self.object_descriptions[dst_object_namespace][dst_object_name]= src_object
+        
     @property
     def namespaces(self):
         return self.parsed_config.keys()

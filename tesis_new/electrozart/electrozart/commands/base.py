@@ -28,7 +28,8 @@ class MetaCommand(object):
         self.commands= dict((c.name, c) for c in commands)
     
     def __call__(self):
-        name= sys.argv[1]
+        if len(sys.argv) < 2: name= 'help'
+        else: name= sys.argv[1]
         if name == 'help':
             print "Available commands:"
             for name in self.commands:
@@ -43,4 +44,6 @@ class MetaCommand(object):
 
 from compose import Compose
 from batch_train import BatchTrain
-start= MetaCommand(Compose(), BatchTrain())
+from analyze_quantization import AnalyzeQuantization
+from mid2mp3 import Mid2Mp3
+start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3())
