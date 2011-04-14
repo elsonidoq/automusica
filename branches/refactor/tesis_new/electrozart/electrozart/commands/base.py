@@ -2,13 +2,15 @@ import sys
 import pioc
 from optparse import OptionParser
 import os
+from IPython.Shell import IPShellEmbed
+
 here= os.path.abspath(os.path.dirname(__file__))
 
 
 class BaseCommand(object):
     name= None
     def __init__(self):
-        usage= 'usage: electrozart command [options]'
+        usage= 'usage: electrozart %s [options]' % self.name
         self.parser= OptionParser(usage=usage)
         self.setup_arguments(self.parser)
 
@@ -22,6 +24,14 @@ class BaseCommand(object):
 
     def start(self, options, args, appctx):
         pass
+
+class Shell(BaseCommand):
+    name='shell'
+
+    def start(self, options, args, appctx):
+        shell= IPShellEmbed(banner='Binded variable: appctx :: AplicationContext')
+        shell()
+
         
 class MetaCommand(object):
     def __init__(self, *commands):
@@ -46,4 +56,4 @@ from compose import Compose
 from batch_train import BatchTrain
 from analyze_quantization import AnalyzeQuantization
 from mid2mp3 import Mid2Mp3
-start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3())
+start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell())

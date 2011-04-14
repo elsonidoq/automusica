@@ -81,6 +81,11 @@ def bind_params(default, updater):
     res.updater(updater)
     return res
 
+class BatchTrainer(object):
+    def train(self, score): pass
+    def dump_statistics(self, stream): pass
+    def plot(self, info_folder): pass
+
 class Algorithm(Parametrizable):
     def __init__(self, loader=None, *args, **kwargs):
         super(Algorithm, self).__init__(*args, **kwargs)

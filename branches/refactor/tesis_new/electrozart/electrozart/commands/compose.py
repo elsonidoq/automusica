@@ -79,7 +79,7 @@ class Compose(BaseCommand):
             outfname= args[1]
         else:
             out_basepath= options.output_dir or appctx.get('paths.midi_out_base') 
-            outfname= get_outfname(infname, out_basepath)
+            outfname= get_outfname(out_basepath, infname=infname)
 
         score_parser= appctx.get('parsers.midi')
         score= score_parser.parse(infname)

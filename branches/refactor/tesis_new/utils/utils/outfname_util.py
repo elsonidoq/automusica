@@ -1,7 +1,9 @@
 import os
 from datetime import datetime
 
-def get_outfname(infname, out_basepath, override=False):        
+def get_outfname(out_basepath, infname= None, override=False, outfname=None):        
+    if outfname is None and infname is None: raise Exception()
+
     outpath= os.path.abspath(os.path.join(out_basepath, datetime.now().strftime('%Y-%m-%d')))
     if not os.path.isdir(outpath):
         print "Creating dir", outpath
@@ -9,10 +11,11 @@ def get_outfname(infname, out_basepath, override=False):
     if os.path.exists('output'): os.unlink('output')
     os.system('ln -s %s output' % outpath)
 
-    outfname= os.path.basename(infname).lower()
+    if outfname is None: outfname= os.path.basename(infname).lower()
     if outfname in os.listdir(outpath):
         # -4 por el .mid +1 por el -
-        versions= [fname[len(outfname)-4+1:-4] for fname in os.listdir(outpath) if fname.startswith(outfname[:-4])]
+        basename, ext= os.path.splitext(outfname)
+        versions= [fname[len(basename)+1:-len(ext)] for fname in os.listdir(outpath) if fname.startswith(basename) and fname.endswith(ext)]
         versions= [s for s in versions if len(s) > 0]
         for i in reversed(xrange(len(versions))):
             if not versions[i].isdigit():
@@ -21,7 +24,7 @@ def get_outfname(infname, out_basepath, override=False):
                 versions[i]= int(versions[i])
         if len(versions) == 0:
             versions= [0]
-        outfname= '%s-%s.mid' % (outfname[:-4], max(versions)+1)
+        outfname= '%s-%s%s' % (basename, max(versions)+1, ext)
     
     outfname= os.path.join(outpath, outfname)
     return outfname
