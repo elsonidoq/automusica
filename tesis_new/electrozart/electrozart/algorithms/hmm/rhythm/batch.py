@@ -1,22 +1,22 @@
 from utils.fraction import Fraction, gcd
-from electrozart.algorithms import ExecutionContext
+from electrozart.algorithms import ExecutionContext, BatchTrainer
 
 from impl import RhythmHMM
 from collections import defaultdict
 import pickle
 
-class RhythmHMMBatchTrainer(object):
+class RhythmHMMBatchTrainer(BatchTrainer):
     def __init__(self, hmm_factory):
         self.models= defaultdict(hmm_factory)
         self.hmm_factory= hmm_factory
 
     def train(self, score):
-        test= self.hmm_factory() 
-        test.train(score)
-        m= max(Fraction(s, score.divisions).numerador() for s in test.hidden_states)
-        if m > 20: raise ValueError('asd')
-        m= max(Fraction(s, score.divisions).denominador() for s in test.hidden_states)
-        if m > 20: raise ValueError('asd')
+        #test= self.hmm_factory() 
+        #test.train(score)
+        #m= max(Fraction(s, score.divisions).numerador() for s in test.hidden_states)
+        #if m > 20: raise ValueError('asd')
+        #m= max(Fraction(s, score.divisions).denominador() for s in test.hidden_states)
+        #if m > 20: raise ValueError('asd')
         self.models[score.time_signature].train(score)
 
     def dump_statistics(self, stream):

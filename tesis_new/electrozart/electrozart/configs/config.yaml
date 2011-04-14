@@ -1,2 +1,3 @@
 paths:
     midi_out_base: "%(electrozart)s/../../output-midis"
+    batch_models_out_base: "%(electrozart)s/../../output-models"

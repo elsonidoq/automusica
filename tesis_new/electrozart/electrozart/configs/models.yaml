@@ -27,6 +27,12 @@ harmonic_context:
         args:
             seed: param:seed
 
+    notes_distr_batch_trainer:
+        type: object
+        path: electrozart.algorithms.harmonic_context.batch:NotesDistrBatchTrainer
+        args:
+            notes_distr_factory: factory:notes_distr
+
 
 rhythm:
     hmm:

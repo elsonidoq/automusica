@@ -2,6 +2,9 @@ parsers:
     midi:
         type: object
         path: electrozart.parsing.midi:MidiScoreParser
+        args:
+            print_warnings: False
+
 
 writers:
     midi:

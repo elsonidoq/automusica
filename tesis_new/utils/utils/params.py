@@ -15,7 +15,7 @@ def set_params(klass, params):
         
 class Parametrizable(object):
     def __new__(cls, *args, **kwargs):
-        i= super(Parametrizable, cls).__new__(cls, *args, **kwargs)
+        i= super(Parametrizable, cls).__new__(cls)
         i.params= {}
         return i
 
