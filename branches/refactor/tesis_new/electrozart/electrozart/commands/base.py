@@ -56,4 +56,5 @@ from compose import Compose
 from batch_train import BatchTrain
 from analyze_quantization import AnalyzeQuantization
 from mid2mp3 import Mid2Mp3
-start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell())
+from ioi_sandbox import IOISandbox
+start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox())
