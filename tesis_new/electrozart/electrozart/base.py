@@ -353,7 +353,7 @@ class Score(object):
         return res
 
 
-    def get_first_voice(self, skip_silences=False, relative_to=None):
+    def get_first_voice(self, skip_silences=False, relative_to=None, group_by_onset=False):
         all_notes= []
         for instr in self.instruments:
             if instr.is_drums: continue
@@ -368,6 +368,13 @@ class Score(object):
         if skip_silences:
             res= [n for n in res if not n.is_silence]
 
+        if group_by_onset:
+            assert relative_to is None
+            l= []
+            for k, ns in groupby(res, key=lambda x:x.start):
+                l.append(list(ns))
+            res=l
+
         if relative_to is not None:
             res= self._relative_notes(res, relative_to)
 
@@ -381,7 +388,7 @@ class Score(object):
     def duration(self):
         return self.get_notes()[-1].end
 
-    def get_notes(self, relative_to=None, instrument=None, skip_silences=False):
+    def get_notes(self, relative_to=None, instrument=None, skip_silences=False, group_by_onset=False):
         """
         params:
           relative_to :: string
@@ -402,6 +409,14 @@ class Score(object):
             allnotes= [n for n in allnotes if not n.is_silence]
 
         allnotes.sort(key=lambda n:n.start)            
+
+        if group_by_onset:
+            assert relative_to is None
+            l= []
+            for k, ns in groupby(allnotes, key=lambda x:x.start):
+                l.append(list(ns))
+            allnotes=l
+
 
         if relative_to is not None:
             allnotes= self._relative_notes(allnotes, relative_to)
