@@ -50,90 +50,6 @@ class ContourAlgorithm(ListAlgorithm):
         res.narmour_features_cnt= pickle.load(stream)
         return res
 
-    def save_info(self, folder, score, params): 
-        from plot import plot_narmour_feature, plot_first_note, paper_plot_narmour_feature, plot_arrival_contexts
-        ### XXX para el paper
-        #prob_model= ProbModel(self.ec.narmour_features_prob, self.notes_distr, use_harmony=True) 
-        #n1= n2= 83
-        #plot_narmour_feature(prob_model, params['min_pitch'], params['max_pitch'], folder, n1, n2)
-        #plot_first_note(prob_model, params['min_pitch'], params['max_pitch'], folder, n1, n2)
-        #plot_arrival_contexts(prob_model, params['min_pitch'], params['max_pitch'], 78, folder)
-
-
-        # XXX
-        feature_names= [] #all_features_values().keys() 
-        feature_names.append(None)
-        # XXX
-        pitches_distr= {}
-        for n, p in self.notes_distr.iteritems():
-            pitches_distr[n.get_canonical_note()]= pitches_distr.get(n.get_canonical_note(), 0) + p
-        prob_model= ProbModel(self.ec.narmour_features_prob, pitches_distr, use_harmony=False) 
-        for feature_name in feature_names:
-            plot_narmour_feature(prob_model, 50, 50+12+6, feature_name, folder)
-        
-        reference_pitch= 11
-        reference_pitch= (12*(params['min_pitch']/12) + 8 + 5 + 4) % 12
-        #reference_pitch= max(self.notes_distr.iteritems(), key=lambda x:x[1])[0].pitch
-        plot_narmour_feature(prob_model, params['min_pitch']+6, params['max_pitch']-6, None, folder, reference_note=Note(reference_pitch))
-        reference_pitch= 6
-        reference_pitch= (12*(params['min_pitch']/12) + 8 + 7 + 4) % 12
-        plot_narmour_feature(prob_model, params['min_pitch']+6, params['max_pitch']-6, None, folder, reference_note=Note(reference_pitch))
-        #plot_narmour_feature(prob_model, 50, 50+12+6, None, folder, reference_note=Note((reference_pitch+7)%12))
-        from pprint import pprint
-        with open(os.path.join(folder, 'narmour.txt'), 'w') as f:
-            pprint(self.ec.narmour_features_prob, f)
-
-        diatonic_pitches= [x[0].pitch for x in sorted(pitches_distr.items(), key=lambda x:x[1], reverse=True)]
-        def t(p):
-            return 12*(params['min_pitch']/12) + 6 + p
-
-
-        diatonic_pitches= map(t, diatonic_pitches)
-        ns= []
-        for n1 in diatonic_pitches:
-            for n2 in diatonic_pitches:
-                ns.append((n1,n2))
-        ns= self.random.sample(ns, 10)
-        #n1= 12*(params['min_pitch']/12) + 8 + 5 + 4 + 2
-        #n2= 12*(params['min_pitch']/12) + 8 + 7 + 4
-        #for f in all_features_values().keys():
-        for n1, n2 in ns:
-            #print "n1", Note(n1).get_pitch_name()
-            #print "n2", Note(n2).get_pitch_name()
-            x= []
-            y= []
-            prob_model= ProbModel(self.ec.narmour_features_prob, self.notes_distr, use_harmony=False) 
-            for pitch in xrange(params['min_pitch'], params['max_pitch']+1):
-                x.append(pitch)
-                y.append(prob_model.get_prob(n1, n2, pitch, use_harmony= True))#, feature_name=f))
-            
-            tot= sum(y)
-            y= [v/tot for v in y]
-            def format_pitch(x, pos=None):
-                #if int(x) != x: import ipdb;ipdb.set_trace()
-                x= int(round(x))
-                return Note(x).get_pitch_name()
-            
-            #def format_pitch(x, pos=None):
-            #    return str(int(x))
-            
-            #pprint(sorted(zip(x,y), key=lambda x:x[1], reverse=True)[:10])
-
-
-            figure= pylab.figure(figsize=(16, 12))
-            sp= figure.add_subplot(111)
-            e= sp.plot(x, y, label='score profile', color='black')[0]
-            #import ipdb;ipdb.set_trace()
-            e.axes.set_xlabel('Pitch')
-            e.axes.set_ylabel('Probability')
-            ax= e.axes.xaxis
-            ax.grid()
-            ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
-            ax.set_major_locator(ticker.MultipleLocator())
-            #ax.set_major_locator(ticker.LinearLocator(numticks=12))
-            pylab.savefig(os.path.join(folder, 'joint_prob_%s_%s.png' % ( Note(n1).get_pitch_name(), Note(n2).get_pitch_name())))
-            pylab.close()
-
 
     def pick_support_note(self, chord, available_pitches):
         chord_pitches= [n.pitch%12 for n in chord.notes]
@@ -264,12 +180,6 @@ class ContourAlgorithm(ListAlgorithm):
             context= RandomPicker(values=d, random=self.random).get_value(normalize=True)
             return context
         if self.ec.last_support_note is None:
-            #if len(prev_notes) == 1:
-            #    # quiero los contextos que sean de la nota que acabo de tocar
-            #    p= lambda c:c[1]  == prev_notes[0].pitch
-            #else:
-            #    # quiero todos los contextos
-            #    p= lambda c: True
             context= pick_context()                
 
         pitches= []
@@ -313,6 +223,85 @@ class ContourAlgorithm(ListAlgorithm):
             raise Exception('maal ahi')
         
         return res
+
+    def save_info(self, folder, score, params): 
+        from plot import plot_narmour_feature, plot_first_note, paper_plot_narmour_feature, plot_arrival_contexts
+
+
+        # XXX
+        feature_names= [] #all_features_values().keys() 
+        feature_names.append(None)
+        # XXX
+        pitches_distr= {}
+        for n, p in self.notes_distr.iteritems():
+            pitches_distr[n.get_canonical_note()]= pitches_distr.get(n.get_canonical_note(), 0) + p
+        prob_model= ProbModel(self.ec.narmour_features_prob, pitches_distr, use_harmony=False) 
+        for feature_name in feature_names:
+            plot_narmour_feature(prob_model, 50, 50+12+6, feature_name, folder)
+        
+        reference_pitch= 11
+        reference_pitch= (12*(params['min_pitch']/12) + 8 + 5 + 4) % 12
+        #reference_pitch= max(self.notes_distr.iteritems(), key=lambda x:x[1])[0].pitch
+        plot_narmour_feature(prob_model, params['min_pitch']+6, params['max_pitch']-6, None, folder, reference_note=Note(reference_pitch))
+        reference_pitch= 6
+        reference_pitch= (12*(params['min_pitch']/12) + 8 + 7 + 4) % 12
+        plot_narmour_feature(prob_model, params['min_pitch']+6, params['max_pitch']-6, None, folder, reference_note=Note(reference_pitch))
+        #plot_narmour_feature(prob_model, 50, 50+12+6, None, folder, reference_note=Note((reference_pitch+7)%12))
+        from pprint import pprint
+        with open(os.path.join(folder, 'narmour.txt'), 'w') as f:
+            pprint(self.ec.narmour_features_prob, f)
+
+        diatonic_pitches= [x[0].pitch for x in sorted(pitches_distr.items(), key=lambda x:x[1], reverse=True)]
+        def t(p):
+            return 12*(params['min_pitch']/12) + 6 + p
+
+
+        diatonic_pitches= map(t, diatonic_pitches)
+        ns= []
+        for n1 in diatonic_pitches:
+            for n2 in diatonic_pitches:
+                ns.append((n1,n2))
+        ns= self.random.sample(ns, 10)
+        #n1= 12*(params['min_pitch']/12) + 8 + 5 + 4 + 2
+        #n2= 12*(params['min_pitch']/12) + 8 + 7 + 4
+        #for f in all_features_values().keys():
+        for n1, n2 in ns:
+            #print "n1", Note(n1).get_pitch_name()
+            #print "n2", Note(n2).get_pitch_name()
+            x= []
+            y= []
+            prob_model= ProbModel(self.ec.narmour_features_prob, self.notes_distr, use_harmony=False) 
+            for pitch in xrange(params['min_pitch'], params['max_pitch']+1):
+                x.append(pitch)
+                y.append(prob_model.get_prob(n1, n2, pitch, use_harmony= True))#, feature_name=f))
+            
+            tot= sum(y)
+            y= [v/tot for v in y]
+            def format_pitch(x, pos=None):
+                #if int(x) != x: import ipdb;ipdb.set_trace()
+                x= int(round(x))
+                return Note(x).get_pitch_name()
+            
+            #def format_pitch(x, pos=None):
+            #    return str(int(x))
+            
+            #pprint(sorted(zip(x,y), key=lambda x:x[1], reverse=True)[:10])
+
+
+            figure= pylab.figure(figsize=(16, 12))
+            sp= figure.add_subplot(111)
+            e= sp.plot(x, y, label='score profile', color='black')[0]
+            #import ipdb;ipdb.set_trace()
+            e.axes.set_xlabel('Pitch')
+            e.axes.set_ylabel('Probability')
+            ax= e.axes.xaxis
+            ax.grid()
+            ax.set_major_formatter(ticker.FuncFormatter(format_pitch))
+            ax.set_major_locator(ticker.MultipleLocator())
+            #ax.set_major_locator(ticker.LinearLocator(numticks=12))
+            pylab.savefig(os.path.join(folder, 'joint_prob_%s_%s.png' % ( Note(n1).get_pitch_name(), Note(n2).get_pitch_name())))
+            pylab.close()
+
 
 
         
