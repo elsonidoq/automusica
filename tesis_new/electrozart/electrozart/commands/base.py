@@ -6,13 +6,16 @@ from IPython.Shell import IPShellEmbed
 
 here= os.path.abspath(os.path.dirname(__file__))
 
-
 class BaseCommand(object):
     name= None
     def __init__(self):
         usage= 'usage: electrozart %s [options]' % self.name
         self.parser= OptionParser(usage=usage)
         self.setup_arguments(self.parser)
+
+    def open_shell(self, vars):
+        locals().update(vars)
+        IPShellEmbed([])()
 
     def setup_arguments(self, parser):
         pass
@@ -57,4 +60,5 @@ from batch_train import BatchTrain
 from analyze_quantization import AnalyzeQuantization
 from mid2mp3 import Mid2Mp3
 from ioi_sandbox import IOISandbox
-start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox())
+from metrical_inference import MetricalInference
+start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference())

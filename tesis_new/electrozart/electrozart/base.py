@@ -173,7 +173,8 @@ class Note(object):
             return False
     def __cmp__(self, other): return cmp(self.pitch, other.pitch)            
     def __hash__(self): return hash(self.pitch)
-    def get_canonical_note(self): return Note(self.pitch%12)
+    def get_canonical_note(self): return self.get_canonical()
+    def get_canonical(self): return Note(self.pitch%12)
     def get_pitch_name(self, disable_octave=False): 
         if disable_octave: return self._pitches[self.pitch%12]
         else: return self._pitches[self.pitch%12] + str(self.pitch/12)

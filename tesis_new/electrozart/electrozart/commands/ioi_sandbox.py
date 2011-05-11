@@ -1,8 +1,14 @@
+from scipy import stats
+
+from base import BaseCommand
+from math import sqrt, exp, pi
+
+from IPython.Shell import IPShellEmbed
+
 import os
 import pylab
 from collections import defaultdict
 from itertools import groupby
-from base import BaseCommand
 from electrozart.algorithms.hmm.rhythm.impl import measure_interval_size
 from utils.outfname_util import get_outfname
 
@@ -37,21 +43,27 @@ class IOISandbox(BaseCommand):
             
             iois= sorted(iois.items())
             if len(iois) > 20: iois= iois[:-len(iois)/7]
-            x,y= zip(*iois)
-            x= [score.ticks2seconds(e) for e in x]
-            #pylab.hist(iois, bins=20)
-            #ax= fig.add_subplot(2,3,i+1)
-            pylab.plot(x,y)
-            #pylab.show()
-            #import ipdb;ipdb.set_trace()
             iois= dict(iois)
             peacks= organize_peacks(iois, score)
-            iois= dict((score.ticks2seconds(k), v) for k, v in iois.iteritems())
-            peacks= [score.ticks2seconds(e) for e in peacks]
-            for x in peacks:
-                pylab.text(x,iois[x],str(x))
 
-            pylab.grid()
+            x,y= zip(*sorted(iois.iteritems()))
+            fig= pylab.figure()
+            #s= int(sqrt(len(peacks)))+1
+            #ax= fig.add_subplot(s, s-1,1)
+            ax= fig.add_subplot(111)
+            ax.plot(x,y)
+            for x in peacks:
+                ax.text(x,iois[x],"%s (%.02f s)" % (x, score.ticks2seconds(x)), fontsize=9)
+
+            ax.grid()
+            IPShellEmbed()()
+            #period_notes= filter_period_notes(score, peacks)
+            #for i, (period, volumes) in enumerate(sorted(period_notes.iteritems())):
+            #    ax= fig.add_subplot(s,s-1,i+2)
+            #    ax.boxplot(volumes)
+            #    ax.set_title(str(period))
+                
+
             if options.show: 
                 pylab.show()
             else:
@@ -138,3 +150,20 @@ def _organize_peacks(remaining_peacks, partial_solution, complete_solutions, sco
     sol= best_sol or partial_solution
     if len(sol) > 1:
         complete_solutions.append(sol)
+
+
+#def get_peak(onset, peaks, offset):
+#    best= None
+#    onset= onset - offset
+#    for peak in peaks:
+#        o1= onset % peak
+#        o2= (o1 - peak) % peak
+#        p1= stats.c
+        
+#def evaluate_alignment(notes, peacks, offset):
+#    
+#def align_peacks(score, peacks):
+#    notes= score.get_notes(skip_silences=True)
+#    for peack in peacks:
+#        _align_
+
