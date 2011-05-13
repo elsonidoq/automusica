@@ -61,4 +61,5 @@ from analyze_quantization import AnalyzeQuantization
 from mid2mp3 import Mid2Mp3
 from ioi_sandbox import IOISandbox
 from metrical_inference import MetricalInference
-start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference())
+from index import Index
+start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference(), Index())
