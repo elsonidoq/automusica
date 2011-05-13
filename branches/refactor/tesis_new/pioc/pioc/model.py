@@ -43,7 +43,7 @@ class ApplicationContext(object):
         try:
             o= self.parsed_config[object_namespace][object_name]
         except KeyError:
-            raise ValueError('Invalid object name')
+            raise ValueError('Invalid object name: `%s.%s`' % (object_namespace, object_name))
 
         if isinstance(o, ObjectDescription):
             extra= extra or {}
