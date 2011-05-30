@@ -20,7 +20,7 @@ class Index(BaseCommand):
             if not options.override and fname in db: continue
             print "\t%s (%s of %s)" % (os.path.basename(fname), i+1, len(fnames))
             score= parser.parse(fname)
-            db[fname]= score #self.score2dict(score)
+            db[fname]= self.score2dict(score)
         db.sync()
         
         
