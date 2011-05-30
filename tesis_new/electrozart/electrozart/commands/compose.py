@@ -98,8 +98,10 @@ class Compose(BaseCommand):
             print "using seed:", seed
             params['seed']= seed
         
-        min_pitch= self.params['min_pitch']= 50
-        max_pitch= self.params['max_pitch']= 74
+        #min_pitch= self.params['min_pitch']= 50
+        #max_pitch= self.params['max_pitch']= 74
+        min_pitch= self.params['min_pitch']= 58
+        max_pitch= self.params['max_pitch']= 58 + 24
         params['score']= score
 
         print "MIN PITCH", min_pitch

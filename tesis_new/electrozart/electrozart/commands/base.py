@@ -32,6 +32,9 @@ class Shell(BaseCommand):
     name='shell'
 
     def start(self, options, args, appctx):
+        from collections import defaultdict
+        from itertools import chain, count, groupby
+        from random import random, seed, randint, choice, shuffle
         shell= IPShellEmbed(banner='Binded variable: appctx :: AplicationContext')
         shell()
 
@@ -45,7 +48,7 @@ class MetaCommand(object):
         else: name= sys.argv[1]
         if name == 'help':
             print "Available commands:"
-            for name in self.commands:
+            for name in sorted(self.commands):
                 print "\t%s" % name
         else:
             command= self.commands.get(name)
@@ -62,4 +65,5 @@ from mid2mp3 import Mid2Mp3
 from ioi_sandbox import IOISandbox
 from metrical_inference import MetricalInference
 from index import Index
-start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference(), Index())
+from meassure_classifier import MeasureClassifier
+start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference(), Index(), MeasureClassifier())

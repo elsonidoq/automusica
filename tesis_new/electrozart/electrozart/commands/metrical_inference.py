@@ -11,63 +11,10 @@ from collections import defaultdict
 from itertools import groupby
 from utils.outfname_util import get_outfname2
 
-def normalize(M, m):
-    def f(x):
-        return float(x-m)/(M-m)
-    return f
+from electrozart.pulse_analysis.model import Pulse
+from electrozart.pulse_analysis.metrical_grid import check_metrical_grid
+from electrozart.pulse_analysis.common import normalize
 
-class Pulse(object):
-    def __init__(self, offset, period):
-        self.offset= offset
-        self.period= period
-        self.variance= 1.0/period
-    
-    def __repr__(self):
-        return "P<k*%s + %s>" % (self.period, self.offset)
-
-    def get_score(self, onsets):
-        res= 0
-        for onset in onsets:
-            phase= float((onset - self.offset) % self.period)/self.period - 0.5
-            res+= stats.norm.pdf(phase, 0, self.variance)
-        return res
-    
-    def get_error(self, other):
-        quotient= float(self.period)/other.period
-        return  min(abs(quotient - f)/float(f)  for f in (0.5, 1.0/3))
-
-    def is_compatible(self, other):
-        quotient= float(self.period)/other.period
-        if min(abs(quotient - f)/float(f)  for f in (0.5, 1.0/3)) >= 0.05: return False
-        #if min(abs(quotient - f)/float(f)  for f in (0.5,1.0/3,2,3)) >= 0.1: return False
-        self_offset=self.offset
-        other_offset= other.offset
-        if self.offset == 0 or other.offset == 0:
-            self_offset+=1
-            other_offset+=1
-        return abs(float(self_offset)/other_offset-1) < 0.05
-
-def check_metrical_grid(metrical_grid, score):
-    nom, denom= score.time_signature
-    denom= 2**denom
-    if denom == 4:
-        beat= score.divisions
-    elif denom == 8:
-        beat= score.divisions/2
-    else:
-        import ipdb;ipdb.set_trace()
-
-    beat= float(beat)
-    found_beat= any((p.period/beat - 1) <= 0.05 for p in metrical_grid)
-    #if not found_beat: import ipdb;ipdb.set_trace()
-    import ipdb;ipdb.set_trace()
-    if nom % 3 == 0:
-        correct= any((p.period/beat/3 - 1) <= 0.05 for p in metrical_grid)
-    elif nom % 2 == 0:
-        correct= any((p.period/beat/2 - 1) <= 0.05 for p in metrical_grid)
-    
-    return found_beat, found_beat and correct
-        
 class MetricalInference(BaseCommand):
     name='metrical-inference'
 
@@ -283,16 +230,6 @@ class MetricalInference(BaseCommand):
         pylab.close()
         #pulses.sort(key=lambda x:x.get_score(onsets), reverse=True)
 
-def get_bests(l, freq_quotient=0.5, min_length= 0, key=None):
-    key= key or (lambda x:x)
-    l.sort(key=key, reverse=True)
-    res= []
-    for e in l:
-        if len(res) == 0 or key(e)/float(key(res[-1])) < freq_quotient or len(res) < min_length:
-            res.append(e)
-        else:
-            break
-    return res
 
 def group_iois(iois, ticks2seconds, threshold):
     res= defaultdict(int)
@@ -323,102 +260,4 @@ def group_iois(iois, ticks2seconds, threshold):
     return res
 
     
-
-def analyze_iois(score, window_size=1):
-    res= defaultdict(int)
-    notes_by_ioi= defaultdict(list)
-    for notes in score.notes_per_instrument.itervalues():
-        notes= [n for n in notes if not n.is_silence]
-        notes.sort(key=lambda n:n.start)
-        l= []
-        for key, ns in groupby(notes, key=lambda n:n.start):
-            l.append(list(ns))
-        notes= l
-    #notes= score.get_notes(skip_silences=True, group_by_onset=True)
-        for prev, next in zip(notes, notes[window_size:]):
-            for pn in prev:
-                for nn in next:
-                    res[nn.start - pn.start]+=1
-                    notes_by_ioi[nn.start - pn.start].append(pn)
-    
-    s= sum(res.itervalues())
-    res= dict((k, float(v)/s) for k, v in res.iteritems())
-    notes_by_ioi= dict(notes_by_ioi)
-    return res, notes_by_ioi
-
-def get_metrical_grid(pulses, notes_by_ioi, pitch_profile, volume_normalizer):
-    complete_solutions= []
-    for pulse in pulses:
-        remaining_pulses= [p for p in pulses if p != pulse]
-        sol= _get_metrical_grid(remaining_pulses, [pulse], complete_solutions)
-
-    if len(complete_solutions) == 0:
-        return []
-    else:
-        res= max(complete_solutions, key=lambda s: evaluate_solution(s, notes_by_ioi, pitch_profile, volume_normalizer))
-        return res
-
-
-def _get_metrical_grid(remaining_pulses, partial_solution, complete_solutions):
-    partial_sol_updated=False
-    for pulse in remaining_pulses:
-        index= get_insertion_index(partial_solution, pulse)
-        if index is not None:
-            partial_sol_updated= True
-            new_solution= partial_solution[:]
-            new_solution.insert(index, pulse)
-            new_remainin_pulses= [p for p in remaining_pulses if p != pulse]
-            _get_metrical_grid(new_remainin_pulses, new_solution, complete_solutions)
-
-    if not partial_sol_updated and len(partial_solution)>1:
-        complete_solutions.append(partial_solution)
-
-def get_insertion_index(partial_solution, pulse):
-    index= None
-    for i, (prev, next) in enumerate(zip(partial_solution, partial_solution[1:])):
-        if pulse.is_compatible(next) and prev.is_compatible(pulse):
-            return i+1
-    else:
-        if partial_solution[-1].is_compatible(pulse):
-            return len(partial_solution)
-        elif pulse.is_compatible(partial_solution[0]):
-            return 0
-
-
-
-def evaluate_solution(metrical_grid, notes_by_ioi, pitch_profile, volume_normalizer):
-    # XXX
-    # ESTOY FAVORECIENDO PULSOS CHICOS
-    res= 0
-    for pulse in metrical_grid:
-        for n in notes_by_ioi[pulse.period]:
-            if n.start % pulse.period != pulse.offset: continue
-            res+= pitch_profile[n.get_canonical()] 
-            res+= volume_normalizer(n.volume)
-    res= float(res)/len(metrical_grid)
-
-    error= 0
-    cnt= 0
-    for i, pulse in enumerate(metrical_grid):
-        if i == 0:
-            error+= pulse.get_error(metrical_grid[1])
-            cnt+=1
-        elif i == len(metrical_grid)-1:
-            error+= pulse.get_error(metrical_grid[i-1])
-            cnt+=1
-        else:
-            error+= pulse.get_error(metrical_grid[i-1])
-            error+= metrical_grid[i+1].get_error(pulse)
-            cnt+=2
-
-    error= error/cnt
-
-    return res/error            
-
-def is_metrical_grid(pulses):
-    for i, p1 in enumerate(pulses):
-        for p2 in pulses[i+1:]:
-            if not p1.is_compatible(p2): return False
-   
-    return True
 
