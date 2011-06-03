@@ -15,7 +15,7 @@ class BaseCommand(object):
 
     def open_shell(self, vars):
         locals().update(vars)
-        IPShellEmbed([])()
+        IPShellEmbed([])(local_ns=locals(), global_ns=globals())
 
     def setup_arguments(self, parser):
         pass
@@ -36,7 +36,7 @@ class Shell(BaseCommand):
         from itertools import chain, count, groupby
         from random import random, seed, randint, choice, shuffle
         shell= IPShellEmbed(banner='Binded variable: appctx :: AplicationContext')
-        shell()
+        shell(local_ns=locals(), global_ns=globals())
 
         
 class MetaCommand(object):
