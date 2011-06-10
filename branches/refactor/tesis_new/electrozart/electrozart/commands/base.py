@@ -14,6 +14,9 @@ class BaseCommand(object):
         self.setup_arguments(self.parser)
 
     def open_shell(self, vars):
+        from collections import defaultdict
+        from itertools import chain, count, groupby
+        from random import random, seed, randint, choice, shuffle
         locals().update(vars)
         IPShellEmbed([])(local_ns=locals(), global_ns=globals())
 

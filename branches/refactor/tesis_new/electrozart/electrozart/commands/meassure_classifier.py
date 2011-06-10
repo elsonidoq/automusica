@@ -46,24 +46,29 @@ class MeasureClassifier(BaseCommand):
 
     def get_fnames(self, options, args, appctx):
         if options.use_db:
-            db= appctx.get('db.midi') 
+            db= appctx.get('db.scores') 
             d= defaultdict(list)
-            items= db.items()[:]
-            seed(0)
-            shuffle(items)
             print "loading fnames..."
-            for fname, desc in items:
+            for i, doc in enumerate(db.find({'time_signature':{'$in':'2/4 3/4 4/4 6/8'.split()}})):
+                print i
+                fname= doc['fname']
                 if 'sks' in fname: continue
                 #if 'cperez' not in fname: continue
                 if 'kp' in fname and 'kp-perf' not in fname: continue
                 #if len(d[desc['time_signature']]) > 20: continue
-                if desc['time_signature'] not in [(2,2), (4,2), (3,2), (6,3)]: continue
-                if desc['time_signature'] not in [(4,2), (3,2), (2,2)]: continue
-                d[desc['time_signature']].append(fname)
+                if len(d[doc['time_signature']]) > 200: continue
+                #if desc['time_signature'] not in [(2,2), (4,2), (3,2), (6,3)]: continue
+                #if desc['time_signature'] not in [(4,2), (3,2)]: continue
+                d[doc['time_signature']].append(doc['score'])
 
             fnames= []
+            seed(0)
+            m= min(map(len, d.itervalues()))
             for l in d.itervalues():
-                fnames.extend((None,e) for e in l[:200])
+                shuffle(l)
+                fnames.extend((None,e) for e in l[:m])
+            print m
+
             #fnames= [(None, fname) for fname in chain(*d.itervalues())]
             #shuffle(fnames)
             #fnames= fnames[:600]
@@ -89,15 +94,19 @@ class MeasureClassifier(BaseCommand):
         #with open('examples.pickle') as f:
         #    examples, fnames= pickle.load(f)
 
-        feature_cnt= defaultdict(int)
-        for features, label in examples:
-            for feature_name in features:
-                feature_cnt[feature_name]+=1
-        all_features= set(f for f, cnt in feature_cnt.iteritems() if cnt > 5)
+        #examples= [e for e in examples if e[1] in ('3/4', '4/4')]
 
-        for i, (features, label) in enumerate(examples):
-            features= dict((k,v) for k, v in features.iteritems() if k in all_features)
-            examples[i]= features, label
+        #feature_cnt= defaultdict(int)
+        #for features, label in examples:
+        #    for feature_name in features:
+        #        feature_cnt[feature_name]+=1
+        #all_features= set(f for f, cnt in feature_cnt.iteritems() if cnt > 5)
+
+        #for i, (features, label) in enumerate(examples):
+        #    features= dict((k,v) for k, v in features.iteritems() if k in all_features)
+        #    examples[i]= features, label
+
+        #examples= [(f,l) for f,l in examples if f]
 
         diss, mapping= self.calculate_dissimilarities(examples, 'diss')
         d= defaultdict(lambda : defaultdict(int))
@@ -116,7 +125,7 @@ class MeasureClassifier(BaseCommand):
             y= ['%.02f%%' % (float(e)/s*100) for e in y]
             print ('%-20s'*(len(y)+1)) % tuple([k]+y)
 
-        self.export_examples_to_csv(examples, 'examples3.csv')
+        self.export_examples_to_csv(examples, 'examples6.csv')
         self.open_shell(locals())
 
         return
@@ -152,21 +161,23 @@ class MeasureClassifier(BaseCommand):
 
 
     def export_examples_to_csv(self, examples, fname):
+        print "Export to csv..."
         d= defaultdict(list)
         for features, label in examples:
             d[label].append((features, label))
 
-        d= [v[:120] for v in d.values()]
-        examples= list(chain(*d))
+        examples= list(chain(*d.values()))
         columns= set()
         for features, label in examples:
             columns.update(features)
+        columns= map(str, columns)
 
         with open(fname, 'w') as f:
             writer= csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
             columns= sorted(columns)
             writer.writerow(map(str, columns) + ['label'])
             for features, label in examples:
+                features= dict((str(k), v) for k, v in features.iteritems())
                 row=[]
                 for column_name in columns:
                     row.append(features.get(column_name))
@@ -188,11 +199,15 @@ class MeasureClassifier(BaseCommand):
         examples= []
         shuffle(fnames)
         for i, (folder, fname) in enumerate(fnames):
-            print "\t%-40s (%s of %s)" % (os.path.basename(fname), i+1, len(fnames))
-            score= parser.parse(fname)
+            if isinstance(fname, basestring): 
+                print "\t%-40s (%s of %s)" % (os.path.basename(fname), i+1, len(fnames))
+                score= parser.parse(fname)
+            else: 
+                score= fname
+                print "\t%-40s (%s of %s)" % (os.path.basename(score.fname), i+1, len(fnames))
             time_signatures[score.time_signature]+=1
 
-            d= get_features4(score, appctx)
+            d= get_features4(score)
             #try: d= get_features4(score, appctx)
             #except Exception, e: 
             #    print "Error with %s" % fname
@@ -203,13 +218,15 @@ class MeasureClassifier(BaseCommand):
             denom= 2**denom
             examples.append((d, '%s/%s' % (num,denom)))
 
-        with open('examples.pickle', 'w') as f:
-            pickle.dump(examples, f, 2)
+        #print "dumping..."
+        #with open('examples.pickle', 'w') as f:
+        #    pickle.dump(examples, f, 2)
 
         return examples, fnames
 
 
     def calculate_dissimilarities(self, examples, fname):
+        print "dissimilarities..."
         diss= defaultdict(dict)
 
         def calc_dist(f1, f2):

@@ -45,9 +45,9 @@ class MetricalInference(BaseCommand):
         if options.use_db:
             db= appctx.get('db.midi') 
             d= defaultdict(list)
-            for fname, desc in db.iteritems():
-                if len(d[desc['time_signature']]) > 50: continue
-                d[desc['time_signature']].append(fname)
+            for doc in db:
+                if len(d[doc['time_signature']]) > 50: continue
+                d[doc['time_signature']].append(doc['score'])
 
             fnames= [(None, fname) for fname in chain(*d.itervalues())]
 

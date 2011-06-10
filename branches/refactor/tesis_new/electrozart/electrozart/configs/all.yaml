@@ -2,10 +2,5 @@ import:
     - config.yaml
     - models.yaml
     - midi.yaml
+    - db.yaml
 
-db:
-    midi:
-        type: object
-        path: utils.pdict:PDict
-        args:
-            fname: config:paths.db
