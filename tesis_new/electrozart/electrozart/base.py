@@ -148,19 +148,27 @@ class Note(object):
     """
     _pitches= ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
     def __init__(self, pitch):
+        d= dict(C=0, D= 2, E=4, F= 5, G= 7, A=9, B=11)
+        for k, v in d.items():
+            d['%s#' % k] = (v+1) % 12
+            d['%sB' % k] = (v-1) % 12
+        self._pitches_d= d    
+
         if isinstance(pitch, basestring):
-            if pitch not in self._pitches: 
-                patterns= [re.compile('(?P<pitch>%s)(?P<octave>[0-9]+)' % s) for s in self._pitches]
+            pitch= pitch.upper()
+            if pitch not in self._pitches_d:
+                patterns= [re.compile('(?P<pitch>%s)(?P<octave>[0-9]+)' % s) for s in self._pitches_d]
                 for p in patterns:
                     m= p.match(pitch)
                     if m:
                         gd= m.groupdict()
-                        pitch= self._pitches.index(gd['pitch']) + int(gd['octave'])*12
+                        base_pitch= self._pitches_d[gd['pitch']]
+                        pitch= base_pitch + int(gd['octave'])*12
                         break
                 else:
                     raise ValueError('si pitch es sting, debe ser alguno de Note._pitches')
             else:
-                pitch= self._pitches.index(pitch)
+                pitch= self._pitches_d[pitch]
 
         self.pitch= pitch
 

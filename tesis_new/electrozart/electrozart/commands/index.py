@@ -11,7 +11,7 @@ class Index(BaseCommand):
 
     def start(self, options, args, appctx):
         parser= appctx.get('parsers.midi')
-        db= appctx.get('db.midi')
+        db= appctx.get('db.scores')
         
         if options.recursive: fnames= self.walk(args[0])
         else: fnames= args
@@ -19,14 +19,11 @@ class Index(BaseCommand):
         for i, fname in enumerate(fnames):
             if not options.override and fname in db: continue
             print "\t%s (%s of %s)" % (os.path.basename(fname), i+1, len(fnames))
-            score= parser.parse(fname)
-            db[fname]= self.score2dict(score)
-        db.sync()
+            try: score= parser.parse(fname)
+            except Exception: continue
+            db.index(fname, score)
         
         
-    def score2dict(self, score):
-        return dict(time_signature= score.time_signature)
-
     def walk(self, dir):
         res= []
         for root, dirs, fnames in os.walk(dir):
