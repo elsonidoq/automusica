@@ -12,7 +12,7 @@ import os
 import pylab
 from collections import defaultdict
 from itertools import groupby
-from utils.outfname_util import get_outfname2
+from utils.outfname_util import get_outfname
 
 from electrozart.pulse_analysis.common import normalize
 from electrozart.pulse_analysis.features import get_features, get_features4
@@ -70,7 +70,7 @@ class MeasureClassifier(BaseCommand):
             print m
 
             #fnames= [(None, fname) for fname in chain(*d.itervalues())]
-            #shuffle(fnames)
+            shuffle(fnames)
             #fnames= fnames[:600]
 
         else:
@@ -88,8 +88,15 @@ class MeasureClassifier(BaseCommand):
 
     def start(self, options, args, appctx):
         examples, fnames= self.get_examples(options, args, appctx)
+
+        data_outdir= appctx.get('paths.data')
+        outfname= get_outfname(os.path.join(data_outdir, 'meassure_classifier'), outfname='examples.csv')
+        print outfname
+        self.export_examples_to_csv(examples, outfname)
+
         with open('examples.pickle', 'w') as f:
             pickle.dump((examples, fnames), f, 2)
+
 
         #with open('examples.pickle') as f:
         #    examples, fnames= pickle.load(f)
@@ -125,7 +132,6 @@ class MeasureClassifier(BaseCommand):
             y= ['%.02f%%' % (float(e)/s*100) for e in y]
             print ('%-20s'*(len(y)+1)) % tuple([k]+y)
 
-        self.export_examples_to_csv(examples, 'examples6.csv')
         self.open_shell(locals())
 
         return
