@@ -39,10 +39,15 @@ class PrefixTree(object):
             l, n= stack.pop()
             nchildren= len(n) - (self.cnt in n)
             if nchildren == 0: nchildren= 1
-            if self.cnt in n and len(l) > 5 and n[self.cnt] > 4:
+            if self.cnt in n and len(l) > 3 and n[self.cnt] > 4:
                 score= n[self.cnt]*(len(l) - max(0, len(l) - 10)) 
+                sgn= sign(l[0])
+                f= 1
+                for i, e in enumerate(l):
+                    if i == 0: continue
+                    if sign(e) != sign(l[i-1]): f+=1
                 #if score > 1000: import ipdb;ipdb.set_trace()
-                prefixes.append((l, score)) 
+                prefixes.append((l, score*f)) 
 
             for k, v in n.iteritems():
                 if k is self.cnt: continue
@@ -99,18 +104,23 @@ def build_score_from_contour_pattern(score, fname_template, writer):
         c.append(fuzz(n.pitch - p.pitch))
         #c.append(sign(n.pitch - p.pitch))
 
-    t, patterns= get_best_patterns(c, 30)
+    t, patterns= get_best_patterns(c, 10)
     
-    for patt_idx, (pattern, w) in enumerate(patterns[:5]):
+    new_t= PrefixTree()
+    for patt_idx, (pattern, w) in enumerate(patterns):
         #return t, patterns
         print pattern
+        if pattern in new_t: 
+            print "no"
+            continue
+        
+        new_t.define(pattern)
         instances= []
         for i in xrange(len(c)):
             if c[i:i+len(pattern)] == pattern: 
                 instances.append(notes[i:i+len(pattern)+1 ])
 
 
-        import ipdb;ipdb.set_trace()
         ns_notes= []
         delims= []
         delimiter= instances[0][0].copy()
@@ -141,12 +151,13 @@ def build_score_from_contour_pattern(score, fname_template, writer):
             delims.append(delimiter)
             ns_notes.append(Silence(ns_notes[-1].end, int(score.seconds2ticks(1))))
             
-        new_score= score.copy()
-        i= [i for i in score.instruments if i.patch==None][0]
-        perc_i= Instrument()
-        perc_i.is_drums= True
-        new_score.notes_per_instrument= {i:ns_notes, perc_i:delims}
-        writer.dump(new_score, fname_template % patt_idx)
+        if len(used_instances) > 1:
+            new_score= score.copy()
+            i= [i for i in score.instruments if i.patch==None][0]
+            perc_i= Instrument()
+            perc_i.is_drums= True
+            new_score.notes_per_instrument= {i:ns_notes, perc_i:delims}
+            writer.dump(new_score, fname_template % patt_idx)
 
 def get_best_patterns(l, wsize, sims=None):
     t= build_prefix_tree(l, wsize)
