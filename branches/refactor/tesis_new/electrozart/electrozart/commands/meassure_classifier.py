@@ -16,6 +16,7 @@ from utils.outfname_util import get_outfname
 
 from electrozart.pulse_analysis.common import normalize
 from electrozart.pulse_analysis.features import get_features, get_features4
+from electrozart import sandbox
 
 class MeasureClassifier(BaseCommand):
     name='measure-classifier'
@@ -87,20 +88,23 @@ class MeasureClassifier(BaseCommand):
         return fnames
 
     def start(self, options, args, appctx):
-        examples, fnames= self.get_examples(options, args, appctx)
+        #examples, fnames= self.get_examples(options, args, appctx)
 
-        data_outdir= appctx.get('paths.data')
-        outfname= get_outfname(os.path.join(data_outdir, 'meassure_classifier'), outfname='examples.csv')
-        print outfname
-        self.export_examples_to_csv(examples, outfname)
+        #data_outdir= appctx.get('paths.data')
+        #outfname= get_outfname(os.path.join(data_outdir, 'meassure_classifier'), outfname='examples.csv')
+        #print outfname
+        #self.export_examples_to_csv(examples, outfname)
 
-        with open('examples.pickle', 'w') as f:
-            pickle.dump((examples, fnames), f, 2)
+        #with open('examples.pickle', 'w') as f:
+        #    pickle.dump(examples, f, 2)
 
 
-        #with open('examples.pickle') as f:
-        #    examples, fnames= pickle.load(f)
+        print "loading examples..."
+        with open('examples_wo_score_not_truncated.pickle') as f:
+            examples= pickle.load(f)
 
+        d= sandbox.entropy_feature_weight(examples)
+        all_features= set(k for k, v in d.iteritems() if v >= 1.7)
         #examples= [e for e in examples if e[1] in ('3/4', '4/4')]
 
         #feature_cnt= defaultdict(int)
@@ -109,9 +113,15 @@ class MeasureClassifier(BaseCommand):
         #        feature_cnt[feature_name]+=1
         #all_features= set(f for f, cnt in feature_cnt.iteritems() if cnt > 5)
 
-        #for i, (features, label) in enumerate(examples):
-        #    features= dict((k,v) for k, v in features.iteritems() if k in all_features)
-        #    examples[i]= features, label
+        for i, (features, label) in enumerate(examples):
+            features= dict((k,v) for k, v in features.iteritems() if k in all_features)
+            examples[i]= features, label
+
+        data_outdir= appctx.get('paths.data')
+        outfname= get_outfname(os.path.join(data_outdir, 'meassure_classifier'), outfname='examples.csv')
+        print outfname
+        self.export_examples_to_csv(examples, outfname)
+
 
         #examples= [(f,l) for f,l in examples if f]
 
