@@ -1,0 +1,19 @@
+db:
+    connection:
+        type: object
+        path: pymongo:Connection
+    
+    scores:
+        type: object
+        path: electrozart.db:ScoreDatabase
+        args:
+            connection: object:connection
+            db_name: config:mongo.db
+            collection_name: config:mongo.scores_collection
+
+    scores_old:
+        type: object
+        path: utils.pdict:PDict
+        args:
+            fname: config:paths.db
+
