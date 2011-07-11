@@ -1,3 +1,5 @@
+import os
+import pylab
 from utils.fraction import Fraction
 from common import get_components
 from impl import get_iois, get_pulses, group_pulses
@@ -20,70 +22,53 @@ def get_landscape(score):
     
     return dict(res)
     
-def borrar(landscape):
-    x,y= zip(*landscape)
-    y= list(y)
-    y.sort()
-    thres= y[int(len(y)*0.65)]
-    landscape= [e for e in landscape if e[1] >= thres]
-    res= defaultdict(int)
-    d= defaultdict(list)
-    for i, (k1, w1) in enumerate(landscape):
-        for k2, w2 in landscape[i+1:]:
-            k= abs(k2-k1)
-            res[k]+= w1*w2#1 #2*w1*w2/(w1+w2)
-            d[k].append((k1,k2))
-
-    #landscape= dict(landscape)
-    #for k, v in d.iteritems():
-    #    ls= []
-    #    for t1, t2 in v:
-    #        for l in ls:
-    #            if l[-1] == t1: 
-    #                l.append(t2)
-    #                break
-    #        else:
-    #            ls.append([t1, t2])
-    #    d[k]= sorted(ls, key=lambda l:sum(landscape[e] for e in l))
 
 
-    s= float(sum(res.itervalues()))
-    s= float(max(res.itervalues()))
-    res= dict((k, v/s) for k, v in res.iteritems())
-    res= sorted(res.iteritems(), key=lambda x:x[1] ,reverse=True)
-    return dict(res)#, d
-
-
-def get_features4(score):
-    landscape= get_landscape(score)
-
+def get_features_from_landscape(landscape, bps, throw_percent=0.65):
     landscape= dict((k, float(v)) for k, v in landscape.iteritems())
     landscape= sorted(landscape.iteritems())
     x,y= zip(*landscape)
     y= list(y)
     y.sort()
-    thres= y[int(len(y)*0.65)]
+    thres= y[int(len(y)*throw_percent)]
     landscape= [e for e in landscape if e[1] >= thres]
     res= defaultdict(int)
     d= defaultdict(list)
     for i, (k1, w1) in enumerate(landscape):
         for k2, w2 in landscape[i+1:]:
-            if score.ticks2seconds(abs(k1-k2)) > 5: break
-            k= Fraction(abs(k2-k1), score.divisions)
-            res[k]+= w1*w2#1 #2*w1*w2/(w1+w2)
+            k= k2-k1
+            secs= float(k)/bps 
+            if secs < 0: import ipdb;ipdb.set_trace()
+            if secs > 5: break
+            if secs < 0.1: continue
+            res[k]+= w1*w2
             d[k].append((k1,k2))
 
-    #landscape= dict(landscape)
-    #for k, v in d.iteritems():
-    #    ls= []
-    #    for t1, t2 in v:
-    #        for l in ls:
-    #            if l[-1] == t1: 
-    #                l.append(t2)
-    #                break
-    #        else:
-    #            ls.append([t1, t2])
-    #    d[k]= sorted(ls, key=lambda l:sum(landscape[e] for e in l))
+
+    s= float(sum(res.itervalues()))
+    s= max(res.itervalues())
+    res= dict((k, v/s) for k, v in res.iteritems())
+    #res= sorted(res.iteritems(), key=lambda x:x[1] ,reverse=True)
+    return dict(res)#, d
+
+def get_features_from_landscape_old(landscape, divisions, ticks2seconds, throw_percent=0.65):
+    landscape= dict((k, float(v)) for k, v in landscape.iteritems())
+    landscape= sorted(landscape.iteritems())
+    x,y= zip(*landscape)
+    y= list(y)
+    y.sort()
+    thres= y[int(len(y)*throw_percent)]
+    landscape= [e for e in landscape if e[1] >= thres]
+    res= defaultdict(int)
+    d= defaultdict(list)
+    for i, (k1, w1) in enumerate(landscape):
+        for k2, w2 in landscape[i+1:]:
+            if ticks2seconds(abs(k1-k2)) > 5: break
+            if ticks2seconds(abs(k1-k2)) < 0.1: continue
+            #k= Fraction(abs(k2-k1), divisions)
+            k= float(abs(k2-k1))/divisions
+            res[k]+= w1*w2
+            d[k].append((k1,k2))
 
 
     s= float(sum(res.itervalues()))
@@ -91,6 +76,46 @@ def get_features4(score):
     res= dict((k, v/s) for k, v in res.iteritems())
     res= sorted(res.iteritems(), key=lambda x:x[1] ,reverse=True)
     return dict(res)#, d
+
+def normalize_landscape(landscape, divisions):
+    return dict((Fraction(k, divisions), v) for k, v in landscape.iteritems())
+
+def get_features4(score, throw_percent=0.65):
+    landscape= get_landscape(score)
+    landscape= dict((Fraction(k, score.divisions), v) for k, v in landscape.iteritems())
+    return get_features_from_landscape(landscape, score.bps, throw_percent)
+
+def find_threshold(landscape):
+    
+
+def plot(db):
+    for doc in db.find({'corpus_name':'cperez'}):
+        ls= doc['landscape']
+        ls= dict((Fraction(k, doc['divisions']), v) for k, v in ls.iteritems())
+        for throw_percent in [float(i)/10 for i in xrange(10)]:
+            fs= get_features_from_landscape(ls, doc['bps'], throw_percent)
+            x,y= zip(*sorted(fs.items()))
+            pylab.plot(x,y)
+            fname= 'acorrs/%s-%.01f.png' % (os.path.basename(doc['fname']), throw_percent)
+            pylab.savefig(fname)
+            pylab.close()
+
+def convolve(score, landscape, throw_percent):
+
+    res= []
+    landscape= dict((Fraction(k,score.divisions), v) for k, v in landscape.iteritems())
+    i= 0
+    orig_ls= landscape
+    for i in xrange(4):
+    #while len(landscape) > 100:
+        landscape= get_features_from_landscape(landscape, score.bps, throw_percent)
+        res.append(landscape)
+        i+=1
+        print i, len(landscape)
+    
+    return res
+
+    
 
 def get_features2(score, appctx):
     iois, notes_by_ioi= get_iois(score)
