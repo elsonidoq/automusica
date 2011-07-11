@@ -69,4 +69,5 @@ from ioi_sandbox import IOISandbox
 from metrical_inference import MetricalInference
 from index import Index
 from meassure_classifier import MeasureClassifier
-start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference(), Index(), MeasureClassifier())
+from meassure_classifier2 import MeasureClassifier2
+start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference(), Index(), MeasureClassifier(), MeasureClassifier2())
