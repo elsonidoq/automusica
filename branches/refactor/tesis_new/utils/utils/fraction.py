@@ -17,8 +17,10 @@ class Fraction(object):
         elif isinstance(num, Fraction) and isinstance(denom, Fraction):
             self._num= num.numerador() * denom.denominador() 
             self._denom= num.denominador() * denom.numerador()
+        elif isinstance(num, float) or isinstance(denom, float):
+            raise ValueError('Cant handle floats')
         else:
-            print "error"
+            raise ValueError('Ups')
 
         self._simplificar()
 

@@ -1,3 +1,4 @@
+from itertools import count
 import pylab
 from random import seed, shuffle
 import os
@@ -7,10 +8,20 @@ from math import sqrt
 import re
 from collections import defaultdict
 
+def translate_dist(dist):
+    d= defaultdict(count().next)
+    res= defaultdict(dict)
+    for k1, v in dist.iteritems():
+        for k2, w in v.iteritems():
+            res[d[k1]][d[k2]]= w
+
+    return dict(d), dict(res)
+
 def do_mds(dist):
     #dist= calc_dist(domains)
     tmpfname= tempfile.mktemp()
-    save_praat_dist(dist, tmpfname)
+    trans_dict, trans_dist= translate_dist(dist)
+    save_praat_dist(trans_dist, tmpfname)
     outfname= tmpfname + '.Configuration'
     script= """Read from file... %(tmpfname)s
 To Configuration (monotone mds)... 2 "Primary approach" 0.00001 50 1
@@ -25,6 +36,8 @@ Save as short text file... %(outfname)s""" % locals()
     p.wait()
     
     conf= parse_mds_configuration(outfname)
+    trans_dict= dict((v,k) for k, v in trans_dict.iteritems())
+    conf= dict((trans_dict[int(k)], v) for k, v in conf.iteritems())
     os.unlink(tmpfname)
     os.unlink(outfname)
     os.unlink(praat_script_fname)

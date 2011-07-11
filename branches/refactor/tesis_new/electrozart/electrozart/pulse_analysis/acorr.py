@@ -1,14 +1,47 @@
+from common import approx_group_by_onset
+from collections import defaultdict
 from math import sqrt
+
+def window(score, size= 50):
+    notes= approx_group_by_onset(score)
+    notes= [e[0] for e in notes]
+
+    res= defaultdict(list)
+    for i, n1 in enumerate(notes):
+        for j, n2 in enumerate(notes[i+1:]):
+            ti= n2.start-n1.start
+            res[ti].append(j)
+
+    best= None
+    arg_best= None
+    for k, v in res.iteritems():
+        v= float(sum(v))/len(v)
+        score= abs(v-size)
+        if best is None or score < arg_best:
+            best= k
+            arg_best= score
+
+    return best
+    res= dict((k, float(sum(v))/len(v)) for k, v in res.iteritems() )
+
+
 
 def avega(d, window):
     l= d
-    while len(l) > 200:
-        l= autocorrelate(l, window)
-    
-    res= {}
-    for i in xrange(max(l)):
-        res[i]= l.get(i,0)
-    return res
+    iters= 0
+    while max(l) > window:
+        iters+=1
+        newl= autocorrelate(l, window)
+        if len(newl) < 10: break
+        l= newl
+    print iters 
+
+    #res= {}
+    #for i in xrange(max(l)):
+    #    res[i]= l.get(i,0)
+    #return res
+    return l
+
 def autocorrelate(d, window):
     x,y= zip(*sorted(d.items()))
 
@@ -37,6 +70,6 @@ def autocorrelate(d, window):
             else:
                 j0+=1
 
-        c= c/(sqrt(norm2)*window_norm2) 
+        if c > 0: c= c/(sqrt(norm2)*window_norm2) 
         res[x[i]]= c
     return res        
