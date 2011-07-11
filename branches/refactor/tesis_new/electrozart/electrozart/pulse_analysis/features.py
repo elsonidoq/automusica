@@ -85,7 +85,7 @@ def get_features4(score, throw_percent=0.65):
     landscape= dict((Fraction(k, score.divisions), v) for k, v in landscape.iteritems())
     return get_features_from_landscape(landscape, score.bps, throw_percent)
 
-def find_threshold(landscape):
+#def find_threshold(landscape):
     
 
 def plot(db):
