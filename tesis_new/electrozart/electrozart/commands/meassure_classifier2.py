@@ -25,35 +25,40 @@ class MeasureClassifier2(BaseCommand):
     def setup_arguments(self, parser):
         parser.add_option('--show', dest='show', default=False, action='store_true')
         parser.add_option('--plot', dest='plot', default=False, action='store_true')
+        parser.add_option('--binary', dest='binary', default=False, action='store_true')
     
     def get_examples(self, options, args, appctx):
         db= appctx.get('db.scores') 
         d= defaultdict(list)
-        print "loading fnames..."
-        for i, doc in enumerate(db.find({'time_signature':{'$in':'2/4 3/4 4/4 6/8'.split()}})):
-            print i
+        cursor= db.find({'landscape':{'$exists':True}, 'time_signature':{'$in':'2/4 3/4 4/4 6/8'.split()}})
+        tot= cursor.count()
+        for i, doc in enumerate(cursor):
+            if 'bps' not in doc: continue
+            print i, 'of', tot
             fname= doc['fname']
             if 'sks' in fname: continue
             if 'kp' in fname and 'kp-perf' not in fname: continue
-            #if len(d[doc['time_signature']]) > 200: continue
-            d[doc['time_signature']].append((fname, doc['landscape'], doc['bps']))
+            if len(d[doc['time_signature']]) > 200: continue
+            landscape= dict((Fraction(k, doc['divisions']), v) for k, v in doc['landscape'].iteritems())
+            features= get_features_from_landscape(landscape, doc['bps'], throw_percent=0.65)
+            features= dict(sorted(features.iteritems(), key=lambda x:x[1], reverse=True)[:10])
+            d[doc['time_signature']].append((fname, features))
 
         res= []
         m= min(map(len, d.itervalues()))
         for label, l in d.iteritems():
-            num, denom= label
-            denom= 2**denom
-            label= '%s/%s' % (num,denom)
+            if options.binary:
+                num= int(label[0])
+                label='bin' if num % 3 != 0 else 'ter'
+
             shuffle(l)
-            for fname, landscape, bps in l:
-                landscape= dict((Fraction(k, score.divisions), v) for k, v in landscape.iteritems())
-                features= get_features_from_landscape(landscapes, bps, throw_percent=0.75)
+            for fname, features in l[:m]:
                 res.append((fname, (features, label)))
         
         seed(0)
         shuffle(res)
         fnames, examples= zip(*res)
-        return fnames, examples
+        return examples, fnames
 
 
     def start(self, options, args, appctx):
