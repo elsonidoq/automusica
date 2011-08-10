@@ -110,14 +110,14 @@ def entropy_feature_weight(examples):
     res= {}
     for feature, d in cnt.iteritems():
         if tot[feature] < 10: continue
-        for l in labels: d[l]= d.get(l, 0.1)
+        for l in labels: d[l]= d.get(l, 0.001)
         s= sum(d.itervalues())
         d= cnt[feature]= dict((k, float(v)/s) for k, v in d.iteritems())
 
         val= 0
         for v in d.itervalues():
-            val+= -v*log(v,2)
-        res[feature]= val
+            val+= v*log(v,2)
+        res[feature]= -val
     
     return res
 

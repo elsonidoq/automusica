@@ -102,6 +102,8 @@ class MidiToScore(MidiOutStream):
 
     def header(self, format=0, nTracks=1, division=96):
         self.score= Score(division)
+        MICROSECONDS_PER_MINUTE = 60000000.0
+        self.score.tempo= MICROSECONDS_PER_MINUTE/division
 
     def note_on(self, channel=0, note=0x40, velocity=0x40):
         assert self.score is not None

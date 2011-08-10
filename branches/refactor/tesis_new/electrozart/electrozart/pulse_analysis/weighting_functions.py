@@ -1,4 +1,5 @@
 from common import normalize, approx_group_by_onset
+from itertools import izip
 
 
 class NumberOfEvents(object):
@@ -80,3 +81,51 @@ class NoteRepetition(object):
             if notes[i+1].pitch == notes[i+2].pitch and notes[i+2].pitch == notes[i+3].pitch:
                 return 1
         return 0
+
+class Onset(object):
+    def __call__(self, i, notes):
+        return 1
+
+class Tomassen(object):
+    def __init__(self, score):
+        nss= approx_group_by_onset(score)
+        first_voice= [max(n.pitch for n in l if not n.is_silence) for l in nss] 
+        tomassen= self.calc_tomassen(first_voice)
+
+        self.d= dict((n, a) for l, a in izip(nss, tomassen) for n in l)
+
+    def __call__(self, i, notes):
+        return self.d[notes[i]]
+        
+
+    def calc_tomassen(self, pitchs):
+        melodic_accent= []
+        for i in xrange(len(pitchs)-2):
+            motion1= pitchs[i+1]-pitchs[i]
+            motion2= pitchs[i+2]-pitchs[i+1]
+
+            if motion1 == 0 and motion2 == 0:
+                melodic_accent.append([0.00001, 0.0])
+            elif motion1!=0 and motion2==0:
+                melodic_accent.append([1, 0.0])
+            elif motion1==0 and motion2!=0:
+                melodic_accent.append([0.00001, 1])
+            elif motion1>0 and motion2<0:
+                melodic_accent.append([0.83, 0.17])
+            elif motion1<0 and motion2>0:
+                melodic_accent.append([0.71, 0.29])
+            elif motion1>0 and motion2>0:
+                melodic_accent.append([0.33, 0.67])
+            elif motion1<0 and motion2<0:
+                melodic_accent.append([0.5, 0.5])
+
+        res= [1, melodic_accent[0][0]]
+        for prev, next in izip(melodic_accent, melodic_accent[1:]):
+            l= [prev[1], next[0]]
+            l= [e for e in l if e > 0]
+            if len(l) == 0: res.append(0)
+            elif len(l) == 1: res.append(l[0])
+            else: res.append(l[0]*l[1])
+        res.append(0)
+
+        return res
