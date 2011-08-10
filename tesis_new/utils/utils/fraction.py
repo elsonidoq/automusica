@@ -5,18 +5,19 @@ class Fraction(object):
     la programe hace mucho, habria que revisar el codigo
     """
     def __init__(self, num= 0, denom= 1):
+        self.__float= None
         if isinstance(num, int) and isinstance(denom, int):
-            self._num= num
-            self._denom= denom
+            self.__num= num
+            self.__denom= denom
         elif isinstance(num, Fraction) and isinstance(denom, int):
-            self._num= num.numerador()
-            self._denom= num.denominador() * denom
+            self.__num= num.numerador()
+            self.__denom= num.denominador() * denom
         elif isinstance(num, int) and isinstance(denom, Fraction):
-            self._num= num * denom.denominador()
-            self._denom= denom.numerador() 
+            self.__num= num * denom.denominador()
+            self.__denom= denom.numerador() 
         elif isinstance(num, Fraction) and isinstance(denom, Fraction):
-            self._num= num.numerador() * denom.denominador() 
-            self._denom= num.denominador() * denom.numerador()
+            self.__num= num.numerador() * denom.denominador() 
+            self.__denom= num.denominador() * denom.numerador()
         elif isinstance(num, float) or isinstance(denom, float):
             raise ValueError('Cant handle floats')
         else:
@@ -26,18 +27,20 @@ class Fraction(object):
 
 
     def __float__(self):
-        return float(self._num)/self._denom
+        if self.__float is None:
+            self.__float= float(self.__num)/self.__denom
+        return self.__float 
 
-    def numerador(self): return self._num
-    def denominador(self): return self._denom
+    def numerador(self): return self.__num
+    def denominador(self): return self.__denom
     def _simplificar(self):
-        el_mcd= mcd(self._num, self._denom)
-        self._num= self._num / el_mcd
-        self._denom= self._denom / el_mcd
+        el_mcd= mcd(self.__num, self.__denom)
+        self.__num= self.__num / el_mcd
+        self.__denom= self.__denom / el_mcd
         
     def __mod__(self, num):
-        return Fraction(((self._num/self._denom) % num)*self._denom + (self._num % self._denom), self._denom)
-        res= Fraction(self._num, self._denom)
+        return Fraction(((self.__num/self.__denom) % num)*self.__denom + (self.__num % self.__denom), self.__denom)
+        res= Fraction(self.__num, self.__denom)
         while res > 0:
             res-=num
         return res + num            
@@ -52,14 +55,13 @@ class Fraction(object):
         else:
             print "numero es de tipo bizarro"
 
-        denom= fraccion._denom * self._denom
-        num= fraccion._num * self._denom + self._num * fraccion._denom
+        denom= fraccion.__denom * self.__denom
+        num= fraccion.__num * self.__denom + self.__num * fraccion.__denom
         ret= Fraction(num, denom)
-        ret._simplificar()
         return ret
     
     def __hash__(self):
-        return hash((self._num, self._denom))
+        return hash(self.__float)
 
     def __mul__(self, numero):
         # pre: type(numero) == Fraction o int
@@ -71,10 +73,9 @@ class Fraction(object):
         else:
             raise Exception("numero es de tipo bizarro")
             
-        num= self._num * fraccion._num    
-        denom= self._denom * fraccion._denom
+        num= self.__num * fraccion.__num    
+        denom= self.__denom * fraccion.__denom
         ret= Fraction(num, denom)
-        ret._simplificar()
         return ret
     
     def __div__(self, numero):
@@ -87,27 +88,37 @@ class Fraction(object):
             
         return self * f
 
-    def __rdiv__(self, other): return Fraction(self._denom, self._num)*other
-    def __neg__(self): return Fraction(-self._num, self._denom)
+    def __rdiv__(self, other): return Fraction(self.__denom, self.__num)*other
+    def __neg__(self): return Fraction(-self.__num, self.__denom)
     def __rmul__(self, num): return self.__mul__(num)
     def __radd__(self, other): return self.__add__(other)
     def __rsub__(self, other): return -self + other 
     def __sub__(self, numero): return self + (numero*(-1))
 
-    def __int__(self): return self._num/self._denom
+    def __int__(self): return self.__num/self.__denom
 
     def __repr__(self):
-        if self._denom == 1: return str(self._num)
-        if self._num < self._denom:
-            return '%s/%s' % (self._num, self._denom) 
+        if self.__denom == 1: return str(self.__num)
+        if self.__num < self.__denom:
+            return '%s/%s' % (self.__num, self.__denom) 
         else:
-            return '%s + %s/%s' % (self._num/self._denom, self._num%self._denom, self._denom)
+            return '%s + %s/%s' % (self.__num/self.__denom, self.__num%self.__denom, self.__denom)
+
+    def __eq__(self, other):
+        return float(self) == float(other)
+        return any(isinstance(other, t) for t in (int, float, Fraction)) and float(self) == float(other)
 
     def __cmp__(self, other):
         return cmp(float(self), float(other))
         
 
 def mcd(a, b):
+    while b != 0:
+        tmp= b
+        b= a%b
+        a=tmp
+    return a
+
     if b == 0:
         return a
     else:
