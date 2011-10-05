@@ -7,6 +7,8 @@ from interface import Window
 import mididings
 from psychopy import gui
 
+import os
+here= os.path.abspath(os.path.dirname(__file__))
 
 def main():
     parser= OptionParser()
@@ -25,7 +27,7 @@ def main():
     mididings.run(mididings.Process(w.recieve_event))
     
 def load_words():
-    with open('categorias.txt') as f:
+    with open(os.path.join(here, 'categorias.txt')) as f:
         lines= f.read().split('\n')
     
     lines= [[w.strip() for w in e.split('\t') if w.strip()] for e in lines]

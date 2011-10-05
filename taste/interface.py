@@ -6,6 +6,8 @@ from time import time
 from psychopy import visual, core, event
 from threading import Thread
 from outfname_util import get_outfname
+import os
+here= os.path.abspath(os.path.dirname(__file__))
 
 
 class Window(Thread):
@@ -27,7 +29,7 @@ class Window(Thread):
         return ev 
 
     def save_data(self):
-        fname= get_outfname('data', outfname='subject.json')
+        fname= get_outfname(os.path.join(here, 'data'), outfname='subject.json')
         doc= dict(words= self.words,
                   events= self.events)
         doc.update(self.subject_data)
@@ -45,9 +47,10 @@ class Window(Thread):
             self.win.flip()
             self.events.append([])
             while True:
-                l=event.waitKeys() 
-                print l
-                if len(l) > 0 and any(e=='return' for e in l): break
+                l=event.waitKeys(0.1) 
+                t.draw()
+                self.win.flip()
+                if l is not None and len(l) > 0 and any(e=='return' for e in l): break
 
         print "saving data.."
         self.save_data()
