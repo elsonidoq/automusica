@@ -38,19 +38,24 @@ class Window(Thread):
 
     def run(self):
         if self.full_screen:
-            1/0
+            self.win = visual.Window(fullscr=True,monitor="testMonitor", units="deg") #create a window
         else:
             self.win = visual.Window([800,600],monitor="testMonitor", units="deg") #create a window
+        quit_keys= set('lctrl q'.split())
         for word in self.words:
             t = visual.TextStim(text= word, win=self.win, pos=[0,0])
             t.draw()
             self.win.flip()
             self.events.append([])
+            pressed_quit_keys= set()
             while True:
-                l=event.waitKeys(0.1) 
-                t.draw()
-                self.win.flip()
-                if l is not None and len(l) > 0 and any(e=='return' for e in l): break
+                l=event.waitKeys() 
+                if quit_keys.issuperset(l): pressed_quit_keys.update(l)
+                else: pressed_quit_keys= set()
+                if pressed_quit_keys == quit_keys: break
+                print l
+                if len(l) > 0 and any(e=='return' for e in l): break
+            if pressed_quit_keys == quit_keys: break
 
         print "saving data.."
         self.save_data()
