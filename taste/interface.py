@@ -43,6 +43,7 @@ class Window(Thread):
             self.win = visual.Window([800,600],monitor="testMonitor", units="deg") #create a window
         quit_keys= set('lctrl q'.split())
         for word in self.words:
+            if not isinstance(word, unicode): word= word.decode('utf8')
             t = visual.TextStim(text= word, win=self.win, pos=[0,0])
             t.draw()
             self.win.flip()

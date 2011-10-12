@@ -20,7 +20,7 @@ def main():
     if options.ask_for_data: subject_data= ask_for_data()
     else: subject_data= dict(age=26, sex='m', musical_training=15)
 
-    w= Window(words=load_words()[:4], subject_data=subject_data, 
+    w= Window(words=load_words(), subject_data=subject_data, 
               full_screen=options.full_screen)
     w.start()
     
