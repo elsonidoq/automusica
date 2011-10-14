@@ -1,5 +1,5 @@
 def approx_group_by_onset(score, threshold=0.05):
-    notes= score.get_notes(skip_silences=True)
+    notes= score.get_notes(skip_silences=True, in_beats=True)
     res= []
     i=0
     while i < len(notes):
@@ -7,7 +7,7 @@ def approx_group_by_onset(score, threshold=0.05):
         l= []
         l.append(actual_note)
         i+=1
-        while i < len(notes) and score.ticks2seconds(notes[i].start - actual_note.start) < threshold:
+        while i < len(notes) and score.ticks2seconds((notes[i].start - actual_note.start)*score.divisions) < threshold:
             l.append(notes[i])
             i+=1
         res.append(l)

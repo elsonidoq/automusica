@@ -32,14 +32,16 @@ class PrefixTree(object):
             node= node[e]
         return node[self.cnt]
 
-    def sorted_nodes(self):
+    def sorted_nodes(self, reach_leaves=False):
         stack= [([], self.root)]
         prefixes= []
         while len(stack) > 0:
             l, n= stack.pop()
             nchildren= len(n) - (self.cnt in n)
-            if nchildren == 0: nchildren= 1
-            if self.cnt in n and len(l) > 3 and n[self.cnt] > 4:
+            #if nchildren == 0: nchildren= 1
+            #if self.cnt in n and len(l) > 3 and n[self.cnt] > 4:
+            if self.cnt in n and len(l) > 1 and n[self.cnt] > 4 and\
+                (not reach_leaves or nchildren == 0):
                 score= n[self.cnt]*(len(l) - max(0, len(l) - 10)) 
                 sgn= sign(l[0])
                 f= 1
@@ -67,10 +69,15 @@ class PrefixTree(object):
         return res                
 
 
-def build_prefix_tree(l, wsize):
-    t= PrefixTree()
+
+def build_prefix_tree(notes, l, wsize, t=None):
+    t= t or PrefixTree()
     for j in xrange(len(l)):
-        t.define(l[j:j+wsize])
+        t0= notes[j].start
+        for k in xrange(j+1, len(l)):
+            if notes[k].start - t0 > wsize: break
+
+        t.define(l[j:k])
     return t
 
 
@@ -94,6 +101,73 @@ def fuzz(n):
     else:
         res=4
     return res*sgn
+
+def get_contour(notes):
+    c= []
+    for p, n in zip(notes, notes[1:]):
+        c.append(fuzz(n.pitch - p.pitch))
+
+    return 1,c
+
+def get_durations(notes):
+    return 0, [n.duration for n in notes]
+
+def get_volumes(notes):
+    res= []
+    for i, n in enumerate(notes):
+        if i == 0: res.append(None)
+        elif i > 0:
+            v= n.volume - notes[i-1].volume
+            if abs(v) < 10:
+                v= v/5
+            else:
+                v= v/10 + sign(v)
+            res.append(v)
+    return 0, res
+
+def get_pivot_points(notes):
+    res= []
+    for i, n1 in enumerate(notes):
+        if i + 2 >= len(notes): break 
+        n2= notes[i+1]
+        n3= notes[i+2]
+
+        res.append(sign(n2.pitch - n1.pitch) != sign(n3.pitch - n2.pitch))
+
+    return 1, res
+
+
+def all_funcs(funcs):
+    def f(notes):
+        ls= [func(notes) for func in funcs]
+        res=[]
+        for i in xrange(len(notes)):
+            e= []
+            for o, l in ls:
+                if i < o: e.append(None)
+                elif i-o >= len(l): e.append(None)
+                else: e.append(l[i-o])
+    
+            res.append(tuple(e))
+        return 0, res
+
+    return f
+
+def build_patterns(cursor, funcs, wsize):
+    ts= [None]*len(funcs)
+    for doc in cursor:
+        notes= doc['score'].get_notes(skip_silences=True)
+        for n in notes:
+            n.start= float(n.start)/doc['divisions']
+            n.duration= float(n.duration)/doc['divisions']
+
+        for i, func in enumerate(funcs):
+            offset, l= func(notes)
+            for j, e in enumerate(l):
+                l[j]= (notes[j+offset].start % doc['score'].time_signature[0], e) 
+            ts[i]= build_prefix_tree(notes, l, wsize, ts[i])
+
+    return ts
 
 def build_score_from_contour_pattern(score, fname_template, writer):
     notess= common.approx_group_by_onset(score, score.ticks2seconds(score.divisions/5))

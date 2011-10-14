@@ -17,7 +17,7 @@ from itertools import groupby
 from utils.outfname_util import get_outfname
 
 from electrozart.pulse_analysis.common import normalize
-from electrozart.pulse_analysis.features import get_features, get_features4, get_features_from_landscape, get_landscape
+from electrozart.pulse_analysis.features import get_features_from_landscape
 from electrozart import sandbox
 from utils.fraction import Fraction
 
@@ -193,6 +193,7 @@ def get_examples(db, parser, binary, max_examples_per_class=None, do_sample=Fals
         query= {'sampled':True}
     else:
         query= {'time_signature':{'$in':'2/4 3/4 4/4 6/8'.split()}, 'corpus_name':{'$ne':'sks'}}#'cperez'}
+        query= {}
     if nthreads is not None and thread_no is not None:
         query['id']= {'$mod':[nthreads, thread_no]}
     #query['recalculate']= True
@@ -229,10 +230,10 @@ def get_examples(db, parser, binary, max_examples_per_class=None, do_sample=Fals
             doc['landscape']= landscape
             changed= True
 
-        if 'features_5' not in doc:# or True:# or ('features' in doc and len(doc['features'])<20):# or True:
+        if 'features_6' not in doc:# or True:# or ('features' in doc and len(doc['features'])<20):# or True:
             #landscape= dict((Fraction(k, doc['divisions']), v) for k, v in doc['landscape'].iteritems())
             landscape= dict((float(k)/doc['divisions'], v) for k, v in doc['landscape'].iteritems())
-            for throw_percent in [0.5, 0.6, 0.8]:
+            for throw_percent in [0.6]:#, 0.6, 0.8]:
                 features= get_features_from_landscape(landscape, throw_percent=throw_percent, max_beats=12)
                 doc['features_%d' % int(throw_percent*10)]= features
             changed= True
@@ -393,7 +394,7 @@ class MeasureClassifier2(BaseCommand):
             return examples, fnames
 
         else:
-            return get_examples(db, parser, options.binary, max_examples_per_class= 500, do_sample=options.do_sample)#, top_features=12)
+            return get_examples(db, parser, options.binary, max_examples_per_class= None, do_sample=options.do_sample)#, top_features=12)
 
 
     def start(self, options, args, appctx):
@@ -438,9 +439,9 @@ class MeasureClassifier2(BaseCommand):
             #print "BIN TER"
             #bin_ter_feature_selection(examples)
 
-            #outfname= get_outfname(os.path.join(data_outdir, 'meassure_classifier'), outfname='examples.arff')
-            #print outfname
-            #self.export_examples_to_arff(examples, outfname)
+            outfname= get_outfname(os.path.join(data_outdir, 'meassure_classifier'), outfname='examples_multiclass.arff')
+            print outfname
+            self.export_examples_to_arff(examples, outfname)
 
             self.open_shell(locals())
             #m,ks= plot_diss(sims)
@@ -513,7 +514,7 @@ class MeasureClassifier2(BaseCommand):
         all_features= set()
         labels= set()
         for features, label in examples:
-            all_features.update(f for f in features if str(f) != 'ternary')
+            all_features.update(str(f) for f in features if str(f) != 'ternary')
             labels.add(label)
 
         lines= ['@relation temp']
@@ -525,7 +526,14 @@ class MeasureClassifier2(BaseCommand):
         
         for features, label in examples:
             #ter= features['ternary']
-            features= [(all_features[k], v) for k, v in features.iteritems() if str(k) != 'ternary']
+            features= [(all_features[str(k)], v) for k, v in features.iteritems() if str(k) != 'ternary']
+            #XXX
+            d= defaultdict(int)
+            for k, v in features:
+                d[k]+=v
+            features= d.items()
+            #XXX
+
             features.sort(key=lambda x:x[0])
             features= ['%s %s' % (k, v) for k, v in features]
             features.append('%s "%s"' % (len(all_features), label))

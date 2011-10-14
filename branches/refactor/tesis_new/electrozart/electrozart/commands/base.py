@@ -66,8 +66,13 @@ from batch_train import BatchTrain
 from analyze_quantization import AnalyzeQuantization
 from mid2mp3 import Mid2Mp3
 from ioi_sandbox import IOISandbox
-from metrical_inference import MetricalInference
+#from metrical_inference import MetricalInference
 from index import Index
-from meassure_classifier import MeasureClassifier
+#from meassure_classifier import MeasureClassifier
 from meassure_classifier2 import MeasureClassifier2
-start= MetaCommand(Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), MetricalInference(), Index(), MeasureClassifier(), MeasureClassifier2())
+from plot_acorrs import PlotAcorrs
+from split_tracks import SplitTracks
+from send_jack import SendJack
+from rhythm_reduction import RhythmReduction
+from json2mid import Json2Mid
+start= MetaCommand(SplitTracks(), PlotAcorrs(), Compose(), BatchTrain(), AnalyzeQuantization(), Mid2Mp3(), Shell(), IOISandbox(), Index(), MeasureClassifier2(), SendJack(), RhythmReduction(), Json2Mid())

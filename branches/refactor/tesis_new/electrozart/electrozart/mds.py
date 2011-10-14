@@ -1,6 +1,7 @@
 from itertools import count
+import numpy as np
 import pylab
-from random import seed, shuffle
+from random import seed, shuffle, random
 import os
 import subprocess
 import tempfile
@@ -88,28 +89,39 @@ def colors():
     shuffle(res)
     return res 
 
-def measure_colors(conf):
+def measure_colors(conf, key):
     color_mapping= defaultdict(iter(colors()).next)
     res= {}
     for k, v in conf.iteritems():
-        res[k]= color_mapping[k[:3]]
+        res[k]= color_mapping[key(k)]#[:3]]
     return res
 
-def plot_mds_configuration(conf):
-    colors= measure_colors(conf)
+def plot_mds_configuration(conf, key=None, show=False):
+    key = key or (lambda x:x)
+    colors= measure_colors(conf, key=key)
     d= defaultdict(list)
+    point_text= {}
     for elem, point in conf.iteritems():
         if elem not in colors: continue
-        d[(colors[elem], elem[:3])].append(point)
+        d[(colors[elem], key(elem))].append(point)
+        point_text[point]= elem
 
-
+    size= 0.1
     for (color, label), points in d.iteritems():
         x,y= zip(*points)
-        pylab.scatter(x,y, color=color,label=label, alpha=0.5)
+        pylab.scatter(np.array(x)+size*random()-size/2,np.array(y)+size*random()-size/2, color=color,label=label, alpha=0.5)
+        continue
+        for x,y in points:
+            pylab.text(x,#+0.05*random()-0.0025,
+                       y+0.1*random()-0.05,
+                       point_text[x,y], 
+                       fontsize=8,
+                       horizontalalignment='center',
+                       verticalalignment='center')
 
 
     pylab.legend()
-    pylab.show()
+    if show: pylab.show()
     
 
 def plot_mds_configuration_wo_color(conf):

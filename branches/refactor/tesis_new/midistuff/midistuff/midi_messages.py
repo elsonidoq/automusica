@@ -15,7 +15,9 @@ class MidiMessage(object):
         """
         method= getattr(mof, self.method_name)
         try: method(*self.msg_args)
-        except Exception, e: print "WARNING: ", e.message
+        except Exception, e: 
+            print "WARNING: ", e.message
+            import ipdb;ipdb.set_trace()
 
     def __repr__(self):
         return 'MidiMessage(%s, %s, %s)' % (repr(self.msg_args), repr(self.method_name), self.time)
