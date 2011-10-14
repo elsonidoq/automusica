@@ -397,7 +397,7 @@ class Score(object):
     def duration(self):
         return self.get_notes()[-1].end
 
-    def get_notes(self, relative_to=None, instrument=None, skip_silences=False, group_by_onset=False):
+    def get_notes(self, relative_to=None, instrument=None, skip_silences=False, group_by_onset=False, in_beats=False):
         """
         params:
           relative_to :: string
@@ -409,6 +409,9 @@ class Score(object):
           skip_silences :: bool
             saca los silencios
         """
+        if relative_to is not None:
+            print "DEPRECATED"
+            1/0
         if instrument is None:
             allnotes= list(chain(*self.notes_per_instrument.values()))
         else:
@@ -420,15 +423,17 @@ class Score(object):
         allnotes.sort(key=lambda n:n.start)            
 
         if group_by_onset:
-            assert relative_to is None
             l= []
             for k, ns in groupby(allnotes, key=lambda x:x.start):
                 l.append(list(ns))
             allnotes=l
 
 
-        if relative_to is not None:
-            allnotes= self._relative_notes(allnotes, relative_to)
+        if in_beats:
+            for i, n in enumerate(allnotes):
+                if n.is_silence: continue
+                newn= PlayedNote(n.pitch, float(n.start)/self.divisions, float(n.duration)/self.divisions, n.volume)
+                allnotes[i]= newn
         return allnotes
 
     def _relative_notes(self, notes, relative_to):
@@ -492,7 +497,7 @@ class Score(object):
     def _set_tempo(self, tempo):
         self._tempo= tempo
         if tempo is not None:
-            m= MidiMessage((tempo,), 'tempo', 0)
+            m= MidiMessage((int(tempo),), 'tempo', 0)
             self.append_message(m)
 
     def _get_tempo(self):
