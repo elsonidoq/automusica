@@ -187,7 +187,8 @@ def ter_feature_selection(examples):
     
 
     
-def get_examples(db, parser, binary, max_examples_per_class=None, do_sample=False,nthreads=None, thread_no=None):
+def get_examples(db, parser, binary, max_examples_per_class=None, do_sample=False,nthreads=None, thread_no=None,
+                 do_sync=True):
     d= defaultdict(list)
     if do_sample:
         query= {'sampled':True}
@@ -252,7 +253,7 @@ def get_examples(db, parser, binary, max_examples_per_class=None, do_sample=Fals
         doc['features']= doc['features_6']
         #doc['features']= doc['new_features']
         #doc.sync()
-        if changed: 
+        if changed and do_sync: 
             doc.sync()
 
     res= []
