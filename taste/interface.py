@@ -31,6 +31,7 @@ class Window(Thread):
         return ev 
 
     def save_data(self):
+        print "saving to %s" % self.fname
         doc= dict(words= self.words,
                   events= self.events)
         doc.update(self.subject_data)
@@ -65,7 +66,6 @@ class Window(Thread):
             self.save_data()
             if pressed_quit_keys == quit_keys: break
 
-        print "saving data.."
         self.save_data()
         print "closing window..."
         self.win.close()
