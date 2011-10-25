@@ -14,6 +14,7 @@ def main():
     parser= OptionParser()
     parser.add_option('--full-screen', dest='full_screen', default=False, action='store_true')
     parser.add_option('--no-data', dest='ask_for_data', default=True, action='store_false')
+    parser.add_option('--short-experiment', dest='short_experiment', default=False, action='store_true')
 
     options, args= parser.parse_args(sys.argv[1:])
     
@@ -21,7 +22,7 @@ def main():
     else: subject_data= dict(age=26, sex='m', musical_training=15)
 
     w= Window(words=load_words(), subject_data=subject_data, 
-              full_screen=options.full_screen)
+              full_screen=options.full_screen, short_experiment=options.short_experiment)
     w.start()
     
     mididings.config(client_name='exp', backend='jack')
